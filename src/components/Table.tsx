@@ -6,14 +6,17 @@ export default function Table() {
   const { tableCards } = useContext(GameContext);
 
   return (
-    <div className="group flex bg-blue-500 flex-row h-10 m-5">
-      {tableCards.map((card, i) => (
-        <CardComponent
-          className={`absolute group-hover:relative translate-x-${i}`}
-          key={`table-${card.toString()}`}
-          card={card}
-        />
-      ))}
+    <div className="group flex bg-blue-500 flex-col m-5 items-center">
+      <span>Table has: {tableCards.length} cards</span>
+      <div className="flex">
+        {tableCards.map((card, i) => (
+          <CardComponent
+            className={`translate-x-[${i}rem]`}
+            key={`table-${card.toString()}`}
+            card={card}
+          />
+        ))}
+      </div>
     </div>
   );
 }

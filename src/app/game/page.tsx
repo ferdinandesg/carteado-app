@@ -6,7 +6,7 @@ import { GameContext } from "@/contexts/game.context";
 import { useContext } from "react";
 
 export default function Game() {
-  const { deck, isLoading, playerCards, playCard } = useContext(GameContext);
+  const { deck, isLoading, playerCards, playCard, drawCard } = useContext(GameContext);
   if (isLoading) return <div>Loading...</div>;
 
   return (
@@ -24,7 +24,7 @@ export default function Game() {
       </div>
       <button
         className="bg-gray-500 hover:bg-gray-600 transition mt-2 p-2 text-white"
-        onClick={() => {}}
+        onClick={drawCard}
       >
         Draw a card
       </button>

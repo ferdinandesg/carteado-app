@@ -9,6 +9,7 @@ interface GameContextProps {
   playerCards: Card[];
   tableCards: Card[];
   playCard?: (card: Card) => void;
+  drawCard?: () => void;
 }
 
 const defaultGameProps: GameContextProps = {
@@ -25,6 +26,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [deck, setDeck] = useState<Deck>();
   const [playerCards, setPlayerCards] = useState<Card[]>([]);
   const [tableCards, setTableCards] = useState<Card[]>([]);
+  const [isYourTurn, setPlayerTurn] = useState<boolean>(true);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [players, setPlayers] = useState<number>(4);
 
@@ -38,10 +40,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, []);
 
   function playCard(card: Card) {
-    console.log({ card });
     const [lastCard] = tableCards.slice(-1);
-    console.log({ lastCard });
-
     if (lastCard && card.rank < lastCard.rank)
       return alert("Your card rank is lower");
     setPlayerCards([
@@ -49,6 +48,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
     ]);
     setTableCards([...tableCards, card]);
   }
+
+  const drawCard = () => {
+    if (!isYourTurn) return;
+    if (playerCards.length === 3) return alert("You cant draw than 3 cards");
+    setPlayerCards((m) => [...m, deck!.draw()!]);
+  };
+
   return (
     <GameContext.Provider
       value={{
@@ -59,6 +65,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         players,
         tableCards,
         isYourTurn: true,
+        drawCard,
       }}
     >
       {children}
