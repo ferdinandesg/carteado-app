@@ -5,6 +5,7 @@ interface GameContextProps {
   deck?: Deck;
   isLoading: boolean;
   players: number;
+  isYourTurn: boolean;
   playerCards: Card[];
   tableCards: Card[];
   playCard?: (card: Card) => void;
@@ -15,6 +16,7 @@ const defaultGameProps: GameContextProps = {
   players: 4,
   playerCards: [],
   tableCards: [],
+  isYourTurn: false,
 };
 
 export const GameContext = createContext(defaultGameProps);
@@ -37,7 +39,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   function playCard(card: Card) {
     console.log({ card });
-    if (card.rank < tableCards[0]?.rank)
+    const [lastCard] = tableCards.slice(-1);
+    console.log({ lastCard });
+
+    if (lastCard && card.rank < lastCard.rank)
       return alert("Your card rank is lower");
     setPlayerCards([
       ...playerCards.filter((x) => x.toString() !== card.toString()),
@@ -46,7 +51,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }
   return (
     <GameContext.Provider
-      value={{ deck, playerCards, playCard, isLoading, players, tableCards }}
+      value={{
+        deck,
+        playerCards,
+        playCard,
+        isLoading,
+        players,
+        tableCards,
+        isYourTurn: true,
+      }}
     >
       {children}
     </GameContext.Provider>

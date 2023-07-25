@@ -4,14 +4,15 @@ import CardComponent from "./Card";
 
 export default function Table() {
   const { tableCards } = useContext(GameContext);
-  console.log({ tableCards });
 
   return (
-    <div className="h-10 w-10">
-      {tableCards.map((card) => (
-        <span key={`table-${card.toString()}`} className="absolute">
-          <CardComponent card={card} />
-        </span>
+    <div className="group flex bg-blue-500 flex-row h-10 m-5">
+      {tableCards.map((card, i) => (
+        <CardComponent
+          className={`absolute group-hover:relative translate-x-${i}`}
+          key={`table-${card.toString()}`}
+          card={card}
+        />
       ))}
     </div>
   );

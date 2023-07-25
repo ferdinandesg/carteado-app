@@ -1,15 +1,20 @@
 import { Card } from "@/models/Cards";
-import { ReactNode } from "react";
-type CardComponentProps = {
+import { ReactNode, HtmlHTMLAttributes } from "react";
+import { twMerge } from "tailwind-merge";
+interface CardComponentProps extends HtmlHTMLAttributes<HTMLDivElement> {
   card: Card;
-};
+}
 
-export default function CardComponent({ card }: CardComponentProps) {
+export default function CardComponent({ card, ...rest }: CardComponentProps) {
   return (
-    <span
-      className="bg-white border rounded p-2 hover:-translate-y-3 transition cursor-pointer"
+    <div
+      {...rest}
+      className={twMerge(
+        "bg-white border rounded p-2 transition cursor-pointer",
+        rest?.className
+      )}
     >
       {card.toString()}
-    </span>
+    </div>
   );
 }

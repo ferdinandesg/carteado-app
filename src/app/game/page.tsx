@@ -10,13 +10,16 @@ export default function Game() {
   if (isLoading) return <div>Loading...</div>;
 
   return (
-    <div className="flex flex-col w-1/2 m-auto h-1/2 p-3">
+    <div className="flex flex-col m-auto  p-3 bg-red-500">
       <Table />
       <div className="flex flex-wrap gap-2 justify-center">
         {playerCards.map((card) => (
-          <span onClick={() => playCard!(card)} key={card.toString()}>
-            <CardComponent card={card} />
-          </span>
+          <CardComponent
+            card={card}
+            className="hover:-translate-y-3"
+            onClick={() => playCard!(card)}
+            key={card.toString()}
+          />
         ))}
       </div>
       <button
