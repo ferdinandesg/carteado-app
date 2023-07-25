@@ -6,7 +6,7 @@ export default function Table() {
   const { tableCards } = useContext(GameContext);
 
   return (
-    <div className="group flex bg-blue-500 flex-col m-5 items-center">
+    <div className="group flex bg-green-500 flex-col m-5 items-center">
       <span>Table has: {tableCards.length} cards</span>
       <div className="flex">
         {tableCards.map((card, i) => (

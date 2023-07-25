@@ -12,5 +12,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <GameProvider>{children}</GameProvider>;
+  return (
+    <GameProvider>
+      <div className="bg-gradient-to-r from-green-900 via-green-800 to-green-900">{children}</div>
+    </GameProvider>
+  );
 }

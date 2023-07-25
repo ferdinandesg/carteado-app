@@ -6,11 +6,12 @@ import { GameContext } from "@/contexts/game.context";
 import { useContext } from "react";
 
 export default function Game() {
-  const { deck, isLoading, playerCards, playCard, drawCard } = useContext(GameContext);
+  const { deck, isLoading, playerCards, playCard, drawCard } =
+    useContext(GameContext);
   if (isLoading) return <div>Loading...</div>;
 
   return (
-    <div className="flex flex-col m-auto  p-3 bg-red-500">
+    <div className="flex flex-col m-auto p-3">
       <Table />
       <div className="flex flex-wrap gap-2 justify-center">
         {playerCards.map((card) => (
