@@ -1,4 +1,4 @@
-import Deck, { Card } from "@/models/Cards";
+import Deck, { Card, PlayerCard } from "@/models/Cards";
 import { ReactNode, createContext, useEffect, useState } from "react";
 
 interface GameContextProps {
@@ -24,7 +24,7 @@ export const GameContext = createContext(defaultGameProps);
 
 export function GameProvider({ children }: { children: ReactNode }) {
   const [deck, setDeck] = useState<Deck>();
-  const [playerCards, setPlayerCards] = useState<Card[]>([]);
+  const [playerCards, setPlayerCards] = useState<PlayerCard[]>([]);
   const [tableCards, setTableCards] = useState<Card[]>([]);
   const [isYourTurn, setPlayerTurn] = useState<boolean>(true);
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -33,7 +33,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const newDeck = new Deck();
     console.log(newDeck);
-    
+
     setDeck(newDeck);
     setLoading(false);
     for (let i = 0; i < 3; i++) {

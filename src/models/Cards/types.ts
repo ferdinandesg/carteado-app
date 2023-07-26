@@ -26,3 +26,7 @@ export interface Card {
   secondaryValue: Value | null;
   toString: () => CardAsString;
 }
+
+export interface PlayerCard extends Card {
+  hidden: boolean
+}

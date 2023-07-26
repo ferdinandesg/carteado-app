@@ -1,5 +1,5 @@
 import { ALL_RANKS, ALL_SUITS, RANK_TO_VALUE } from './constants';
-import { Card } from './types';
+import { Card, PlayerCard } from './types';
 
 class Deck {
   private cards: Card[] = [];
@@ -22,7 +22,6 @@ class Deck {
     for (let suit of ALL_SUITS) {
       for (let rank of ALL_RANKS) {
         const value = RANK_TO_VALUE[rank];
-
         cards.push({
           suit,
           rank,
@@ -32,7 +31,6 @@ class Deck {
         });
       }
     }
-
     return cards;
   }
 
@@ -42,7 +40,6 @@ class Deck {
 
   shuffle(): void {
     this.resetDeck();
-
     for (let i = this.cards.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
@@ -55,6 +52,11 @@ class Deck {
 
   isThisYourCard(cardOne: Card, cardTwo: Card): boolean {
     return cardOne.rank === cardTwo.rank && cardOne.suit === cardTwo.suit;
+  }
+
+  givePlayerCards(): PlayerCard[]{
+    
+    return []
   }
 }
 
