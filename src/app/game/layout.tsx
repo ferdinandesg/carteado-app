@@ -14,7 +14,9 @@ export default function RootLayout({
 }) {
   return (
     <GameProvider>
-      <div className="bg-gradient-to-r from-green-900 via-green-800 to-green-900">{children}</div>
+      <div className="bg-gradient-to-r from-green-800 via-green-700 to-green-800  h-screen w-screen">
+        {children}
+      </div>
     </GameProvider>
   );
 }

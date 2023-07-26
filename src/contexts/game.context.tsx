@@ -32,6 +32,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const newDeck = new Deck();
+    console.log(newDeck);
+    
     setDeck(newDeck);
     setLoading(false);
     for (let i = 0; i < 3; i++) {
@@ -41,7 +43,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   function playCard(card: Card) {
     const [lastCard] = tableCards.slice(-1);
-    if (lastCard && card.rank < lastCard.rank)
+    if (lastCard && card.value < lastCard.value)
       return alert("Your card rank is lower");
     setPlayerCards([
       ...playerCards.filter((x) => x.toString() !== card.toString()),

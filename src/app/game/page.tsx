@@ -24,7 +24,7 @@ export default function Game() {
         ))}
       </div>
       <button
-        className="bg-gray-500 hover:bg-gray-600 transition mt-2 p-2 text-white"
+        className="bg-gray-400 hover:bg-gray-400 transition mt-2 p-2 text-white"
         onClick={drawCard}
       >
         Draw a card
