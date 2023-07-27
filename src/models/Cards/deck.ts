@@ -1,5 +1,5 @@
-import { ALL_RANKS, ALL_SUITS, RANK_TO_VALUE } from './constants';
-import { Card, PlayerCard } from './types';
+import { ALL_RANKS, ALL_SUITS, RANK_TO_VALUE } from "./constants";
+import { Card, PlayerCard } from "./types";
 
 class Deck {
   private cards: Card[] = [];
@@ -54,9 +54,17 @@ class Deck {
     return cardOne.rank === cardTwo.rank && cardOne.suit === cardTwo.suit;
   }
 
-  givePlayerCards(): PlayerCard[]{
-    
-    return []
+  givetableCards(): PlayerCard[] {
+    const playerDeck: PlayerCard[] = [];
+    while (playerDeck.length < 9) {
+      const cardDrawed = this.draw();
+      const hiddenCards = playerDeck.filter((x) => x.hidden);
+      playerDeck.push({
+        ...cardDrawed!,
+        hidden: hiddenCards.length < 3 ?? Math.floor(Math.random()*10) > 5
+      });
+    }
+    return playerDeck;
   }
 }
 

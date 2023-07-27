@@ -3,13 +3,13 @@ import { useContext } from "react";
 import CardComponent from "./Card";
 
 export default function Table() {
-  const { tableCards } = useContext(GameContext);
+  const { bunchCards } = useContext(GameContext);
 
   return (
     <div className="group flex flex-col m-5 items-center">
-      <span className="text-white font-semibold">Table has: {tableCards.length} cards</span>
+      <span className="text-white font-semibold">Table has: {bunchCards.length} cards</span>
       <div className="flex">
-        {tableCards.map((card, i) => (
+        {bunchCards.map((card, i) => (
           <CardComponent
             className={`translate-x-[${i}rem]`}
             key={`table-${card.toString()}`}

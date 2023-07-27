@@ -6,68 +6,72 @@ interface GameContextProps {
   isLoading: boolean;
   players: number;
   isYourTurn: boolean;
-  playerCards: Card[];
-  tableCards: Card[];
-  playCard?: (card: Card) => void;
-  drawCard?: () => void;
+  tableCards: PlayerCard[];
+  handCards: PlayerCard[];
+  bunchCards: Card[];
+  playCard: (card: Card) => void;
+  drawCard: () => void;
+  setHandCards: (cards: PlayerCard[]) => void;
 }
 
 const defaultGameProps: GameContextProps = {
   isLoading: true,
   players: 4,
-  playerCards: [],
   tableCards: [],
+  handCards: [],
+  bunchCards: [],
   isYourTurn: false,
+  playCard: (card: Card) => {},
+  drawCard: () => {},
+  setHandCards: (cards: PlayerCard[]) => {},
 };
 
 export const GameContext = createContext(defaultGameProps);
 
 export function GameProvider({ children }: { children: ReactNode }) {
   const [deck, setDeck] = useState<Deck>();
-  const [playerCards, setPlayerCards] = useState<PlayerCard[]>([]);
-  const [tableCards, setTableCards] = useState<Card[]>([]);
+  const [tableCards, setTableCards] = useState<PlayerCard[]>([]);
+  const [bunchCards, setBunchCards] = useState<Card[]>([]);
+  const [handCards, setHandCards] = useState<PlayerCard[]>([]);
   const [isYourTurn, setPlayerTurn] = useState<boolean>(true);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [players, setPlayers] = useState<number>(4);
 
   useEffect(() => {
     const newDeck = new Deck();
-    console.log(newDeck);
-
-    setDeck(newDeck);
     setLoading(false);
-    for (let i = 0; i < 3; i++) {
-      setPlayerCards((m) => [...m, newDeck.draw()!]);
-    }
+    setTableCards(newDeck.givetableCards());
+    setDeck(newDeck);
   }, []);
 
   function playCard(card: Card) {
-    const [lastCard] = tableCards.slice(-1);
-    if (lastCard && card.value < lastCard.value)
+    const [lastBunchCard] = bunchCards.slice(-1);
+    if (lastBunchCard && card.value < lastBunchCard.value)
       return alert("Your card rank is lower");
-    setPlayerCards([
-      ...playerCards.filter((x) => x.toString() !== card.toString()),
+    setTableCards([
+      ...tableCards.filter((x) => x.toString() !== card.toString()),
     ]);
-    setTableCards([...tableCards, card]);
+    setBunchCards((m) => [...m, card]);
   }
 
   const drawCard = () => {
     if (!isYourTurn) return;
-    if (playerCards.length === 3) return alert("You cant draw than 3 cards");
-    setPlayerCards((m) => [...m, deck!.draw()!]);
+    if (tableCards.length === 3) return alert("You cant draw than 3 cards");
   };
 
   return (
     <GameContext.Provider
       value={{
         deck,
-        playerCards,
+        handCards,
+        tableCards,
+        bunchCards,
         playCard,
         isLoading,
         players,
-        tableCards,
         isYourTurn: true,
         drawCard,
+        setHandCards,
       }}
     >
       {children}
