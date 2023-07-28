@@ -1,8 +1,8 @@
-import { Card, PlayerCard } from "@/models/Cards";
+import { Card } from "@/models/Cards";
 import { ReactNode, HtmlHTMLAttributes } from "react";
 import { twMerge } from "tailwind-merge";
 interface CardComponentProps extends HtmlHTMLAttributes<HTMLDivElement> {
-  card: PlayerCard | Card;
+  card: Card;
 }
 
 export default function CardComponent({ card,...rest }: CardComponentProps) {

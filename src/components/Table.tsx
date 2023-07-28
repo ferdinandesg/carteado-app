@@ -8,7 +8,7 @@ export default function Table() {
   return (
     <div className="group flex flex-col m-5 items-center">
       <span className="text-white font-semibold">Table has: {bunchCards.length} cards</span>
-      <div className="flex">
+      <div className="flex flex-wrap">
         {bunchCards.map((card, i) => (
           <CardComponent
             className={`translate-x-[${i}rem]`}

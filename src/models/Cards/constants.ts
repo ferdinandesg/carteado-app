@@ -29,7 +29,7 @@ export const ALL_SUITS: Suit[] = ['hearts', 'diamonds', 'spades', 'clubs'];
 
 // If it's an array, it'll be [primaryValue, secondaryValue].
 export const RANK_TO_VALUE: Record<Rank, Value | Value[]> = {
-    '2': 2,
+    '2': 14,
     '3': 3,
     '4': 4,
     '5': 5,
@@ -37,7 +37,7 @@ export const RANK_TO_VALUE: Record<Rank, Value | Value[]> = {
     '7': 7,
     '8': 8,
     '9': 9,
-    '10': 10,
+    '10': 14,
     J: 11,
     Q: 12,
     K: 13,

@@ -1,4 +1,4 @@
-import Deck, { Card, PlayerCard } from "@/models/Cards";
+import Deck, { Card } from "@/models/Cards";
 import { ReactNode, createContext, useEffect, useState } from "react";
 
 interface GameContextProps {
@@ -6,12 +6,12 @@ interface GameContextProps {
   isLoading: boolean;
   players: number;
   isYourTurn: boolean;
-  tableCards: PlayerCard[];
-  handCards: PlayerCard[];
+  tableCards: Card[];
+  handCards: Card[];
   bunchCards: Card[];
   playCard: (card: Card) => void;
-  drawCard: () => void;
-  handlePickCards: (cards: PlayerCard[]) => void;
+  drawTable: () => void;
+  handlePickCards: (cards: Card[]) => void;
 }
 
 const defaultGameProps: GameContextProps = {
@@ -22,46 +22,90 @@ const defaultGameProps: GameContextProps = {
   bunchCards: [],
   isYourTurn: false,
   playCard: (card: Card) => {},
-  drawCard: () => {},
-  handlePickCards: (cards: PlayerCard[]) => {},
+  drawTable: () => {},
+  handlePickCards: (cards: Card[]) => {},
 };
 
 export const GameContext = createContext(defaultGameProps);
 
 export function GameProvider({ children }: { children: ReactNode }) {
   const [deck, setDeck] = useState<Deck>();
-  const [tableCards, setTableCards] = useState<PlayerCard[]>([]);
+  const [tableCards, setTableCards] = useState<Card[]>([]);
   const [bunchCards, setBunchCards] = useState<Card[]>([]);
-  const [handCards, setHandCards] = useState<PlayerCard[]>([]);
-  const [isYourTurn, setPlayerTurn] = useState<boolean>(true);
+  const [handCards, setHandCards] = useState<Card[]>([]);
+  const [playerTurn, setPlayerTurn] = useState<boolean>(true);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [players, setPlayers] = useState<number>(4);
+  const [nextPlayer, setNextPlayer] = useState<number>(0);
 
   useEffect(() => {
     const newDeck = new Deck();
     setLoading(false);
-    setTableCards(newDeck.givetableCards());
+    setTableCards(newDeck.giveTableCards());
     setDeck(newDeck);
   }, []);
 
   function playCard(card: Card) {
-    const [lastBunchCard] = bunchCards.slice(-1);
-    if (lastBunchCard && card.value < lastBunchCard.value)
+    if (!playerTurn) return;
+    const [lastCard] = bunchCards.slice(-1);
+    if (lastCard && lastCard.value! > card.value!)
       return alert("Your card rank is lower");
+    setBunchCards((m) => [...m, card]);
+    applyRules(card, 1);
+  }
+
+  const handlePickCards = (cards: Card[]) => {
+    setHandCards([...cards]);
+    setTableCards([
+      ...tableCards.filter(
+        (x) => !cards.some((y) => y.toString() === x.toString())
+      ),
+    ]);
+  };
+
+  const applyRules = async (card: Card, quantity: number) => {
+    switch (card.rank) {
+      case "2":
+        setNextPlayer(Math.floor((quantity + nextPlayer) / players));
+        card.value = 1;
+        break;
+      case "10":
+        setBunchCards([]);
+        card.value = 1;
+        break;
+      default:
+        break;
+    }
+    const lastThree = bunchCards.slice(-3);
+    if (
+      lastThree.length === 3 &&
+      lastThree.every((x) => x.rank === card.rank)
+    ) {
+      setBunchCards([]);
+    }
     setHandCards([
       ...handCards.filter((x) => x.toString() !== card.toString()),
     ]);
-    setBunchCards((m) => [...m, card]);
-  }
-
-  const handlePickCards = (cards: PlayerCard[]) => {
-    setHandCards([...cards]);
-    setTableCards([...tableCards.filter(x => !cards.some(y => y.toString() === x.toString()))])
+    drawCard();
   };
 
   const drawCard = () => {
-    if (!isYourTurn) return;
-    if (handCards.length === 3) return alert("You cant draw than 3 cards");
+    if (handCards.length >= 4) return;
+
+    const draweeCard = deck!.draw();
+    if (!draweeCard) return;
+    setHandCards((m) => [
+      ...m,
+      {
+        ...draweeCard,
+        hidden: false,
+      },
+    ]);
+  };
+
+  const drawTable = () => {
+    setHandCards((m) => [...m, ...bunchCards]);
+    setBunchCards([]);
   };
 
   return (
@@ -75,7 +119,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         isLoading,
         players,
         isYourTurn: true,
-        drawCard,
+        drawTable,
         handlePickCards,
       }}
     >

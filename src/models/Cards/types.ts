@@ -20,13 +20,10 @@ export type Rank =
 export type CardAsString = `${Rank} of ${Suit}`;
 
 export interface Card {
+  hidden?: boolean;
   suit: Suit;
   rank: Rank;
-  value: Value;
+  value?: Value;
   secondaryValue: Value | null;
   toString: () => CardAsString;
-}
-
-export interface PlayerCard extends Card {
-  hidden: boolean
 }
