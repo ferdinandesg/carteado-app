@@ -3,7 +3,7 @@ import { useContext } from "react";
 import CardComponent from "./Card";
 
 export default function Table() {
-  const { bunchCards } = useContext(GameContext);
+  const { bunchCards, retrieveCard } = useContext(GameContext);
 
   return (
     <div className="group flex flex-col m-5 items-center">
@@ -14,6 +14,7 @@ export default function Table() {
             className={`translate-x-[${i}rem]`}
             key={`table-${card.toString()}`}
             card={card}
+            onClick={() => retrieveCard(card)}
           />
         ))}
       </div>
