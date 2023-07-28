@@ -79,9 +79,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const applyRules = async (card: Card, quantity: number = 1) => {
     const [lastCard] = bunchCards.slice(-1);
-    if (cardsPlayed.length > 0 && lastCard && lastCard.value! !== card.value!) {
-      return alert("Your card rank different from your last played");
-    } else if (lastCard && lastCard.value! > card.value!)
+    if (lastCard && lastCard.value! > card.value!)
       return alert("Your card rank is lower");
 
     switch (card.rank) {
@@ -94,6 +92,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
         card.value = 1;
         break;
       default:
+        if (
+          cardsPlayed.length > 0 &&
+          lastCard &&
+          lastCard.value! !== card.value!
+        ) {
+          return alert("Your card rank different from your last played");
+        }
         break;
     }
     setBunchCards((m) => [...m, card]);
