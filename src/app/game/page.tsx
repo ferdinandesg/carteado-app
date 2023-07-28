@@ -9,13 +9,13 @@ import { useContext } from "react";
 
 export default function Game() {
   const { setShowModal, show } = useContext(ModalContext);
-  const { isLoading, tableCards, playCard, drawCard, setHandCards, handCards } =
+  const { isLoading, tableCards, playCard, drawCard, handlePickCards, handCards } =
     useContext(GameContext);
 
   if (isLoading) return <div>Loading...</div>;
   const notHiddenCards = tableCards.filter((x) => !x.hidden);
   const handleSelectHand = (hand: PlayerCard[]) => {
-    setHandCards(hand);
+    handlePickCards(hand);
     setShowModal(false);
   };
 
@@ -32,13 +32,10 @@ export default function Game() {
         <Table />
         <div className="flex flex-wrap gap-2 justify-center">
           {tableCards
-            .filter(
-              (x) => !handCards.some((y) => y.toString() === x.toString())
-            )
             .map((card) => (
               <CardComponent
                 card={card}
-                key={`player-hand-${card.toString()}`}
+                key={`player-table-${card.toString()}`}
               />
             ))}
         </div>
@@ -53,7 +50,7 @@ export default function Game() {
           <CardComponent
             card={card}
             className="hover:-translate-y-3"
-            onClick={() => playCard!(card)}
+            onClick={() => playCard(card)}
             key={`player-hand-${card.toString()}`}
           />
         ))}

@@ -11,7 +11,7 @@ interface GameContextProps {
   bunchCards: Card[];
   playCard: (card: Card) => void;
   drawCard: () => void;
-  setHandCards: (cards: PlayerCard[]) => void;
+  handlePickCards: (cards: PlayerCard[]) => void;
 }
 
 const defaultGameProps: GameContextProps = {
@@ -23,7 +23,7 @@ const defaultGameProps: GameContextProps = {
   isYourTurn: false,
   playCard: (card: Card) => {},
   drawCard: () => {},
-  setHandCards: (cards: PlayerCard[]) => {},
+  handlePickCards: (cards: PlayerCard[]) => {},
 };
 
 export const GameContext = createContext(defaultGameProps);
@@ -48,15 +48,20 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const [lastBunchCard] = bunchCards.slice(-1);
     if (lastBunchCard && card.value < lastBunchCard.value)
       return alert("Your card rank is lower");
-    setTableCards([
-      ...tableCards.filter((x) => x.toString() !== card.toString()),
+    setHandCards([
+      ...handCards.filter((x) => x.toString() !== card.toString()),
     ]);
     setBunchCards((m) => [...m, card]);
   }
 
+  const handlePickCards = (cards: PlayerCard[]) => {
+    setHandCards([...cards]);
+    setTableCards([...tableCards.filter(x => !cards.some(y => y.toString() === x.toString()))])
+  };
+
   const drawCard = () => {
     if (!isYourTurn) return;
-    if (tableCards.length === 3) return alert("You cant draw than 3 cards");
+    if (handCards.length === 3) return alert("You cant draw than 3 cards");
   };
 
   return (
@@ -71,7 +76,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         players,
         isYourTurn: true,
         drawCard,
-        setHandCards,
+        handlePickCards,
       }}
     >
       {children}
