@@ -1,3 +1,4 @@
+'use client'
 import Deck, { Card } from "@/models/Cards";
 import { ReactNode, createContext, useEffect, useState } from "react";
 
@@ -80,27 +81,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const applyRules = async (card: Card, quantity: number = 1) => {
     const [lastCard] = bunchCards.slice(-1);
     if (lastCard && lastCard.value! > card.value!)
-      return alert("Your card rank is lower");
-
+    return alert("Your card rank is lower");
     switch (card.rank) {
       case "2":
         setNextPlayer(Math.floor((quantity + nextPlayer) / players));
         card.value = 1;
         break;
       case "10":
-        setBunchCards([]);
         card.value = 1;
         break;
-      default:
-        if (
-          cardsPlayed.length > 0 &&
-          lastCard &&
-          lastCard.value! !== card.value!
-        ) {
-          return alert("Your card rank different from your last played");
-        }
-        break;
     }
+    
+
+    // if (cardsPlayed.length > 0 && lastCard && lastCard.value! !== card.value!) {
+    //   console.log({lastCard});
+    //   console.log({card});
+      
+    //   return alert("Your card rank different from your last played");
+    // }
+   
     setBunchCards((m) => [...m, card]);
     setHandCards([
       ...handCards.filter((x) => x.toString() !== card.toString()),
@@ -120,6 +119,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const endTurn = () => {
     if (cardsPlayed.length === 0) return;
+    if (bunchCards.some((x) => x.rank === "10"))
+      setBunchCards((m) => [
+        ...m.slice(m.findLastIndex((x) => x.rank === "10")+1),
+      ]);
     setCardsPlayed([]);
     drawCards();
   };
@@ -136,9 +139,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
   };
 
   const drawTable = () => {
+    if (!playerTurn) return;
     setHandCards((m) => [...m, ...bunchCards]);
-    setCardsPlayed([]);
-    setBunchCards([]);
+    setCardsPlayed(m => []);
+    setBunchCards(m => []);
   };
 
   return (

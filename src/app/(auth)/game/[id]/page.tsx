@@ -6,9 +6,10 @@ import Table from "@/components/Table";
 import { GameContext } from "@/contexts/game.context";
 import { Card } from "@/models/Cards";
 import { useContext } from "react";
+import UserCard from "@/components/UserCard";
 
 export default function Game() {
-  const { setShowModal, show } = useContext(ModalContext);
+  const { setShowModal, show } = useContext(ModalContext);  
   const {
     isLoading,
     cardsPlayed,
@@ -19,8 +20,8 @@ export default function Game() {
     handCards,
     endTurn
   } = useContext(GameContext);
-
   if (isLoading) return <div>Loading...</div>;
+  
   const notHiddenCards = tableCards.filter((x) => !x.hidden);
   const handleSelectHand = (hand: Card[]) => {
     handlePickCards(hand);
@@ -67,6 +68,8 @@ export default function Game() {
             />
           ))}
         </div>
+        <UserCard />
+        
       </div>
     </>
   );

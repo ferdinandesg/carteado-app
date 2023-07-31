@@ -1,22 +1,22 @@
 import CardComponent from "@/components/Card";
 import Modal from "..";
 import { useState } from "react";
-import { PlayerCard } from "@/models/Cards";
+import { Card } from "@/models/Cards";
 import { Check } from "lucide-react";
 interface ModalChoseCardsProps {
-  handCards: PlayerCard[];
-  selectHand: (hand: PlayerCard[]) => void;
+  handCards: Card[];
+  selectHand: (hand: Card[]) => void;
 }
 export default function ModalChoseCards({
   handCards,
   selectHand,
 }: ModalChoseCardsProps) {
-  const [chosenCards, setChosenCards] = useState<PlayerCard[]>([]);
-  const selectCard = (card: PlayerCard) => {
+  const [chosenCards, setChosenCards] = useState<Card[]>([]);
+  const selectCard = (card: Card) => {
     if (chosenCards.length < 3) setChosenCards((m) => [...m, card]);
   };
 
-  const removeCard = (card: PlayerCard) =>
+  const removeCard = (card: Card) =>
     setChosenCards((m) => [
       ...m.filter((x) => x.toString() !== card.toString()),
     ]);
