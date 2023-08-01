@@ -15,8 +15,10 @@ export async function ConnectionEventHandler(
     const context = { socket, channel }
     socket.on(CHANNEL.CLIENT.JOIN_CHAT, (payload) => JoinChatEventHandler({ ...context, payload }))
     socket.on(CHANNEL.CLIENT.SEND_MESSAGE, (payload) => SendMessageEventHandler({ ...context, payload }))
+
     socket.on(CHANNEL.CLIENT.JOIN_ROOM, (payload) => RoomEventHandler({ ...context, payload }));
     socket.on(CHANNEL.CLIENT.PLAY_CARD, (payload) => PlayCardEventHandler({ ...context, payload }));
+
     socket.on(CHANNEL.CLIENT.START_MATCH, (payload) => { })
 
     socket.on('disconnecting', () => {

@@ -8,6 +8,6 @@ export async function JoinChatEventHandler(
 ): Promise<void> {
     const { payload, socket, channel } = context
     const { roomId } = payload;
-    const room = await prisma.room.findFirst({ where: { id: roomId }, include: { chat: true } })
-    socket.emit("load_messages", room.chat)
+    const room = await prisma.room.findFirst({ where: { id: roomId }, include: { chat: { select: { messages: true } } } })
+    socket.emit("load_messages", room.chat);
 }
