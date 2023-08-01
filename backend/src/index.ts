@@ -4,7 +4,6 @@ import http from "http";
 import cors from "cors";
 import SocketClass from "./socket/socket";
 import routes from "./routes";
-
 const app = express();
 app.use(express.json());
 app.use(cors());

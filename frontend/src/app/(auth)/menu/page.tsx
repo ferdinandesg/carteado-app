@@ -12,7 +12,7 @@ export default function Menu() {
     try {
       const response = await fetch("http://localhost:3001/api/rooms", { headers: { "Content-Type": "application/json", }, method: "POST", body: JSON.stringify({ name: "Sala dos cria", createdBy: user?.name }) })
       const room = await response.json()
-      router.push(`/game/${room.hash}`)
+      router.push(`/room/${room.hash}`)
     } catch (error) {
       console.error(error);
     }

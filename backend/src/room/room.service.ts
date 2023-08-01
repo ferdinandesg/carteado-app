@@ -1,30 +1,32 @@
+import prisma from "../prisma";
 import { CHANNEL } from "../socket/channels";
 import SocketClass from "../socket/socket";
 import { RoomInterface } from "./room.schema";
 
 const ROOMS: RoomInterface[] = [];
-export function createRoom(room: RoomInterface) {
+export async function createRoom(room: RoomInterface) {
   try {
-    ROOMS.push(room);
-    return { inserted: true };
+    const chat = await prisma.chat.create({})
+    const createdRoom = await prisma.room.create({ data: { hash: room.hash, name: room.name, players: [], chatId: chat.id } })
+    return createdRoom
   } catch (error) {
     throw error;
   }
 }
 
-export function listRooms() {
+export async function listRooms() {
   try {
+    const rooms = await prisma.room.findMany({})
     return { rooms: ROOMS };
   } catch (error) {
     throw error;
   }
 }
 
-export function joinRoom(hash: string, player: string) {
+export async function joinRoom(hash: string, player: string) {
   try {
-    const room = ROOMS.find((x) => x.hash === hash);
+    const room = await prisma.room.findFirst({ where: { hash: hash } })
     if (!room) throw "Room not found";
-    room.players.push(player);
     SocketClass.io.to(hash).emit(CHANNEL.SERVER.PLAYER_JOINED, player);
   } catch (error) {
     throw error;

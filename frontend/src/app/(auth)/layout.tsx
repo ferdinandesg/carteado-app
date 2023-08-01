@@ -4,6 +4,8 @@ import { SessionProvider } from "next-auth/react";
 
 import type { Metadata } from "next";
 import { SocketProvider } from "@/contexts/socket.context";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const metadata: Metadata = {
   title: "Carteado App",
@@ -24,6 +26,18 @@ export default function RootLayout({
           </div>
         </ModalProvider>
       </SocketProvider>
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable={false}
+        pauseOnHover={false}
+        theme="light"
+      />
     </SessionProvider>
   );
 }

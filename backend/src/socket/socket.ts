@@ -1,6 +1,8 @@
 import { Server, Socket, Namespace } from "socket.io";
 import http from "http";
 import { CHANNEL } from "./channels";
+import { ConnectionEventHandler } from "./events/ConnectionEventHandler";
+import { Authentication } from "./events/middleware/AuthSocket";
 
 class SocketClass {
   static io: Server;
@@ -14,15 +16,12 @@ class SocketClass {
         origin: "*",
       },
     });
-    this.io.on(CHANNEL.CLIENT.CONNECTION, (socket: Socket) => {
-      console.log(`Socket Id: ${socket.id}`);
-      this.socket = socket;
+    this.roomChannel = this.io.of("/room")
+    this.roomChannel.use(Authentication)
+    this.roomChannel.on(CHANNEL.CLIENT.CONNECTION, async socket => {
+      ConnectionEventHandler(socket, this.roomChannel)
+    })
 
-      this.socket.on(
-        CHANNEL.CLIENT.PLAY_CARD,
-        (roomId: string, callback) => {}
-      );
-    });
   }
 }
 
