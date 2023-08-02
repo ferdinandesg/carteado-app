@@ -18,7 +18,7 @@ export default function ModalChoseCards({
 
   const removeCard = (card: Card) =>
     setChosenCards((m) => [
-      ...m.filter((x) => x.toString() !== card.toString()),
+      ...m.filter((x) => x.toString !== card.toString),
     ]);
 
   return (
@@ -29,12 +29,12 @@ export default function ModalChoseCards({
           <div className="flex h-full w-full">
             {handCards
               .filter(
-                (x) => !chosenCards.some((y) => y.toString() === x.toString())
+                (x) => !chosenCards.some((y) => y.toString === x.toString)
               )
               .map((card) => (
                 <CardComponent
                   card={card}
-                  key={`hand-${card.toString()}`}
+                  key={`hand-${card.toString}`}
                   onClick={() => selectCard(card)}
                 />
               ))}
@@ -48,7 +48,7 @@ export default function ModalChoseCards({
             {chosenCards.map((card) => (
               <CardComponent
                 card={card}
-                key={`chosen-${card.toString()}`}
+                key={`chosen-${card.toString}`}
                 onClick={() => removeCard(card)}
               />
             ))}

@@ -30,8 +30,8 @@ export async function getByHash(hash: string) {
       where: { hash },
       include: { players: { select: { user: true } } },
     });
-    console.log({room});
-    
+    console.log({ room });
+
     return room;
   } catch (error) {
     throw error;

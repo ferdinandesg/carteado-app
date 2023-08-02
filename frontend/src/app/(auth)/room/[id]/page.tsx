@@ -43,18 +43,21 @@ const getRoomByHash = async (hash: string) => {
 
 export default function Room({ params }: RoomProps) {
   const { socket } = useContext(SocketContext)!;
-  const { isLoading } = useContext(GameContext)!;
   const roomId = params.id
 
   useEffect(() => {
     if (!socket) return
     socket.emit("join_room", { roomId });
   }, [socket]);
-
   if (!socket) return <div>Loading...</div>;
+
+  const handleStartGame = () => {
+    socket.emit("start_game", { roomId })
+  }
   return (
     <>
-      {!isLoading ?? <Game />}
+      <Game />
+      <button className="p-2" onClick={() => handleStartGame()}>Start Game</button>
       <div className="w-1/2 flex flex-col">
         <Players />
         <Chat roomId={roomId} />

@@ -23,6 +23,7 @@ export async function RoomEventHandler(context: SocketContext): Promise<void> {
       (x) => (x.isOnline = channel.adapter.rooms.has(x.user.email))
     );
     socket.join(roomId);
+    socket.user.room = roomId;
     socket.emit("load_messages", room.chat);
     socket.emit("load_players", JSON.stringify(room.players));
 
@@ -30,6 +31,14 @@ export async function RoomEventHandler(context: SocketContext): Promise<void> {
       await prisma.player.create({
         data: { userId: socket.user.id, roomId: room.id },
       });
+      if (!room.players.length)
+        socket.emit(
+          "user_joined",
+          JSON.stringify({
+            message: `O usuário ${socket.user?.name} entrou na partida.`,
+            user: socket.user,
+          })
+        );
     }
     socket.broadcast.to(roomId).emit(
       "user_joined",

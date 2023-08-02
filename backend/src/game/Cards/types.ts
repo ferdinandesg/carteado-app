@@ -25,5 +25,5 @@ export interface Card {
   rank: Rank;
   value?: Value;
   secondaryValue: Value | null;
-  toString: () => CardAsString;
+  toString: CardAsString;
 }

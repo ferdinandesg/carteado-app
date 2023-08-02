@@ -4,10 +4,12 @@ import { SocketContext } from "../../@types/socket";
 import prisma from "../../prisma";
 
 export async function JoinChatEventHandler(
-    context: SocketContext,
+  context: SocketContext
 ): Promise<void> {
-    const { payload, socket, channel } = context
-    const { roomId } = payload;
-    const room = await prisma.room.findFirst({ where: { id: roomId }, include: { chat: { select: { messages: true } } } })
-    socket.emit("load_messages", room.chat);
+  const { payload, socket, channel } = context;
+  const room = await prisma.room.findFirst({
+    where: { id: socket.user.room },
+    include: { chat: { select: { messages: true } } },
+  });
+  socket.emit("load_messages", room.chat);
 }

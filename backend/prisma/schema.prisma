@@ -40,7 +40,6 @@ model Room {
   chat      Chat     @relation(fields: [chatId], references: [id])
   chatId    String   @db.ObjectId
   createdAt DateTime @default(now())
-  playerId  String   @db.ObjectId
 }
 
 model Chat {
@@ -56,8 +55,9 @@ type Message {
 }
 
 type Card {
-  hidden Boolean
+  hidden Boolean?
   suit   String
   rank   String
   value  Int
+  toString String?
 }

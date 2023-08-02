@@ -6,7 +6,7 @@ export async function SendMessageEventHandler(
 ): Promise<void> {
   try {
     const { payload, socket, channel } = context;
-    const { roomId } = payload;
+    const roomId = socket.user.room;
     const room = await prisma.room.findFirst({
       where: { hash: roomId },
       include: { chat: true, players: true },

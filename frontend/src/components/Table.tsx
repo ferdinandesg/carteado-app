@@ -12,7 +12,7 @@ export default function Table() {
         {bunchCards.map((card, i) => (
           <CardComponent
             className={`translate-x-[${i}rem]`}
-            key={`table-${card.toString()}`}
+            key={`table-${card.toString}`}
             card={card}
             onClick={() => retrieveCard(card)}
           />

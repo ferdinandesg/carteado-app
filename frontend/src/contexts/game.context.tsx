@@ -1,7 +1,8 @@
 'use client'
 import Deck, { Card } from "@/models/Cards";
-import { ReactNode, createContext, useEffect, useState } from "react";
-
+import { ReactNode, createContext, useContext, useEffect, useState } from "react";
+import { SocketContext } from "./socket.context";
+import { useSession } from 'next-auth/react'
 interface GameContextProps {
   deck?: Deck;
   isLoading: boolean;
@@ -19,9 +20,23 @@ interface GameContextProps {
 }
 
 
+type StartGamePayloadType = {
+  tableCards: Card[]
+  email: string
+}
+
+type SelectHandsType = {
+  email: string
+  player: {
+    hand: Card[]
+    table: Card[]
+  }
+}
 export const GameContext = createContext<GameContextProps | null>(null);
 
 export function GameProvider({ children }: { children: ReactNode }) {
+  const { data } = useSession();
+  const { socket } = useContext(SocketContext)!;
   const [deck, setDeck] = useState<Deck>();
   const [tableCards, setTableCards] = useState<Card[]>([]);
   const [bunchCards, setBunchCards] = useState<Card[]>([]);
@@ -33,84 +48,60 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [nextPlayer, setNextPlayer] = useState<number>(0);
 
   useEffect(() => {
-    const newDeck = new Deck();
-    setLoading(false);
-    setTableCards(newDeck.giveTableCards());
-    setDeck(newDeck);
-  }, []);
+    if (!socket) return
+    socket.on("give_cards", (payload: string) => {
+      const cards: StartGamePayloadType = JSON.parse(payload)
+      if (data?.user?.email === cards.email) {
+        // cards.tableCards.forEach(card => card.toString = `${card.rank} of ${card.suit}`)
+        setTableCards([...cards.tableCards])
+      }
+    })
+    socket.on("select_cards", (payload) => {
+      setPlayerTurn(payload)
+      setLoading(false)
+    })
+    socket.on("selected_hand", (payload) => {
+      const obj: SelectHandsType = JSON.parse(payload)
+      if (data?.user?.email === obj.email) {
+        setTableCards([...obj.player.table])
+        setHandCards([...obj.player.hand])
+      }
+    })
+    socket.on("refresh_cards", (payload) => {
+      const obj = JSON.parse(payload)
+      console.log({ playerTurn: obj.playerTurn });
+
+      if (obj.playerTurn) setPlayerTurn(obj.playerTurn)
+      if (data?.user?.email === obj.player.user.email) {
+        setTableCards([...obj.player.table])
+        setHandCards([...obj.player.hand])
+      }
+      setBunchCards([...obj.bunch])
+      console.log({ obj });
+    })
+
+  }, [socket]);
 
   function playCard(card: Card) {
-    const lastThree = bunchCards.slice(-3);
-    if (
-      lastThree.length === 3 &&
-      lastThree.every((x) => x.rank === card.rank)
-    ) {
-      setBunchCards([]);
-      setHandCards([
-        ...handCards.filter((x) => x.toString() !== card.toString()),
-      ]);
-      return;
-    }
-    if (!playerTurn) return;
-    applyRules(card);
+    socket?.emit("play_card", { card })
   }
 
   const handlePickCards = (cards: Card[]) => {
-    setHandCards([...cards]);
-    setTableCards([
-      ...tableCards.filter(
-        (x) => !cards.some((y) => y.toString() === x.toString())
-      ),
-    ]);
-  };
-
-  const applyRules = async (card: Card, quantity: number = 1) => {
-    const [lastCard] = bunchCards.slice(-1);
-    if (lastCard && lastCard.value! > card.value!)
-      return alert("Your card rank is lower");
-    switch (card.rank) {
-      case "2":
-        setNextPlayer(Math.floor((quantity + nextPlayer) / players));
-        card.value = 1;
-        break;
-      case "10":
-        card.value = 1;
-        break;
-    }
-
-
-    // if (cardsPlayed.length > 0 && lastCard && lastCard.value! !== card.value!) {
-    //   console.log({lastCard});
-    //   console.log({card});
-
-    //   return alert("Your card rank different from your last played");
-    // }
-
-    setBunchCards((m) => [...m, card]);
-    setHandCards([
-      ...handCards.filter((x) => x.toString() !== card.toString()),
-    ]);
-    setCardsPlayed((m) => [...m, card]);
+    socket?.emit("pick_hand", { cards })
   };
 
   const retrieveCard = (card: Card) => {
     setBunchCards((m) => [
-      ...m.filter((x) => x.toString() !== card.toString()),
+      ...m.filter((x) => x.toString !== card.toString),
     ]);
     setCardsPlayed((m) => [
-      ...m.filter((x) => x.toString() !== card.toString()),
+      ...m.filter((x) => x.toString !== card.toString),
     ]);
     setHandCards((m) => [...m, card]);
   };
 
   const endTurn = () => {
-    if (cardsPlayed.length === 0) return;
-    if (bunchCards.some((x) => x.rank === "10"))
-      setBunchCards((m) => [
-        ...m.slice(m.findLastIndex((x) => x.rank === "10") + 1),
-      ]);
-    setCardsPlayed([]);
-    drawCards();
+    socket?.emit("end_turn")
   };
 
   const drawCards = () => {

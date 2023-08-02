@@ -15,7 +15,7 @@ export default function CardComponent({ card,...rest }: CardComponentProps) {
         'hidden' in card && card.hidden ? "opacity-50" : ""
       )}
     >
-      {card.toString()}
+      {card.toString}
     </div>
   );
 }

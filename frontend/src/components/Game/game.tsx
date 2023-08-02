@@ -24,6 +24,7 @@ export default function Game() {
         handlePickCards(hand);
         setShowModal(false);
     };
+    if (isLoading) return <div>Esperando jogadores...</div>
     return <>
 
         {show && (
@@ -38,7 +39,7 @@ export default function Game() {
                 {tableCards.map((card) => (
                     <CardComponent
                         card={card}
-                        key={`player-table-${card.toString()}`}
+                        key={`player-table-${card.toString}`}
                     />
                 ))}
             </div>
@@ -49,7 +50,7 @@ export default function Game() {
                 >
                     Buy table cards
                 </button>
-                <button disabled={!cardsPlayed.length} onClick={endTurn} className="bg-gray-400 hover:bg-gray-400 transition mt-2 p-2 text-white">
+                <button onClick={() => endTurn()} className="bg-gray-400 hover:bg-gray-400 transition mt-2 p-2 text-white">
                     End Turn
                 </button>
             </div>
@@ -59,7 +60,7 @@ export default function Game() {
                         card={card}
                         className="hover:-translate-y-3"
                         onClick={() => playCard(card)}
-                        key={`player-hand-${card.toString()}`}
+                        key={`player-hand-${card.toString}`}
                     />
                 ))}
             </div>
