@@ -2,9 +2,8 @@ import { Request, Response } from "express";
 import { randomUUID } from "node:crypto";
 import { RoomInterface, roomSchema } from "./room.schema";
 import { createRoom, joinRoom, listRooms } from "./room.service";
-import SocketClass from "../socket/socket";
 
-export function handleCreateRoom(req: Request, res: Response) {
+export async function handleCreateRoom(req: Request, res: Response) {
   try {
     const { name } = req.body;
     if (!name) throw "name property should be passed";
@@ -16,7 +15,7 @@ export function handleCreateRoom(req: Request, res: Response) {
       name,
       players: [],
     };
-    createRoom(newRoom);
+    await createRoom(newRoom);
     res.status(201).json(newRoom);
   } catch (error) {
     res.status(400).json(error);

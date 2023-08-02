@@ -6,9 +6,11 @@ import { RoomInterface } from "./room.schema";
 const ROOMS: RoomInterface[] = [];
 export async function createRoom(room: RoomInterface) {
   try {
-    const chat = await prisma.chat.create({})
-    const createdRoom = await prisma.room.create({ data: { hash: room.hash, name: room.name, players: [], chatId: chat.id } })
-    return createdRoom
+    const chat = await prisma.chat.create({});
+    const createdRoom = await prisma.room.create({
+      data: { hash: room.hash, name: room.name, chatId: chat.id },
+    });
+    return createdRoom;
   } catch (error) {
     throw error;
   }
@@ -16,7 +18,7 @@ export async function createRoom(room: RoomInterface) {
 
 export async function listRooms() {
   try {
-    const rooms = await prisma.room.findMany({})
+    const rooms = await prisma.room.findMany({});
     return { rooms: ROOMS };
   } catch (error) {
     throw error;
@@ -25,7 +27,7 @@ export async function listRooms() {
 
 export async function joinRoom(hash: string, player: string) {
   try {
-    const room = await prisma.room.findFirst({ where: { hash: hash } })
+    const room = await prisma.room.findFirst({ where: { hash: hash } });
     if (!room) throw "Room not found";
     SocketClass.io.to(hash).emit(CHANNEL.SERVER.PLAYER_JOINED, player);
   } catch (error) {
