@@ -1,3 +1,4 @@
+'use client'
 import { FormEvent, useContext, useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { useSession } from "next-auth/react";

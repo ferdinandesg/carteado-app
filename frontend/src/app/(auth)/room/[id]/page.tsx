@@ -1,4 +1,4 @@
-"use client";
+'use client'
 import { GameContext } from "@/contexts/game.context";
 import {
   useContext,
@@ -9,24 +9,45 @@ import UserCard from "@/components/UserCard";
 import { SocketContext } from "@/contexts/socket.context";
 import Game from "@/components/Game/game";
 import { useParams } from "next/navigation";
-import { toast } from "react-toastify";
 import Chat from "@/components/Chat";
-
+import { useSession } from "next-auth/react";
+import { Player } from "@/models/Users";
+import Players from "@/components/Players";
+type User = {
+  email: string;
+  name: string;
+  id: string;
+  image: string;
+}
+type PayloadType = {
+  message: string;
+  user: User
+}
 interface RoomProps {
   params: {
     id: string
   }
 }
+
+const getRoomByHash = async (hash: string) => {
+  try {
+    const response = await fetch(`http://localhost:3001/api/rooms/hash${hash}`)
+    const room = response.json()
+    return room
+  } catch (error) {
+    throw error
+  }
+}
+
+
+
 export default function Room({ params }: RoomProps) {
-  const { isLoading } = useContext(GameContext)!;
   const { socket } = useContext(SocketContext)!;
+  const { isLoading } = useContext(GameContext)!;
   const roomId = params.id
-  console.log(params);
+
   useEffect(() => {
     if (!socket) return
-    socket.on("user_joined", (message) => toast(message));
-    console.log({ roomId });
-
     socket.emit("join_room", { roomId });
   }, [socket]);
 
@@ -35,8 +56,9 @@ export default function Room({ params }: RoomProps) {
     <>
       {!isLoading ?? <Game />}
       <div className="w-1/2 flex flex-col">
-        <UserCard />
+        <Players />
         <Chat roomId={roomId} />
+        <UserCard />
       </div>
     </>
   );

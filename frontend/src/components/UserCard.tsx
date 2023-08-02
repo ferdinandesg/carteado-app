@@ -1,7 +1,9 @@
 import { User2 } from "lucide-react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-
+type UserCardProps = {
+  user: any
+}
 export default function UserCard() {
   const { data, status } = useSession();
   const user = data?.user;

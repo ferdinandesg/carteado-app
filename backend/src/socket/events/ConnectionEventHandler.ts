@@ -5,6 +5,7 @@ import { RoomEventHandler } from "./RoomEventHandler";
 import { DisconnectingEventHandler } from "./DisconnectingEventHandler";
 import { JoinChatEventHandler } from "./JoinChatEventHandler";
 import { SendMessageEventHandler } from "./SendMessageEventHandler";
+import { StartGameEventHandler } from "./StartGameEventHandler";
 
 export async function ConnectionEventHandler(
   socket: Socket,
@@ -26,7 +27,7 @@ export async function ConnectionEventHandler(
     PlayCardEventHandler({ ...context, payload })
   );
 
-  socket.on(CHANNEL.CLIENT.START_MATCH, (payload) => {});
+  socket.on(CHANNEL.CLIENT.START_GAME, (payload) => StartGameEventHandler({ ...context, payload }));
 
   socket.on("disconnecting", () => {
     DisconnectingEventHandler({ ...context });

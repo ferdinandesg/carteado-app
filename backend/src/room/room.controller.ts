@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { randomUUID } from "node:crypto";
 import { RoomInterface, roomSchema } from "./room.schema";
-import { createRoom, joinRoom, listRooms } from "./room.service";
+import { createRoom, getByHash, joinRoom, listRooms } from "./room.service";
 
 export async function handleCreateRoom(req: Request, res: Response) {
   try {
@@ -25,6 +25,15 @@ export function handleListRooms(req: Request, res: Response) {
   try {
     const rooms = listRooms();
     res.status(200).json(rooms);
+  } catch (error) {
+    throw error;
+  }
+}
+export async function handleGetRoomByHash(req: Request, res: Response) {
+  try {
+    const { hash } = req.params;
+    const room = await getByHash(hash);
+    res.status(200).json(room);
   } catch (error) {
     throw error;
   }

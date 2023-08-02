@@ -2,6 +2,11 @@ import { ReactNode, createContext, useEffect, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
+const DEFAULT_USER = {
+  email: "convidado@gmail.com",
+  name: "Nome do convidado",
+  image: ""
+}
 type SocketContextProps = {
   socket: Socket | undefined;
   joinRoom: (roomId: string) => Promise<void>;
@@ -13,8 +18,9 @@ export function SocketProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (status !== "loading") {
+      const user = data?.user ?? DEFAULT_USER
       const instance = io("http://localhost:3001/room", {
-        query: { user: data?.user ? JSON.stringify(data.user) : null },
+        query: { user: JSON.stringify(user) },
       });
       instance.on("error", (message) => toast(message));
       setSocket(instance);

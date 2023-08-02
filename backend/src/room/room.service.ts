@@ -24,6 +24,19 @@ export async function listRooms() {
     throw error;
   }
 }
+export async function getByHash(hash: string) {
+  try {
+    const room = await prisma.room.findFirst({
+      where: { hash },
+      include: { players: { select: { user: true } } },
+    });
+    console.log({room});
+    
+    return room;
+  } catch (error) {
+    throw error;
+  }
+}
 
 export async function joinRoom(hash: string, player: string) {
   try {

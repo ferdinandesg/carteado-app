@@ -1,24 +1,39 @@
-import { Socket } from 'socket.io'
+import { Socket } from "socket.io";
+import prisma from "../../../prisma";
+import { User } from "@prisma/client";
 
 const DEFAULT_USER = {
-    email: "none@gmail.com",
-    name: "none",
-    image: ""
-}
+  email: "convidado@gmail.com",
+  name: "Nome do convidado",
+  image: "",
+};
 
 export async function Authentication(
-    socket: any,
-    next: Function,
+  socket: any,
+  next: Function
 ): Promise<void> {
-    try {
-        const { user } = socket.handshake.query
-        // const auth = await AuthenticationHelper(Authorization, Identification)
-        socket.user = JSON.parse(user)
-        socket.join(socket.user.email)
-    } catch (err) {
-        socket.user = DEFAULT_USER
+  try {
+    const { user } = socket.handshake.query;
 
-    } finally {
-        return next(null, true)
-    }
+    const parsedUser = JSON.parse(user);
+    const auth = await validateUser(parsedUser);
+    socket.user = auth;
+    socket.join(socket.user.email);
+    return next(null, true);
+  } catch (err) {
+    console.error({ err });
+  }
 }
+
+const validateUser = async (user: User) => {
+  try {
+    const foundUser = await prisma.user.findFirst({
+      where: { email: user.email },
+    });
+    if (!foundUser) {
+      return await prisma.user.create({ data: { ...user, rank: 0 } });
+    } else return foundUser;
+  } catch (error) {
+    throw error;
+  }
+};

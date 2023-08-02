@@ -10,7 +10,6 @@ export async function RoomEventHandler(context: SocketContext): Promise<void> {
       where: { hash: roomId },
       include: { chat: true, players: { include: { user: true } } },
     });
-
     if (!room) {
       socket.emit("error", "A sala não foi encontrada.");
       return;
@@ -20,22 +19,26 @@ export async function RoomEventHandler(context: SocketContext): Promise<void> {
       socket.emit("error", "A sala já está cheia.");
       return;
     }
+    room.players.forEach(
+      (x) => (x.isOnline = channel.adapter.rooms.has(x.user.email))
+    );
     socket.join(roomId);
     socket.emit("load_messages", room.chat);
-    console.log(`User: ${socket.user.name} joined to room: ${room.hash}`);
+    socket.emit("load_players", JSON.stringify(room.players));
 
     if (!room.players.some((x) => x.user.email === socket.user.email)) {
-      //   const createdPlayer = await prisma.player.create({
-      //     data: { roomId: "", userId: "" },
-      //   });
-      //   room.players.push(createdPlayer);
-      //   await prisma.room.update({
-      //     where: { id: room.id },
-      //     data: { players: room.players },
-      //   });
+      await prisma.player.create({
+        data: { userId: socket.user.id, roomId: room.id },
+      });
     }
-    socket.broadcast
-      .to(roomId)
-      .emit("user_joined", `O usuário ${socket.user?.name} entrou na partida.`);
-  } catch (er) {}
+    socket.broadcast.to(roomId).emit(
+      "user_joined",
+      JSON.stringify({
+        message: `O usuário ${socket.user?.name} entrou na partida.`,
+        user: socket.user,
+      })
+    );
+  } catch (er) {
+    console.log(er);
+  }
 }
