@@ -1,3 +1,4 @@
+'use client'
 import { ReactNode, createContext, useEffect, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import { useSession } from "next-auth/react";
@@ -13,19 +14,19 @@ type SocketContextProps = {
 };
 export const SocketContext = createContext<SocketContextProps | null>(null);
 export function SocketProvider({ children }: { children: ReactNode }) {
-  const { data, status } = useSession();
+  const { data, status, update } = useSession({ required: true, onUnauthenticated: () => { } });
   const [socket, setSocket] = useState<Socket>();
 
   useEffect(() => {
-    if (status !== "loading") {
+    if (status === "authenticated") {
       const user = data?.user ?? DEFAULT_USER
       const instance = io("http://localhost:3001/room", {
+        reconnectionDelayMax: 10000,
         query: { user: JSON.stringify(user) },
       });
       instance.on("error", (message) => toast(message));
       setSocket(instance);
     }
-
   }, [status]);
 
   const joinRoom = async (roomId: string) => {

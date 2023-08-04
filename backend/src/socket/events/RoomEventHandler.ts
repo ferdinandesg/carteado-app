@@ -5,9 +5,8 @@ export async function RoomEventHandler(context: SocketContext): Promise<void> {
   try {
     const { payload, socket, channel } = context;
     const { roomId } = payload;
-
     const room = await prisma.room.findFirst({
-      where: { hash: roomId },
+      where: { hash: roomId, status: "open" },
       include: { chat: true, players: { include: { user: true } } },
     });
     if (!room) {
@@ -36,7 +35,7 @@ export async function RoomEventHandler(context: SocketContext): Promise<void> {
       "user_joined",
       JSON.stringify({
         message: `O usuário ${socket.user?.name} entrou na partida.`,
-        user: socket.user,
+        player: { user: socket.user, isOnline: true },
       })
     );
   } catch (er) {

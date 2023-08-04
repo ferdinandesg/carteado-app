@@ -8,7 +8,12 @@ export async function createRoom(room: RoomInterface) {
   try {
     const chat = await prisma.chat.create({});
     const createdRoom = await prisma.room.create({
-      data: { hash: room.hash, name: room.name, chatId: chat.id },
+      data: {
+        hash: room.hash,
+        name: room.name,
+        chatId: chat.id,
+        status: "open",
+      },
     });
     return createdRoom;
   } catch (error) {
@@ -19,7 +24,7 @@ export async function createRoom(room: RoomInterface) {
 export async function listRooms() {
   try {
     const rooms = await prisma.room.findMany({});
-    return { rooms: ROOMS };
+    return { rooms };
   } catch (error) {
     throw error;
   }
@@ -30,8 +35,6 @@ export async function getByHash(hash: string) {
       where: { hash },
       include: { players: { select: { user: true } } },
     });
-    console.log({ room });
-
     return room;
   } catch (error) {
     throw error;

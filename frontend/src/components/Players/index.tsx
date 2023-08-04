@@ -1,3 +1,4 @@
+'use client'
 import { SocketContext } from "@/contexts/socket.context";
 import { Player } from "@/models/Users";
 import { useContext, useEffect, useState } from "react";
@@ -8,6 +9,7 @@ interface PlayerAvatar extends Player {
 }
 export default function Players() {
     const [players, setPlayers] = useState<PlayerAvatar[]>([])
+    const [turn, setTurn] = useState<string>()
     const { socket } = useContext(SocketContext)!;
 
     useEffect(() => {
@@ -15,27 +17,39 @@ export default function Players() {
         socket.on("user_joined", (payload) => {
             const obj = JSON.parse(payload)
             toast(obj.message)
-            const foundUser = players.find(x => x.user.email === obj.user.email)
-            if (!foundUser) setPlayers(m => [...m, { ...obj.user, isOnline: true }]);
-            else {
-                foundUser.isOnline = true;
-                setPlayers(m => [...players])
-            }
+            setPlayers(m => {
+                const foundUser = m.find(x => x.user.email === obj.player.user.email)
+                if (!foundUser) return [...m, { ...obj.player, isOnline: true }]
+                else {
+                    foundUser.isOnline = true;
+                    return [...m]
+                }
+            });
+
         });
         socket.on("load_players", (payload) => {
             const players = JSON.parse(payload)
-            setPlayers(players)
+            setPlayers([...players])
         })
         socket.on("quit", (payload) => {
             const user = JSON.parse(payload)
-            const playerFound = players.find(player => player.user.email === user.email)
-            if (!playerFound) return
-            playerFound.isOnline = false
-            setPlayers(m => [...players])
+            setPlayers(m => {
+                const playerFound = m.find(player => player.user.email === user.email)
+                if (!playerFound) return [...m]
+                playerFound.isOnline = false
+                return [...m]
+            })
         })
-    });
+        socket.on("player_turn", id => setTurn(id))
+        return () => {
+            socket.off('player_turn')
+            socket.off('quit')
+            socket.off('user_joined')
+            socket.off('load_players')
+        }
+    }, [socket]);
     return <div className="flex gap-2">
-        {players.map(players => <span className={twMerge("p-2 text-black", players.isOnline ? "bg-green-500" : 'bg-green-200')} key={players.user?.email}>{players.user?.name}</span>)}
+        {players.map((players, i) => <span className={twMerge("p-2 text-black", players.isOnline ? "bg-green-500" : 'bg-green-200', players.user.id === turn ? "border" : '')} key={`${players.user?.email}-${i}`}>{players.user?.name}</span>)}
     </div>
 
 }

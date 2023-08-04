@@ -22,11 +22,11 @@ interface GameContextProps {
 
 type StartGamePayloadType = {
   tableCards: Card[]
-  email: string
+  id: string
 }
 
 type SelectHandsType = {
-  email: string
+  id: string
   player: {
     hand: Card[]
     table: Card[]
@@ -41,7 +41,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [tableCards, setTableCards] = useState<Card[]>([]);
   const [bunchCards, setBunchCards] = useState<Card[]>([]);
   const [handCards, setHandCards] = useState<Card[]>([]);
-  const [playerTurn, setPlayerTurn] = useState<boolean>(true);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [players, setPlayers] = useState<number>(4);
   const [cardsPlayed, setCardsPlayed] = useState<Card[]>([]);
@@ -51,35 +50,38 @@ export function GameProvider({ children }: { children: ReactNode }) {
     if (!socket) return
     socket.on("give_cards", (payload: string) => {
       const cards: StartGamePayloadType = JSON.parse(payload)
-      if (data?.user?.email === cards.email) {
-        // cards.tableCards.forEach(card => card.toString = `${card.rank} of ${card.suit}`)
+      console.log({ user: data?.user });
+      console.log({ cards });
+
+      if (data?.user?.id === cards.id) {
         setTableCards([...cards.tableCards])
       }
     })
-    socket.on("select_cards", (payload) => {
-      setPlayerTurn(payload)
-      setLoading(false)
-    })
+    socket.on("begin_match", () => setLoading(false))
     socket.on("selected_hand", (payload) => {
       const obj: SelectHandsType = JSON.parse(payload)
-      if (data?.user?.email === obj.email) {
+      if (data?.user?.id === obj.id) {
         setTableCards([...obj.player.table])
         setHandCards([...obj.player.hand])
       }
     })
     socket.on("refresh_cards", (payload) => {
       const obj = JSON.parse(payload)
-      console.log({ playerTurn: obj.playerTurn });
+      console.log({ refresh: obj });
 
-      if (obj.playerTurn) setPlayerTurn(obj.playerTurn)
-      if (data?.user?.email === obj.player.user.email) {
+
+      if (data?.user?.id === obj.player.userId) {
         setTableCards([...obj.player.table])
         setHandCards([...obj.player.hand])
       }
       setBunchCards([...obj.bunch])
-      console.log({ obj });
     })
-
+    return () => {
+      socket.off('give_cards')
+      socket.off('select_cards')
+      socket.off('selected_hand')
+      socket.off('refresh_cards')
+    }
   }, [socket]);
 
   function playCard(card: Card) {
@@ -104,22 +106,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     socket?.emit("end_turn")
   };
 
-  const drawCards = () => {
-    if (handCards.length >= 4) return;
-    const draweesCard: Card[] = [];
-    for (let i = handCards.length; i < 3; i++) {
-      const draweeCard = deck!.draw();
-      if (!draweeCard) return;
-      draweesCard.push(draweeCard);
-    }
-    setHandCards((m) => [...m, ...draweesCard]);
-  };
-
   const drawTable = () => {
-    if (!playerTurn) return;
-    setHandCards((m) => [...m, ...bunchCards]);
-    setCardsPlayed(m => []);
-    setBunchCards(m => []);
+    socket?.emit("draw_table")
   };
 
   return (

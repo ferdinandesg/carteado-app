@@ -11,7 +11,7 @@ export async function PickHandEventHandler(
     .to(socket.user.room)
     .emit(
       "selected_hand",
-      JSON.stringify({ email: socket.user.email, player: result.player })
+      JSON.stringify({ id: socket.user.id, player: result.player })
     );
   if (result.isFinished) channel.to(socket.user.room).emit("begin_match");
 }

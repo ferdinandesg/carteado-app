@@ -34,6 +34,7 @@ model Room {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   hash      String
   name      String
+  status    String
   password  String?
   players   Player[]
   bunch     Card[]
@@ -55,9 +56,10 @@ type Message {
 }
 
 type Card {
-  hidden Boolean?
-  suit   String
-  rank   String
-  value  Int
+  hidden   Boolean?
+  suit     String
+  rank     String
+  value    Int
+  secondaryValue Int?
   toString String?
 }

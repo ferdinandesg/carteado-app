@@ -8,6 +8,7 @@ import { SendMessageEventHandler } from "./SendMessageEventHandler";
 import { StartGameEventHandler } from "./StartGameEventHandler";
 import { PickHandEventHandler } from "./PickHandEventHandler";
 import { EndTurnEventHandler } from "./EndTurnEventHandler";
+import { DrawTableEventHandler } from "./DrawTableEventHandler";
 
 export async function ConnectionEventHandler(
   socket: Socket,
@@ -15,6 +16,7 @@ export async function ConnectionEventHandler(
 ): Promise<void> {
   console.log(`Socket Id: ${socket.id}`);
   const context = { socket, channel };
+
   socket.on(CHANNEL.CLIENT.JOIN_CHAT, (payload) =>
     JoinChatEventHandler({ ...context, payload })
   );
@@ -37,6 +39,9 @@ export async function ConnectionEventHandler(
   );
   socket.on(CHANNEL.CLIENT.END_TURN, (payload) =>
     EndTurnEventHandler({ ...context, payload })
+  );
+  socket.on(CHANNEL.CLIENT.DRAW_TABLE, (payload) =>
+    DrawTableEventHandler({ ...context, payload })
   );
 
   socket.on("disconnecting", () => {

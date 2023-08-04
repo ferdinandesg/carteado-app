@@ -7,6 +7,7 @@ type UserCardProps = {
 export default function UserCard() {
   const { data, status } = useSession();
   const user = data?.user;
+
   return (
     <div className="flex w-1/2 p-2 rounded">
       <div className="">

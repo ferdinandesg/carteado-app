@@ -9,5 +9,6 @@ export const CHANNEL = {
     SEND_MESSAGE: "send_message",
     END_TURN: "end_turn",
     PICK_HAND: "pick_hand",
+    DRAW_TABLE: "draw_table",
   },
 };
