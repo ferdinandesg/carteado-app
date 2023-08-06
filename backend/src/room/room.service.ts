@@ -23,7 +23,7 @@ export async function createRoom(room: RoomInterface) {
 
 export async function listRooms() {
   try {
-    const rooms = await prisma.room.findMany({});
+    const rooms = await prisma.room.findMany();
     return { rooms };
   } catch (error) {
     throw error;
