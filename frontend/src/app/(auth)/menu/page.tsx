@@ -1,6 +1,5 @@
 'use client'
 
-import { SocketContext } from "@/contexts/socket.context"
 import { useRouter } from 'next/navigation'
 import { useSession } from "next-auth/react";
 
