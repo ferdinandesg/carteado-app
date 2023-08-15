@@ -21,9 +21,10 @@ export async function handleCreateRoom(req: Request, res: Response) {
     res.status(400).json(error);
   }
 }
-export function handleListRooms(req: Request, res: Response) {
+export async function handleListRooms(req: Request, res: Response) {
   try {
-    const rooms = listRooms();
+    const rooms = await listRooms();
+    
     res.status(200).json(rooms);
   } catch (error) {
     throw error;

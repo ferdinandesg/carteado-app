@@ -15,7 +15,10 @@ export default function useFetch<T = any>({ url, method }: UseFetchProps) {
       //   body,
     })
       .then((response) => response.json())
-      .then((result) => setData(result))
+      .then((result) => {
+        console.log({ result });
+        setData(result);
+      })
       .catch((er) => setError(er))
       .finally(() => setLoading(false));
   }, []);

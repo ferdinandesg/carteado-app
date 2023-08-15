@@ -23,8 +23,9 @@ export async function createRoom(room: RoomInterface) {
 
 export async function listRooms() {
   try {
-    const rooms = await prisma.room.findMany();
-    return { rooms };
+    const rooms = await prisma.room.findMany({ include: { players: true }, orderBy: {createdAt: "desc"} });
+
+    return rooms;
   } catch (error) {
     throw error;
   }

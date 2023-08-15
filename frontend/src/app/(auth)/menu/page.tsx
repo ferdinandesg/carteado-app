@@ -17,11 +17,16 @@ export default function Menu() {
       console.error(error);
     }
   }
+  const listRooms = () => {
+    router.push(`/rooms`)
+
+  }
+
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="flex flex-col h-1/2 w-1/2 gap-2 bg-[#496493]">
         <button className="p-2 bg-gray-400 hover:bg-gray-500 " onClick={() => createRoom()}>Start game</button>
-        <button className="p-2 bg-gray-400 hover:bg-gray-500 ">Join game</button>
+        <button className="p-2 bg-gray-400 hover:bg-gray-500 " onClick={listRooms}>Join game</button>
       </div>
     </div>
   );
