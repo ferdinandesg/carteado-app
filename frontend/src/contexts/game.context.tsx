@@ -9,6 +9,7 @@ import {
 } from "react";
 import { useSocket } from "./socket.context";
 import { useSession } from "next-auth/react";
+import useModalContext from "@/components/Modal/ModalContext";
 interface GameContextProps {
   deck?: Deck;
   isLoading: boolean;
@@ -23,6 +24,15 @@ interface GameContextProps {
   endTurn: () => void;
   drawTable: () => void;
   handlePickCards: (cards: Card[]) => void;
+}
+
+interface LoadTableProps {
+  bunch: Card[];
+  players: {
+    hand: Card[];
+    table: Card[];
+    userId: string;
+  }[];
 }
 
 type StartGamePayloadType = {
@@ -42,6 +52,7 @@ const GameContext = createContext<GameContextProps | null>(null);
 export function GameProvider({ children }: { children: ReactNode }) {
   const { data } = useSession();
   const { socket } = useSocket();
+  const { setShowModal } = useModalContext();
   const [deck, setDeck] = useState<Deck>();
   const [tableCards, setTableCards] = useState<Card[]>([]);
   const [bunchCards, setBunchCards] = useState<Card[]>([]);
@@ -80,11 +91,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
       }
       setBunchCards([...obj.bunch]);
     });
+
+    socket.on("load_table", (room) => {
+      const payload: LoadTableProps = JSON.parse(room);
+      const foundPlayer = payload.players.find((x) => x.userId);
+      setBunchCards([...payload.bunch]);
+      if (!foundPlayer) return;
+      if (data?.user?.id === foundPlayer.userId) {
+        setTableCards([...foundPlayer.table]);
+        setHandCards([...foundPlayer.hand]);
+      }
+      setShowModal(false);
+    });
+
     return () => {
       socket.off("give_cards");
       socket.off("select_cards");
       socket.off("selected_hand");
       socket.off("refresh_cards");
+      socket.off("load_table");
     };
   }, [socket]);
 

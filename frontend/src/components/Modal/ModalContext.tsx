@@ -11,7 +11,7 @@ const defaultModalProps: ModalProps = {
 };
 const ModalContext = createContext(defaultModalProps);
 export function ModalProvider({ children }: { children: ReactNode }) {
-  const [show, setShowModal] = useState<boolean>(false);
+  const [show, setShowModal] = useState<boolean>(true);
   return (
     <ModalContext.Provider value={{ show, setShowModal }}>
       {children}

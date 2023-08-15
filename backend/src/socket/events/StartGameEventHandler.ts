@@ -39,6 +39,8 @@ export async function StartGameEventHandler(
           tableCards,
         })
       );
+      prisma.player.update({ where: { id: player.id }, data: { table: tableCards } })
+
     });
     channel.to(roomId).emit("begin_match");
   } catch (er) {

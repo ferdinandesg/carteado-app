@@ -84,7 +84,7 @@ export default class GameClass {
       GameClass.bunch.push(card);
       player.hand = player.hand.filter((x) => x.toString !== card.toString);
       player.cardsPlayed.push(card);
-      return { error: false, player };
+      return { error: false, player, bunch: this.bunch };
     } catch (error) {
       throw { error: true, message: error };
     }
@@ -126,7 +126,7 @@ export default class GameClass {
         );
       foundPlayer.cardsPlayed = [];
       const result = GameClass.drawCards(foundPlayer);
-      return { player: result };
+      return { player: result, bunch: this.bunch };
     } catch (error) {
       throw { error: true, message: error };
     }

@@ -36,6 +36,7 @@ model Room {
   name      String
   status    String
   password  String?
+  size   Int
   players   Player[]
   bunch     Card[]
   chat      Chat     @relation(fields: [chatId], references: [id])
@@ -56,10 +57,10 @@ type Message {
 }
 
 type Card {
-  hidden   Boolean?
-  suit     String
-  rank     String
-  value    Int
+  hidden         Boolean?
+  suit           String
+  rank           String
+  value          Int
   secondaryValue Int?
-  toString String?
+  toString       String?
 }
