@@ -18,26 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SessionProvider>
-      <SocketProvider>
-        <ModalProvider>
-          <div className="bg-gradient-to-r from-green-800 via-green-700 to-green-800  h-screen w-screen">
-            {children}
-          </div>
-        </ModalProvider>
-      </SocketProvider>
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss={false}
-        draggable={false}
-        pauseOnHover={false}
-        theme="light"
-      />
-    </SessionProvider>
+    <div className="bg-gradient-to-r from-green-800 via-green-700 to-green-800  h-screen w-screen">
+      {children}
+    </div>
   );
 }

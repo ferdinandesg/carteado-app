@@ -1,13 +1,13 @@
 import { useContext } from "react";
 import CardComponent from "../Card";
 import Table from "../Table";
-import { ModalContext } from "../Modal/ModalContext";
+import useModalContext from "../Modal/ModalContext";
 import { useGameContext } from "@/contexts/game.context";
 import { Card } from "@/models/Cards";
 import ModalChoseCards from "../Modal/ChoseCards/ModalChoseCards";
 
 export default function Game() {
-  const { setShowModal, show } = useContext(ModalContext);
+  const { setShowModal, show } = useModalContext();
   const {
     isLoading,
     cardsPlayed,

@@ -39,7 +39,7 @@ type SelectHandsType = {
 };
 const GameContext = createContext<GameContextProps | null>(null);
 
-function GameProvider({ children }: { children: ReactNode }) {
+export function GameProvider({ children }: { children: ReactNode }) {
   const { data } = useSession();
   const { socket } = useSocket();
   const [deck, setDeck] = useState<Deck>();

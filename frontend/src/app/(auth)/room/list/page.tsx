@@ -1,3 +1,4 @@
+'use client';
 import useFetch from "@/hooks/useFetch"
 type RoomsInterface = {}
 export default function RoomList() {

@@ -11,39 +11,43 @@ import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 const DEFAULT_USER = {
   email: "convidado@gmail.com",
-  name: "Nome do convidado",
+  name: "",
   image: "",
 };
 type SocketContextProps = {
   socket: Socket | undefined;
-  joinRoom: (roomId: string) => Promise<void>;
+  authGuest: (name: string) => void;
 };
 const SocketContext = createContext<SocketContextProps | null>(null);
-function SocketProvider({ children }: { children: ReactNode }) {
+export function SocketProvider({ children }: { children: ReactNode }) {
   const { data, status, update } = useSession({
-    required: true,
-    onUnauthenticated: () => {},
+    required: false,
   });
+  const [defaultUser, setDefaultUser] = useState(DEFAULT_USER);
   const [socket, setSocket] = useState<Socket>();
 
   useEffect(() => {
-    if (status === "authenticated") {
-      const user = data?.user ?? DEFAULT_USER;
-      const instance = io("http://localhost:3001/room", {
-        reconnectionDelayMax: 10000,
-        query: { user: JSON.stringify(user) },
-      });
-      instance.on("error", (message) => toast(message));
-      setSocket(instance);
-    }
+    if (status === "loading") return;
+    let user;
+    if (status === "authenticated") user = data.user;
+    else if (status === "unauthenticated") user = DEFAULT_USER;
+    const instance = io("http://localhost:3001/room", {
+      reconnectionDelayMax: 10000,
+      query: { user: JSON.stringify(user) },
+    });
+    instance.on("error", (message) => toast(message));
+    setSocket(instance);
   }, [status]);
 
-  const joinRoom = async (roomId: string) => {
-    if (!socket) return;
-    socket?.emit("join_room", roomId);
+  const authGuest = (name: string) => {
+    setDefaultUser((m) => {
+      m.name = name;
+      return m;
+    });
   };
+
   return (
-    <SocketContext.Provider value={{ joinRoom, socket }}>
+    <SocketContext.Provider value={{ authGuest, socket }}>
       {children}
     </SocketContext.Provider>
   );

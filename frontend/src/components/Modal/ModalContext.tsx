@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useState } from "react";
+import { ReactNode, createContext, useContext, useState } from "react";
 
 type ModalProps = {
   show: boolean;
@@ -9,12 +9,21 @@ const defaultModalProps: ModalProps = {
   show: false,
   setShowModal: () => {},
 };
-export const ModalContext = createContext(defaultModalProps);
+const ModalContext = createContext(defaultModalProps);
 export function ModalProvider({ children }: { children: ReactNode }) {
-  const [show, setShowModal] = useState<boolean>(true);
+  const [show, setShowModal] = useState<boolean>(false);
   return (
     <ModalContext.Provider value={{ show, setShowModal }}>
       {children}
     </ModalContext.Provider>
   );
+}
+
+export default function useModalContext() {
+  const context = useContext(ModalContext);
+  if (!context)
+    throw new Error(
+      "useModalContext must be used within a ModalContextProvider"
+    );
+  return context;
 }
