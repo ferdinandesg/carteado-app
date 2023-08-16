@@ -1,7 +1,7 @@
 import { Namespace, Socket } from "socket.io";
 import { CHANNEL } from "../channels";
 import { PlayCardEventHandler } from "./PlayCardEventHandler";
-import { RoomEventHandler } from "./RoomEventHandler";
+import { JoinRoomEventHandler } from "./JoinRoomEventHandler";
 import { DisconnectingEventHandler } from "./DisconnectingEventHandler";
 import { JoinChatEventHandler } from "./JoinChatEventHandler";
 import { SendMessageEventHandler } from "./SendMessageEventHandler";
@@ -25,7 +25,7 @@ export async function ConnectionEventHandler(
   );
 
   socket.on(CHANNEL.CLIENT.JOIN_ROOM, (payload) =>
-    RoomEventHandler({ ...context, payload })
+    JoinRoomEventHandler({ ...context, payload })
   );
   socket.on(CHANNEL.CLIENT.PLAY_CARD, (payload) =>
     PlayCardEventHandler({ ...context, payload })

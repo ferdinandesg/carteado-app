@@ -1,8 +1,8 @@
-'use client'
-import { FormEvent, useContext, useEffect, useRef, useState } from "react";
+"use client";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { useSession } from "next-auth/react";
-import { SocketContext } from "@/contexts/socket.context"
+import { useSocket } from "@/contexts/socket.context";
 
 type MessageType = {
   message: string;
@@ -15,29 +15,37 @@ export default function Chat({ roomId }: ChatProps) {
   const { data } = useSession();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const divRef = useRef<HTMLDivElement | null>(null);
-  const { socket } = useContext(SocketContext)!;
+  const { socket } = useSocket();
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
   useEffect(() => {
-    socket?.on("receive_message", (message) => setMessages((m) => [...m, message]));
+    socket?.on("receive_message", (message) =>
+      setMessages((m) => [...m, message])
+    );
     socket?.on("load_messages", (payload) => {
       setMessages(payload.messages);
       setLoading(false);
     });
   }, []);
   useEffect(() => {
-    divRef.current!.scroll({ behavior: "smooth", top: divRef.current!.scrollHeight })
-  }, [messages])
+    divRef.current!.scroll({
+      behavior: "smooth",
+      top: divRef.current!.scrollHeight,
+    });
+  }, [messages]);
 
   const sendMessage = (e: FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     const message = inputRef.current!.value;
     socket?.emit("send_message", { roomId, message: message });
     inputRef.current!.value = "";
   };
   return (
     <div className="flex flex-col justify-between">
-      <div ref={divRef} className="flex flex-col gap-4 overflow-y-auto h-60 p-2">
+      <div
+        ref={divRef}
+        className="flex flex-col gap-4 overflow-y-auto h-60 p-2"
+      >
         {isLoading ? (
           <span className="text-white">Loading...</span>
         ) : (
@@ -53,14 +61,14 @@ export default function Chat({ roomId }: ChatProps) {
                 <span
                   className={twMerge(
                     "p-2 rounded text-sm text-gray-800",
-                    data?.user?.name === x.name ? "bg-white" : "bg-gray-400 text-gray-800 "
+                    data?.user?.name === x.name
+                      ? "bg-white"
+                      : "bg-gray-400 text-gray-800 "
                   )}
                 >
                   {x.message}
                 </span>
-                <span className="text-xs text-gray-300">
-                  {x.name}
-                </span>
+                <span className="text-xs text-gray-300">{x.name}</span>
               </div>
             </div>
           ))

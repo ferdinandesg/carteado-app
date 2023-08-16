@@ -5,7 +5,7 @@ import { createRoom, getByHash, joinRoom, listRooms } from "./room.service";
 
 export async function handleCreateRoom(req: Request, res: Response) {
   try {
-    const { name } = req.body;
+    const { name, size } = req.body;
     if (!name) throw "name property should be passed";
     const uuid = randomUUID();
     const hash = uuid.substring(uuid.length - 4);
@@ -14,6 +14,7 @@ export async function handleCreateRoom(req: Request, res: Response) {
       id: hash,
       name,
       players: [],
+      size: +size,
     };
     await createRoom(newRoom);
     res.status(201).json(newRoom);
@@ -24,7 +25,7 @@ export async function handleCreateRoom(req: Request, res: Response) {
 export async function handleListRooms(req: Request, res: Response) {
   try {
     const rooms = await listRooms();
-    
+
     res.status(200).json(rooms);
   } catch (error) {
     throw error;

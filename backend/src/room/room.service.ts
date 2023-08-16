@@ -3,7 +3,6 @@ import { CHANNEL } from "../socket/channels";
 import SocketClass from "../socket/socket";
 import { RoomInterface } from "./room.schema";
 
-const ROOMS: RoomInterface[] = [];
 export async function createRoom(room: RoomInterface) {
   try {
     const chat = await prisma.chat.create({});
@@ -13,10 +12,13 @@ export async function createRoom(room: RoomInterface) {
         name: room.name,
         chatId: chat.id,
         status: "open",
+        size: room.size
       },
     });
     return createdRoom;
   } catch (error) {
+    console.log(error);
+    
     throw error;
   }
 }

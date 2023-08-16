@@ -1,12 +1,12 @@
 import { SocketContext } from "../../@types/socket";
 import prisma from "../../prisma";
 
-export async function RoomEventHandler(context: SocketContext): Promise<void> {
+export async function JoinRoomEventHandler(context: SocketContext): Promise<void> {
   try {
     const { payload, socket, channel } = context;
     const { roomId } = payload;
     const room = await prisma.room.findFirst({
-      where: { hash: roomId, status: "open" },
+      where: { hash: roomId },
       include: { chat: true, players: { include: { user: true } } },
     });
     if (!room) {
@@ -14,7 +14,12 @@ export async function RoomEventHandler(context: SocketContext): Promise<void> {
       return;
     }
 
-    if (room.players.length > 4) {
+    if (!room.players.some(x => x.userId === socket.user.id) && room.status === 'playing') {
+      socket.emit("error", "Esta sala já está em partida.");
+      return;
+    }
+
+    if (room.players.length > room.size) {
       socket.emit("error", "A sala já está cheia.");
       return;
     }
@@ -38,6 +43,9 @@ export async function RoomEventHandler(context: SocketContext): Promise<void> {
         player: { user: socket.user, isOnline: true },
       })
     );
+    if (room.status === 'playing') {
+      socket.emit("load_table", JSON.stringify(room))
+    }
   } catch (er) {
     console.log(er);
   }

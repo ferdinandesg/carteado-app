@@ -8,7 +8,8 @@ export const roomSchema = z.object({
   name: z.string(),
   password: z.string().optional(),
   players: z.array(userSchema).max(4),
-  bunch: z.array(cardSchema)
+  bunch: z.array(cardSchema),
+  size: z.number().min(2)
 });
 
 export type RoomInterface = z.infer<typeof roomSchema>;

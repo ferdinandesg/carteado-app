@@ -9,12 +9,15 @@ export async function EndTurnEventHandler(
   const { socket, channel } = context;
   try {
     const result = GameClass.endTurn(socket.user.id);
+    await Promise.all([prisma.player.update({ where: { id: result.player.id }, data: { hand: result.player.hand, table: result.player.table } }),
+    prisma.room.update({ where: { id: result.player.roomId }, data: { bunch: result.bunch } })])
     channel
       .to(socket.user.room)
       .emit(
         "refresh_cards",
         JSON.stringify({ bunch: GameClass.bunch, player: result.player })
       );
+
     channel.to(socket.user.room).emit("player_turn", GameClass.playerTurn);
   } catch (er) {
     console.error(er);
