@@ -19,6 +19,7 @@ export default function Chat({ roomId }: ChatProps) {
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
   useEffect(() => {
+    if (!socket) return;
     socket?.on("receive_message", (message) =>
       setMessages((m) => [...m, message])
     );
@@ -26,7 +27,11 @@ export default function Chat({ roomId }: ChatProps) {
       setMessages(payload.messages);
       setLoading(false);
     });
-  }, []);
+    return () => {
+      socket.off("receive_message");
+      socket.off("load_messages");
+    };
+  }, [socket]);
   useEffect(() => {
     divRef.current!.scroll({
       behavior: "smooth",

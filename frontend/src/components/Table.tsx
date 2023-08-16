@@ -1,5 +1,4 @@
 import { useGameContext } from "@/contexts/game.context";
-import { useContext } from "react";
 import CardComponent from "./Card";
 
 export default function Table() {

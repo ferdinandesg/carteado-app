@@ -5,12 +5,12 @@ import useModalContext from "../Modal/ModalContext";
 import { useGameContext } from "@/contexts/game.context";
 import { Card } from "@/models/Cards";
 import ModalChoseCards from "../Modal/ChoseCards/ModalChoseCards";
+import Players from "../Players";
 
 export default function Game() {
   const { setShowModal, show } = useModalContext();
   const {
     isLoading,
-    cardsPlayed,
     tableCards,
     playCard,
     drawTable,
@@ -34,6 +34,8 @@ export default function Game() {
         />
       )}
       <div className="flex flex-col m-auto p-3">
+        <Players />
+
         <Table />
         <div className="flex flex-wrap gap-2 justify-center">
           {tableCards.map((card) => (

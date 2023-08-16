@@ -8,6 +8,7 @@ import {
 } from "react";
 import { Socket, io } from "socket.io-client";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 const DEFAULT_USER = {
   email: "convidado@gmail.com",
@@ -20,7 +21,8 @@ type SocketContextProps = {
 };
 const SocketContext = createContext<SocketContextProps | null>(null);
 export function SocketProvider({ children }: { children: ReactNode }) {
-  const { data, status, update } = useSession({
+  const router = useRouter();
+  const { data, status } = useSession({
     required: false,
   });
   const [defaultUser, setDefaultUser] = useState(DEFAULT_USER);
@@ -28,12 +30,10 @@ export function SocketProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (status === "loading") return;
-    let user;
-    if (status === "authenticated") user = data.user;
-    else if (status === "unauthenticated") user = DEFAULT_USER;
+    if (status === "unauthenticated") return router.push("/");
     const instance = io("http://localhost:3001/room", {
       reconnectionDelayMax: 10000,
-      query: { user: JSON.stringify(user) },
+      query: { user: JSON.stringify(data?.user) },
     });
     instance.on("error", (message) => toast(message));
     setSocket(instance);

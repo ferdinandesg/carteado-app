@@ -1,4 +1,5 @@
 "use client";
+import { useGameContext } from "@/contexts/game.context";
 import { useSocket } from "@/contexts/socket.context";
 import { Player } from "@/models/Users";
 import { useContext, useEffect, useState } from "react";
@@ -9,8 +10,8 @@ interface PlayerAvatar extends Player {
 }
 export default function Players() {
   const [players, setPlayers] = useState<PlayerAvatar[]>([]);
-  const [turn, setTurn] = useState<string>();
   const { socket } = useSocket();
+  const { turn } = useGameContext();
 
   useEffect(() => {
     if (!socket) return;
@@ -41,9 +42,7 @@ export default function Players() {
         return [...m];
       });
     });
-    socket.on("player_turn", (id) => setTurn(id));
     return () => {
-      socket.off("player_turn");
       socket.off("quit");
       socket.off("user_joined");
       socket.off("load_players");

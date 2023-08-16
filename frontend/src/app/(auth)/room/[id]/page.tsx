@@ -1,11 +1,6 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
-import UserCard from "@/components/UserCard";
+import { useEffect } from "react";
 import Game from "@/components/Game/game";
-import { useParams } from "next/navigation";
-import Chat from "@/components/Chat";
-import { useSession } from "next-auth/react";
-import { Player } from "@/models/Users";
 import Players from "@/components/Players";
 import { useSocket } from "@/contexts/socket.context";
 type User = {
@@ -23,16 +18,6 @@ interface RoomProps {
     id: string;
   };
 }
-
-const getRoomByHash = async (hash: string) => {
-  try {
-    const response = await fetch(`http://localhost:3001/api/rooms/hash${hash}`);
-    const room = response.json();
-    return room;
-  } catch (error) {
-    throw error;
-  }
-};
 
 export default function Room({ params }: RoomProps) {
   const { socket } = useSocket();
@@ -56,7 +41,7 @@ export default function Room({ params }: RoomProps) {
       <div className="w-1/2 flex flex-col">
         <Players />
         {/* <Chat roomId={roomId} /> */}
-        <UserCard />
+        {/* <UserCard /> */}
       </div>
     </>
   );

@@ -14,11 +14,11 @@ import { useForm } from "react-hook-form";
 interface GameContextProps {
   deck?: Deck;
   isLoading: boolean;
-  isYourTurn: boolean;
   tableCards: Card[];
   cardsPlayed: Card[];
   handCards: Card[];
   bunchCards: Card[];
+  turn: string | undefined;
   playCard: (card: Card) => void;
   retrieveCard: (card: Card) => void;
   endTurn: () => void;
@@ -31,7 +31,7 @@ interface Player {
   hand: Card[];
   table: Card[];
   userId: string;
-};
+}
 interface LoadTableProps {
   bunch: Card[];
   players: {
@@ -56,10 +56,9 @@ type SelectHandsType = {
 const GameContext = createContext<GameContextProps | null>(null);
 
 type GameFormProps = {
-  players: Player[]
-  bunchCards: Card[]
-}
-
+  players: Player[];
+  bunchCards: Card[];
+};
 
 export function GameProvider({ children }: { children: ReactNode }) {
   const { data } = useSession();
@@ -67,21 +66,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const { setValue } = useForm<GameFormProps>();
   const { setShowModal } = useModalContext();
   const [deck, setDeck] = useState<Deck>();
+  const [turn, setTurn] = useState<string>();
+
   const [tableCards, setTableCards] = useState<Card[]>([]);
   const [bunchCards, setBunchCards] = useState<Card[]>([]);
   const [handCards, setHandCards] = useState<Card[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
+  const [isPlaying, setPlaying] = useState<boolean>(false);
   const [cardsPlayed, setCardsPlayed] = useState<Card[]>([]);
 
   useEffect(() => {
     if (!socket) return;
     socket.on("give_cards", (payload: string) => {
       const cards: StartGamePayloadType = JSON.parse(payload);
+      setShowModal(true);
       if (data?.user?.id === cards.id) {
         setTableCards([...cards.tableCards]);
       }
     });
-    socket.on("begin_match", () => setLoading(false));
+    socket.on("begin_match", () => setPlaying(true));
     socket.on("selected_hand", (payload) => {
       const obj: SelectHandsType = JSON.parse(payload);
       if (data?.user?.id === obj.id) {
@@ -101,18 +104,22 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
     socket.on("load_table", (room) => {
       const payload: LoadTableProps = JSON.parse(room);
-      const foundPlayer = payload.players.find((x) => x.userId === data?.user.id);
+      const foundPlayer = payload.players.find(
+        (x) => x.userId === data?.user.id
+      );
       setBunchCards([...payload.bunch]);
       if (!foundPlayer) return;
       if (data?.user?.id === foundPlayer.userId) {
         setTableCards([...foundPlayer.table]);
         setHandCards([...foundPlayer.hand]);
       }
-      setShowModal(false);
+      setPlaying(true);
     });
+    socket.on("player_turn", (id) => setTurn(id));
 
     return () => {
       socket.off("give_cards");
+      socket.off("player_turn");
       socket.off("select_cards");
       socket.off("selected_hand");
       socket.off("refresh_cards");
@@ -151,7 +158,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         bunchCards,
         cardsPlayed,
         isLoading,
-        isYourTurn: true,
+        turn,
         playCard,
         endTurn,
         drawTable,

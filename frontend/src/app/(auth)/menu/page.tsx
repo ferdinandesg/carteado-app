@@ -94,7 +94,8 @@ export default function Menu() {
           >
             Start game
           </button>
-          <button className="p-2 bg-gray-400 hover:bg-gray-500 ">
+      
+          <button onClick={() => router.push(`/rooms`)} className="p-2 bg-gray-400 hover:bg-gray-500 ">
             Join game
           </button>
         </div>
