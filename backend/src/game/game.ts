@@ -35,19 +35,19 @@ export default class GameClass {
     try {
       const foundPlayer = GameClass.players.find((x) => x.userId === userId);
       if (!foundPlayer) return;
-      foundPlayer.hand = [
-        ...foundPlayer.hand.filter((x) => x.toString !== card.toString),
-      ];
+
       const lastThree = GameClass.bunch.slice(-3);
       if (
         lastThree.length === 3 &&
         lastThree.every((x) => x.rank === card.rank)
       ) {
-        return;
+        const result = GameClass.applyRules(card, foundPlayer);
+        return result;
       }
 
       if (foundPlayer.userId !== GameClass.playerTurn)
         throw { message: "Ainda não é sua vez!" };
+
       const result = GameClass.applyRules(card, foundPlayer);
       return result;
     } catch (error) {
@@ -55,12 +55,16 @@ export default class GameClass {
     }
   }
 
-  static applyRules(card: Card, player: GamePlayer, quantity: number = 1) {
+  static applyRules(card: Card, player: GamePlayer) {
     try {
       const [lastCard] = GameClass.bunch.slice(-1);
-      if (lastCard && lastCard.value! > card.value!)
-        throw "Você está jogando uma carta mais baixa que a da mesa";
-
+      if (card.rank !== "2" && card.rank !== "10") {
+        if (lastCard && lastCard.value! > card.value)
+          throw "Você está jogando uma carta mais baixa que a da mesa";
+        if (player.cardsPlayed.length > 0 && lastCard?.value !== card.value) {
+          throw "Sua carta é diferente da anterior!";
+        }
+      }
       switch (card.rank) {
         case "2":
           card.value = 1;
@@ -68,22 +72,16 @@ export default class GameClass {
         case "10":
           card.value = 1;
           break;
-
         default:
           break;
       }
-      if (
-        player.cardsPlayed.length > 0 &&
-        lastCard &&
-        lastCard.value! !== card.value! &&
-        lastCard.rank !== "2" &&
-        lastCard.rank !== "10"
-      ) {
-        throw "Sua carta é diferente da anterior!";
-      }
+
       GameClass.bunch.push(card);
       player.hand = player.hand.filter((x) => x.toString !== card.toString);
       player.cardsPlayed.push(card);
+      player.hand = [
+        ...player.hand.filter((x) => x.toString !== card.toString),
+      ];
       return { error: false, player, bunch: this.bunch };
     } catch (error) {
       throw { error: true, message: error };
@@ -125,8 +123,8 @@ export default class GameClass {
           GameClass.bunch.findIndex((card) => card.rank === "10") + 1
         );
       foundPlayer.cardsPlayed = [];
-      const result = GameClass.drawCards(foundPlayer);
-      return { player: result, bunch: this.bunch };
+      GameClass.drawCards(foundPlayer);
+      return { player: foundPlayer, bunch: this.bunch, turn: GameClass.playerTurn };
     } catch (error) {
       throw { error: true, message: error };
     }
@@ -140,7 +138,7 @@ export default class GameClass {
       delete draweeCard.hidden;
       player.hand.push(draweeCard as Card);
     }
-    return player;
+    return;
   }
 
   static drawTable(userId: string) {
@@ -156,7 +154,7 @@ export default class GameClass {
     }
   }
 
-  static retrieveCard(userId: string, card: Card) {
+  static retrieveCard(card: Card, userId: string) {
     try {
       if (userId !== GameClass.playerTurn) throw "Ainda não é sua vez!";
       const foundPlayer = GameClass.players.find((x) => x.userId === userId);
@@ -169,6 +167,7 @@ export default class GameClass {
       GameClass.bunch = GameClass.bunch.filter(
         (x) => x.toString !== card.toString
       );
+      return { player: foundPlayer, bunch: GameClass.bunch };
     } catch (error) {
       throw { error: true, message: error };
     }
@@ -181,6 +180,7 @@ export default class GameClass {
     );
     return {
       player: foundPlayer,
+      turn: GameClass.playerTurn,
       isFinished: this.players.every((x) => x.hand.length),
     };
   }

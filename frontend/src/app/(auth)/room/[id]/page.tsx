@@ -3,46 +3,44 @@ import { useEffect } from "react";
 import Game from "@/components/Game/game";
 import Players from "@/components/Players";
 import { useSocket } from "@/contexts/socket.context";
-type User = {
-  email: string;
-  name: string;
-  id: string;
-  image: string;
-};
-type PayloadType = {
-  message: string;
-  user: User;
-};
+import Lobby from "@/components/Lobby";
+import { useGameContext } from "@/contexts/game.context";
+import useFetch from "@/hooks/useFetch";
+import { Player } from "@/models/Users";
+import { Card } from "@/models/Cards";
+import { RoomInterface, RoomStatus } from "@/models/room";
+import { useRoomContext } from "@/contexts/room.context";
 interface RoomProps {
   params: {
     id: string;
   };
 }
 
+const renderScreen = (status: RoomStatus) => {
+  switch (status) {
+    case "open": return <Lobby />;
+    case "playing": return <Game />;
+    default: <div>Loading...</div>
+  }
+}
+
 export default function Room({ params }: RoomProps) {
-  const { socket } = useSocket();
   const roomId = params.id;
+  const { socket } = useSocket();
+  const { data, isLoading, error } = useFetch<RoomInterface>({ method: "GET", url: `${process.env.API_URL}/api/rooms/hash/${roomId}` })
+  const { initRoom, status } = useRoomContext();
 
   useEffect(() => {
-    if (!socket) return;
-    socket.emit("join_room", { roomId });
-  }, [socket]);
-  if (!socket) return <div>Loading...</div>;
+    if (isLoading) return;
+    initRoom(data!);
+    socket!.emit("join_room", { roomId });
+  }, [isLoading]);
 
-  const handleStartGame = () => {
-    socket.emit("start_game", { roomId });
-  };
+  if (isLoading) return <h1 className="text-white font-semibold text-center pt-5">Carregando a sala...</h1>;
+
   return (
     <>
-      <Game />
-      <button className="p-2" onClick={() => handleStartGame()}>
-        Start Game
-      </button>
-      <div className="w-1/2 flex flex-col">
-        <Players />
-        {/* <Chat roomId={roomId} /> */}
-        {/* <UserCard /> */}
-      </div>
+      {renderScreen(status)}
     </>
   );
 }

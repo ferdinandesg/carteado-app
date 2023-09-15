@@ -1,14 +1,16 @@
 import { Namespace, Socket } from "socket.io";
 import { CHANNEL } from "../channels";
-import { PlayCardEventHandler } from "./PlayCardEventHandler";
-import { JoinRoomEventHandler } from "./JoinRoomEventHandler";
-import { DisconnectingEventHandler } from "./DisconnectingEventHandler";
-import { JoinChatEventHandler } from "./JoinChatEventHandler";
-import { SendMessageEventHandler } from "./SendMessageEventHandler";
-import { StartGameEventHandler } from "./StartGameEventHandler";
-import { PickHandEventHandler } from "./PickHandEventHandler";
+import { PlayCardEventHandler } from "./cards/PlayCardEventHandler";
+import { PickHandEventHandler } from "./cards/PickHandEventHandler";
+import { DrawTableEventHandler } from "./cards/DrawTableEventHandler";
+import { RetrieveCardEventHandler } from "./cards/RetrieveCardEventHandler";
+import { JoinRoomEventHandler } from "./rooms/JoinRoomEventHandler";
+import { StartGameEventHandler } from "./rooms/StartGameEventHandler";
+import { JoinChatEventHandler } from "./chat/JoinChatEventHandler";
+import { SendMessageEventHandler } from "./chat/SendMessageEventHandler";
 import { EndTurnEventHandler } from "./EndTurnEventHandler";
-import { DrawTableEventHandler } from "./DrawTableEventHandler";
+import { DisconnectingEventHandler } from "./DisconnectingEventHandler";
+import { LeaveRoomEventHandler } from "./rooms/LeaveRoomEventHandler";
 
 export async function ConnectionEventHandler(
   socket: Socket,
@@ -17,6 +19,7 @@ export async function ConnectionEventHandler(
   console.log(`Socket Id: ${socket.id}`);
   const context = { socket, channel };
 
+  //CHAT EVENTS
   socket.on(CHANNEL.CLIENT.JOIN_CHAT, (payload) =>
     JoinChatEventHandler({ ...context, payload })
   );
@@ -24,18 +27,22 @@ export async function ConnectionEventHandler(
     SendMessageEventHandler({ ...context, payload })
   );
 
+  //ROOM EVENTS
   socket.on(CHANNEL.CLIENT.JOIN_ROOM, (payload) =>
     JoinRoomEventHandler({ ...context, payload })
   );
-  socket.on(CHANNEL.CLIENT.PLAY_CARD, (payload) =>
-    PlayCardEventHandler({ ...context, payload })
-  );
-
   socket.on(CHANNEL.CLIENT.START_GAME, (payload) =>
     StartGameEventHandler({ ...context, payload })
   );
+  //CARD EVENTS
+  socket.on(CHANNEL.CLIENT.PLAY_CARD, (payload) =>
+    PlayCardEventHandler({ ...context, payload })
+  );
   socket.on(CHANNEL.CLIENT.PICK_HAND, (payload) =>
     PickHandEventHandler({ ...context, payload })
+  );
+  socket.on(CHANNEL.CLIENT.RETRIEVE_CARD, (payload) =>
+    RetrieveCardEventHandler({ ...context, payload })
   );
   socket.on(CHANNEL.CLIENT.END_TURN, (payload) =>
     EndTurnEventHandler({ ...context, payload })
@@ -44,7 +51,5 @@ export async function ConnectionEventHandler(
     DrawTableEventHandler({ ...context, payload })
   );
 
-  socket.on("disconnecting", () => {
-    DisconnectingEventHandler({ ...context });
-  });
+  socket.on("disconnecting", () => DisconnectingEventHandler({ ...context }));
 }

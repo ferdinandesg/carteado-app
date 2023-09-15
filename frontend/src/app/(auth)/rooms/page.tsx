@@ -15,11 +15,9 @@ type RoomsInterface = {
 export default function Rooms() {
   const router = useRouter();
   const { data, isLoading } = useFetch<RoomsInterface[]>({
-    url: "http://localhost:3001/api/rooms",
+    url: `${process.env.API_URL}/api/rooms`,
     method: "GET",
   });
-  console.log({ data });
-
   const goToRoom = (hash: string) => {
     try {
       router.push(`/room/${hash}`);

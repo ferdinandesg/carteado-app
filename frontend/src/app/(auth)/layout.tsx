@@ -1,10 +1,5 @@
 "use client";
-import { ModalProvider } from "@/components/Modal/ModalContext";
-import { SessionProvider } from "next-auth/react";
-
 import type { Metadata } from "next";
-import { SocketProvider } from "@/contexts/socket.context";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export const metadata: Metadata = {

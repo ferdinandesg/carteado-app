@@ -19,9 +19,8 @@ export default function Home() {
     formState: { errors },
   } = useForm<FormData>();
   const router = useRouter();
-  const { authGuest } = useSocket();
   const submit = handleSubmit((data) => {
-    authGuest(data.name);
+    // authGuest(data.name);
     router.push("/menu");
   });
   return (
@@ -75,6 +74,7 @@ export default function Home() {
               Continuar com o Google
             </button>
             <button
+              disabled
               onClick={() => setShowModal(true)}
               className="bg-gray-500 text-white hover:bg-gray-500 transition p-2 rounded"
             >

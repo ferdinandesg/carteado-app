@@ -6,28 +6,16 @@ import { useGameContext } from "@/contexts/game.context";
 import { Card } from "@/models/Cards";
 import ModalChoseCards from "../Modal/ChoseCards/ModalChoseCards";
 import Players from "../Players";
+import { useRoomContext } from "@/contexts/room.context";
 
 export default function Game() {
-  const { setShowModal, show } = useModalContext();
-  const {
-    isLoading,
-    tableCards,
-    playCard,
-    drawTable,
-    handlePickCards,
-    handCards,
-    endTurn,
-  } = useGameContext();
+  const { actualPlayer, handlePickCards, playCard, drawTable, endTurn } = useRoomContext();
 
-  const notHiddenCards = tableCards.filter((x) => !x.hidden);
-  const handleSelectHand = (hand: Card[]) => {
-    handlePickCards(hand);
-    setShowModal(false);
-  };
-  if (isLoading) return <div>Esperando jogadores...</div>;
+  const notHiddenCards = actualPlayer!.table.filter((x) => !x.hidden);
+  const handleSelectHand = (hand: Card[]) => handlePickCards(hand);
   return (
     <>
-      {show && (
+      {actualPlayer?.status === "choosing" && (
         <ModalChoseCards
           handCards={notHiddenCards}
           selectHand={handleSelectHand}
@@ -35,10 +23,9 @@ export default function Game() {
       )}
       <div className="flex flex-col m-auto p-3">
         <Players />
-
         <Table />
         <div className="flex flex-wrap gap-2 justify-center">
-          {tableCards.map((card) => (
+          {actualPlayer?.table.map((card) => (
             <CardComponent card={card} key={`player-table-${card.toString}`} />
           ))}
         </div>
@@ -50,14 +37,14 @@ export default function Game() {
             Buy table cards
           </button>
           <button
-            onClick={() => endTurn()}
+            onClick={endTurn}
             className="bg-gray-400 hover:bg-gray-400 transition mt-2 p-2 text-white"
           >
             End Turn
           </button>
         </div>
         <div className="flex flex-wrap gap-2 justify-center mt-3">
-          {handCards.map((card) => (
+          {actualPlayer?.hand.map((card) => (
             <CardComponent
               card={card}
               className="hover:-translate-y-3"

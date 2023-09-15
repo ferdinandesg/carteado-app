@@ -1,6 +1,7 @@
 "use client";
-import Deck, { Card } from "@/models/Cards";
+import { Card } from "@/models/Cards";
 import {
+  Dispatch,
   ReactNode,
   createContext,
   useContext,
@@ -10,28 +11,22 @@ import {
 import { useSocket } from "./socket.context";
 import { useSession } from "next-auth/react";
 import useModalContext from "@/components/Modal/ModalContext";
-import { useForm } from "react-hook-form";
+import { Player } from "@/models/Users";
+
 interface GameContextProps {
-  deck?: Deck;
+  isPlaying: boolean;
   isLoading: boolean;
   tableCards: Card[];
-  cardsPlayed: Card[];
   handCards: Card[];
   bunchCards: Card[];
   turn: string | undefined;
-  playCard: (card: Card) => void;
   retrieveCard: (card: Card) => void;
   endTurn: () => void;
   drawTable: () => void;
   handlePickCards: (cards: Card[]) => void;
-  //Dispatch<SetStateAction<Card[]>>
 }
 
-interface Player {
-  hand: Card[];
-  table: Card[];
-  userId: string;
-}
+
 interface LoadTableProps {
   bunch: Card[];
   players: {
@@ -55,43 +50,22 @@ type SelectHandsType = {
 };
 const GameContext = createContext<GameContextProps | null>(null);
 
-type GameFormProps = {
-  players: Player[];
-  bunchCards: Card[];
-};
-
 export function GameProvider({ children }: { children: ReactNode }) {
   const { data } = useSession();
   const { socket } = useSocket();
-  const { setValue } = useForm<GameFormProps>();
   const { setShowModal } = useModalContext();
-  const [deck, setDeck] = useState<Deck>();
-  const [turn, setTurn] = useState<string>();
 
+  const [turn, setTurn] = useState<string>();
   const [tableCards, setTableCards] = useState<Card[]>([]);
   const [bunchCards, setBunchCards] = useState<Card[]>([]);
   const [handCards, setHandCards] = useState<Card[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [isPlaying, setPlaying] = useState<boolean>(false);
-  const [cardsPlayed, setCardsPlayed] = useState<Card[]>([]);
 
   useEffect(() => {
     if (!socket) return;
-    socket.on("give_cards", (payload: string) => {
-      const cards: StartGamePayloadType = JSON.parse(payload);
-      setShowModal(true);
-      if (data?.user?.id === cards.id) {
-        setTableCards([...cards.tableCards]);
-      }
-    });
-    socket.on("begin_match", () => setPlaying(true));
-    socket.on("selected_hand", (payload) => {
-      const obj: SelectHandsType = JSON.parse(payload);
-      if (data?.user?.id === obj.id) {
-        setTableCards([...obj.player.table]);
-        setHandCards([...obj.player.hand]);
-      }
-    });
+
+
     socket.on("refresh_cards", (payload) => {
       const obj = JSON.parse(payload);
 
@@ -102,43 +76,22 @@ export function GameProvider({ children }: { children: ReactNode }) {
       setBunchCards([...obj.bunch]);
     });
 
-    socket.on("load_table", (room) => {
-      const payload: LoadTableProps = JSON.parse(room);
-      const foundPlayer = payload.players.find(
-        (x) => x.userId === data?.user.id
-      );
-      setBunchCards([...payload.bunch]);
-      if (!foundPlayer) return;
-      if (data?.user?.id === foundPlayer.userId) {
-        setTableCards([...foundPlayer.table]);
-        setHandCards([...foundPlayer.hand]);
-      }
-      setPlaying(true);
-    });
-    socket.on("player_turn", (id) => setTurn(id));
-
     return () => {
-      socket.off("give_cards");
-      socket.off("player_turn");
-      socket.off("select_cards");
-      socket.off("selected_hand");
       socket.off("refresh_cards");
-      socket.off("load_table");
     };
   }, [socket]);
 
-  function playCard(card: Card) {
-    socket?.emit("play_card", { card });
-  }
+ 
 
   const handlePickCards = (cards: Card[]) => {
     socket?.emit("pick_hand", { cards });
   };
 
   const retrieveCard = (card: Card) => {
-    setBunchCards((m) => [...m.filter((x) => x.toString !== card.toString)]);
-    setCardsPlayed((m) => [...m.filter((x) => x.toString !== card.toString)]);
-    setHandCards((m) => [...m, card]);
+    socket?.emit("retrieve_card", { card })
+    // setBunchCards((m) => [...m.filter((x) => x.toString !== card.toString)]);
+    // setCardsPlayed((m) => [...m.filter((x) => x.toString !== card.toString)]);
+    // setHandCards((m) => [...m, card]);
   };
 
   const endTurn = () => {
@@ -152,14 +105,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
   return (
     <GameContext.Provider
       value={{
-        deck,
         handCards,
         tableCards,
         bunchCards,
-        cardsPlayed,
         isLoading,
+        isPlaying,
         turn,
-        playCard,
         endTurn,
         drawTable,
         retrieveCard,

@@ -1,5 +1,5 @@
-import { SocketContext } from "../../@types/socket";
-import prisma from "../../prisma";
+import { SocketContext } from "../../../@types/socket";
+import prisma from "../../../prisma";
 
 export async function SendMessageEventHandler(
   context: SocketContext

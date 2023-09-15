@@ -27,6 +27,7 @@ model Player {
   table    Card[]
   Room     Room?    @relation(fields: [roomId], references: [id])
   roomId   String?  @db.ObjectId
+  status   String?
   isOnline Boolean?
 }
 
@@ -36,7 +37,7 @@ model Room {
   name      String
   status    String
   password  String?
-  size   Int
+  size      Int
   players   Player[]
   bunch     Card[]
   chat      Chat     @relation(fields: [chatId], references: [id])

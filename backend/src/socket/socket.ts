@@ -16,12 +16,11 @@ class SocketClass {
         origin: "*",
       },
     });
-    this.roomChannel = this.io.of("/room")
-    this.roomChannel.use(Authentication)
-    this.roomChannel.on(CHANNEL.CLIENT.CONNECTION, async socket => {
+    this.roomChannel = this.io.of("/room");
+    this.roomChannel.use(Authentication);
+    this.roomChannel.on(CHANNEL.CLIENT.CONNECTION, async (socket) =>
       ConnectionEventHandler(socket, this.roomChannel)
-    })
-
+    );
   }
 }
 

@@ -3,11 +3,12 @@ import {
   handleCreateRoom,
   handleJoinRoom,
   handleListRooms,
-  handleGetRoomByHash
+  handleGetRoomByHash,
 } from "./room.controller";
+import authorize from "../routes/middlewares/auth";
 
 export default express()
-  .post("/", handleCreateRoom)
-  .get("/", handleListRooms)
-  .get("/hash/:hash", handleGetRoomByHash)
-  .post("/join/:hash", handleJoinRoom);
+  .post("/", authorize, handleCreateRoom)
+  .get("/", authorize, handleListRooms)
+  .get("/hash/:hash", authorize, handleGetRoomByHash)
+  .post("/join/:hash", authorize, handleJoinRoom);

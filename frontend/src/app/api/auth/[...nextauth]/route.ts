@@ -5,16 +5,15 @@ import GoogleProvider from "next-auth/providers/google";
 
 const validateUser = async (payload: UserSession) => {
   try {
-    const response = await fetch(`http://localhost:3001/api/auth`, {
+    const response = await fetch(`${process.env.API_URL}/api/auth`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-    const user = response.json();
+    const user = await response.json();
+    
     return user;
   } catch (error) {
-    console.log({ error });
-
     throw error;
   }
 };
@@ -31,13 +30,13 @@ const handler = NextAuth({
     async session({ session, token }) {
       try {
         const user = await validateUser(session.user);
-        console.log("Updated session.");
         session.user = user;
         return session; // The return type will match the one returned in `useSession()`
       } catch (error) {
         return session;
       }
     },
+
     redirect() {
       return "/menu";
     },

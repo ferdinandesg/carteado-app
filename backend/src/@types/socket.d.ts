@@ -1,6 +1,5 @@
-// import { Card } from "@prisma/client";
+import { Card } from "@prisma/client";
 import { Socket, Namespace } from "socket.io";
-import Deck, { Card } from "../../cards/interface";
 
 declare module "socket.io" {
   interface Socket {
@@ -21,8 +20,8 @@ export interface SocketContext {
     error?: string;
     roomId?: string;
     message?: string;
-    card?: Card
-    cards?: Card[]
+    card?: Card;
+    cards?: Card[];
   };
   channel: Namespace;
 }
