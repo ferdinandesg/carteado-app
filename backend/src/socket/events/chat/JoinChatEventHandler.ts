@@ -1,13 +1,12 @@
 import { SocketContext } from "../../../@types/socket";
 import prisma from "../../../prisma";
+import { getMessages } from "../../../redis/actions";
 
 export async function JoinChatEventHandler(
   context: SocketContext
 ): Promise<void> {
   const { socket } = context;
-  const room = await prisma.room.findFirst({
-    where: { id: socket.user.room },
-    include: { chat: { select: { messages: true } } },
-  });
-  socket.emit("load_messages", room.chat);
+  const messages = await getMessages(socket.user.room);
+  socket.emit("load_messages", messages);
+  console.log(`Emitted to: ${socket.user.room} - load_messages`);
 }

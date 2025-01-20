@@ -1,6 +1,8 @@
 import { SocketContext } from "../../../@types/socket";
 import GameClass from "../../../game/game";
+import Rooms from "../../../game/room";
 import prisma from "../../../prisma";
+import { getRoomState, saveGameState } from "../../../redis/actions";
 
 export async function StartGameEventHandler(
   context: SocketContext
@@ -8,12 +10,8 @@ export async function StartGameEventHandler(
   const { socket, channel } = context;
   const roomId = socket.user.room;
   try {
-    const room = await prisma.room.findFirst({
-      where: { hash: roomId, status: "open" },
-      include: { players: { include: { user: true } } },
-    });
-
-    if (!room) {
+    const room = await getRoomState(roomId);
+    if (!room || socket.id !== room.ownerId) {
       channel.to(roomId).emit("error", "Sala não encontrada!");
       return;
     }
@@ -28,29 +26,28 @@ export async function StartGameEventHandler(
       where: { hash: roomId, status: "open" },
       data: { status: "playing" },
     });
-
-    new GameClass(room.players);
-    channel.to(roomId).emit("player_turn", GameClass.playerTurn);
-
-    room.players.forEach(async (player) => {
-      const tableCards = GameClass.givePlayerCards(player.user.id);
-      channel.to(roomId).emit(
-        "give_cards",
-        JSON.stringify({
-          id: player.userId,
-          tableCards,
-        })
-      );
-      await prisma.player.update({
-        where: { id: player.id },
-        data: { table: tableCards, status: "choosing" },
-      });
+    const game = new GameClass(room.players);
+    room.status = "playing";
+    room.players.forEach(p => {
+      p.status = "chosing";
+      p.hand = game.givePlayerCards(p.user.id);
     });
-    channel.to(roomId).emit("start_game");
+
+    await saveGameState(roomId, game);
+    room.players.forEach((player) => {
+      channel.to(player.id).emit('give_cards', player.hand);
+    });
+
+    channel.to(roomId).emit("start_game", {
+      message: 'O jogo começou!',
+      players: room.players.map(p =>
+        ({ id: p.id, name: p.user.name, cardCount: p.hand.length })
+      ),
+      currentTurn: game.playerTurn,
+      cardsOnTable: game.deck
+    });
   } catch (er) {
-    channel
-      .to(roomId)
-      .emit("error", typeof er === "string" ? er : JSON.stringify(er));
     console.error(er);
+    throw er
   }
 }

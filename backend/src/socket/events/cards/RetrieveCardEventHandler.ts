@@ -1,6 +1,8 @@
 import { SocketContext } from "../../../@types/socket";
 import GameClass from "../../../game/game";
+import Rooms from "../../../game/room";
 import prisma from "../../../prisma";
+import { getGameState } from "../../../redis/actions";
 
 export async function RetrieveCardEventHandler(
   context: SocketContext
@@ -8,24 +10,15 @@ export async function RetrieveCardEventHandler(
   const { payload, socket, channel } = context;
   try {
     const { card } = payload;
+    const roomId = socket.user.room;
+    const game = await getGameState(roomId);
+    const result = game.retrieveCard(card, socket.user.id);
+    if(result.error) {
+      socket.emit("error", result.error);
+      return;
+    }
+    socket.broadcast.to(roomId).emit("game_update", game);
 
-    const result = GameClass.retrieveCard(card, socket.user.id);
-    channel
-      .to(socket.user.room)
-      .emit(
-        "refresh_room",
-        JSON.stringify({ bunch: GameClass.bunch, player: result.player })
-      );
-    Promise.allSettled([
-      prisma.player.update({
-        where: { id: result.player.id },
-        data: { hand: result.player.hand, table: result.player.table },
-      }),
-      prisma.room.update({
-        where: { id: result.player.roomId },
-        data: { bunch: result.bunch },
-      }),
-    ]);
   } catch (er) {
     socket.emit("error", er.message);
   }

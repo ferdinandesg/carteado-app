@@ -12,10 +12,8 @@ export async function Authentication(
     const auth = await validateUser(parsedUser);
     socket.user = auth;
     socket.join(socket.user.email);
-    socket.emit("authenticate", auth.id);
-
     return next(null, true);
-  } catch (err) {
-    console.error({ err });
+  } catch (error) {
+    console.error({ error });
   }
 }

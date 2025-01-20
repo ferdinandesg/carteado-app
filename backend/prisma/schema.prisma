@@ -17,6 +17,7 @@ model User {
   email  String
   Player Player[]
   rank   Int
+  Room   Room[]
 }
 
 model Player {
@@ -32,17 +33,20 @@ model Player {
 }
 
 model Room {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  hash      String
-  name      String
-  status    String
-  password  String?
-  size      Int
-  players   Player[]
-  bunch     Card[]
-  chat      Chat     @relation(fields: [chatId], references: [id])
-  chatId    String   @db.ObjectId
-  createdAt DateTime @default(now())
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  hash       String
+  name       String
+  status     String
+  password   String?
+  size       Int
+  players    Player[]
+  bunch      Card[]
+  chat       Chat     @relation(fields: [chatId], references: [id])
+  chatId     String   @db.ObjectId
+  createdAt  DateTime @default(now())
+  playerTurn String?
+  owner      User     @relation(fields: [ownerId], references: [id])
+  ownerId    String   @db.ObjectId
 }
 
 model Chat {

@@ -1,34 +1,20 @@
 import { SocketContext } from "../../@types/socket";
-import Deck from "../../cards/interface";
-import GameClass from "../../game/game";
-import prisma from "../../prisma";
+import { getGameState } from "../../redis/actions";
 
 export async function EndTurnEventHandler(
   context: SocketContext
 ): Promise<void> {
   const { socket, channel } = context;
+  const { room } = socket.user;
   try {
-    const result = GameClass.endTurn(socket.user.id);
-    channel.to(socket.user.room).emit(
-      "refresh_room",
-      JSON.stringify({
-        bunch: result.bunch,
-        player: result.player,
-        turn: result.turn,
-      })
-    );
 
-    channel.to(socket.user.email).emit("player_turn");
-    Promise.allSettled([
-      prisma.player.update({
-        where: { id: result.player.id },
-        data: { hand: result.player.hand, table: result.player.table },
-      }),
-      prisma.room.update({
-        where: { id: result.player.roomId },
-        data: { bunch: result.bunch },
-      }),
-    ]).then((settled) => console.log({ settled }));
+    const game = await getGameState(room);
+    const result = game.endTurn(socket.user.id);
+    if (result.error) {
+      socket.emit("error", result.error);
+      return;
+    }
+    socket.broadcast.to(room).emit("game_update", game);
   } catch (er) {
     console.error(er);
     socket.emit("error", er.message);

@@ -44,11 +44,15 @@ export function RoomProvider({ children }: { children: ReactNode }) {
     if (!socket) return;
     socket.on("refresh_room", payload => {
       const obj = JSON.parse(payload)
+
       refreshPlayer(obj.player)
       setBunch(obj.bunch)
       if (obj.turn) setTurn(obj.turn)
     })
-    socket.on("player_turn", (id) => toast("É sua vez!"));
+    socket.on("player_turn", (id) => {
+      setTurn(id)
+      if (actualPlayer?.user.id === id) toast("É sua vez!")
+    });
     socket.on("start_game", () => setStatus("playing"));
     socket.on("all_chosed", () => toast("Todos os jogadores selecionaram suas cartas"));
 

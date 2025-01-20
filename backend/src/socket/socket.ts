@@ -18,7 +18,7 @@ class SocketClass {
     });
     this.roomChannel = this.io.of("/room");
     this.roomChannel.use(Authentication);
-    this.roomChannel.on(CHANNEL.CLIENT.CONNECTION, async (socket) =>
+    this.roomChannel.on(CHANNEL.CLIENT.CONNECTION, async (socket: Socket) =>
       ConnectionEventHandler(socket, this.roomChannel)
     );
   }

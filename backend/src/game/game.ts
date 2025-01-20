@@ -6,58 +6,59 @@ interface GamePlayer extends Player {
 }
 
 export default class GameClass {
-  static playerTurn: string;
-  static deck: Deck;
-  static bunch: Card[] = [];
-  static players: GamePlayer[] = [];
+  playerTurn: string;
+  deck: Deck;
+  bunch: Card[] = [];
+  players: GamePlayer[] = [];
+  status: "open" | "playing" | "finished" = "open";
 
   constructor(players: Player[]) {
     const gamePlayers: GamePlayer[] = players.map((x) => ({
       ...x,
       cardsPlayed: [],
     }));
-    GameClass.players = gamePlayers;
-    GameClass.deck = new Deck();
-    GameClass.playerTurn =
-      gamePlayers[
-        Math.floor(Math.random() * (players.length - 1 - 0 + 1) + 0)
-      ].userId;
+    this.players = gamePlayers;
+    this.deck = new Deck();
+    const playerTurn = gamePlayers[Math.floor(Math.random() * gamePlayers.length)];
+
+    this.playerTurn = playerTurn.userId;
   }
 
-  static givePlayerCards(userId: string) {
-    const foundPlayer = GameClass.players.find((x) => x.userId === userId);
+  givePlayerCards(userId: string) {
+    const foundPlayer = this.players.find((x) => x.userId === userId);
     if (!foundPlayer) return;
-    foundPlayer.table = GameClass.deck.giveTableCards() as Card[];
+    foundPlayer.table = this.deck.giveTableCards() as Card[];
     return foundPlayer.table;
   }
 
-  static playCard(card: Card, userId: string) {
+  canPlayCard(card: Card, userId: string): boolean {
+    const foundPlayer = this.players.find((x) => x.userId === userId);
+    if (!foundPlayer) return false;
+    const lastThree = this.bunch.slice(-3);
+    if (
+      lastThree.length === 3 &&
+      lastThree.every((x) => x.rank === card.rank)
+    ) {
+      return true;
+    }
+    if (foundPlayer.userId !== this.playerTurn) return false;
+    return true
+  }
+
+  playCard(card: Card, userId: string) {
     try {
-      const foundPlayer = GameClass.players.find((x) => x.userId === userId);
-      if (!foundPlayer) return;
-
-      const lastThree = GameClass.bunch.slice(-3);
-      if (
-        lastThree.length === 3 &&
-        lastThree.every((x) => x.rank === card.rank)
-      ) {
-        const result = GameClass.applyRules(card, foundPlayer);
-        return result;
-      }
-
-      if (foundPlayer.userId !== GameClass.playerTurn)
-        throw { message: "Ainda não é sua vez!" };
-
-      const result = GameClass.applyRules(card, foundPlayer);
+      const foundPlayer = this.players.find((x) => x.userId === userId);
+      if (!this.canPlayCard(card, userId)) return;
+      const result = this.applyRules(card, foundPlayer);
       return result;
     } catch (error) {
       throw error;
     }
   }
 
-  static applyRules(card: Card, player: GamePlayer) {
+  applyRules(card: Card, player: GamePlayer) {
     try {
-      const [lastCard] = GameClass.bunch.slice(-1);
+      const [lastCard] = this.bunch.slice(-1);
       if (card.rank !== "2" && card.rank !== "10") {
         if (lastCard && lastCard.value! > card.value)
           throw "Você está jogando uma carta mais baixa que a da mesa";
@@ -76,7 +77,7 @@ export default class GameClass {
           break;
       }
 
-      GameClass.bunch.push(card);
+      this.bunch.push(card);
       player.hand = player.hand.filter((x) => x.toString !== card.toString);
       player.cardsPlayed.push(card);
       player.hand = [
@@ -88,23 +89,21 @@ export default class GameClass {
     }
   }
 
-  static handlePickCards(cards: Card[], userId: string) {
-    const foundPlayer = GameClass.players.find((x) => x.userId === userId);
+  handlePickCards(cards: Card[], userId: string) {
+    const foundPlayer = this.players.find((x) => x.userId === userId);
     foundPlayer.cardsPlayed = [...cards];
-    GameClass.bunch = [
-      ...GameClass.bunch.filter(
+    this.bunch = [
+      ...this.bunch.filter(
         (x) => !cards.some((y) => y.toString === x.toString)
       ),
     ];
   }
-  static endTurn(userId: string) {
+  endTurn(userId: string) {
     try {
-      const foundPlayer = GameClass.players.find((x) => x.userId === userId);
+      const foundPlayer = this.players.find((x) => x.userId === userId);
       if (foundPlayer.cardsPlayed.length === 0)
         throw "Você precisa jogar alguma carta para poder pular a vez";
-      let index = GameClass.players.findIndex(
-        (x) => x.userId === GameClass.playerTurn
-      );
+      let index = this.players.findIndex((x) => x.userId === this.playerTurn);
       let skip = 1;
       if (foundPlayer.cardsPlayed.some((card) => card.rank === "2")) {
         skip += foundPlayer.cardsPlayed.reduce(
@@ -113,27 +112,32 @@ export default class GameClass {
         );
       }
       while (skip !== 0) {
-        index = index + 1 > GameClass.players.length - 1 ? 0 : index + 1;
+        index = index + 1 > this.players.length - 1 ? 0 : index + 1;
         skip -= 1;
       }
-      GameClass.playerTurn = GameClass.players[index].userId;
+      this.playerTurn = this.players[index].userId;
 
-      if (GameClass.bunch.some((x) => x.rank === "10"))
-        GameClass.bunch = GameClass.bunch.slice(
-          GameClass.bunch.findIndex((card) => card.rank === "10") + 1
+      if (this.bunch.some((x) => x.rank === "10"))
+        this.bunch = this.bunch.slice(
+          this.bunch.findIndex((card) => card.rank === "10") + 1
         );
       foundPlayer.cardsPlayed = [];
-      GameClass.drawCards(foundPlayer);
-      return { player: foundPlayer, bunch: this.bunch, turn: GameClass.playerTurn };
+      this.drawCards(foundPlayer);
+      return {
+        player: foundPlayer,
+        bunch: this.bunch,
+        turn: this.playerTurn,
+        error: false
+      };
     } catch (error) {
       throw { error: true, message: error };
     }
   }
 
-  static drawCards(player: GamePlayer) {
+  drawCards(player: GamePlayer) {
     if (player.hand.length >= 4) return;
     for (let i = player.hand.length; i < 3; i++) {
-      const draweeCard = GameClass.deck!.draw();
+      const draweeCard = this.deck!.draw();
       if (!draweeCard) return;
       delete draweeCard.hidden;
       player.hand.push(draweeCard as Card);
@@ -141,47 +145,63 @@ export default class GameClass {
     return;
   }
 
-  static drawTable(userId: string) {
+  drawTable(userId: string) {
     try {
-      if (userId !== GameClass.playerTurn) throw "Ainda não é sua vez!";
-      const foundPlayer = GameClass.players.find((x) => x.userId === userId);
-      GameClass.bunch.forEach((card) => foundPlayer.hand.push(card));
+      if (userId !== this.playerTurn) throw "Ainda não é sua vez!";
+      const foundPlayer = this.players.find((x) => x.userId === userId);
+      this.bunch.forEach((card) => foundPlayer.hand.push(card));
       foundPlayer.cardsPlayed = [];
-      GameClass.bunch = [];
-      return { player: foundPlayer };
+      this.bunch = [];
+      return { error: false, player: foundPlayer };
     } catch (error) {
       throw { error: true, message: error };
     }
   }
 
-  static retrieveCard(card: Card, userId: string) {
+  retrieveCard(card: Card, userId: string) {
     try {
-      if (userId !== GameClass.playerTurn) throw "Ainda não é sua vez!";
-      const foundPlayer = GameClass.players.find((x) => x.userId === userId);
+      if (userId !== this.playerTurn) throw "Ainda não é sua vez!";
+      const foundPlayer = this.players.find((x) => x.userId === userId);
       if (!foundPlayer.cardsPlayed.some((x) => x.toString === card.toString))
         throw "Parece que você não jogou esta carta!";
       (foundPlayer.cardsPlayed = foundPlayer.cardsPlayed.filter(
         (x) => x.toString !== card.toString
       )),
         (foundPlayer.hand as Card[]).push(card);
-      GameClass.bunch = GameClass.bunch.filter(
-        (x) => x.toString !== card.toString
-      );
-      return { player: foundPlayer, bunch: GameClass.bunch };
+      this.bunch = this.bunch.filter((x) => x.toString !== card.toString);
+      return { error: true, player: foundPlayer, bunch: this.bunch };
     } catch (error) {
       throw { error: true, message: error };
     }
   }
-  static pickHand(userId: string, cards: Card[]) {
-    const foundPlayer = GameClass.players.find((x) => x.userId === userId);
+  pickHand(userId: string, cards: Card[]) {
+    const foundPlayer = this.players.find((x) => x.userId === userId);
     (foundPlayer.hand as Card[]) = cards;
     foundPlayer.table = foundPlayer.table.filter(
       (x) => !cards.some((y) => x.toString === y.toString)
     );
     return {
       player: foundPlayer,
-      turn: GameClass.playerTurn,
+      turn: this.playerTurn,
       isFinished: this.players.every((x) => x.hand.length),
     };
+  }
+
+  public serialize(): string {
+    return JSON.stringify({
+      players: this.players,
+      deck: this.deck,
+      playerTurn: this.playerTurn,
+      status: this.status
+    });
+  }
+
+  public static deserialize(serializedGame: string): GameClass {
+    const data = JSON.parse(serializedGame);
+    const game = new GameClass(data.players);
+    game.deck = data.deck;
+    game.playerTurn = data.playerTurn;
+    game.status = data.status;
+    return game;
   }
 }
