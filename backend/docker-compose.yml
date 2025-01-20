@@ -5,10 +5,7 @@ services:
     image: mongo
     container_name: carteado_mongodb
     restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_DB}
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--noauth"]
     ports:
       - "27017:27017"
     volumes:

@@ -8,9 +8,6 @@ const validateUser = async (payload: UserSession) => {
   try {
     const response = await axiosInstance.post("/auth", payload);
     const user = await response.data();
-    console.log({
-      user
-    })
     return user;
   } catch (error) {
     throw error;
@@ -28,10 +25,6 @@ const handler = NextAuth({
   callbacks: {
     async session({ session, token }) {
       try {
-        console.log({
-          session,
-          token
-        })
         const user = await validateUser(session.user);
         session.user = user;
         session.user.token = token

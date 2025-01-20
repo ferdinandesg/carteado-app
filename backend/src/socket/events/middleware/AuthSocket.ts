@@ -6,9 +6,6 @@ export async function Authentication(
   next: Function
 ): Promise<void> {
   try {
-    console.log({
-      query: socket.handshake.query
-    })
     const { user } = socket.handshake.query;
     const parsedUser = JSON.parse(String(user));
 
