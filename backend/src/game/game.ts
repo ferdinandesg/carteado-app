@@ -13,19 +13,19 @@ export default class GameClass {
   status: "open" | "playing" | "finished" = "open";
 
   constructor(players: Player[]) {
-    const gamePlayers: GamePlayer[] = players.map((x) => ({
+    const gamePlayers: GamePlayer[] = players?.map((x) => ({
       ...x,
       playedCards: [],
     }));
     this.players = gamePlayers;
     this.cards = new Deck();
-    const playerTurn = gamePlayers[Math.floor(Math.random() * gamePlayers.length)];
+    const playerTurn = gamePlayers[0];
 
     this.playerTurn = playerTurn.userId;
   }
 
   playerExists(userId: string) {
-    const foundPlayer = this.players.find((x) => x.userId === userId);
+    const foundPlayer = this.players.find((x) => x.id === userId);
     if (!foundPlayer) return false;
     return foundPlayer;
   }
@@ -34,7 +34,7 @@ export default class GameClass {
     const foundPlayer = this.playerExists(userId);
     if (!foundPlayer) return;
     foundPlayer.table = this.cards.giveTableCards() as Card[];
-    return foundPlayer.table;
+    return foundPlayer.table || [];
   }
 
   canPlayCard(card: Card, userId: string): boolean {
@@ -201,7 +201,8 @@ export default class GameClass {
       players: this.players,
       cards: this.cards,
       playerTurn: this.playerTurn,
-      status: this.status
+      status: this.status,
+      bunch: this.bunch
     });
   }
 

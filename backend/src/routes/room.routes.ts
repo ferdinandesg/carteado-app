@@ -3,8 +3,8 @@ import {
   handleCreateRoom,
   handleGetRoom,
   handleListRooms,
-} from "./room.controller";
-import authorize from "../routes/middlewares/auth";
+} from "@controller/room.controller";
+import authorize from "@routes/middlewares/auth";
 
 export default express()
   .post("/", authorize, handleCreateRoom)

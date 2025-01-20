@@ -1,23 +1,16 @@
 import { Request, Response } from "express";
-import { randomUUID } from "node:crypto";
-import { createRoom, getRoom, listRooms } from "./room.service";
+import { createRoom, getRoom, listRooms } from "../services/room.service";
 
 export async function handleCreateRoom(req: any, res: Response) {
   try {
     const { name, size } = req.body;
     const { user } = req;
-    if (!name) throw "name property should be passed";
-    const uuid = randomUUID();
-    const hash = uuid.substring(uuid.length - 4);
-    const newRoom = await createRoom({
-      hash: hash,
-      id: hash,
-      name,
-      size: +size,
-      ownerId: user.id,
-    }, user.id);
+    if (!name) throw "A sala não pode ser criada sem nome";
+    const newRoom = await createRoom({ name, size: +size }, user.id);
+
     res.status(201).json(newRoom);
   } catch (error) {
+    
     res.status(400).json(error);
   }
 }
@@ -34,8 +27,8 @@ export async function handleListRooms(req: Request, res: Response) {
 export async function handleGetRoom(req: Request, res: Response) {
   try {
     const { hash } = req.params;
-    await getRoom(String(hash));
-    res.status(200);
+    const room = await getRoom(String(hash));
+    res.status(200).json(room);
   } catch (error) {
     res.status(400).json(error);
   }

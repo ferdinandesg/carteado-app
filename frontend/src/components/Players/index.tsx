@@ -4,13 +4,13 @@ import UserCard from "../UserCard";
 import { useRoomContext } from "@/contexts/room.context";
 
 export default function Players() {
-  const { players, turn } = useRoomContext();
+  const { players } = useRoomContext();
   
   return (
     <div className="flex gap-2 mt-2">
-      {players.map((player, i) => (
-        <div key={`table-user-${player.user.id}`} className={twMerge("border-2 border-white", turn === player.user.id ? "border-green-600" : "")}>
-          <UserCard user={player.user} />
+      {players.map((player) => (
+        <div key={`table-user-${player.email}`} className={twMerge("border-2 border-white", false ? "border-green-600" : "")}>
+          <UserCard user={player} />
           {/* <div className="flex">
             {player.hand.map(card => <CardComponent card={card} />)}
           </div> */}

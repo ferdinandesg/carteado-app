@@ -8,11 +8,9 @@ export type UserSession = {
   rank?: number;
 };
 
-export type Player = {
+export type Player = UserSession & {
   hand: Card[];
   table: Card[];
-  user: UserSession;
   isOnline?: boolean;
-  status?: "choosing" | "playing";
-  // userId: string;
+  status?: "chosing" | "playing";
 };

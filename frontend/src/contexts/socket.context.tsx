@@ -26,16 +26,16 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (status === "loading") return;
     if (status === "unauthenticated") return router.push("/");
+    axiosInstance.interceptors.request.use((config) => {
+      config.headers.Authorization = data?.user.id || data?.user.email;
+      return config;
+    });
     const instance = io(`${process.env.API_URL}/room`, {
       reconnectionDelayMax: 10000,
       query: { user: JSON.stringify(data?.user) },
     });
     instance.on("error", (message) => toast(message));
     instance.on("info", (message) => toast(message));
-    axiosInstance.interceptors.request.use((config) => {
-      config.headers.Authorization = data?.user.id || data?.user.email;
-      return config;
-    });
     setSocket(instance);
   }, [status]);
 

@@ -2,7 +2,7 @@ import { SocketContext } from "../../../@types/socket";
 import GameClass from "../../../game/game";
 import prisma from "../../../prisma";
 import { saveGameState } from "../../../redis/game";
-import { getRoomState } from "../../../redis/room";
+import { getRoomState, saveRoomState } from "../../../redis/room";
 
 export async function StartGameEventHandler(
   context: SocketContext
@@ -11,12 +11,27 @@ export async function StartGameEventHandler(
   const roomId = socket.user.room;
   try {
     const room = await getRoomState(roomId);
-    if (!room || socket.id !== room.ownerId) {
+
+    if (!room) {
       channel.to(roomId).emit("error", "Sala não encontrada!");
       return;
     }
 
-    if (channel.adapter.rooms.get(roomId)?.size < 2) {
+    if (socket.user.id !== room.ownerId) {
+      channel.to(roomId).emit("error", "Apenas o dono da sala pode iniciar a partida!");
+      return
+    }
+
+    const users = [];
+
+    for (const socketId of channel.adapter.rooms.get(roomId)) {
+      const socket = channel.sockets.get(socketId);
+      if (socket && socket.user) {
+        users.push(socket.user);
+      }
+    }
+
+    if (channel.adapter.rooms.get(roomId)?.size < 1) {
       channel.to(roomId).emit("error", "Falta membros!");
       return;
     }
@@ -26,22 +41,29 @@ export async function StartGameEventHandler(
       where: { hash: roomId, status: "open" },
       data: { status: "playing" },
     });
+    await saveRoomState(roomId, {
+      ...room,
+      status: "playing",
+    });
+    room.players = users
+
     const game = new GameClass(room.players);
-    room.status = "playing";
-    room.players.forEach(p => {
+    game.status = "playing";
+    game.players.forEach(p => {
       p.status = "chosing";
-      p.hand = game.givePlayerCards(p.user.id);
+      p.hand = game.givePlayerCards(p.id);
     });
 
     await saveGameState(roomId, game);
-    room.players.forEach((player) => {
+    
+    game.players.forEach((player) => {
       channel.to(player.id).emit('give_cards', player.hand);
     });
 
     channel.to(roomId).emit("start_game", {
       message: 'O jogo começou!',
-      players: room.players.map(p =>
-        ({ id: p.id, name: p.user.name, cardCount: p.hand.length })
+      players: game.players.map(p =>
+        ({ id: p.id, name: (p as any).name, cardCount: p.hand.length })
       ),
       currentTurn: game.playerTurn,
       cardsOnTable: game.cards

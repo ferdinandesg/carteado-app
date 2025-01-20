@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import useModalContext from "@/components/Modal/ModalContext";
 import Modal from "@/components/Modal";
 import { Check } from "lucide-react";
+import postRoom from "@/hooks/rooms/postRooms";
 type RoomForm = {
   name: string;
   size: number;
@@ -20,14 +21,11 @@ export default function Menu() {
     formState: { errors },
   } = useForm<RoomForm>();
   const user = data?.user;
-  const createRoom = handleSubmit(async (data) => {
+  const { createRoom } = postRoom();
+
+  const handleCreateRoom = handleSubmit(async (data) => {
     try {
-      const response = await fetch(`${process.env.API_URL}/api/rooms`, {
-        headers: { "Content-Type": "application/json", "Authorization": user!.id! },
-        method: "POST",
-        body: JSON.stringify({ name: data.name, createdBy: user?.name, size: data.size }),
-      });
-      const room = await response.json();
+      const room = await createRoom({ name: data.name, size: data.size });
       router.push(`/room/${room.hash}`);
     } catch (error) {
       console.error(error);
@@ -82,7 +80,7 @@ export default function Menu() {
           <Modal.Footer>
             <Modal.Buttons
               className="bg-green-600"
-              onClick={() => createRoom()}
+              onClick={() => handleCreateRoom()}
               icon={<Check color="white" />}
             >
               Confirmar

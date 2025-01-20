@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { validateUser } from "../../../auth/auth.service";
+import { validateUser } from "../../../services/auth.service";
 
 export async function Authentication(
   socket: Socket,

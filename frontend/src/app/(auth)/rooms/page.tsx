@@ -2,11 +2,11 @@
 import SearchComponent from "@/components/Search";
 import { twMerge } from "tailwind-merge";
 import { useRouter } from "next/navigation";
-import useRooms from "@/hooks/useRooms";
+import fetchRooms from "@/hooks/rooms/fetchRooms";
 
 export default function Rooms() {
   const router = useRouter();
-  const { data, isLoading } = useRooms();
+  const { data, isLoading } = fetchRooms();
 
   const goToRoom = (hash: string) => {
     try {

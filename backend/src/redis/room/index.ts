@@ -3,22 +3,21 @@ import RedisClass from "../client";
 
 type PopulatedRoom = Prisma.RoomGetPayload<{
   include: {
-    players: {
-      include: {
-        user: true
-      }
-    };
+    players: true
+   
   }
 }>
+
 export async function getRoomState(roomId: string): Promise<PopulatedRoom | null> {
   const redis = await RedisClass.getInstance();
-  const data = await redis.get(`game:${roomId}`);
+  console.log({roomId})
+  const data = await redis.get(`room:${roomId}`);
   return data ? JSON.parse(data) : null;
 }
 
 export async function saveRoomState(roomId: string, roomState: object) {
   const redis = await RedisClass.getInstance();
-  await redis.set(`game:${roomId}`, JSON.stringify(roomState), {
+  await redis.set(`room:${roomId}`, JSON.stringify(roomState), {
     EX: 3600,
   });
 }

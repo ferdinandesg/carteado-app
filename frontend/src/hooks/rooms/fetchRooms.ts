@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import axiosInstance from "./axios";
+import axiosInstance from "../axios";
 import { Player } from '@/models/Users';
 
 type RoomsInterface = {
@@ -11,15 +11,15 @@ type RoomsInterface = {
   players: Player[];
 };
 
-const fetchRooms = async () => {
+const rawFetchRooms = async () => {
   const response = await axiosInstance.get('/rooms');
   return response.data;
 };
 
-export default function useRooms() {
+export default function fetchRooms() {
   const { data, isLoading, isError } = useQuery<RoomsInterface[]>({
-    queryKey: ['players'],
-    queryFn: fetchRooms
+    queryKey: ['rooms'],
+    queryFn: rawFetchRooms
   });
 
   return {
