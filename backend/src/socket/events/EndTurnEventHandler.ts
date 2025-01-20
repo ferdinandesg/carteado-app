@@ -1,5 +1,5 @@
 import { SocketContext } from "../../@types/socket";
-import { getGameState } from "../../redis/actions";
+import { getGameState } from "../../redis/game";
 
 export async function EndTurnEventHandler(
   context: SocketContext

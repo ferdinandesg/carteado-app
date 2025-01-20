@@ -1,6 +1,6 @@
 import { Room } from "@prisma/client";
 import prisma from "../prisma";
-import { getRoomState, saveRoomState } from "../redis/actions";
+import { getRoomState, saveRoomState } from "../redis/room";
 
 export async function createRoom(room: Partial<Room>, userId: string): Promise<Room> {
   try {

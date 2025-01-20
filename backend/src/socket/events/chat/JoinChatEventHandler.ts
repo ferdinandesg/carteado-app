@@ -1,6 +1,5 @@
 import { SocketContext } from "../../../@types/socket";
-import prisma from "../../../prisma";
-import { getMessages } from "../../../redis/actions";
+import { getMessages } from "../../../redis/chat";
 
 export async function JoinChatEventHandler(
   context: SocketContext

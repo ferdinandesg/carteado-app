@@ -1,7 +1,7 @@
 import { Chat, Message } from "@prisma/client";
 import { SocketContext } from "../../../@types/socket";
 import prisma from "../../../prisma";
-import { saveMessages } from "../../../redis/actions";
+import { saveMessages } from "../../../redis/chat";
 
 const addMessage = async (roomId: string, message: Message): Promise<Chat> => {
   const room = await prisma.room.findFirst({

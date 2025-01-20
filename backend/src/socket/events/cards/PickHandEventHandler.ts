@@ -1,5 +1,5 @@
 import { SocketContext } from "../../../@types/socket";
-import { getGameState, getRoomState, saveGameState } from "../../../redis/actions";
+import { getGameState, saveGameState } from "../../../redis/game";
 
 export async function PickHandEventHandler(
   context: SocketContext

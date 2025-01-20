@@ -1,7 +1,5 @@
 import { SocketContext } from "../../../@types/socket";
-import Rooms from "../../../game/room";
-import prisma from "../../../prisma";
-import { getGameState } from "../../../redis/actions";
+import { getGameState } from "../../../redis/game";
 
 export async function PlayCardEventHandler(
   context: SocketContext

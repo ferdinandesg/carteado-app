@@ -6,11 +6,15 @@ export async function Authentication(
   next: Function
 ): Promise<void> {
   try {
+    console.log({
+      query: socket.handshake.query
+    })
     const { user } = socket.handshake.query;
-
     const parsedUser = JSON.parse(String(user));
+
     const auth = await validateUser(parsedUser);
     socket.user = auth;
+ 
     socket.join(socket.user.email);
     return next(null, true);
   } catch (error) {

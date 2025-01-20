@@ -1,8 +1,8 @@
 import { SocketContext } from "../../../@types/socket";
 import GameClass from "../../../game/game";
-import Rooms from "../../../game/room";
 import prisma from "../../../prisma";
-import { getRoomState, saveGameState } from "../../../redis/actions";
+import { saveGameState } from "../../../redis/game";
+import { getRoomState } from "../../../redis/room";
 
 export async function StartGameEventHandler(
   context: SocketContext
@@ -44,7 +44,7 @@ export async function StartGameEventHandler(
         ({ id: p.id, name: p.user.name, cardCount: p.hand.length })
       ),
       currentTurn: game.playerTurn,
-      cardsOnTable: game.deck
+      cardsOnTable: game.cards
     });
   } catch (er) {
     console.error(er);
