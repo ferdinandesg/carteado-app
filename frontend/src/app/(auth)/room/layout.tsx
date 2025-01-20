@@ -2,13 +2,6 @@
 import { GameProvider } from "@/contexts/game.context";
 import { RoomProvider } from "@/contexts/room.context";
 
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Carteado App",
-  description: "Jogasso",
-};
-
 export default function RootLayout({
   children,
 }: {

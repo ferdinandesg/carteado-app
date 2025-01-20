@@ -61,7 +61,7 @@ class Deck {
       const hiddenCards = playerDeck.filter((x) => x.hidden);
       playerDeck.push({
         ...cardDrawed!,
-        hidden: hiddenCards.length < 3 ?? Math.floor(Math.random() * 10) > 5,
+        hidden: hiddenCards.length < 3 || Math.floor(Math.random() * 10) > 5,
       });
     }
     return playerDeck;

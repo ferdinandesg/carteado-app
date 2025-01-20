@@ -1,17 +1,16 @@
 // pages/api/auth/[...nextauth].js
+import axiosInstance from "@/hooks/axios";
 import { UserSession } from "@/models/Users";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
 const validateUser = async (payload: UserSession) => {
   try {
-    const response = await fetch(`${process.env.API_URL}/api/auth`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const user = await response.json();
-    
+    const response = await axiosInstance.post("/auth", payload);
+    const user = await response.data();
+    console.log({
+      user
+    })
     return user;
   } catch (error) {
     throw error;
@@ -29,8 +28,13 @@ const handler = NextAuth({
   callbacks: {
     async session({ session, token }) {
       try {
+        console.log({
+          session,
+          token
+        })
         const user = await validateUser(session.user);
         session.user = user;
+        session.user.token = token
         return session; // The return type will match the one returned in `useSession()`
       } catch (error) {
         return session;

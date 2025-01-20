@@ -4,8 +4,8 @@ import { signIn } from "next-auth/react";
 import Modal from "@/components/Modal";
 import { Check } from "lucide-react";
 import useModalContext from "@/components/Modal/ModalContext";
-import { useSocket } from "@/contexts/socket.context";
 import { useRouter } from "next/navigation";
+
 
 type FormData = {
   name: string;
@@ -20,7 +20,6 @@ export default function Home() {
   } = useForm<FormData>();
   const router = useRouter();
   const submit = handleSubmit((data) => {
-    // authGuest(data.name);
     router.push("/menu");
   });
   return (

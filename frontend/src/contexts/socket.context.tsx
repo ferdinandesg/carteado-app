@@ -10,6 +10,7 @@ import { Socket, io } from "socket.io-client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import axiosInstance from "@/hooks/axios";
 
 type SocketContextProps = {
   socket: Socket | undefined;
@@ -25,6 +26,9 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (status === "loading") return;
     if (status === "unauthenticated") return router.push("/");
+      console.log({
+        data
+      })
     const instance = io(`${process.env.API_URL}/room`, {
       reconnectionDelayMax: 10000,
       query: { user: JSON.stringify(data?.user) },
@@ -32,6 +36,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     instance.on("error", (message) => toast(message));
     instance.on("info", (message) => toast(message));
     setSocket(instance);
+
   }, [status]);
 
   return (

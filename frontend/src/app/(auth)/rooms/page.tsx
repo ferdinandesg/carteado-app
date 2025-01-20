@@ -1,28 +1,18 @@
 "use client";
 import SearchComponent from "@/components/Search";
-import useFetch from "@/hooks/useFetch";
-import { Player } from "@/models/Users";
 import { twMerge } from "tailwind-merge";
 import { useRouter } from "next/navigation";
-type RoomsInterface = {
-  id: string;
-  hash: string;
-  name: string;
-  status: "open" | "playing";
-  createdAt: string;
-  players: Player[];
-};
+import useRooms from "@/hooks/useRooms";
+
 export default function Rooms() {
   const router = useRouter();
-  const { data, isLoading } = useFetch<RoomsInterface[]>({
-    url: `${process.env.API_URL}/api/rooms`,
-    method: "GET",
-  });
+  const { data, isLoading } = useRooms();
+
   const goToRoom = (hash: string) => {
     try {
       router.push(`/room/${hash}`);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

@@ -1,11 +1,4 @@
-"use client";
-import type { Metadata } from "next";
 import "react-toastify/dist/ReactToastify.css";
-
-export const metadata: Metadata = {
-  title: "Carteado App",
-  description: "Jogasso",
-};
 
 export default function RootLayout({
   children,
