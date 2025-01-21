@@ -1,2 +1,88 @@
-backend/node_modules/
+# Ignorar node_modules para ambos os projetos
 frontend/node_modules/
+backend/node_modules/
+node_modules/
+
+# Ignorar dependências lockfiles (opcional, se deseja gerenciá-los apenas localmente)
+frontend/package-lock.json
+frontend/yarn.lock
+backend/package-lock.json
+backend/yarn.lock
+
+# Build e arquivos gerados
+frontend/.next/
+frontend/out/
+frontend/.nuxt/
+frontend/dist/
+backend/dist/
+backend/build/
+
+# Logs
+frontend/npm-debug.log*
+backend/npm-debug.log*
+frontend/yarn-debug.log*
+backend/yarn-debug.log*
+frontend/yarn-error.log*
+backend/yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Pastas de cache do npm/yarn/pnpm
+frontend/.npm/
+backend/.npm/
+frontend/.yarn/
+backend/.yarn/
+frontend/.pnpm/
+backend/.pnpm/
+.pnp/
+.pnp.js
+
+# Pastas de cache temporárias
+frontend/.cache/
+backend/.cache/
+
+# Configuração de IDEs e sistemas operacionais
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+
+# Ambientes de configuração sensível
+frontend/.env
+backend/.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Logs de processos e runtime do sistema
+frontend/.eslintcache
+backend/.eslintcache
+.npmrc
+.eslintcache
+.log
+*.log
+
+# Coverage e relatórios de testes
+frontend/coverage/
+backend/coverage/
+frontend/.nyc_output/
+backend/.nyc_output/
+frontend/junit.xml
+backend/junit.xml
+frontend/coverage-final.json
+backend/coverage-final.json
+
+# Arquivos de dependências de Docker e compilação
+docker-compose.override.yml
+docker-compose.log
+frontend/Dockerfile
+backend/Dockerfile
+frontend/docker-compose.yml
+backend/docker-compose.yml
+
+# Next.js específico
+frontend/.next/
+frontend/.vercel/
+frontend/.netlify/
