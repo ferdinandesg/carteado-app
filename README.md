@@ -19,7 +19,7 @@ and soon after the web application will be available on port `:3000`
 
 * Website: ferdinandes.com.br
 * Github: [@ferdinandesg](https://github.com/ferdinandesg)
-* LinkedIn: [@ferdinandesg](https://linkedin.com/in/ferdinandesg)
+* LinkedIn: [@ferdinandes-nascimento](https://linkedin.com/in/ferdinandes-nascimento)
 
 ## Show your support
 
