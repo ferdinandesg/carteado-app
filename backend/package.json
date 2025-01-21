@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Warn: no test created yet for backend\" && exit 1",
     "lint": ""
   },
   "keywords": [],
