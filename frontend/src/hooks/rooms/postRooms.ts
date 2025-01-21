@@ -1,42 +1,27 @@
-import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "../axios"
-import { RoomInterface } from "@/models/room";
 
 type CreateRoomPayload = {
   name: string;
   size: number
 }
 
-async function postRoom(room: CreateRoomPayload): Promise<RoomInterface> {
+async function rawPostRoom(room: CreateRoomPayload) {
   const response = await axiosInstance.post('/rooms', room);
-  return response.data;
+  const data = response.data;
+  return data
 }
 
-export function useCreateRoom() {
-  return useMutation<RoomInterface, Error, CreateRoomPayload>(
-    {
-      mutationFn: (room: CreateRoomPayload) => postRoom(room),
-      onSuccess: (data) => {
-        console.log("Room created successfully:", data);
-      },
-      onError: (error) => {
-        console.error("Error creating room:", error);
-      }
+export default function postRoom() {
+
+  const createRoom = async (room: CreateRoomPayload) => {
+    try {
+      const data = await rawPostRoom(room);
+      return data
+    } catch (error) {
+      console.error(error);
     }
-  );
-}
-
-export default function CreateRoom() {
-  const { mutate, isError, data, isPending } = useCreateRoom();
-
-  const handleSubmit = (room: CreateRoomPayload) => {
-    mutate(room);
-  };
-
+  }
   return {
-    handleSubmit,
-    isError,
-    data,
-    isLoading: isPending
+    createRoom
   }
 }

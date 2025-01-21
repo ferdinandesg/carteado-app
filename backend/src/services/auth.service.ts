@@ -7,7 +7,13 @@ export async function validateUser(user: UserLogin): Promise<User> {
       where: { email: user.email },
     });
     if (!foundUser) {
-      return await prisma.user.create({ data: { ...user, rank: 0, image: "" } });
+      const userData = {
+        email: user.email,
+        name: user.name,
+        image: user.image 
+      }
+      const newUser = await prisma.user.create({ data: { ...userData, rank: 0} });
+      return newUser;
     } else return foundUser;
   } catch (error) {
     throw error;

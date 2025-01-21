@@ -10,7 +10,6 @@ export async function handleCreateRoom(req: any, res: Response) {
 
     res.status(201).json(newRoom);
   } catch (error) {
-    console.log(error);
     res.status(400).json(error);
   }
 }

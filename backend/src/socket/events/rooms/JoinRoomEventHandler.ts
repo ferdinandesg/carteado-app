@@ -51,11 +51,9 @@ export async function JoinRoomEventHandler(
     })
   } catch (er) {
     if (typeof er === "string") {
-      context.socket.emit("error", JSON.stringify({
-        message: er,
-      }));
+      context.socket.emit("error", { message: er });
       return;
     }
-    console.log(er);
+    throw er
   }
 }

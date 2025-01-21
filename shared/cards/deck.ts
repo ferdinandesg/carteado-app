@@ -73,6 +73,19 @@ class Deck {
     }
     return playerDeck;
   }
+
+  public serialize(): string {
+    return JSON.stringify({
+      cards: this.cards
+    });
+  }
+
+  public static deserialize(serialized: string): Deck {
+    const { cards } = JSON.parse(serialized);
+    const deck = new Deck();
+    deck.cards = cards;
+    return deck;
+  }
 }
 
 export default Deck;

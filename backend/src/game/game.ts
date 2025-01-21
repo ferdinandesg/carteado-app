@@ -80,11 +80,15 @@ export default class GameClass {
   applyRules(card: Card, player: GamePlayer) {
     try {
       const [lastCard] = this.bunch.slice(-1);
-      if (this.isSpecialCard(card)) {
+      const currentCardSpecial = this.isSpecialCard(card);
+      if (currentCardSpecial) {
 
-      } else if (lastCard) {
+      } else if (lastCard && !this.isSpecialCard(lastCard)) {
+        // if the last card is not special, the current card should be higher
         if (lastCard.value! > card.value)
           throw "Você está jogando uma carta mais baixa que a da mesa";
+
+        // if the last card is not special, the current card should be the same rank
         if (lastCard?.rank !== card.rank && player.playedCards.length > 0) {
           throw "Sua carta é diferente da anterior!";
         }
@@ -93,7 +97,6 @@ export default class GameClass {
       this.bunch.push(card);
       player.hand = player.hand.filter((x) => x.toString !== card.toString);
       player.playedCards.push(card);
-      if (player.hand.length === 0) this.status = "finished";
       return { error: false, message: "Carta jogada com sucesso!" };
     } catch (error) {
       return { error: true, message: error };
@@ -104,20 +107,20 @@ export default class GameClass {
     const currentPlayerIndex = this.players.findIndex(
       (x) => x.userId === fromUser
     );
+    if (currentPlayerIndex === -1) throw "Jogador não encontrado!";
     const nextPlayerIndex = (currentPlayerIndex + 1) % this.players.length;
     this.playerTurn = this.players[nextPlayerIndex].userId;
     if (turns > 1) this.skipTurns(this.playerTurn, turns - 1);
   }
 
-
   applySpecialCardRules(player: GamePlayer) {
     // find the current user and for each rank "2" card, should skip one turn
-    const turnsToSkip = player.playedCards.filter((x) => x.rank === "2").length;
-    this.skipTurns(player.id, turnsToSkip);
+    const turnsToSkip = (player.playedCards.filter((x) => x.rank === "2").length + 1) || 1;
+    this.skipTurns(player.userId, turnsToSkip);
 
     // find the current user and for each rank "10" card, should pick the last one and split the bunch
-    const lastTenIndex = player.playedCards.findIndex((x) => x.rank === "10");
-    if (lastTenIndex > -1) this.bunch = this.bunch.slice(lastTenIndex + 1);
+    const lastTenIndex = this.bunch.findIndex((x) => x.rank === "10");
+    if (lastTenIndex > -1) this.bunch = this.bunch.slice(lastTenIndex + 1);;
 
     // if in bunch we have a sequence in any place of four cards with the same rank, the bunch should be split
     for (let i = 0; i < this.bunch.length - 3; i++) {
@@ -127,7 +130,6 @@ export default class GameClass {
         break;
       }
     }
-
   }
 
   endTurn(userId: string) {
@@ -136,9 +138,8 @@ export default class GameClass {
       if (!foundPlayer) return
       if (foundPlayer.playedCards.length === 0)
         throw "Você precisa jogar alguma carta para poder pular a vez";
-
       this.applySpecialCardRules(foundPlayer);
-      foundPlayer.playedCards = [];
+      this.players.forEach(p => p.playedCards = [])
       this.drawCards(foundPlayer);
       return {
         player: foundPlayer,
@@ -153,12 +154,19 @@ export default class GameClass {
 
   drawCards(player: GamePlayer) {
     if (player.hand.length > 3) return;
-    for (let i = player.hand.length; i < 3; i++) {
-      const draweeCard = this.cards!.draw();
+    const gameHasCards = this.cards.getCards().length > 0;
+    while (player.hand.length < 3 && gameHasCards) {
+      const draweeCard = this.cards.draw();
       if (!draweeCard) return;
       delete draweeCard.hidden;
       player.hand.push(draweeCard as Card);
     }
+
+    if (player.hand.length === 0 && !gameHasCards) {
+      player.hand = player.table.filter(x => !x.hidden);
+      player.table = player.table.filter(x => x.hidden);
+    }
+
     return;
   }
 
@@ -167,7 +175,6 @@ export default class GameClass {
       const foundPlayer = this.playerExists(userId);
       if (!foundPlayer) return
       if (userId !== this.playerTurn) throw "Ainda não é sua vez!";
-
       this.bunch.forEach((card) => foundPlayer.hand.push(card));
       foundPlayer.playedCards = [];
       this.bunch = [];
@@ -208,7 +215,7 @@ export default class GameClass {
   public serialize(): string {
     return JSON.stringify({
       players: this.players,
-      cards: this.cards,
+      cards: this.cards.serialize(),
       playerTurn: this.playerTurn,
       status: this.status,
       bunch: this.bunch
@@ -218,7 +225,8 @@ export default class GameClass {
   public static deserialize(serializedGame: string): GameClass {
     const data = JSON.parse(serializedGame);
     const game = new GameClass(data.players);
-    game.cards = data.cards;
+    const cards = Deck.deserialize(data.cards);
+    game.cards = cards;
     game.playerTurn = data.playerTurn;
     game.status = data.status;
     game.players = data.players;

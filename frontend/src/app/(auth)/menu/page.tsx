@@ -7,6 +7,7 @@ import useModalContext from "@/components/Modal/ModalContext";
 import Modal from "@/components/Modal";
 import { Check } from "lucide-react";
 import postRoom from "@/hooks/rooms/postRooms";
+import CreateRoom from "@/hooks/rooms/postRooms";
 type RoomForm = {
   name: string;
   size: number;
@@ -20,7 +21,6 @@ export default function Menu() {
     handleSubmit,
     formState: { errors },
   } = useForm<RoomForm>();
-  const user = data?.user;
   const { createRoom } = postRoom();
 
   const handleCreateRoom = handleSubmit(async (data) => {

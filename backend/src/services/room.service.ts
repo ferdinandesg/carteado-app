@@ -20,8 +20,6 @@ export async function createRoom(room: Partial<Room>, userId: string): Promise<R
     await saveRoomState(hash, createdRoom);
     return createdRoom;
   } catch (error) {
-    console.log(error);
-
     throw error;
   }
 }

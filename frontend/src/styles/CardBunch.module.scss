@@ -3,10 +3,13 @@ $card-border: 1px solid black;
 $card-border-radius: 5px;
 $hover-scale: 1.5;
 $hover-offset-y: -20px;
+$card-count: 15; // Define o número total de cartas
 
-$card-positions: (
-  (0px, 0px, -10deg)
-);
+// Gera posições dinamicamente para evitar repetição manual
+$card-positions: ();
+@for $i from 1 through $card-count {
+  $card-positions: append($card-positions, (0px, 0px, -10deg));
+}
 
 .centerDeck {
   position: absolute;
@@ -32,10 +35,10 @@ $card-positions: (
   position: relative;
   transition: transform 0.2s ease-in-out;
 
-  @for $i from 1 through length($card-positions) {
+  @for $i from 1 through $card-count {
     $left: -($card-width - 20px) * $i;
     $top: 0px;
-    $rotate: -10deg;
+    $rotate: nth(nth($card-positions, $i), 3);
 
     &:nth-child(#{$i}) {
       left: $left;
@@ -45,7 +48,7 @@ $card-positions: (
 
     &:hover {
       z-index: 2;
-      transform: translate(1px, $hover-offset-y) rotate($rotate) scale($hover-scale);
+      transform: translate(1px, $hover-offset-y) rotate($rotate) scale(1.1);
     }
   }
 }

@@ -17,7 +17,7 @@ export default function Game() {
   return (
     <>
       <ModalChoseCards
-        isOpen={player?.status === "chosing"}  />
+        isOpen={player?.status === "chosing"} />
 
       <div className={styles.Game}>
         <div className={styles.gameTable}>

@@ -24,7 +24,7 @@ export default function UserCard({ user }: UserCardProps) {
       )}>
         {
           user?.image
-            ? <Image alt="user.name" src={user.image} width={42} height={42} />
+            ? <Image alt="user.name" src={user.image} width={100} height={100} />
             : <UserPlaceholder />
         }
       </div>

@@ -21,7 +21,7 @@ export default function Table() {
   return (
     <div className={styles.table}>
       {rotatedPlayers.map((player, index) => (
-        <div key={player.id} className={classNames(
+        <div key={player.userId} className={classNames(
           styles.player,
           styles[playerPositions[index]]
         )}>

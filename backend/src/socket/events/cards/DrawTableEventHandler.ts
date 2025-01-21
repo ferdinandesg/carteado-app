@@ -1,6 +1,6 @@
 import emitToRoom from "src/socket/utils/emitToRoom";
 import { SocketContext } from "../../../@types/socket";
-import { getGameState } from "../../../redis/game";
+import { getGameState, saveGameState } from "../../../redis/game";
 export async function DrawTableEventHandler(
   context: SocketContext
 ): Promise<void> {
@@ -13,8 +13,8 @@ export async function DrawTableEventHandler(
       socket.emit("error", result.error);
       return
     }
+    await saveGameState(roomHash, game);
     emitToRoom(channel, roomHash, "game_update", game);
-
   } catch (er) {
     console.error(er);
     socket.emit("error", er.message);
