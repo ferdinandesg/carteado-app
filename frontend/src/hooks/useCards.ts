@@ -1,5 +1,6 @@
 import { useSocket } from "@/contexts/socket.context";
-import { Card } from "@/models/Cards";
+import { Card } from "shared/cards";
+
 import { useEffect, useState } from "react";
 
 export default function useCards() {

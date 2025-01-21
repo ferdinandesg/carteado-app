@@ -1,7 +1,7 @@
 import CardComponent from "@/components/Card";
 import Modal from "..";
 import { useState } from "react";
-import { Card } from "@/models/Cards";
+import { Card } from "shared/cards";
 import { Check } from "lucide-react";
 
 import styles from "@styles/ModalChoseCards.module.scss";

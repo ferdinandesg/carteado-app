@@ -1,4 +1,5 @@
 import { Player } from "@/models/Users";
+import Deck from "shared/cards";
 
 export interface GameState {
   players: Player[];

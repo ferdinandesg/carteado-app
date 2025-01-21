@@ -1,4 +1,4 @@
-import { Card } from "../Cards";
+import { Card } from "shared/cards";
 
 export type UserSession = {
   id?: string;

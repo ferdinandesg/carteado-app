@@ -1,5 +1,6 @@
 "use client";
-import { Card } from "@/models/Cards";
+import { Card } from "shared/cards";
+
 import {
   ReactNode,
   createContext,

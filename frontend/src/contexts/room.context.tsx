@@ -19,8 +19,7 @@ export function RoomProvider({ children }: { children: ReactNode }) {
   const { id } = useParams();
   const { socket } = useSocket();
   const [name] = useState<string>("")
-  const [status, setStatus] = useState<RoomStatus>("open");
-  const { updateRoom } = useRoomByHash(id as string);
+  const { updateRoom, room } = useRoomByHash(id as string);
 
 
   useEffect(() => {
@@ -39,7 +38,7 @@ export function RoomProvider({ children }: { children: ReactNode }) {
   return (
     <RoomContext.Provider value={{
       name,
-      status
+      status: room?.status || "open"
     }}>
       {children}
     </RoomContext.Provider>

@@ -1,5 +1,5 @@
 import { Card, Prisma } from "@prisma/client";
-import Deck from "./cards";
+import Deck from "shared/cards";
 
 export type PopulatedPlayer = Prisma.PlayerGetPayload<{
   include: {

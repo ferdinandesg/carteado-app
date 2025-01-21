@@ -1,4 +1,4 @@
-import { Card } from "@/models/Cards";
+import { Card } from "shared/cards";
 
 import styles from "@styles/CardBunch.module.scss";
 import CardComponent from "./Card";
