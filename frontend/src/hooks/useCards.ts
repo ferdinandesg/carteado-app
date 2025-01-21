@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 export default function useCards() {
   const { socket } = useSocket();
-  const [pickCards, setPickCards] = useState<boolean>(false);
+  const [, setPickCards] = useState<boolean>(false);
 
   useEffect(() => {
     if (!socket) return;
