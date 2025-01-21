@@ -10,8 +10,5 @@ module.exports = {
     ecmaVersion: 2021,
     sourceType: "module"
   },
-  rules: {
-    "prettier/prettier": "error"
-  },
   ignorePatterns: ["node_modules/", "dist/", "build/"]
 };
