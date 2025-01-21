@@ -1,8 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axiosInstance from "../axios";
-import { Player, PopulatedPlayer } from '@/models/Users';
+import { PopulatedPlayer } from '@/models/Users';
 import { RoomStatus } from '@/models/room';
-import { useMemo } from 'react';
 
 export type RoomPlayer = PopulatedPlayer & {
   status?: "READY" | "NOT_READY";

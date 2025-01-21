@@ -6,7 +6,9 @@ export default function Header({ roomId, messageCount }: { roomId: string, messa
 
   return <div className={styles.header}>
     <span>
-      Bate-papo sala "{room?.name}" ({messageCount})
+      Bate-papo sala <span id="chat-room-name">
+        {room?.name}
+      </span> ({messageCount})
     </span>
   </div>
 }
