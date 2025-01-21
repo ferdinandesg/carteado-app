@@ -39,6 +39,7 @@
     "bufferutil": "^4.0.7",
     "eslint": "8.45.0",
     "eslint-config-next": "13.4.12",
+    "eslint-plugin-prettier": "^5.2.3",
     "socket.io": "^4.7.1",
     "utf-8-validate": "^5.0.10",
     "webpack": "^5.88.2",
