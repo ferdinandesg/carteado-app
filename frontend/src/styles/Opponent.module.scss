@@ -1,0 +1,53 @@
+.Opponent {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-s;
+  border: 3px;
+  border-style: solid;
+  border-color: lightgray;
+
+  &.isCurrentPlayerTurn {
+    border-color: green;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  .name {
+    color: #fff;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+
+  .infoBox {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0);
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  }
+
+  &:hover .infoBox {
+    opacity: 1;
+    visibility: visible;
+  }
+}

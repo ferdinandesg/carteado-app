@@ -9,8 +9,7 @@ export async function PickHandEventHandler(
   const { cards } = payload;
   const roomHash = socket.user.room;
   const game = await getGameState(roomHash)
-  const result = game.pickHand(socket.user.id, cards);
-  if (result.isFinished) channel.to(roomHash).emit("all_chosed");
+  game.pickHand(socket.user.id, cards);
   game.status = "playing";
   emitToRoom(channel, roomHash, "game_update", game);
 

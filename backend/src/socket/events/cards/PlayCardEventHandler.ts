@@ -1,20 +1,21 @@
 import emitToRoom from "src/socket/utils/emitToRoom";
 import { SocketContext } from "../../../@types/socket";
-import { getGameState } from "../../../redis/game";
+import { getGameState, saveGameState } from "../../../redis/game";
 
 export async function PlayCardEventHandler(
   context: SocketContext
 ): Promise<void> {
   const { payload, socket, channel } = context;
   try {
-    const { card } = payload;
+      const { card } = payload;
     const roomHash = socket.user.room;
     const game = await getGameState(roomHash)
     const result = game.playCard(card, socket.user.id);
     if (result.error) {
-      socket.emit("error", result.error);
+      socket.emit("error", result.message);
       return;
     }
+    await saveGameState(roomHash, game);
     emitToRoom(channel, roomHash, "game_update", game);
 
   } catch (er) {

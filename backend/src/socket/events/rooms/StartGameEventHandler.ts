@@ -49,15 +49,15 @@ export async function StartGameEventHandler(
     game.status = "playing";
     game.players.forEach(p => {
       p.status = "chosing";
-      p.hand = game.givePlayerCards(p.id);
+      p.hand = game.givePlayerCards(p.userId);
       p.name = p.user.name;
       p.image = p.user.image;
       p.email = p.user.email;
     });
-    
+
     await saveGameState(room.hash, game);
 
-    const newRoom =  {
+    const newRoom = {
       ...room,
       status: "playing"
     }

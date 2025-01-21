@@ -10,4 +10,14 @@
     height: 500px;
     width: 500px;
   }
+
+  .cardTable {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-s;
+
+    div {
+      width: 32%;
+    }
+  }
 }

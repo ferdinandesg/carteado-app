@@ -58,10 +58,17 @@ class Deck {
     const playerDeck: Card[] = [];
     while (playerDeck.length < 9) {
       const cardDrawed = this.draw();
-      const hiddenCards = playerDeck.filter((x) => x.hidden);
+      const hiddenCards = playerDeck.filter((x) => x.hidden).length;
+
+      let shouldBeHidden = hiddenCards < 3 ? Math.random() > 0.5 : false;
+
+      if (playerDeck.length === 8 && hiddenCards < 3) {
+        shouldBeHidden = true;
+      }
+
       playerDeck.push({
         ...cardDrawed!,
-        hidden: hiddenCards.length < 3 || Math.floor(Math.random() * 10) > 5,
+        hidden: shouldBeHidden,
       });
     }
     return playerDeck;

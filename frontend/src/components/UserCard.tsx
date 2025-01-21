@@ -3,6 +3,7 @@ import Image from "next/image";
 import styles from "@styles/UserCard.module.scss";
 import { User } from "lucide-react";
 import classNames from "classnames";
+import UserPlaceholder from "./UserPlaceholder";
 
 type UserCardProps = {
   user: {
@@ -24,9 +25,7 @@ export default function UserCard({ user }: UserCardProps) {
         {
           user?.image
             ? <Image alt="user.name" src={user.image} width={42} height={42} />
-            : <div className={styles.placeholderAvatar}>
-              <User size={42} />
-            </div>
+            : <UserPlaceholder />
         }
       </div>
       <div className={styles.description}>

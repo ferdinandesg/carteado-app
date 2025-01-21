@@ -2,6 +2,7 @@ import { Player } from "@/models/Users";
 
 export interface GameState {
   players: Player[];
+  bunch: Card[];
   hand: Card[];
   table: Card[];
   playedCards: Card[];

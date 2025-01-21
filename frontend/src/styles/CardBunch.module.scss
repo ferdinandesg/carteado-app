@@ -1,0 +1,51 @@
+$card-width: 100px;
+$card-border: 1px solid black;
+$card-border-radius: 5px;
+$hover-scale: 1.5;
+$hover-offset-y: -20px;
+
+$card-positions: (
+  (0px, 0px, -10deg)
+);
+
+.centerDeck {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  display: flex;
+  gap: 15px;
+  transform: translate(-50%, -50%);
+}
+
+.wrap {
+  margin: $spacing-m 0;
+  display: flex;
+  margin: auto 0;
+  position: absolute;
+  justify-content: center;
+}
+
+.card {
+  width: $card-width;
+  border: $card-border;
+  border-radius: $card-border-radius;
+  position: relative;
+  transition: transform 0.2s ease-in-out;
+
+  @for $i from 1 through length($card-positions) {
+    $left: -($card-width - 20px) * $i;
+    $top: 0px;
+    $rotate: -10deg;
+
+    &:nth-child(#{$i}) {
+      left: $left;
+      top: $top;
+      transform: translateY(0px) rotate($rotate);
+    }
+
+    &:hover {
+      z-index: 2;
+      transform: translate(1px, $hover-offset-y) rotate($rotate) scale($hover-scale);
+    }
+  }
+}

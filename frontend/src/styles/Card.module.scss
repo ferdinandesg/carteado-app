@@ -1,0 +1,14 @@
+.Card {
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 0.25rem;
+  color: black;
+  height: 100%;
+  padding: $spacing-s;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+  &.hidden {
+    opacity: 0.5;
+  }
+}

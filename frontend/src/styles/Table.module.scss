@@ -8,23 +8,14 @@
 }
 
 .player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   position: absolute;
   width: 100px;
   height: 120px;
   text-align: center;
-
-  .avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 3px solid #fff;
-  }
-
-  .name {
-    color: #fff;
-    font-size: 14px;
-    margin-top: 8px;
-  }
+  z-index: 3;
 }
 
 /* 1 jogador */

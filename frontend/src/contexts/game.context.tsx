@@ -15,18 +15,15 @@ import { Player } from "@/models/Users";
 import { GameState } from "@/@types/game";
 
 interface GameContextProps {
-  isPlaying: boolean;
-  isLoading: boolean;
-  tableCards: Card[];
-  handCards: Card[];
   bunchCards: Card[];
-  turn: string | undefined;
-  retrieveCard: (card: Card) => void;
+  retrieveCard: () => void;
   endTurn: () => void;
   drawTable: () => void;
   handlePickCards: (cards: Card[]) => void;
   player?: Player,
   rotatedPlayers: Player[]
+  game?: GameState;
+  playCard: (card: Card) => void;
 }
 
 const GameContext = createContext<GameContextProps | null>(null);
@@ -43,63 +40,54 @@ export function GameProvider({ children }: { children: ReactNode }) {
     ...players.slice(currentPlayerIndex),
     ...players.slice(0, currentPlayerIndex),
   ];
-  console.log({
-    game,
-    data
-  })
   const { socket } = useSocket();
-  const [turn, setTurn] = useState<string>();
-  const [isLoading, setLoading] = useState<boolean>(true);
-  const [isPlaying, setPlaying] = useState<boolean>(false);
 
   useEffect(() => {
     if (!id || !socket) return;
-    socket.on('game_update', (updatedGame: GameState) => {
-      console.log({
-        updatedGame
-      })
-      updateGame({
-        ...updatedGame,
-      })
-    });
+    socket.on('game_update', (updatedGame: GameState) => updateGame(updatedGame));
 
     return () => {
       socket.off("game_update");
     };
   }, [id, socket]);
 
+  const playCard = (card: Card) => {
+    if(!socket) return;
+    socket.emit("play_card", { card });
+  }
+
   const handlePickCards = (cards: Card[]) => {
-    socket?.emit("pick_hand", { cards });
+    if(!socket) return;
+    socket.emit("pick_hand", { cards });
   };
 
-  const retrieveCard = (card: Card) => {
-    socket?.emit("retrieve_card", { card })
+  const retrieveCard = () => {
+    if(!socket) return;
+    socket.emit("retrieve_card")
   };
 
   const endTurn = () => {
-    socket?.emit("end_turn");
+    if(!socket) return;
+    socket.emit("end_turn");
   };
 
   const drawTable = () => {
-    socket?.emit("draw_table");
+    if(!socket) return;
+    socket.emit("draw_table");
   };
 
-  const gameTable = game?.cards;
   return (
     <GameContext.Provider
       value={{
+        game,
         player,
         rotatedPlayers,
-        handCards: player?.hand || [],
-        tableCards: player?.table || [],
-        bunchCards: gameTable?.cards || [],
-        isLoading,
-        isPlaying,
-        turn,
+        bunchCards: game?.bunch || [],
         endTurn,
         drawTable,
         retrieveCard,
         handlePickCards,
+        playCard
       }}
     >
       {children}

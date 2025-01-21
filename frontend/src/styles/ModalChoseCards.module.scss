@@ -1,0 +1,15 @@
+.ModalChoseCards {
+  // "flex flex-col justify-between h-full items-center"
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  align-items: center;
+
+  .notChosenCards {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    gap: $spacing-s
+  }
+}

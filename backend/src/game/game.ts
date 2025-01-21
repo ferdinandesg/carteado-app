@@ -34,40 +34,42 @@ export default class GameClass {
   }
 
   playerExists(userId: string) {
-    const foundPlayer = this.players.find((x) => x.id === userId);
+    const foundPlayer = this.players.find((x) => x.userId === userId);
     if (!foundPlayer) return false;
     return foundPlayer;
   }
 
-  givePlayerCards(userId: string) {
+  givePlayerCards(userId: string): Card[] {
     const foundPlayer = this.playerExists(userId);
     if (!foundPlayer) return;
-    foundPlayer.table = this.cards.giveTableCards() as Card[];
-    return foundPlayer.table || [];
+    const hand = this.cards.giveTableCards()
+    foundPlayer.table = []
+    foundPlayer.hand = hand as Card[]
+    return hand as Card[]
   }
 
-  canPlayCard(card: Card, userId: string): boolean {
+  canPlayCard(card: Card, userId: string): GamePlayer {
     const foundPlayer = this.playerExists(userId);
-    if (!foundPlayer) return false;
+    if (!foundPlayer) throw "Jogador não encontrado!";
+    if (!this.players.every(p => p.status === "playing")) throw "Ainda não é possível jogar!";
     const lastThree = this.bunch.slice(-3);
     if (
       lastThree.length === 3 &&
       lastThree.every((x) => x.rank === card.rank)
     ) {
-      return true;
+      return foundPlayer;
     }
-    if (foundPlayer.userId !== this.playerTurn) return false;
-    return true
+    if (foundPlayer.userId !== this.playerTurn) throw "Ainda não é sua vez!";
+    return foundPlayer
   }
 
   playCard(card: Card, userId: string) {
     try {
-      const foundPlayer = this.playerExists(userId);
-      if (!foundPlayer || !this.canPlayCard(card, userId)) return;
+      const foundPlayer = this.canPlayCard(card, userId)
       const result = this.applyRules(card, foundPlayer);
       return result;
     } catch (error) {
-      throw error;
+      return { error: true, message: error };
     }
   }
 
@@ -80,10 +82,10 @@ export default class GameClass {
       const [lastCard] = this.bunch.slice(-1);
       if (this.isSpecialCard(card)) {
 
-      } else if (!this.isSpecialCard(lastCard)) {
-        if (lastCard && lastCard.value! > card.value)
+      } else if (lastCard) {
+        if (lastCard.value! > card.value)
           throw "Você está jogando uma carta mais baixa que a da mesa";
-        if (player.playedCards.length > 0 && lastCard?.rank !== card.rank) {
+        if (lastCard?.rank !== card.rank && player.playedCards.length > 0) {
           throw "Sua carta é diferente da anterior!";
         }
       }
@@ -92,9 +94,9 @@ export default class GameClass {
       player.hand = player.hand.filter((x) => x.toString !== card.toString);
       player.playedCards.push(card);
       if (player.hand.length === 0) this.status = "finished";
-      return { error: false, player, bunch: this.bunch };
+      return { error: false, message: "Carta jogada com sucesso!" };
     } catch (error) {
-      throw { error: true, message: error };
+      return { error: true, message: error };
     }
   }
 
@@ -175,18 +177,15 @@ export default class GameClass {
     }
   }
 
-  retrieveCard(card: Card, userId: string) {
+  retrieveCard(userId: string) {
     try {
       if (userId !== this.playerTurn) throw "Ainda não é sua vez!";
       const foundPlayer = this.playerExists(userId);
       if (!foundPlayer) return
-      if (!foundPlayer.playedCards.some((x) => x.toString === card.toString))
-        throw "Parece que você não jogou esta carta!";
-      foundPlayer.playedCards = foundPlayer.playedCards.filter(
-        (x) => x.toString !== card.toString
-      );
-      (foundPlayer.hand as Card[]).push(card);
-      this.bunch = this.bunch.filter((x) => x.toString !== card.toString);
+      if (!foundPlayer.playedCards.length) throw "Você não jogou nenhuma carta!";
+      foundPlayer.hand.push(...foundPlayer.playedCards);
+      this.bunch = this.bunch.filter((x) => foundPlayer.playedCards.every((y) => y.toString !== x.toString));
+      foundPlayer.playedCards = []
       return { error: false, player: foundPlayer, bunch: this.bunch };
     } catch (error) {
       throw { error: true, message: error };
@@ -196,12 +195,13 @@ export default class GameClass {
   pickHand(userId: string, cards: Card[]) {
     const foundPlayer = this.playerExists(userId);
     if (!foundPlayer) return
-    (foundPlayer.hand as Card[]) = cards;
-    foundPlayer.table = foundPlayer.table.filter(c => !cards.some((y) => c.toString === y.toString));
+    foundPlayer.table = foundPlayer.hand.filter(c => !cards.some((y) => c.toString === y.toString));
+    foundPlayer.hand = cards;
+    foundPlayer.status = "playing";
     return {
       player: foundPlayer,
       turn: this.playerTurn,
-      isFinished: this.players.every((x) => x.hand.length),
+      isFinished: this.players.every((x) => x.table.length),
     };
   }
 
