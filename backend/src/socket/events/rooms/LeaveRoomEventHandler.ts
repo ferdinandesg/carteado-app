@@ -1,5 +1,4 @@
 import { SocketContext } from "../../../@types/socket";
-import prisma from "../../../prisma";
 
 export async function LeaveRoomEventHandler(
   context: SocketContext

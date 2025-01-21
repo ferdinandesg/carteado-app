@@ -10,6 +10,7 @@ declare module "socket.io" {
       image: string;
       rank: number;
       room?: string;
+      status?: string;
     };
   }
 }
@@ -19,6 +20,7 @@ export interface SocketContext {
   payload?: {
     error?: string;
     roomId?: string;
+    status?: string;
     message?: string;
     card?: Card;
     cards?: Card[];

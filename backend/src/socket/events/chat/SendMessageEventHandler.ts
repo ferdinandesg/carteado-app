@@ -2,6 +2,7 @@ import { Chat, Message } from "@prisma/client";
 import { SocketContext } from "../../../@types/socket";
 import prisma from "../../../prisma";
 import { saveMessages } from "../../../redis/chat";
+import emitToRoom from "src/socket/utils/emitToRoom";
 
 const addMessage = async (roomId: string, message: Message): Promise<Chat> => {
   const room = await prisma.room.findFirst({
@@ -21,16 +22,17 @@ export async function SendMessageEventHandler(
 ): Promise<void> {
   try {
     const { payload, socket, channel } = context;
-    const roomId = socket.user.room;
+    const roomHash = payload.roomId;
     const messageDoc = {
       message: payload.message,
       name: socket.user.name,
       createdAt: new Date(),
     };
-    const chat = await addMessage(roomId, messageDoc);
-    await saveMessages(roomId, chat.messages);
-    channel.to(roomId).emit("receive_message", messageDoc);
-    console.log(`Emitted to: ${roomId} - ${messageDoc.message}`);
+    const chat = await addMessage(roomHash, messageDoc);
+    await saveMessages(roomHash, chat.messages);
+
+    emitToRoom(channel, roomHash, "receive_message", messageDoc);
+    console.log(`Emitted to: ${roomHash} - ${messageDoc.message}`);
   } catch (error) {
     console.error(error);
   }

@@ -10,6 +10,7 @@ import { JoinChatEventHandler } from "./chat/JoinChatEventHandler";
 import { SendMessageEventHandler } from "./chat/SendMessageEventHandler";
 import { EndTurnEventHandler } from "./EndTurnEventHandler";
 import { DisconnectingEventHandler } from "./DisconnectingEventHandler";
+import { SetPlayerStatusEventHandler } from "./rooms/SetPlayerReadyEventHandler";
 
 export async function ConnectionEventHandler(
   socket: Socket,
@@ -32,6 +33,10 @@ export async function ConnectionEventHandler(
   );
   socket.on(CHANNEL.CLIENT.START_GAME, (payload) =>
     StartGameEventHandler({ ...context, payload })
+  );
+
+  socket.on(CHANNEL.CLIENT.SET_PLAYER_STATUS, (payload) =>
+    SetPlayerStatusEventHandler({ ...context, payload })
   );
 
   //CARD EVENTS

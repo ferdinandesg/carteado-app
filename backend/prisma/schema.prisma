@@ -13,11 +13,11 @@ datasource db {
 model User {
   id     String   @id @default(auto()) @map("_id") @db.ObjectId
   name   String
-  image  String   @unique
+  image  String
   email  String
   Player Player[]
   rank   Int
-  Room   Room[]
+  rooms  Room[]   @relation("owner")
 }
 
 model Player {
@@ -30,23 +30,41 @@ model Player {
   roomId   String?  @db.ObjectId
   status   String?
   isOnline Boolean?
+  game     Game?    @relation(fields: [gameId], references: [id])
+  gameId   String?  @db.ObjectId
 }
 
 model Room {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  hash      String
+  name      String
+  status    String?  @default("open")
+  password  String?
+  size      Int
+  players   Player[]
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  chatId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+  owner     User     @relation("owner", fields: [ownerId], references: [id])
+  ownerId   String   @db.ObjectId
+  game      Game?
+  gameId    String?  @db.ObjectId
+}
+
+model Game {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  hash       String
-  name       String
-  status     String
-  password   String?
-  size       Int
-  players    Player[]
   bunch      Card[]
-  chat       Chat     @relation(fields: [chatId], references: [id])
-  chatId     String   @db.ObjectId
-  createdAt  DateTime @default(now())
-  playerTurn String?
-  owner      User     @relation(fields: [ownerId], references: [id])
-  ownerId    String   @db.ObjectId
+  players    Player[]
+  status     String
+  room       Room     @relation(fields: [roomId], references: [id])
+  roomId     String   @unique @db.ObjectId
+  playerTurn String   @db.ObjectId
+  cards      CardData
+}
+
+type CardData {
+  cards              Card[]
+  numbertOfFullDecks Int
 }
 
 model Chat {

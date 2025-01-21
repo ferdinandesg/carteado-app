@@ -1,0 +1,56 @@
+.message {
+  display: flex;
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+    word-break: break-all;
+
+    .background {
+      padding: $spacing-s;
+      border-radius: $spacing-xs;
+      color: #1f2937;
+    }
+
+    .fromName {
+      font-size: 0.8rem;
+      color: #d1d5db;
+    }
+  }
+
+  &.own {
+    flex-direction: row-reverse;
+
+    .content {
+      .background {
+        background-color: white;
+      }
+    }
+  }
+
+  &.system {
+    margin: 0 auto;
+
+    .content {
+      max-width: 100%;
+
+      .background {
+        background-color: transparent;
+        color: white;
+        font-size: 0.95rem;
+      }
+    }
+  }
+
+  &.other {
+    flex-direction: row;
+
+    .content {
+      .background {
+        background-color: #9ca3af;
+      }
+    }
+  }
+
+}

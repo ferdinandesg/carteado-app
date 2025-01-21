@@ -12,5 +12,6 @@ export const CHANNEL = {
     PICK_HAND: "pick_hand",
     DRAW_TABLE: "draw_table",
     LEAVE_ROOM: "leave_room",
+    SET_PLAYER_STATUS: "set_player_status",
   },
 };

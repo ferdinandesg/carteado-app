@@ -11,8 +11,27 @@ declare module "next-auth" {
       id?: string;
       email: string;
       name: string;
-      image: string;
+      image?: string;
       token?: JWT | undefined
-    };
+    }
+  }
+
+  interface User {
+    id: string;
+    role: string;
   }
 }
+declare module "next-auth/jwt" {
+  interface JWT extends DefaultJWT {
+    /** The user's postal address. */
+    id?: string;
+    email: string;
+    name: string;
+    sub: string;
+    iat: string;
+    picture: string;
+    jti: string;
+  }
+
+}
+

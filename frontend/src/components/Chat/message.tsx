@@ -1,33 +1,35 @@
 import { useSession } from "next-auth/react";
 import { twMerge } from "tailwind-merge";
 
+import styles from "@styles/Message.module.scss";
+import classNames from "classnames";
+
 type MessageType = {
   message: string;
-  name: string;
+  name: string | "system";
 };
 
 export default function Message({ message, name }: MessageType) {
   const { data } = useSession();
+  const isMessageFromSystem = name === "system";
+  const isMessageFromSameUser = data?.user?.name === name;
+  const isMessageFromDifferentUser = data?.user?.name !== name && !isMessageFromSystem;
 
   return <div
     key={`message-${message}`}
-    className={twMerge(
-      "flex",
-      data?.user?.name === name ? "flex-row-reverse" : "flex-row"
+    className={classNames(styles.message,
+      isMessageFromSameUser && styles.own,
+      isMessageFromSystem && styles.system,
+      isMessageFromDifferentUser && styles.other,
     )}
   >
-    <div className="flex flex-col">
+    <div className={styles.content}>
       <span
-        className={twMerge(
-          "p-2 rounded text-sm text-gray-800",
-          data?.user?.name === name
-            ? "bg-white"
-            : "bg-gray-400 text-gray-800 "
-        )}
+        className={styles.background}
       >
         {message}
       </span>
-      <span className="text-xs text-gray-300">{name}</span>
+      {!isMessageFromSystem && <span className={styles.fromName}>{name}</span>}
     </div>
-  </div>
+  </div >
 }

@@ -26,6 +26,7 @@
       "@hooks/*": ["./src/hooks/*"],
       "@contexts/*": ["./src/contexts/*"],
       "@models/*": ["./src/contexts/*"],
+      "@styles/*": ["./src/styles/*"],
     }
   },
   "include": [

@@ -1,31 +1,45 @@
+import { useState } from "react";
 import { useSocket } from "@/contexts/socket.context";
 import Players from "../Players";
-import { useRoomContext } from "@/contexts/room.context";
-import Chat from "../Chat";
+import classNames from "classnames"
+import useRoomByHash from "@/hooks/rooms/useRoomByHash";
+import { useParams } from "next/navigation";
+
+import styles from "@styles/Lobby.module.scss";
 
 export default function Lobby() {
   const { socket } = useSocket();
-  const { roomId } = useRoomContext();
+  const [isPlayerReady, setIsPlayerReady] = useState<boolean>(false);
+  const { id } = useParams();
+  const roomId = String(id)
+  const { room } = useRoomByHash(String(id))
 
-  const setReady = () => {
-    socket!.emit("player_ready", { roomId });
-  }
-  const handleStartGame = () => {
-    // socket!.emit("player_ready", { roomId });
-    socket!.emit("start_game", { roomId });
+  const handleReadyClick = () => {
+    if (!socket || !room) return;
+    const newStatus = !isPlayerReady ? "READY" : "NOT_READY";
+    setIsPlayerReady((prev) => !prev);
+    socket.emit("set_player_status", { status: newStatus });
   };
 
-  return <div className="flex flex-col p-2">
-    <span className="text-center mb-2 text-white animate-bounce font-semibold text-sm">
-      Esperando jogadores...
+  const handleStartGame = () => {
+    if (!socket) return;
+    socket.emit("start_game", { roomId });
+  };
+
+  return <div className={styles.LobbyContainer}>
+    <span className={classNames("animate-bounce", styles.waiting)}>
+      Esperando jogadores
     </span>
-    <button className="p-2 bg-green-600 text-white font-semibold">
-      Set ready
+    <button className={classNames(
+      styles.statusButton,
+      isPlayerReady ? styles.ready : styles.notReady,
+    )} onClick={handleReadyClick}>
+      Estou pronto
     </button>
     <button className="p-2 bg-green-600 text-white font-semibold" onClick={handleStartGame}>
       Start Game
     </button>
-    <Players />
+    <Players roomId={roomId} />
 
   </div >
 }

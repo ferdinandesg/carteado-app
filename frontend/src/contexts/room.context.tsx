@@ -1,35 +1,45 @@
 import { useContext, createContext, ReactNode, useState, useEffect } from "react";
 import { useSocket } from "./socket.context";
-import { useSession } from "next-auth/react";
-import { RoomStatus } from "@/models/room";
-import usePlayers from "../hooks/usePlayers";
-import { Player } from "@/models/Users";
+import { RoomInterface, RoomStatus } from "@/models/room";
 import { useParams } from "next/navigation";
+import useRoomByHash, { RoomPlayer } from "@/hooks/rooms/useRoomByHash";
+
+type UpdateRoomType = {
+  room: RoomInterface;
+  players: RoomPlayer[];
+}
 
 type RoomContextProps = {
   name: string;
-  roomId: string;
   status: RoomStatus;
-  players: Player[];
 }
 const RoomContext = createContext<RoomContextProps | null>(null);
 
 export function RoomProvider({ children }: { children: ReactNode }) {
   const { id } = useParams();
   const { socket } = useSocket();
-  const { players, setPlayers, refreshPlayer } = usePlayers();
   const [name] = useState<string>("")
   const [status, setStatus] = useState<RoomStatus>("open");
+  const { updateRoom } = useRoomByHash(id as string);
 
- 
 
+  useEffect(() => {
+    if (!id || !socket) return;
+    socket.on('room_update', (updatedRoom: UpdateRoomType) => {
+      updateRoom({
+        ...updatedRoom.room,
+        players: updatedRoom.players,
+      })
+    });
 
+    return () => {
+      socket.off("room_update");
+    };
+  }, [id, socket]);
   return (
     <RoomContext.Provider value={{
       name,
-      status,
-      roomId: id as string,
-      players
+      status
     }}>
       {children}
     </RoomContext.Provider>

@@ -13,4 +13,10 @@ export type Player = UserSession & {
   table: Card[];
   isOnline?: boolean;
   status?: "chosing" | "playing";
+  userId: string;
+};
+
+
+export type PopulatedPlayer = Player & {
+  user: UserSession;
 };

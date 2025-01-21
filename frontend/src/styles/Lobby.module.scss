@@ -1,0 +1,40 @@
+.LobbyContainer {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
+  width: 50%;
+  margin: 0 auto;
+  align-items: center;
+
+  .waiting {
+    text-align: center;
+    margin: $spacing-m 0;
+    color: white;
+  }
+
+  .statusButton {
+    text-align: center;
+    border-radius: 6px;
+    width: 50%;
+    padding: $spacing-s;
+
+    &.notReady {
+      background-color: white;
+      color: darken(#32CD32, 20);
+
+      &:hover {
+        background-color: lighten($color: #32CD32, $amount: 30);
+      }
+    }
+
+    &.ready {
+      background-color: #32CD32;
+      color: white;
+
+      &:hover {
+        background-color: lighten($color: #32CD32, $amount: 10);
+      }
+    }
+
+  }
+}

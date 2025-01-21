@@ -1,0 +1,17 @@
+@use 'variables' as *;
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.spacing-s {
+  margin: $spacing-s;
+}
+
+.spacing-m {
+  margin: $spacing-m;
+}
+
+.spacing-l {
+  margin: $spacing-l;
+}

@@ -4,6 +4,7 @@ const axiosInstance = axios.create({
   baseURL: `${process.env.API_URL}/api`,
   headers: {
     'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache'
   }
 });
 

@@ -1,6 +1,6 @@
 'use client'
 import { SocketProvider } from "@/contexts/socket.context";
-import "./globals.scss";
+import "../styles/globals.scss";
 import { SessionProvider } from "next-auth/react";
 import { Inter } from "next/font/google";
 import { ModalProvider } from "@/components/Modal/ModalContext";

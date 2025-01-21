@@ -11,19 +11,12 @@ export async function createRoom(room: Partial<Room>, userId: string): Promise<R
     const createdRoom = await prisma.room.create({
       data: {
         hash,
-        name: hash,
+        name: room.name,
         chatId: chat.id,
-        status: "open",
         size: room.size,
-        ownerId: userId,
+        ownerId: userId
       },
     });
-    await prisma.player.create({
-      data: { userId, roomId: createdRoom.id },
-    });
-    console.log({
-      createdRoom
-    })
     await saveRoomState(hash, createdRoom);
     return createdRoom;
   } catch (error) {
@@ -48,7 +41,6 @@ export async function listRooms() {
 export async function getRoom(hash: string) {
   try {
     const roomCache = await getRoomState(hash)
-
     if (roomCache) {
       return roomCache
     }
@@ -56,7 +48,7 @@ export async function getRoom(hash: string) {
       where: { hash },
       include: { players: { include: { user: true } } },
     });
-  
+
     if (!room) throw "Sala não encontrada";
     return room;
   } catch (error) {

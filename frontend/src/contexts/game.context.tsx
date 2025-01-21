@@ -4,6 +4,7 @@ import {
   ReactNode,
   createContext,
   useContext,
+  useEffect,
   useState,
 } from "react";
 import { useSocket } from "./socket.context";
@@ -11,6 +12,7 @@ import { useSession } from "next-auth/react";
 import useGameState from "@/hooks/useGameState";
 import { useParams } from "next/navigation";
 import { Player } from "@/models/Users";
+import { GameState } from "@/@types/game";
 
 interface GameContextProps {
   isPlaying: boolean;
@@ -23,7 +25,8 @@ interface GameContextProps {
   endTurn: () => void;
   drawTable: () => void;
   handlePickCards: (cards: Card[]) => void;
-  player?: Player
+  player?: Player,
+  rotatedPlayers: Player[]
 }
 
 const GameContext = createContext<GameContextProps | null>(null);
@@ -31,14 +34,39 @@ const GameContext = createContext<GameContextProps | null>(null);
 export function GameProvider({ children }: { children: ReactNode }) {
   const { id } = useParams();
   const { data } = useSession();
-  const { game } = useGameState(String(id));
+  const { game, updateGame } = useGameState(String(id));
 
-  const player = game?.players.find((p) => p.email === data?.user?.email);
-
+  const players = game?.players || [];
+  const player = players.find((p) => p.userId === data?.user.id);
+  const currentPlayerIndex = game?.players.findIndex((p) => p.userId === data?.user.id);
+  const rotatedPlayers = [
+    ...players.slice(currentPlayerIndex),
+    ...players.slice(0, currentPlayerIndex),
+  ];
+  console.log({
+    game,
+    data
+  })
   const { socket } = useSocket();
   const [turn, setTurn] = useState<string>();
   const [isLoading, setLoading] = useState<boolean>(true);
-  const [isPlaying, setPlaying] = useState<boolean>(false); 
+  const [isPlaying, setPlaying] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!id || !socket) return;
+    socket.on('game_update', (updatedGame: GameState) => {
+      console.log({
+        updatedGame
+      })
+      updateGame({
+        ...updatedGame,
+      })
+    });
+
+    return () => {
+      socket.off("game_update");
+    };
+  }, [id, socket]);
 
   const handlePickCards = (cards: Card[]) => {
     socket?.emit("pick_hand", { cards });
@@ -61,6 +89,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     <GameContext.Provider
       value={{
         player,
+        rotatedPlayers,
         handCards: player?.hand || [],
         tableCards: player?.table || [],
         bunchCards: gameTable?.cards || [],

@@ -7,7 +7,7 @@ import GoogleProvider from "next-auth/providers/google";
 const validateUser = async (payload: UserSession) => {
   try {
     const response = await axiosInstance.post("/auth", payload);
-    const user = await response.data();
+    const user = await response.data;
     return user;
   } catch (error) {
     throw error;
@@ -23,10 +23,24 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
+    async jwt({ token, user, account }) {
+      if (account && user) {
+        try {
+          const validatedUser = await validateUser(user as UserSession);
+          token.id = validatedUser.id;
+          token.name = validatedUser.name;
+          token.email = validatedUser.email;
+          token.role = validatedUser.role;
+        } catch (error) {
+          console.error("Erro na validação do usuário:", error);
+        }
+      }
+      return token;
+    },
     async session({ session, token }) {
       try {
-        const user = await validateUser(session.user);
-        session.user = user;
+        session.user = session.user
+        session.user.id = token.id
         session.user.token = token
         return session; // The return type will match the one returned in `useSession()`
       } catch (error) {
@@ -37,7 +51,9 @@ const handler = NextAuth({
     redirect() {
       return "/menu";
     },
+
   },
+
   theme: { colorScheme: "dark" },
 });
 

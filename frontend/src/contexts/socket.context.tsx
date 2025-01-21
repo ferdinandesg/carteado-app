@@ -27,7 +27,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     if (status === "loading") return;
     if (status === "unauthenticated") return router.push("/");
     axiosInstance.interceptors.request.use((config) => {
-      config.headers.Authorization = data?.user.id || data?.user.email;
+      config.headers.Authorization = data?.user.id;
       return config;
     });
     const instance = io(`${process.env.API_URL}/room`, {

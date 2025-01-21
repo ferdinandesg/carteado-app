@@ -1,0 +1,64 @@
+.table {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 5px solid #2e2e2e;
+  background: radial-gradient(circle, #444, #222);
+}
+
+.player {
+  position: absolute;
+  width: 100px;
+  height: 120px;
+  text-align: center;
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+  }
+
+  .name {
+    color: #fff;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+}
+
+/* 1 jogador */
+.bottom-center {
+  bottom: 10%;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+/* 2 jogadores */
+.top-center {
+  top: 10%;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+/* 3 jogadores */
+.top-left {
+  top: 20%;
+  left: 15%;
+}
+
+.top-right {
+  top: 20%;
+  right: 15%;
+}
+
+/* 4 jogadores */
+.bottom-left {
+  bottom: 10%;
+  left: 15%;
+}
+
+.bottom-right {
+  bottom: 10%;
+  right: 15%;
+}

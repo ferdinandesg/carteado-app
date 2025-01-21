@@ -1,74 +1,76 @@
+import { Card } from "@prisma/client";
 import { SocketContext } from "../../../@types/socket";
 import GameClass from "../../../game/game";
 import prisma from "../../../prisma";
 import { saveGameState } from "../../../redis/game";
 import { getRoomState, saveRoomState } from "../../../redis/room";
+import getRoomPlayers from "src/socket/utils/getRoomPlayers";
+import emitToRoom from "src/socket/utils/emitToRoom";
 
 export async function StartGameEventHandler(
   context: SocketContext
 ): Promise<void> {
   const { socket, channel } = context;
-  const roomId = socket.user.room;
+  const roomHash = socket.user.room;
   try {
-    const room = await getRoomState(roomId);
+    const room = await getRoomState(roomHash);
+    const roomId = room.id
+    if (!room) throw "Sala não encontrada!"
+    if (room.status !== "open") throw "A sala já está em jogo!"
+    if (socket.user.id !== room.ownerId) throw "Apenas o dono da sala pode iniciar a partida!"
 
-    if (!room) {
-      channel.to(roomId).emit("error", "Sala não encontrada!");
-      return;
-    }
+    const users = getRoomPlayers(room.hash, channel);
+    const isAllUsersReady = users.every(user => user.status === "READY");
+    if (!isAllUsersReady) throw "Nem todos os jogadores estão prontos!"
 
-    if (socket.user.id !== room.ownerId) {
-      channel.to(roomId).emit("error", "Apenas o dono da sala pode iniciar a partida!");
-      return
-    }
+    await prisma.player.createMany({
+      data: users.map((user) => ({
+        roomId,
+        status: "chosing",
+        userId: user.id,
+      }))
+    })
+    const players = await prisma.player.findMany({
+      where: { roomId: room.id },
+      include: { user: true }
+    })
 
-    const users = [];
+    if (channel.adapter.rooms.get(roomId)?.size < room.size) throw "Faltam jogadores na sala!"
 
-    for (const socketId of channel.adapter.rooms.get(roomId)) {
-      const socket = channel.sockets.get(socketId);
-      if (socket && socket.user) {
-        users.push(socket.user);
-      }
-    }
-
-    if (channel.adapter.rooms.get(roomId)?.size < 1) {
-      channel.to(roomId).emit("error", "Falta membros!");
-      return;
-    }
-    channel.emit("info", "Iniciando partida");
+    emitToRoom(channel, room.hash, "info", "Iniciando partida");
 
     await prisma.room.updateMany({
       where: { hash: roomId, status: "open" },
       data: { status: "playing" },
     });
-    await saveRoomState(roomId, {
-      ...room,
-      status: "playing",
-    });
-    room.players = users
 
+    room.players = players;
     const game = new GameClass(room.players);
     game.status = "playing";
     game.players.forEach(p => {
       p.status = "chosing";
       p.hand = game.givePlayerCards(p.id);
+      p.name = p.user.name;
+      p.image = p.user.image;
+      p.email = p.user.email;
     });
-
-    await saveGameState(roomId, game);
     
-    game.players.forEach((player) => {
-      channel.to(player.id).emit('give_cards', player.hand);
+    await saveGameState(room.hash, game);
+
+    const newRoom =  {
+      ...room,
+      status: "playing"
+    }
+    await saveRoomState(room.hash, newRoom);
+
+    emitToRoom(channel, room.hash, "game_update", game);
+    emitToRoom(channel, room.hash, "room_update", {
+      room: newRoom,
+      players: game.players,
     });
 
-    channel.to(roomId).emit("start_game", {
-      message: 'O jogo começou!',
-      players: game.players.map(p =>
-        ({ id: p.id, name: (p as any).name, cardCount: p.hand.length })
-      ),
-      currentTurn: game.playerTurn,
-      cardsOnTable: game.cards
-    });
   } catch (er) {
+    channel.emit("error", JSON.stringify({ message: er }));
     console.error(er);
     throw er
   }

@@ -1,3 +1,5 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   env: {
@@ -10,9 +12,11 @@ const nextConfig = {
   images: {
     domains: ["lh3.googleusercontent.com"],
   },
-  reactStrictMode: true,
+  reactStrictMode: false,
   sassOptions: {
     implementation: 'sass-embedded',
+    includePaths: [path.join(__dirname, 'styles')],
+    prependData: `@use 'variables' as *;`
   },
 };
 

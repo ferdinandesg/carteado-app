@@ -1,0 +1,59 @@
+.UserCard {
+  display: flex;
+  width: 100%;
+  padding: $spacing-s;
+  border-radius: $spacing-s;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  align-items: center;
+  gap: $spacing-s;
+  height: 100%;
+
+  .avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f3f3f3;
+    transition: all 0.3s ease;
+    &.ready {
+      border: 6px solid lightgreen;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+
+    }
+
+    &.notReady {
+      border: 6px solid gray;
+
+    }
+
+    img {
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .placeholderAvatar {
+      font-size: 32px;
+      color: #888;
+    }
+  }
+
+  .description {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    .title {
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+
+    .email {
+      font-size: 0.875rem;
+      color: lightgray;
+    }
+  }
+
+}

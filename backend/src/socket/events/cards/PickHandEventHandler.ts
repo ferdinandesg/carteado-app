@@ -1,3 +1,4 @@
+import emitToRoom from "src/socket/utils/emitToRoom";
 import { SocketContext } from "../../../@types/socket";
 import { getGameState, saveGameState } from "../../../redis/game";
 
@@ -6,14 +7,12 @@ export async function PickHandEventHandler(
 ): Promise<void> {
   const { payload, socket, channel } = context;
   const { cards } = payload;
-  const roomId = socket.user.room;
-  const game = await getGameState(roomId)
+  const roomHash = socket.user.room;
+  const game = await getGameState(roomHash)
   const result = game.pickHand(socket.user.id, cards);
-  channel
-    .to(roomId)
-    .emit("selected_hand", JSON.stringify({ player: result.player }));
-  if (result.isFinished) channel.to(roomId).emit("all_chosed");
+  if (result.isFinished) channel.to(roomHash).emit("all_chosed");
   game.status = "playing";
-  socket.broadcast.to(roomId).emit("game_update", game);
-  await saveGameState(roomId, game);
+  emitToRoom(channel, roomHash, "game_update", game);
+
+  await saveGameState(roomHash, game);
 }

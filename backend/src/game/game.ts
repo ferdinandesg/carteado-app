@@ -1,8 +1,17 @@
-import { Player, Card } from "@prisma/client";
+import { Card, Prisma } from "@prisma/client";
 import Deck from "./cards";
 
-interface GamePlayer extends Player {
-  playedCards: Card[];
+export type PopulatedPlayer = Prisma.PlayerGetPayload<{
+  include: {
+    user: true
+  }
+}>
+
+interface GamePlayer extends PopulatedPlayer {
+  playedCards?: Card[];
+  name?: string;
+  image?: string
+  email?: string;
 }
 
 export default class GameClass {
@@ -12,7 +21,7 @@ export default class GameClass {
   players: GamePlayer[] = [];
   status: "open" | "playing" | "finished" = "open";
 
-  constructor(players: Player[]) {
+  constructor(players: PopulatedPlayer[]) {
     const gamePlayers: GamePlayer[] = players?.map((x) => ({
       ...x,
       playedCards: [],

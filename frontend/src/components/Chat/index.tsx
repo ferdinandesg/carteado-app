@@ -1,7 +1,13 @@
 "use client";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useSocket } from "@/contexts/socket.context";
 import Message from "./message";
+
+import styles from "@styles/Chat.module.scss";
+import { Mic } from "lucide-react";
+import classNames from "classnames";
+import useRoomByHash from "@/hooks/rooms/useRoomByHash";
+import Header from "./header";
 
 type MessageType = {
   message: string;
@@ -9,62 +15,100 @@ type MessageType = {
 };
 interface ChatProps {
   roomId: string;
+  isOpen?: boolean
 }
 export default function Chat({ roomId }: ChatProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const divRef = useRef<HTMLDivElement | null>(null);
+  const chatRef = useRef<HTMLDivElement | null>(null);
+
   const { socket } = useSocket();
-  const [messages, setMessages] = useState<MessageType[]>([]);
+  const [localMessages, setMessages] = useState<MessageType[]>([]);
+  const [useAutoScroll, setUseAutoScroll] = useState<boolean>(true);
   const [isLoading, setLoading] = useState<boolean>(true);
+  const [unreadMessages, setUnreadMessages] = useState<number>(0);
+
+  const updateMessages = (messages: MessageType | MessageType[]) => {
+    console.log("Updating messages", messages)
+    setMessages(m => [...m, ...(Array.isArray(messages) ? messages : [messages])]);
+    if (chatRef.current && document.activeElement !== chatRef.current) {
+      setUnreadMessages(un => un + (Array.isArray(messages) ? messages.length : 1));
+    }
+  }
 
   useEffect(() => {
     if (!socket) return;
-    socket?.emit("join_chat", { roomId });
-    socket?.on("receive_message", (message) =>
-      setMessages((m) => [...m, message])
-    );
-    socket?.on("load_messages", (payload) => {
-      setMessages(payload);
-      setLoading(false);
+    console.log("Joining chat", roomId)
+    const events = {
+      join_chat: (message: MessageType) => updateMessages(message),
+      receive_message: (message: MessageType) => updateMessages(message),
+      load_messages: (payload: MessageType[]) => {
+        updateMessages(payload)
+        setLoading(false);
+      },
+    };
+    socket.emit("join_chat", { roomId });
+    Object.entries(events).forEach(([event, handler]) => {
+      socket.on(event, handler);
     });
+
     return () => {
-      socket.off("receive_message");
-      socket.off("load_messages");
+      console.log("Leaving chat", roomId)
+      Object.keys(events).forEach((event) => {
+        socket.off(event);
+      });
     };
   }, [socket]);
+
   useEffect(() => {
+    if (!useAutoScroll) return
     divRef.current!.scroll({
       behavior: "smooth",
       top: divRef.current!.scrollHeight,
     });
-  }, [messages]);
+  }, [localMessages, useAutoScroll]);
 
   const sendMessage = (e: FormEvent) => {
+    if (!socket) return
     e.preventDefault();
     const message = inputRef.current?.value;
-    socket?.emit("send_message", { roomId, message });
+    if (!message) return
+    socket.emit("send_message", { roomId, message });
     inputRef.current!.value = "";
   };
+
+  const setReadMessages = () => {
+    setUnreadMessages(0);
+  }
+
+
   return (
-    <div className="flex flex-col justify-between">
+    <div className={styles.Chat} ref={chatRef} onFocus={setReadMessages}>
+      <Header roomId={roomId} messageCount={unreadMessages} />
       <div
         ref={divRef}
-        className="flex flex-col gap-4 overflow-y-auto h-60 p-2"
+        className={styles.messagesContainer}
       >
         {isLoading && <span className="text-white">Loading...</span>}
-        {!isLoading && messages?.map((m, i) => <Message key={`message-${i}`} {...m} />)}
-
+        {!isLoading && localMessages?.map((m, i) => <Message key={`message-${i}`} {...m} />)}
       </div>
-      <form className="flex">
-        <input ref={inputRef} className="p-2 border mt-2 w-full" type="text" />
+      <form className={styles.messageForm}>
+        <div className={styles.messageBox}>
+          <Mic size={48} className={
+            classNames(
+              styles.microphone,
+              useAutoScroll && styles.active
+            )}
+            onClick={() => setUseAutoScroll(!useAutoScroll)} />
+          <input ref={inputRef} type="text" />
+        </div>
         <button
-          className="p-2 bg-gray-300 text-sm"
           placeholder="Digite sua mensagem..."
           onClick={(e) => sendMessage(e)}
         >
           Enviar
         </button>
       </form>
-    </div>
+    </div >
   );
 }

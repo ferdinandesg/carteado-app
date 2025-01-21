@@ -1,27 +1,37 @@
 import Image from "next/image";
-import { useSession } from "next-auth/react";
+
+import styles from "@styles/UserCard.module.scss";
+import { User } from "lucide-react";
+import classNames from "classnames";
+
 type UserCardProps = {
   user: {
     id?: string;
     email: string;
     name: string;
     image: string;
+    status?: "READY" | "NOT_READY";
   };
 }
 export default function UserCard({ user }: UserCardProps) {
-  // const { data, status } = useSession();
-  // const user = data?.user;
+  const isUserReady = user.status === "READY";
 
   return (
-    <div className="flex w-1/2 p-2 rounded">
-      <div className="">
-        {user?.image &&
-          <Image alt="user.name" src={user.image} width={90} height={90} />
+    <div className={styles.UserCard}>
+      <div className={classNames(styles.avatar,
+        isUserReady ? styles.ready : styles.notReady
+      )}>
+        {
+          user?.image
+            ? <Image alt="user.name" src={user.image} width={42} height={42} />
+            : <div className={styles.placeholderAvatar}>
+              <User size={42} />
+            </div>
         }
       </div>
-      <div className="flex flex-col ml-2">
-        <span className="text-gray-300 font-semibold text-sm">{user?.name}</span>
-        <span className="text-gray-300 text-sm">{user?.email}</span>
+      <div className={styles.description}>
+        <span className={styles.title}>{user?.name}</span>
+        <span className={styles.email}>{user?.email}</span>
       </div>
     </div>
   );

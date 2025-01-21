@@ -9,8 +9,8 @@ export default async function authorize(
   const { authorization } = req.headers;
   if (!authorization)
     return res.status(401).json({ message: "NOT_AUTHORIZED" });
-  const user = await prisma.user.findFirst({
-    where: { email: authorization.toString() },
+  const user = await prisma.user.findUnique({
+    where: { id: authorization },
   });
   req.user = user;
   next();

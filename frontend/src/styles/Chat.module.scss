@@ -1,0 +1,92 @@
+.Chat {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+
+  .header {
+    height: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background-color: green;
+    padding: $spacing-s;
+    border: 1px solid darken(green, 10);
+  }
+
+  .messagesContainer {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-m;
+    padding: $spacing-s;
+    overflow-y: auto;
+    height: 70%;
+  }
+
+  .messageForm {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: $spacing-s auto 0 ;
+    gap: $spacing-m;
+    width: 100%;
+    max-height: 30%;
+
+    .messageBox {
+      background-color: white;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: $spacing-s;
+      gap: $spacing-s;
+
+      .microphone {
+        padding: $spacing-s;
+        cursor: pointer;
+        border-radius: 25px;
+        transition: 200ms;
+
+        &:hover,
+        &.active {
+          background-color: lightgray;
+        }
+      }
+
+      input {
+        border-radius: 25px;
+        padding: $spacing-s $spacing-m;
+        background-color: transparent;
+        border: 1px solid gray;
+        transition: 200ms;
+        width: 50%;
+
+        &:focus-within {
+          border-color: black;
+        }
+      }
+    }
+
+    button {
+      padding: $spacing-s;
+      color: black;
+      font-weight: bold;
+      letter-spacing: 2px;
+      background-color: white;
+      border: 1px solid gray;
+      border-radius: 4px;
+      
+      &:hover {
+        background-color: lightgray;
+        color: lighten($color: black, $amount: 20);
+      }
+
+      &:active {
+        background-color: darken(lightgray, 10);
+        color: lighten($color: black, $amount: 20);
+      }
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import { SocketContext } from "../../@types/socket";
 import { getGameState } from "../../redis/game";
+import emitToRoom from "../utils/emitToRoom";
 
 export async function EndTurnEventHandler(
   context: SocketContext
@@ -7,16 +8,12 @@ export async function EndTurnEventHandler(
   const { socket, channel } = context;
   const { room } = socket.user;
   try {
-
     const game = await getGameState(room);
     const result = game.endTurn(socket.user.id);
-    if (result.error) {
-      socket.emit("error", result.error);
-      return;
-    }
-    socket.broadcast.to(room).emit("game_update", game);
+    if (result.error) throw result.error
+    emitToRoom(channel, room, "game_update", game);
   } catch (er) {
     console.error(er);
-    socket.emit("error", er.message);
+    socket.emit("error", typeof er === "string" ? er : er.message);
   }
 }
