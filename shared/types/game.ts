@@ -1,5 +1,14 @@
-import { Player } from "@/models/Users";
-import Deck from "shared/cards";
+import { Card } from "shared/cards";
+
+export type Player = {
+  hand: Card[];
+  name?: string;
+  table: Card[];
+  isOnline?: boolean;
+  status?: "chosing" | "playing";
+  image?: string;
+  userId: string;
+};
 
 export interface GameState {
   players: Player[];

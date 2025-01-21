@@ -1,4 +1,4 @@
-import { Card } from "shared/cards";
+import { Player } from "shared/types";
 
 export type UserSession = {
   id?: string;
@@ -8,15 +8,6 @@ export type UserSession = {
   rank?: number;
 };
 
-export type Player = UserSession & {
-  hand: Card[];
-  table: Card[];
-  isOnline?: boolean;
-  status?: "chosing" | "playing";
-  userId: string;
-};
-
-
-export type PopulatedPlayer = Player & {
+export type PopulatedPlayer = Player & UserSession & {
   user: UserSession;
 };

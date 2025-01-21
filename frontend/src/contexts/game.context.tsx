@@ -1,19 +1,17 @@
 "use client";
 import { Card } from "shared/cards";
+import { Player, GameState } from "shared/types";
 
 import {
   ReactNode,
   createContext,
   useContext,
   useEffect,
-  useState,
 } from "react";
 import { useSocket } from "./socket.context";
 import { useSession } from "next-auth/react";
 import useGameState from "@/hooks/useGameState";
 import { useParams } from "next/navigation";
-import { Player } from "@/models/Users";
-import { GameState } from "@/@types/game";
 
 interface GameContextProps {
   bunchCards: Card[];
@@ -53,27 +51,27 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [id, socket]);
 
   const playCard = (card: Card) => {
-    if(!socket) return;
+    if (!socket) return;
     socket.emit("play_card", { card });
   }
 
   const handlePickCards = (cards: Card[]) => {
-    if(!socket) return;
+    if (!socket) return;
     socket.emit("pick_hand", { cards });
   };
 
   const retrieveCard = () => {
-    if(!socket) return;
+    if (!socket) return;
     socket.emit("retrieve_card")
   };
 
   const endTurn = () => {
-    if(!socket) return;
+    if (!socket) return;
     socket.emit("end_turn");
   };
 
   const drawTable = () => {
-    if(!socket) return;
+    if (!socket) return;
     socket.emit("draw_table");
   };
 

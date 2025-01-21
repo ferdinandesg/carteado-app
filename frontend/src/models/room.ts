@@ -1,5 +1,6 @@
-import { Card } from "./Cards";
-import { Player } from "./Users";
+import { Card } from "shared/cards";
+import { Player } from "shared/types";
+
 
 export type RoomStatus = "open" | "playing";
 

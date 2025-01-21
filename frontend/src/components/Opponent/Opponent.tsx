@@ -1,4 +1,5 @@
-import { Player } from "@/models/Users";
+import { Player } from "shared/types";
+
 import UserPlaceholder from "../UserPlaceholder";
 
 import styles from "@styles/Opponent.module.scss";

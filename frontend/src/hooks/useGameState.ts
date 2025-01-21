@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "./axios";
-import { GameState } from "@/@types/game";
+import { GameState } from "shared/types";
 
 async function fetchGameState(hash: string) {
   const response = await axiosInstance.get<GameState>(`/game/${hash}`);
