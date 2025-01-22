@@ -1,5 +1,4 @@
 "use client";
-import { twMerge } from "tailwind-merge";
 import UserCard from "../UserCard";
 import useRoomByHash from "@/hooks/rooms/useRoomByHash";
 
