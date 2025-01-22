@@ -4,6 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.darkBg {
+  background: $gradient-background;
+}
+
 .spacing-s {
   margin: $spacing-s;
 }

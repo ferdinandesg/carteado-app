@@ -1,8 +1,26 @@
 "use client";
 import SearchComponent from "@/components/Search";
-import { twMerge } from "tailwind-merge";
 import { useRouter } from "next/navigation";
-import useFetchRooms from "@/hooks/rooms/useFetchRooms";
+import useFetchRooms, { RoomInterface } from "@/hooks/rooms/useFetchRooms";
+import RoomItem from "@/components/RoomItem";
+
+import styles from "@styles/Rooms.module.scss";
+
+
+type RoomList = {
+  rooms: RoomInterface[];
+  onClick: (room: RoomInterface) => void;
+}
+
+const RoomList = ({ rooms, onClick }: RoomList) => {
+  return (
+    <div className={styles.RoomList}>
+      {rooms.map((room) => (
+        <RoomItem key={`room-${room.hash}`} room={room} onClick={onClick} />
+      ))}
+    </div>
+  );
+}
 
 export default function Rooms() {
   const router = useRouter();
@@ -17,34 +35,15 @@ export default function Rooms() {
   };
 
   return (
-    <div className="flex items-center justify-center bg-black bg-opacity-20 w-1/2 mx-auto">
-      <div className="flex flex-col gap-2 w-full p-2">
-        <SearchComponent />
-        <div className="flex flex-col">
-          {isLoading ? (
-            <span>Loading...</span>
-          ) : (
-            data?.map((room) => (
-              <div
-                onClick={() => goToRoom(room.hash)}
-                className="flex p-2 bg-[#ffbb76] border-b border-black cursor-pointer justify-between"
-                key={room.id}
-              >
-                <span className="text-gray-800">Sala: {room.hash.toUpperCase()}</span>
-                <span>{room.name}</span>
-                <span
-                  className={twMerge(
-                    "font-semibold",
-                    room.status === "open" ? "text-green-600" : "text-red-800"
-                  )}
-                >
-                  {room.status}
-                </span>
-                <span>Jogadores: {room.players.length}</span>
-              </div>
-            ))
-          )}
-        </div>
+    <div className={styles.Rooms}>
+      <SearchComponent />
+      <div className={styles.RoomList}>
+        {isLoading &&
+          <span>Loading...</span>}
+        {
+          !isLoading && data?.length &&
+          <RoomList onClick={r => goToRoom(r.hash)} rooms={data} />
+        }
       </div>
     </div>
   );

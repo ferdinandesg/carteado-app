@@ -1,0 +1,54 @@
+.RootLayout {
+  height: 100vh;
+  width: 100vw;
+  background: $gradient-background;
+}
+
+.Menu {
+  background: $gradient-background;
+  display: flex;
+  justify-content: center;
+  gap: $spacing-l;
+  height: 100%;
+  align-items: center;
+
+  margin: 0 auto;
+
+  .user {}
+
+  .menuActions {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-l;
+  }
+}
+
+.MenuButton {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  padding: $spacing-l $spacing-m;
+  gap: $spacing-m;
+  background-color: $primary-color;
+  position: relative;
+
+  &:hover {
+    background-color: lighten($primary-color, 10);
+  }
+
+  .menuIcon {
+    color: $secondary-color;
+    width: 20%;
+  }
+
+  .menuLabel {
+    color: $secondary-color;
+    font-weight: bold;
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+    width: 50%;
+  }
+}

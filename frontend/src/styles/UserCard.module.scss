@@ -9,8 +9,6 @@
   height: 100%;
 
   .avatar {
-    width: 90px;
-    height: 90px;
     border-radius: 50%;
     overflow: hidden;
     display: flex;
@@ -18,6 +16,22 @@
     justify-content: center;
     background-color: #f3f3f3;
     transition: all 0.3s ease;
+
+    &.small {
+      width: 72px;
+      height: 72px;
+    }
+
+    &.medium {
+      width: 112px;
+      height: 112px;
+    }
+
+    &.large {
+      width: 160px;
+      height: 160px;
+    }
+
     &.ready {
       border: 6px solid lightgreen;
       box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
@@ -44,6 +58,7 @@
     display: flex;
     flex-direction: column;
     gap: $spacing-xs;
+    color: $primary-color;
 
     .title {
       font-size: 1.25rem;

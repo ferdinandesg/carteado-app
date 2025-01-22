@@ -3,6 +3,8 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import "react-toastify/dist/ReactToastify.css";
 
+import styles from "@styles/Menu.module.scss";
+
 export default function RootLayout({
   children,
 }: {
@@ -16,7 +18,7 @@ export default function RootLayout({
     return null
   }
   return (
-    <div className="bg-gradient-to-r from-green-800 via-green-700 to-green-800  h-screen w-screen">
+    <div className={styles.RootLayout}>
       {children}
     </div>
   );

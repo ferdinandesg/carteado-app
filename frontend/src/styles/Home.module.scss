@@ -1,0 +1,27 @@
+.Home {
+  background: $gradient-background;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .container {
+    width: 50%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    padding: $spacing-s;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .title {
+    color: $secondary-color;
+    font-size: 4rem;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+}

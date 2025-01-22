@@ -1,30 +1,31 @@
 import Image from "next/image";
 
 import styles from "@styles/UserCard.module.scss";
-import { User } from "lucide-react";
 import classNames from "classnames";
 import UserPlaceholder from "./UserPlaceholder";
 
 type UserCardProps = {
-  user: {
+  user?: {
     id?: string;
     email: string;
     name: string;
-    image: string;
+    image?: string;
     status?: "READY" | "NOT_READY";
   };
+  size?: "small" | "medium" | "large";
 }
-export default function UserCard({ user }: UserCardProps) {
-  const isUserReady = user.status === "READY";
+export default function UserCard({ user, size = "large" }: UserCardProps) {
+  const isUserReady = user?.status === "READY";
 
   return (
     <div className={styles.UserCard}>
       <div className={classNames(styles.avatar,
-        isUserReady ? styles.ready : styles.notReady
+        isUserReady ? styles.ready : styles.notReady,
+        styles[size]
       )}>
         {
           user?.image
-            ? <Image alt="user.name" src={user.image} width={100} height={100} />
+            ? <Image alt="user.name" src={user.image} width={150} height={100} />
             : <UserPlaceholder />
         }
       </div>

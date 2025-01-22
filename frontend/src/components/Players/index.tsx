@@ -9,9 +9,7 @@ export default function Players({ roomId }: { roomId: string }) {
   return (
     <div className="flex gap-2 mt-2">
       {players.map((player) => (
-        <div key={`table-user-${player.email}`} className={twMerge("border-2 border-white", false ? "border-green-600" : "")}>
-          <UserCard user={player} />
-        </div>
+        <UserCard key={`table-use:r-${player.email}`} user={player} />
       ))}
     </div>
   );

@@ -10,26 +10,25 @@
     align-items: center;
     justify-content: center;
     color: white;
-    background-color: green;
+    font-weight: 400;
+    background: generate-gradient($secondary-color);
     padding: $spacing-s;
-    border: 1px solid darken(green, 10);
   }
 
   .messagesContainer {
     display: flex;
     flex-direction: column;
-    gap: $spacing-m;
     padding: $spacing-s;
+    background: generate-gradient(lightgray);
     overflow-y: auto;
-    height: 70%;
+    height: 100%;
+    gap: $spacing-m;
   }
 
   .messageForm {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: $spacing-s auto 0 ;
-    gap: $spacing-m;
     width: 100%;
     max-height: 30%;
 
@@ -72,12 +71,11 @@
     button {
       padding: $spacing-s;
       color: black;
+      height: 100%;
       font-weight: bold;
       letter-spacing: 2px;
       background-color: white;
-      border: 1px solid gray;
-      border-radius: 4px;
-      
+
       &:hover {
         background-color: lightgray;
         color: lighten($color: black, $amount: 20);

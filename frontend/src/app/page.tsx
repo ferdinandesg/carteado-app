@@ -6,6 +6,7 @@ import { Check } from "lucide-react";
 import useModalContext from "@/components/Modal/ModalContext";
 import { useRouter } from "next/navigation";
 
+import styles from "@styles/Home.module.scss";
 
 type FormData = {
   name: string;
@@ -40,7 +41,7 @@ export default function Home() {
                   {...register("name", { required: true })}
                   type="text"
                   id="username"
-                  className="p-1 border-b border-b-gray-400 transition focus:outline-none focus:border-b-gray-700"
+                  className=" bg-opacity-0 p-1 border-b border-b-gray-400 transition focus:outline-none focus:border-b-gray-700"
                 />
                 {errors.name && (
                   <span className="text-red-400 text-xs mt-2">
@@ -62,9 +63,9 @@ export default function Home() {
         </Modal.Root>
       )}
 
-      <div className="bg-gradient-to-r from-green-800 via-green-700 to-green-800  h-screen w-screen flex items-center justify-center">
-        <div className="w-1/2 h-1/2 bg-gray- 00 flex flex-col p-2 justify-around items-center bg-black bg-opacity-20">
-          <h1 className="font-bold text-4xl">Carteado</h1>
+      <div className={styles.Home}>
+        <div className={styles.container}>
+          <h1 className={styles.title}>Carteado</h1>
           <div className="flex gap-2">
             <button
               className="bg-white p-2 rounded hover:bg-gray-200"

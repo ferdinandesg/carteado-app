@@ -2,104 +2,64 @@
 
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useForm } from "react-hook-form";
 import useModalContext from "@/components/Modal/ModalContext";
-import Modal from "@/components/Modal";
-import { Check } from "lucide-react";
-import postRoom from "@/hooks/rooms/postRooms";
-import CreateRoom from "@/hooks/rooms/postRooms";
-type RoomForm = {
-  name: string;
-  size: number;
-};
+import ModalCreateRoom from "@/components/Modal/ModalCreateRoom/ModalCreateRoom";
+
+import styles from "@styles/Menu.module.scss";
+import UserCard from "@/components/UserCard";
+import { List, ListPlus, Play, PlusCircle } from "lucide-react";
+
+type MenuButtonProps = {
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+}
+const MenuButton = ({ onClick, icon, label }: MenuButtonProps) => {
+
+  return <div className={styles.MenuButton} onClick={onClick}>
+    <div className={styles.menuIcon}>{icon}</div>
+    <span className={styles.menuLabel}>{label}</span>
+  </div>
+}
+
 export default function Menu() {
   const router = useRouter();
   const { data } = useSession();
   const { show, setShowModal } = useModalContext();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<RoomForm>();
-  const { createRoom } = postRoom();
 
-  const handleCreateRoom = handleSubmit(async (data) => {
-    try {
-      const room = await createRoom({ name: data.name, size: data.size });
-      router.push(`/room/${room.hash}`);
-    } catch (error) {
-      console.error(error);
-    }
-  });
-
+  const onCreateRoom = (hash: string) => {
+    router.push(`/room/${hash}`);
+  }
   return (
     <>
-      {show && (
-        <Modal.Root className="w-1/4 h-auto">
-          <Modal.Header
-            onClose={() => setShowModal(false)}
-            title="Criar nova sala"
-          ></Modal.Header>
-          <Modal.Content className="p-4">
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col">
-                <label htmlFor="username" className="text-gray-600 text-sm">
-                  Nome da sala
-                </label>
-                <input
-                  {...register("name", { required: true })}
-                  type="text"
-                  id="username"
-                  className="p-1 border-b border-b-gray-400 transition focus:outline-none focus:border-b-gray-700"
-                />
-                {errors.name && (
-                  <span className="text-red-400 text-xs mt-2">
-                    Nome da sala deve ser informado
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <label htmlFor="size" className="text-gray-600 text-sm">
-                  Jogadores
-                </label>
-                <input
-                  {...register("size", { required: true, max: 4, min: 2 })}
-                  type="number"
-                  maxLength={4}
-                  id="size"
-                  className="p-1 border-b border-b-gray-400 transition focus:outline-none focus:border-b-gray-700"
-                />
-                {errors.size && (
-                  <span className="text-red-400 text-xs mt-2">
-                    Quantidade de jogadores deve ser informado
-                  </span>
-                )}
-              </div>
-            </div>
-          </Modal.Content>
-          <Modal.Footer>
-            <Modal.Buttons
-              className="bg-green-600"
-              onClick={() => handleCreateRoom()}
-              icon={<Check color="white" />}
-            >
-              Confirmar
-            </Modal.Buttons>{" "}
-          </Modal.Footer>
-        </Modal.Root>
-      )}
-      <div className="flex justify-center items-center h-screen">
-        <div className="flex flex-col h-full justify-center w-1/2 gap-2 bg-black bg-opacity-20 p-2">
-          <button
-            className="p-2 bg-gray-400 hover:bg-gray-500 "
-            onClick={() => setShowModal(true)}
-          >
-            Start game
-          </button>
-
-          <button onClick={() => router.push(`/rooms`)} className="p-2 bg-gray-400 hover:bg-gray-500 ">
-            Join game
-          </button>
+      <ModalCreateRoom
+        isOpen={show}
+        onClose={() => setShowModal(false)}
+        onConfirm={onCreateRoom}
+      />
+      <div className={styles.Menu}>
+        <div className={styles.user}>
+          <UserCard user={data?.user} />
+        </div>
+        <div className={styles.menuActions}>
+          <MenuButton
+            label="Jogar"
+            icon={
+              <Play size={42} />
+            }
+            onClick={() => router.push(`/rooms`)} />
+          <MenuButton
+            label="Criar sala"
+            icon={
+              <ListPlus size={42} />
+            }
+            onClick={() => setShowModal(true)} />
+          <MenuButton
+            label="Salas criadas"
+            icon={
+              <List size={42} />
+            }
+            onClick={() => router.push(`/rooms`)} />
         </div>
       </div>
     </>

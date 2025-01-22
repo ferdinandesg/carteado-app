@@ -3,7 +3,17 @@ $spacing-s: 8px;
 $spacing-m: 16px;
 $spacing-l: 32px;
 
-// Outras variáveis globais (exemplo)
-$primary-color: #3498db;
-$secondary-color: #2ecc71;
+
+$background-color: #133314;
+$primary-color: #f1b001;
+$secondary-color: #310c07;
+$therciary-color: #3ced01;
+
+@function generate-gradient($color) {
+  $darkened-color: darken($color, 30%);
+  @return radial-gradient(circle, $color 0%, $darkened-color 140%);
+}
+
+$gradient-background: generate-gradient($background-color);
+
 $font-family: 'Roboto', sans-serif;

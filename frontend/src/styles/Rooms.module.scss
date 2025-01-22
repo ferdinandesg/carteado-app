@@ -1,0 +1,139 @@
+.Rooms {
+  width: 60%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
+  padding: $spacing-m;
+
+  .searchBox {
+    display: flex;
+    margin: 0 auto;
+    width: 50%;
+    gap: $spacing-s;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-s;
+    border: 1px solid gray;
+    border-radius: 5px;
+    background-color: white;
+
+    .searchInput {
+      width: 100%;
+      display: flex;
+      border: none;
+      outline: none;
+      font-size: 1.5rem
+    }
+
+    .searchButton {
+      background-color: $primary-color;
+      color: white;
+      padding: $spacing-s;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1.5rem;
+
+      &:hover {
+        background-color: lighten($primary-color, 10);
+      }
+
+      &:active {
+        background-color: darken($primary-color, 10);
+      }
+    }
+  }
+
+  .RoomList {
+    display: flex;
+    flex-direction: column;
+
+    .RoomItem {
+      display: flex;
+      padding: $spacing-s;
+      align-items: center;
+      gap: $spacing-m;
+      cursor: pointer;
+      background: generate-gradient($primary-color);
+
+      .owner {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin-right: $spacing-s;
+      }
+
+      .roomInfo {
+        display: flex;
+        flex-direction: column;
+
+        .roomHash {
+          font-size: .95rem;
+          font-weight: 500;
+          color: white;
+        }
+
+        .roomName {
+          font-size: 1.5rem;
+          font-weight: bold;
+        }
+
+      }
+
+      .roomData {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+        justify-content: space-around;
+        width: 50%;
+
+        .roomStatus {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: $spacing-s;
+
+          &.open {
+            color: green;
+
+            .icon {
+              color: rgb(0, 165, 0);
+              fill: rgb(0, 165, 0);
+              ;
+            }
+          }
+
+          &.playing {
+            color: lightgray
+          }
+
+          .label {
+            font-weight: bold;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+          }
+
+
+        }
+      }
+
+      .infoCount {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .label {
+          font-size: .85rem;
+          font-weight: 400;
+        }
+
+        .count {
+          font-size: 2rem;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
