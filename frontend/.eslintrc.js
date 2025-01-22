@@ -15,3 +15,4 @@ module.exports = {
       version: "detect",
     },
   },
+};
