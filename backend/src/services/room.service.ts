@@ -27,7 +27,7 @@ export async function createRoom(room: Partial<Room>, userId: string): Promise<R
 export async function listRooms() {
   try {
     const rooms = await prisma.room.findMany({
-      include: { players: true },
+      include: { players: true, owner: true },
       orderBy: { createdAt: "desc" },
     });
     return rooms;
