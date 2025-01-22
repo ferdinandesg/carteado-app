@@ -1,12 +1,11 @@
 "use client";
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useSocket } from "@/contexts/socket.context";
 import Message from "./message";
 
 import styles from "@styles/Chat.module.scss";
 import { Mic } from "lucide-react";
 import classNames from "classnames";
-import useRoomByHash from "@/hooks/rooms/useRoomByHash";
 import Header from "./header";
 
 type MessageType = {

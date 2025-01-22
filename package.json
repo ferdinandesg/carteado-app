@@ -1,9 +1,18 @@
 {
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "eslint --fix"
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
-  "scripts": {
-    "prepare": "husky"
+  "lint-staged": {
+    "**/*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "eslint"
+    ],
+    "**/*.{css,scss}": [
+      "stylelint --fix",
+      "stylelint"
+    ]
   },
   "devDependencies": {
     "@commitlint/cli": "^19.6.1",

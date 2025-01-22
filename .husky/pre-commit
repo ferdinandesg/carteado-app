@@ -1,5 +1,4 @@
 CHANGED_FILES=$(git diff --cached --name-only)
-
 # Rodar scripts para o frontend se houver mudanças nele
 if echo "$CHANGED_FILES" | grep -q '^frontend/'; then
   echo "Running frontend lint and tests..."
@@ -13,3 +12,5 @@ if echo "$CHANGED_FILES" | grep -q '^backend/'; then
   cd backend && npm run lint
   cd ..
 fi
+
+npx lint-staged

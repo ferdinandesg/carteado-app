@@ -6,12 +6,12 @@ import RoomItem from "@/components/RoomItem";
 
 import styles from "@styles/Rooms.module.scss";
 
-type RoomList = {
+type RoomListType = {
   rooms: RoomInterface[];
   onClick: (room: RoomInterface) => void;
 };
 
-const RoomList = ({ rooms, onClick }: RoomList) => {
+const RoomList = ({ rooms, onClick }: RoomListType) => {
   return (
     <div className={styles.RoomList}>
       {rooms.map((room) => (

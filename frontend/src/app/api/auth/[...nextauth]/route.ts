@@ -1,17 +1,12 @@
-// pages/api/auth/[...nextauth].js
 import axiosInstance from "@/hooks/axios";
 import { UserSession } from "@/models/Users";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
 const validateUser = async (payload: UserSession) => {
-  try {
-    const response = await axiosInstance.post("/auth", payload);
-    const user = await response.data;
-    return user;
-  } catch (error) {
-    throw error;
-  }
+  const response = await axiosInstance.post("/auth", payload);
+  const user = await response.data;
+  return user;
 };
 
 const handler = NextAuth({
@@ -39,7 +34,6 @@ const handler = NextAuth({
     },
     async session({ session, token }) {
       try {
-        session.user = session.user;
         session.user.id = token.id;
         session.user.token = token;
         return session; // The return type will match the one returned in `useSession()`

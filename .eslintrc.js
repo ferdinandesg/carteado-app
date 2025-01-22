@@ -12,7 +12,8 @@ module.exports = {
   },
   rules: {
     "prettier/prettier": "warn",
+    "no-unused-vars": "off",
   },
   ignorePatterns: ["node_modules/", "dist/", "build/"],
-  plugins: ["prettier"],
+  plugins: ["prettier", "@typescript-eslint"],
 };

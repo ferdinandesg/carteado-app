@@ -10,7 +10,7 @@ import TableActions from "../TableActions";
 export default function Game() {
   const { player, playCard } = useGameContext();
   const handCards = player?.hand || [];
-  const tableCards = player?.table.sort((a, b) => (a.hidden ? 1 : -1)) || [];
+  const tableCards = player?.table.sort((a) => (a.hidden ? 1 : -1)) || [];
   return (
     <>
       <ModalChoseCards isOpen={player?.status === "chosing"} />

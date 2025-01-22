@@ -12,7 +12,7 @@ export default function Opponent({ player }: { player: Player }) {
   const { game } = useGameContext();
   const isCurrentPlayerTurn = game?.playerTurn === player.userId;
   const [isHovered, setIsHovered] = useState<boolean>(false);
-  const opponentCards = player.table.sort((a, b) => (a.hidden ? 1 : -1));
+  const opponentCards = player.table.sort((a) => (a.hidden ? 1 : -1));
 
   return (
     <div

@@ -1,5 +1,4 @@
 import { useSession } from "next-auth/react";
-import { twMerge } from "tailwind-merge";
 
 import styles from "@styles/Message.module.scss";
 import classNames from "classnames";

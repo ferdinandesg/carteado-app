@@ -2,9 +2,7 @@ import { useForm } from "react-hook-form";
 import Modal from "..";
 import usePostRoom from "@/hooks/rooms/usePostRoom";
 
-import styles from "@styles/ModalCreateRoom.module.scss";
 import { Check } from "lucide-react";
-import { RoomInterface } from "@/models/room";
 
 type RoomForm = {
   name: string;
