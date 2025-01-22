@@ -12,8 +12,7 @@ export default function Header({ ...props }: HeaderProps) {
       {props.onClose && (
         <button
           className="hover:bg-gray-400 transition rounded-lg p-1 hover:text-white"
-          onClick={props.onClose}
-        >
+          onClick={props.onClose}>
           <X />
         </button>
       )}

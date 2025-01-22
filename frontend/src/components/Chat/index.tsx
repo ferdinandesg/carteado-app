@@ -15,7 +15,7 @@ type MessageType = {
 };
 interface ChatProps {
   roomId: string;
-  isOpen?: boolean
+  isOpen?: boolean;
 }
 export default function Chat({ roomId }: ChatProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -29,21 +29,26 @@ export default function Chat({ roomId }: ChatProps) {
   const [unreadMessages, setUnreadMessages] = useState<number>(0);
 
   const updateMessages = (messages: MessageType | MessageType[]) => {
-    console.log("Updating messages", messages)
-    setMessages(m => [...m, ...(Array.isArray(messages) ? messages : [messages])]);
+    console.log("Updating messages", messages);
+    setMessages((m) => [
+      ...m,
+      ...(Array.isArray(messages) ? messages : [messages]),
+    ]);
     if (chatRef.current && document.activeElement !== chatRef.current) {
-      setUnreadMessages(un => un + (Array.isArray(messages) ? messages.length : 1));
+      setUnreadMessages(
+        (un) => un + (Array.isArray(messages) ? messages.length : 1)
+      );
     }
-  }
+  };
 
   useEffect(() => {
     if (!socket) return;
-    console.log("Joining chat", roomId)
+    console.log("Joining chat", roomId);
     const events = {
       join_chat: (message: MessageType) => updateMessages(message),
       receive_message: (message: MessageType) => updateMessages(message),
       load_messages: (payload: MessageType[]) => {
-        updateMessages(payload)
+        updateMessages(payload);
         setLoading(false);
       },
     };
@@ -53,7 +58,7 @@ export default function Chat({ roomId }: ChatProps) {
     });
 
     return () => {
-      console.log("Leaving chat", roomId)
+      console.log("Leaving chat", roomId);
       Object.keys(events).forEach((event) => {
         socket.off(event);
       });
@@ -61,7 +66,7 @@ export default function Chat({ roomId }: ChatProps) {
   }, [socket]);
 
   useEffect(() => {
-    if (!useAutoScroll) return
+    if (!useAutoScroll) return;
     divRef.current!.scroll({
       behavior: "smooth",
       top: divRef.current!.scrollHeight,
@@ -69,46 +74,60 @@ export default function Chat({ roomId }: ChatProps) {
   }, [localMessages, useAutoScroll]);
 
   const sendMessage = (e: FormEvent) => {
-    if (!socket) return
+    if (!socket) return;
     e.preventDefault();
     const message = inputRef.current?.value;
-    if (!message) return
+    if (!message) return;
     socket.emit("send_message", { roomId, message });
     inputRef.current!.value = "";
   };
 
   const setReadMessages = () => {
     setUnreadMessages(0);
-  }
-
+  };
 
   return (
-    <div className={styles.Chat} ref={chatRef} onFocus={setReadMessages}>
-      <Header roomId={roomId} messageCount={unreadMessages} />
+    <div
+      className={styles.Chat}
+      ref={chatRef}
+      onFocus={setReadMessages}>
+      <Header
+        roomId={roomId}
+        messageCount={unreadMessages}
+      />
       <div
         ref={divRef}
-        className={styles.messagesContainer}
-      >
+        className={styles.messagesContainer}>
         {isLoading && <span className="text-white">Loading...</span>}
-        {!isLoading && localMessages?.map((m, i) => <Message key={`message-${i}`} {...m} />)}
+        {!isLoading &&
+          localMessages?.map((m, i) => (
+            <Message
+              key={`message-${i}`}
+              {...m}
+            />
+          ))}
       </div>
       <form className={styles.messageForm}>
         <div className={styles.messageBox}>
-          <Mic size={48} className={
-            classNames(
+          <Mic
+            size={48}
+            className={classNames(
               styles.microphone,
               useAutoScroll && styles.active
             )}
-            onClick={() => setUseAutoScroll(!useAutoScroll)} />
-          <input ref={inputRef} type="text" />
+            onClick={() => setUseAutoScroll(!useAutoScroll)}
+          />
+          <input
+            ref={inputRef}
+            type="text"
+          />
         </div>
         <button
           placeholder="Digite sua mensagem..."
-          onClick={(e) => sendMessage(e)}
-        >
+          onClick={(e) => sendMessage(e)}>
           Enviar
         </button>
       </form>
-    </div >
+    </div>
   );
 }

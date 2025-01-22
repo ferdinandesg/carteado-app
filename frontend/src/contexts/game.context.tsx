@@ -2,12 +2,7 @@
 import { Card } from "shared/cards";
 import { Player, GameState } from "shared/types";
 
-import {
-  ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-} from "react";
+import { ReactNode, createContext, useContext, useEffect } from "react";
 import { useSocket } from "./socket.context";
 import { useSession } from "next-auth/react";
 import useGameState from "@/hooks/useGameState";
@@ -19,8 +14,8 @@ interface GameContextProps {
   endTurn: () => void;
   drawTable: () => void;
   handlePickCards: (cards: Card[]) => void;
-  player?: Player,
-  rotatedPlayers: Player[]
+  player?: Player;
+  rotatedPlayers: Player[];
   game?: GameState;
   playCard: (card: Card) => void;
 }
@@ -34,7 +29,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const players = game?.players || [];
   const player = players.find((p) => p.userId === data?.user.id);
-  const currentPlayerIndex = game?.players.findIndex((p) => p.userId === data?.user.id);
+  const currentPlayerIndex = game?.players.findIndex(
+    (p) => p.userId === data?.user.id
+  );
   const rotatedPlayers = [
     ...players.slice(currentPlayerIndex),
     ...players.slice(0, currentPlayerIndex),
@@ -43,7 +40,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!id || !socket) return;
-    socket.on('game_update', (updatedGame: GameState) => updateGame(updatedGame));
+    socket.on("game_update", (updatedGame: GameState) =>
+      updateGame(updatedGame)
+    );
 
     return () => {
       socket.off("game_update");
@@ -53,7 +52,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const playCard = (card: Card) => {
     if (!socket) return;
     socket.emit("play_card", { card });
-  }
+  };
 
   const handlePickCards = (cards: Card[]) => {
     if (!socket) return;
@@ -62,7 +61,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const retrieveCard = () => {
     if (!socket) return;
-    socket.emit("retrieve_card")
+    socket.emit("retrieve_card");
   };
 
   const endTurn = () => {
@@ -86,9 +85,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         drawTable,
         retrieveCard,
         handlePickCards,
-        playCard
-      }}
-    >
+        playCard,
+      }}>
       {children}
     </GameContext.Provider>
   );

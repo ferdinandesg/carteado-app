@@ -39,9 +39,9 @@ const handler = NextAuth({
     },
     async session({ session, token }) {
       try {
-        session.user = session.user
-        session.user.id = token.id
-        session.user.token = token
+        session.user = session.user;
+        session.user.id = token.id;
+        session.user.token = token;
         return session; // The return type will match the one returned in `useSession()`
       } catch (error) {
         return session;
@@ -51,7 +51,6 @@ const handler = NextAuth({
     redirect() {
       return "/menu";
     },
-
   },
 
   theme: { colorScheme: "dark" },

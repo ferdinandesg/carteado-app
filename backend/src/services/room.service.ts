@@ -3,7 +3,10 @@ import prisma from "../prisma";
 import { getRoomState, saveRoomState } from "../redis/room";
 import { randomUUID } from "node:crypto";
 
-export async function createRoom(room: Partial<Room>, userId: string): Promise<Room> {
+export async function createRoom(
+  room: Partial<Room>,
+  userId: string
+): Promise<Room> {
   try {
     const uuid = randomUUID();
     const hash = uuid.substring(uuid.length - 4);
@@ -14,7 +17,7 @@ export async function createRoom(room: Partial<Room>, userId: string): Promise<R
         name: room.name,
         chatId: chat.id,
         size: room.size,
-        ownerId: userId
+        ownerId: userId,
       },
     });
     await saveRoomState(hash, createdRoom);
@@ -38,9 +41,9 @@ export async function listRooms() {
 
 export async function getRoom(hash: string) {
   try {
-    const roomCache = await getRoomState(hash)
+    const roomCache = await getRoomState(hash);
     if (roomCache) {
-      return roomCache
+      return roomCache;
     }
     const room = await prisma.room.findFirst({
       where: { hash },

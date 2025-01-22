@@ -14,28 +14,30 @@ export async function StartGameEventHandler(
   const roomHash = socket.user.room;
   try {
     const room = await getRoomState(roomHash);
-    const roomId = room.id
-    if (!room) throw "Sala não encontrada!"
-    if (room.status !== "open") throw "A sala já está em jogo!"
-    if (socket.user.id !== room.ownerId) throw "Apenas o dono da sala pode iniciar a partida!"
+    const roomId = room.id;
+    if (!room) throw "Sala não encontrada!";
+    if (room.status !== "open") throw "A sala já está em jogo!";
+    if (socket.user.id !== room.ownerId)
+      throw "Apenas o dono da sala pode iniciar a partida!";
 
     const users = getRoomPlayers(room.hash, channel);
-    const isAllUsersReady = users.every(user => user.status === "READY");
-    if (!isAllUsersReady) throw "Nem todos os jogadores estão prontos!"
+    const isAllUsersReady = users.every((user) => user.status === "READY");
+    if (!isAllUsersReady) throw "Nem todos os jogadores estão prontos!";
 
     await prisma.player.createMany({
       data: users.map((user) => ({
         roomId,
         status: "chosing",
         userId: user.id,
-      }))
-    })
+      })),
+    });
     const players = await prisma.player.findMany({
       where: { roomId: room.id },
-      include: { user: true }
-    })
+      include: { user: true },
+    });
 
-    if (channel.adapter.rooms.get(roomId)?.size < room.size) throw "Faltam jogadores na sala!"
+    if (channel.adapter.rooms.get(roomId)?.size < room.size)
+      throw "Faltam jogadores na sala!";
 
     emitToRoom(channel, room.hash, "info", "Iniciando partida");
 
@@ -47,7 +49,7 @@ export async function StartGameEventHandler(
     room.players = players;
     const game = new GameClass(room.players);
     game.status = "playing";
-    game.players.forEach(p => {
+    game.players.forEach((p) => {
       p.status = "chosing";
       p.hand = game.givePlayerCards(p.userId);
       p.name = p.user.name;
@@ -59,8 +61,8 @@ export async function StartGameEventHandler(
 
     const newRoom = {
       ...room,
-      status: "playing"
-    }
+      status: "playing",
+    };
     await saveRoomState(room.hash, newRoom);
 
     emitToRoom(channel, room.hash, "game_update", game);
@@ -68,10 +70,9 @@ export async function StartGameEventHandler(
       room: newRoom,
       players: game.players,
     });
-
   } catch (er) {
     channel.emit("error", JSON.stringify({ message: er }));
     console.error(er);
-    throw er
+    throw er;
   }
 }

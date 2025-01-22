@@ -12,8 +12,8 @@ export async function saveGameState(roomId: string, game: GameClass) {
 export async function getGameState(roomId: string): Promise<GameClass | null> {
   const redis = await RedisClass.getInstance();
   const serializedGame = await redis.get(`game:${roomId}`);
-    if (serializedGame) {
-        return GameClass.deserialize(serializedGame);
-    }
-    return null;
+  if (serializedGame) {
+    return GameClass.deserialize(serializedGame);
+  }
+  return null;
 }

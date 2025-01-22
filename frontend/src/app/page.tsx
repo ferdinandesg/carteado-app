@@ -7,11 +7,13 @@ import useModalContext from "@/components/Modal/ModalContext";
 import { useRouter } from "next/navigation";
 
 import styles from "@styles/Home.module.scss";
+import classNames from "classnames";
+import { Pixelify_Sans } from "next/font/google";
 
 type FormData = {
   name: string;
 };
-
+const pixelify = Pixelify_Sans({ weight: ["700", "700"], subsets: ["latin"] });
 export default function Home() {
   const { setShowModal, show } = useModalContext();
   const {
@@ -20,7 +22,7 @@ export default function Home() {
     formState: { errors },
   } = useForm<FormData>();
   const router = useRouter();
-  const submit = handleSubmit((data) => {
+  const submit = handleSubmit(() => {
     router.push("/menu");
   });
   return (
@@ -29,12 +31,13 @@ export default function Home() {
         <Modal.Root className="w-1/4">
           <Modal.Header
             onClose={() => setShowModal(false)}
-            title="Entrar em uma sala"
-          ></Modal.Header>
+            title="Entrar em uma sala"></Modal.Header>
           <Modal.Content>
             <div className="mx-auto flex flex-col gap-4 w-full justify-center items-center p-2">
               <div className="flex flex-col">
-                <label htmlFor="username" className="text-gray-600 text-sm">
+                <label
+                  htmlFor="username"
+                  className="text-gray-600 text-sm">
                   Nome de usuário
                 </label>
                 <input
@@ -55,29 +58,28 @@ export default function Home() {
             <Modal.Buttons
               className="bg-green-600"
               onClick={() => submit()}
-              icon={<Check color="white" />}
-            >
+              icon={<Check color="white" />}>
               Confirmar
             </Modal.Buttons>
           </Modal.Footer>
         </Modal.Root>
       )}
 
-      <div className={styles.Home}>
+      <div className={classNames(styles.Home, "square-bg")}>
         <div className={styles.container}>
-          <h1 className={styles.title}>Carteado</h1>
+          <h1 className={classNames(styles.title, pixelify.className)}>
+            Carteado
+          </h1>
           <div className="flex gap-2">
             <button
               className="bg-white p-2 rounded hover:bg-gray-200"
-              onClick={() => signIn("google")}
-            >
+              onClick={() => signIn("google")}>
               Continuar com o Google
             </button>
             <button
               disabled
               onClick={() => setShowModal(true)}
-              className="bg-gray-500 text-white hover:bg-gray-500 transition p-2 rounded"
-            >
+              className="bg-gray-500 text-white hover:bg-gray-500 transition p-2 rounded">
               Entrar como convidado
             </button>
           </div>

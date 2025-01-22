@@ -11,19 +11,19 @@ export default function useGameState(hash: string) {
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
-    queryKey: ['game', hash],
+    queryKey: ["game", hash],
     queryFn: async () => fetchGameState(hash),
     enabled: !!hash,
     retry: 1,
-    staleTime: 1000 * 60 * 5
+    staleTime: 1000 * 60 * 5,
   });
 
   const updateGame = (updatedGame: GameState) => {
-    queryClient.setQueryData(['game', hash], updatedGame);
-  }
+    queryClient.setQueryData(["game", hash], updatedGame);
+  };
   return {
     game: data,
     isLoading,
-    updateGame
-  }
+    updateGame,
+  };
 }

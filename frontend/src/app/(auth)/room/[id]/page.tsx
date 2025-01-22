@@ -12,24 +12,37 @@ import styles from "@styles/Room.module.scss";
 
 const RenderScreen = ({ status }: { status?: RoomStatus }) => {
   switch (status) {
-    case "open": return <Lobby />;
-    case "playing": return <Game />;
-    default: <div>Loading...</div>
+    case "open":
+      return <Lobby />;
+    case "playing":
+      return <Game />;
+    default:
+      <div>Loading...</div>;
   }
-}
+};
 
 export default function Room() {
   const { id } = useParams();
   const { socket } = useSocket();
-  const { room, isLoading } = useRoomByHash(String(id))
+  const { room, isLoading } = useRoomByHash(String(id));
 
   useEffect(() => {
     if (isLoading || !socket) return;
     socket.emit("join_room", { roomId: id });
   }, [isLoading, socket]);
 
-  if (isLoading) return <h1 className="text-white font-semibold text-center pt-5">Carregando a sala...</h1>;
-  if (!room) return <h1 className="text-white font-semibold text-center pt-5">Sala não encontrada</h1>;
+  if (isLoading)
+    return (
+      <h1 className="text-white font-semibold text-center pt-5">
+        Carregando a sala...
+      </h1>
+    );
+  if (!room)
+    return (
+      <h1 className="text-white font-semibold text-center pt-5">
+        Sala não encontrada
+      </h1>
+    );
 
   return (
     <div>

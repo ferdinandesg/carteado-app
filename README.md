@@ -4,26 +4,30 @@
 </p>
 
 > Carteado card game
-Project created with the aim of learning more about Docker, deployment, socket, redis and other technologies
+> Project created with the aim of learning more about Docker, deployment, socket, redis and other technologies
+
 ## Install
+
 To carry out the installation you just need to run the docker-compose file
+
 ```sh
 docker-compose up -d
 ```
 
-and soon after the web application will be available on port `:3000` 
+and soon after the web application will be available on port `:3000`
 
 ## Author
 
 👤 **Ferdinandes Guimaraes**
 
-* Website: ferdinandes.com.br
-* Github: [@ferdinandesg](https://github.com/ferdinandesg)
-* LinkedIn: [@ferdinandes-nascimento](https://linkedin.com/in/ferdinandes-nascimento)
+- Website: ferdinandes.com.br
+- Github: [@ferdinandesg](https://github.com/ferdinandesg)
+- LinkedIn: [@ferdinandes-nascimento](https://linkedin.com/in/ferdinandes-nascimento)
 
 ## Show your support
 
 Give a ⭐️ if this project helped you!
 
-***
+---
+
 _This README was generated with ❤️ by [readme-md-generator](https://github.com/kefranabg/readme-md-generator)_

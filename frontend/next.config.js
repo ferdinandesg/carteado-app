@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require("path");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -14,9 +14,9 @@ const nextConfig = {
   },
   reactStrictMode: false,
   sassOptions: {
-    implementation: 'sass-embedded',
-    includePaths: [path.join(__dirname, 'styles')],
-    prependData: `@use 'variables' as *;`
+    implementation: "sass-embedded",
+    includePaths: [path.join(__dirname, "styles")],
+    prependData: `@use 'variables' as *;`,
   },
 };
 

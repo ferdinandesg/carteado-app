@@ -23,7 +23,7 @@
       display: flex;
       border: none;
       outline: none;
-      font-size: 1.5rem
+      font-size: 1.5rem;
     }
 
     .searchButton {
@@ -69,7 +69,7 @@
         flex-direction: column;
 
         .roomHash {
-          font-size: .95rem;
+          font-size: 0.95rem;
           font-weight: 500;
           color: white;
         }
@@ -78,7 +78,6 @@
           font-size: 1.5rem;
           font-weight: bold;
         }
-
       }
 
       .roomData {
@@ -100,12 +99,11 @@
             .icon {
               color: rgb(0, 165, 0);
               fill: rgb(0, 165, 0);
-              ;
             }
           }
 
           &.playing {
-            color: lightgray
+            color: lightgray;
           }
 
           .label {
@@ -113,8 +111,6 @@
             font-size: 1.1rem;
             text-transform: uppercase;
           }
-
-
         }
       }
 
@@ -125,7 +121,7 @@
         align-items: center;
 
         .label {
-          font-size: .85rem;
+          font-size: 0.85rem;
           font-weight: 400;
         }
 

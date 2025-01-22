@@ -12,8 +12,7 @@ export default function Buttons({ icon: Icon, ...props }: ButtonProps) {
         "p-2 rounded-sm transition",
         props.className,
         props.disabled ? "opacity-50" : "opacity-100"
-      )}
-    >
+      )}>
       {Icon}
     </button>
   );

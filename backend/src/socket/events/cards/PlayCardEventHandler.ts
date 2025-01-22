@@ -7,9 +7,9 @@ export async function PlayCardEventHandler(
 ): Promise<void> {
   const { payload, socket, channel } = context;
   try {
-      const { card } = payload;
+    const { card } = payload;
     const roomHash = socket.user.room;
-    const game = await getGameState(roomHash)
+    const game = await getGameState(roomHash);
     const result = game.playCard(card, socket.user.id);
     if (result.error) {
       socket.emit("error", result.message);
@@ -17,7 +17,6 @@ export async function PlayCardEventHandler(
     }
     await saveGameState(roomHash, game);
     emitToRoom(channel, roomHash, "game_update", game);
-
   } catch (er) {
     socket.emit("error", er.message);
   }

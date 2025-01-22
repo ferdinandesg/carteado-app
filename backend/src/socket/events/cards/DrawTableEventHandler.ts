@@ -7,11 +7,11 @@ export async function DrawTableEventHandler(
   const { socket, channel } = context;
   try {
     const roomHash = socket.user.room;
-    const game = await getGameState(roomHash)
+    const game = await getGameState(roomHash);
     const result = game.drawTable(socket.user.id);
     if (result.error) {
       socket.emit("error", result.error);
-      return
+      return;
     }
     await saveGameState(roomHash, game);
     emitToRoom(channel, roomHash, "game_update", game);

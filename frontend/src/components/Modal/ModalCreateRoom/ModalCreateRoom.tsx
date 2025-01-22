@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import Modal from "..";
 import usePostRoom from "@/hooks/rooms/usePostRoom";
 
-import styles from "@styles/ModalCreateRoom.module.scss"
+import styles from "@styles/ModalCreateRoom.module.scss";
 import { Check } from "lucide-react";
 import { RoomInterface } from "@/models/room";
 
@@ -19,8 +19,8 @@ interface ModalCreateRoomProps {
 
 export default function ModalCreateRoom({
   isOpen,
-  onClose = () => { },
-  onConfirm = () => { }
+  onClose = () => {},
+  onConfirm = () => {},
 }: ModalCreateRoomProps) {
   const {
     register,
@@ -32,22 +32,23 @@ export default function ModalCreateRoom({
   const handleCreateRoom = handleSubmit(async (data) => {
     try {
       const room = await createRoom({ name: data.name, size: data.size });
-      onConfirm(room.hash)
+      onConfirm(room.hash);
     } catch (error) {
       console.error(error);
     }
   });
-  if (!isOpen) return
+  if (!isOpen) return;
   return (
     <Modal.Root className="w-1/4 h-auto">
       <Modal.Header
         onClose={() => onClose()}
-        title="Criar nova sala"
-      ></Modal.Header>
+        title="Criar nova sala"></Modal.Header>
       <Modal.Content className="p-4">
         <div className="flex flex-col gap-4">
           <div className="flex flex-col">
-            <label htmlFor="username" className="text-gray-600 text-sm">
+            <label
+              htmlFor="username"
+              className="text-gray-600 text-sm">
               Nome da sala
             </label>
             <input
@@ -63,7 +64,9 @@ export default function ModalCreateRoom({
             )}
           </div>
           <div className="flex flex-col">
-            <label htmlFor="size" className="text-gray-600 text-sm">
+            <label
+              htmlFor="size"
+              className="text-gray-600 text-sm">
               Jogadores
             </label>
             <input
@@ -85,11 +88,10 @@ export default function ModalCreateRoom({
         <Modal.Buttons
           className="bg-green-600"
           onClick={() => handleCreateRoom()}
-          icon={<Check color="white" />}
-        >
+          icon={<Check color="white" />}>
           Confirmar
         </Modal.Buttons>{" "}
       </Modal.Footer>
     </Modal.Root>
-  )
+  );
 }

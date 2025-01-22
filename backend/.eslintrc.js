@@ -1,9 +1,9 @@
 module.exports = {
   extends: ["../.eslintrc.js"],
   env: {
-    node: true
+    node: true,
   },
   rules: {
-    "no-console": "off"
-  }
+    "no-console": "off",
+  },
 };

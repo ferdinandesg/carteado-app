@@ -5,11 +5,7 @@ import Opponent from "./Opponent/Opponent";
 import classNames from "classnames";
 
 export default function Table() {
-  const {
-    rotatedPlayers,
-    bunchCards,
-    retrieveCard
-  } = useGameContext();
+  const { rotatedPlayers, bunchCards, retrieveCard } = useGameContext();
 
   const playerPositions = {
     1: ["bottom-center"],
@@ -21,14 +17,16 @@ export default function Table() {
   return (
     <div className={styles.table}>
       {rotatedPlayers.map((player, index) => (
-        <div key={player.userId} className={classNames(
-          styles.player,
-          styles[playerPositions[index]]
-        )}>
+        <div
+          key={player.userId}
+          className={classNames(styles.player, styles[playerPositions[index]])}>
           <Opponent player={player} />
         </div>
       ))}
-      <CardBunch cards={bunchCards} onClick={retrieveCard} />
+      <CardBunch
+        cards={bunchCards}
+        onClick={retrieveCard}
+      />
     </div>
   );
 }

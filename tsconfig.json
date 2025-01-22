@@ -2,17 +2,11 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@shared/*": [
-        "shared/*"
-      ]
+      "@shared/*": ["shared/*"]
     },
     "moduleResolution": "node",
     "strict": true,
     "esModuleInterop": true
   },
-  "include": [
-    "shared",
-    "frontend",
-    "backend"
-  ]
+  "include": ["shared", "frontend", "backend"]
 }

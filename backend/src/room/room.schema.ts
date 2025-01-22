@@ -9,7 +9,7 @@ export const roomSchema = z.object({
   password: z.string().optional(),
   players: z.array(userSchema).max(4),
   bunch: z.array(cardSchema),
-  size: z.number().min(2)
+  size: z.number().min(2),
 });
 
 export type RoomInterface = z.infer<typeof roomSchema>;

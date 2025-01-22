@@ -20,21 +20,20 @@
 
     &.notReady {
       background-color: white;
-      color: darken(#32CD32, 20);
+      color: darken(#32cd32, 20);
 
       &:hover {
-        background-color: lighten($color: #32CD32, $amount: 30);
+        background-color: lighten($color: #32cd32, $amount: 30);
       }
     }
 
     &.ready {
-      background-color: #32CD32;
+      background-color: #32cd32;
       color: white;
 
       &:hover {
-        background-color: lighten($color: #32CD32, $amount: 10);
+        background-color: lighten($color: #32cd32, $amount: 10);
       }
     }
-
   }
 }

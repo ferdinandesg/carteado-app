@@ -3,11 +3,13 @@ import RedisClass from "../client";
 import { PopulatedPlayer } from "src/game/game";
 
 type PopulatedRoom = {
-  spectators: User[]
-  players: PopulatedPlayer[]
-} & Prisma.RoomGetPayload<{}>
+  spectators: User[];
+  players: PopulatedPlayer[];
+} & Prisma.RoomGetPayload<{}>;
 
-export async function getRoomState(roomId: string): Promise<PopulatedRoom | null> {
+export async function getRoomState(
+  roomId: string
+): Promise<PopulatedRoom | null> {
   const redis = await RedisClass.getInstance();
   const data = await redis.get(`room:${roomId}`);
   return data ? JSON.parse(data) : null;
@@ -19,6 +21,3 @@ export async function saveRoomState(roomId: string, roomState: object) {
     EX: 3600,
   });
 }
-
-
-

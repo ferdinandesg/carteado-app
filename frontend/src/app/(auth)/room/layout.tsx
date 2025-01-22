@@ -7,13 +7,10 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-
   return (
     <RoomProvider>
       <GameProvider>
-        <div className="darkBg">
-          {children}
-        </div>
+        <div className="darkBg">{children}</div>
       </GameProvider>
     </RoomProvider>
   );

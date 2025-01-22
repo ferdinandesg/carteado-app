@@ -12,15 +12,14 @@ declare module "next-auth" {
       email: string;
       name: string;
       image?: string;
-      token?: JWT | undefined
-      rank?: number
-    }
+      token?: JWT | undefined;
+      rank?: number;
+    };
   }
 
   interface User {
     id: string;
     role: string;
-
   }
 }
 declare module "next-auth/jwt" {
@@ -34,6 +33,4 @@ declare module "next-auth/jwt" {
     picture: string;
     jti: string;
   }
-
 }
-

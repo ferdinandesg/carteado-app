@@ -8,16 +8,12 @@ import CardFan from "../CardFan";
 import TableActions from "../TableActions";
 
 export default function Game() {
-  const {
-    player,
-    playCard
-  } = useGameContext();
+  const { player, playCard } = useGameContext();
   const handCards = player?.hand || [];
-  const tableCards = player?.table.sort((a, b) => a.hidden ? 1 : -1) || [];
+  const tableCards = player?.table.sort((a, b) => (a.hidden ? 1 : -1)) || [];
   return (
     <>
-      <ModalChoseCards
-        isOpen={player?.status === "chosing"} />
+      <ModalChoseCards isOpen={player?.status === "chosing"} />
 
       <div className={styles.Game}>
         <div className={styles.gameTable}>
@@ -25,10 +21,16 @@ export default function Game() {
         </div>
         <div className={styles.cardTable}>
           {tableCards.map((card) => (
-            <CardComponent card={card} key={`player-table-${card.toString}`} />
+            <CardComponent
+              card={card}
+              key={`player-table-${card.toString}`}
+            />
           ))}
         </div>
-        <CardFan cards={handCards} onClick={playCard} />
+        <CardFan
+          cards={handCards}
+          onClick={playCard}
+        />
         <TableActions />
       </div>
     </>

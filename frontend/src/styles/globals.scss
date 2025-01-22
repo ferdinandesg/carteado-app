@@ -1,9 +1,8 @@
-@use 'variables' as *;
+@use "variables" as *;
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 
 .darkBg {
   background: $gradient-background;

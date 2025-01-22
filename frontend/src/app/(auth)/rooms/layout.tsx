@@ -1,8 +1,7 @@
 "use client";
-export default function RootLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
-    return children;
+
+import { ReactNode } from "react";
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return children;
 }

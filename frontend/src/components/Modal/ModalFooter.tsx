@@ -12,8 +12,7 @@ export default function Footer({ ...props }: FooterProps) {
       className={twMerge(
         "h-16 flex bg-gray-300 p-2 justify-end items-center gap-3 rounded-b",
         props.className
-      )}
-    >
+      )}>
       {props.children}
     </div>
   );

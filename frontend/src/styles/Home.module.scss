@@ -1,5 +1,6 @@
 .Home {
-  background: $gradient-background;
+  // background-image: sripte-bg($background-color);
+  // background-size: 300px 450px;
   height: 100vh;
   width: 100vw;
   display: flex;
@@ -13,6 +14,7 @@
     flex-direction: column;
     padding: $spacing-s;
     justify-content: space-around;
+    background-color: $primary-color;
     align-items: center;
   }
 

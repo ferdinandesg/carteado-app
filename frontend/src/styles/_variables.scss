@@ -3,7 +3,6 @@ $spacing-s: 8px;
 $spacing-m: 16px;
 $spacing-l: 32px;
 
-
 $background-color: #133314;
 $primary-color: #f1b001;
 $secondary-color: #310c07;
@@ -16,4 +15,82 @@ $therciary-color: #3ced01;
 
 $gradient-background: generate-gradient($background-color);
 
-$font-family: 'Roboto', sans-serif;
+$font-family: "Roboto", sans-serif;
+
+// Stripes bg variable
+@function sripte-bg($color) {
+  @return repeating-linear-gradient(
+      120deg,
+      rgba($color, 0.1),
+      rgba($color, 0.1) 3px,
+      transparent 3px,
+      transparent 60px
+    ),
+    repeating-linear-gradient(
+      60deg,
+      rgba($color, 0.1),
+      rgba($color, 0.1) 1px,
+      transparent 3px,
+      transparent 60px
+    ),
+    linear-gradient(
+      60deg,
+      rgba($color, 0.6) 25%,
+      transparent 25%,
+      transparent 75%,
+      rgba($color, 0.6) 75%,
+      rgba($color, 0.6)
+    ),
+    linear-gradient(
+      120deg,
+      rgba($color, 0.6) 25%,
+      transparent 25%,
+      transparent 75%,
+      rgba($color, 0.6) 75%,
+      rgba($color, 0.6)
+    );
+}
+
+.square-bg {
+  width: 100%;
+  height: 100%;
+  background-size: 100px 100px;
+  $darker-background-color: darken($background-color, 3%);
+  background-image: linear-gradient(
+      45deg,
+      $background-color 25%,
+      transparent 25%,
+      transparent 75%,
+      $background-color 75%,
+      $background-color
+    ),
+    linear-gradient(
+      45deg,
+      $background-color 25%,
+      transparent 25%,
+      transparent 75%,
+      $background-color 75%,
+      $background-color
+    ),
+    linear-gradient(
+      45deg,
+      $darker-background-color 25%,
+      transparent 25%,
+      transparent 75%,
+      $darker-background-color 75%,
+      $darker-background-color
+    ),
+    linear-gradient(
+      45deg,
+      $darker-background-color 25%,
+      transparent 25%,
+      transparent 75%,
+      $darker-background-color 75%,
+      $darker-background-color
+    );
+  background-position:
+    0 0,
+    50px 50px,
+    50px 0,
+    0 50px;
+}

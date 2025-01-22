@@ -14,8 +14,8 @@ const addMessage = async (roomId: string, message: Message): Promise<Chat> => {
     where: { id: room.chatId },
     data: { messages: { set: room.chat.messages } },
   });
-  return chat
-}
+  return chat;
+};
 
 export async function SendMessageEventHandler(
   context: SocketContext

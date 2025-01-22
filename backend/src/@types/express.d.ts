@@ -8,9 +8,8 @@ declare global {
   }
 }
 
-
 declare module "express-serve-static-core" {
-    interface Request {
-        user?: User;
-    }
+  interface Request {
+    user?: User;
   }
+}

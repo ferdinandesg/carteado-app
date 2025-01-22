@@ -21,6 +21,6 @@ export interface GameState {
   status: "playing" | "finished";
   cards: {
     cards: Card[];
-    numberOfFullDecks: number
-  }
+    numberOfFullDecks: number;
+  };
 }

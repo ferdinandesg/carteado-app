@@ -1,4 +1,3 @@
-
 import { HtmlHTMLAttributes } from "react";
 
 import styles from "@styles/Card.module.scss";
@@ -12,11 +11,7 @@ export default function CardComponent({ card, ...rest }: CardComponentProps) {
   return (
     <div
       {...rest}
-      className={classNames(
-        styles.Card,
-        card.hidden && styles.hidden,
-      )}
-    >
+      className={classNames(styles.Card, card.hidden && styles.hidden)}>
       {card.toString}
     </div>
   );

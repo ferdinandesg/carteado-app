@@ -1,11 +1,11 @@
-version: '3.8'
+version: "3.8"
 
 include:
   - path: backend/docker-compose.yml
 
 services:
   frontend:
-    build: 
+    build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: carteado_frontend

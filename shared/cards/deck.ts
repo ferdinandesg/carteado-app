@@ -76,7 +76,7 @@ class Deck {
 
   public serialize(): string {
     return JSON.stringify({
-      cards: this.cards
+      cards: this.cards,
     });
   }
 

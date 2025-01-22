@@ -43,7 +43,9 @@ $card-positions: (
 
     &:hover {
       z-index: 2;
-      transform: translate(1px, $hover-offset-y) rotate($rotate) scale($hover-scale);
+      transform: translate(1px, $hover-offset-y)
+        rotate($rotate)
+        scale($hover-scale);
     }
   }
 }

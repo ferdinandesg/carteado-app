@@ -2,7 +2,7 @@ import { Message } from "@prisma/client";
 import RedisClass from "../client";
 
 export async function getMessages(roomId: string) {
-  const redis = await RedisClass.getInstance()
+  const redis = await RedisClass.getInstance();
   const data = await redis.get(`chat:${roomId}`);
   return data ? JSON.parse(data) : [];
 }

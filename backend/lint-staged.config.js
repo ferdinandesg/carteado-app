@@ -1,5 +1,3 @@
 module.exports = {
-  'apps/frontend/**/*.{js,jsx,ts,tsx}': [
-    'eslint --fix',
-  ]
+  "apps/frontend/**/*.{js,jsx,ts,tsx}": ["eslint --fix"],
 };

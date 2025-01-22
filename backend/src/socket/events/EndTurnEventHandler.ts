@@ -10,7 +10,7 @@ export async function EndTurnEventHandler(
   try {
     const game = await getGameState(room);
     const result = game.endTurn(socket.user.id);
-    if (result.error) throw result.error
+    if (result.error) throw result.error;
     await saveGameState(room, game);
     emitToRoom(channel, room, "game_update", game);
   } catch (er) {

@@ -10,31 +10,26 @@ import { useGameContext } from "@/contexts/game.context";
 interface ModalChoseCardsProps {
   isOpen: boolean;
 }
-export default function ModalChoseCards({
-  isOpen
-}: ModalChoseCardsProps) {
+export default function ModalChoseCards({ isOpen }: ModalChoseCardsProps) {
   const { handlePickCards, player } = useGameContext();
   const handCards = player?.hand || [];
   const [chosenCards, setChosenCards] = useState<Card[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
 
   const pickHand = () => {
-    if (chosenCards.length !== 3) return
+    if (chosenCards.length !== 3) return;
     handlePickCards(chosenCards);
     setChosenCards([]);
-    setLoading(true)
-
-  }
+    setLoading(true);
+  };
   const selectCard = (card: Card) => {
     if (chosenCards.length < 3) setChosenCards((m) => [...m, card]);
   };
 
   const removeCard = (card: Card) =>
-    setChosenCards((m) => [
-      ...m.filter((x) => x.toString !== card.toString),
-    ]);
+    setChosenCards((m) => [...m.filter((x) => x.toString !== card.toString)]);
 
-  const cards = handCards.filter(h => h.hidden !== true);
+  const cards = handCards.filter((h) => h.hidden !== true);
 
   const notChosenCards = cards.filter(
     (x) => !chosenCards.some((y) => y.toString === x.toString)

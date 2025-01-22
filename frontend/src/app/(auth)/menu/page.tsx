@@ -7,20 +7,23 @@ import ModalCreateRoom from "@/components/Modal/ModalCreateRoom/ModalCreateRoom"
 
 import styles from "@styles/Menu.module.scss";
 import UserCard from "@/components/UserCard";
-import { List, ListPlus, Play, PlusCircle } from "lucide-react";
+import { List, ListPlus, Play } from "lucide-react";
 
 type MenuButtonProps = {
   onClick: () => void;
   icon: React.ReactNode;
   label: string;
-}
+};
 const MenuButton = ({ onClick, icon, label }: MenuButtonProps) => {
-
-  return <div className={styles.MenuButton} onClick={onClick}>
-    <div className={styles.menuIcon}>{icon}</div>
-    <span className={styles.menuLabel}>{label}</span>
-  </div>
-}
+  return (
+    <div
+      className={styles.MenuButton}
+      onClick={onClick}>
+      <div className={styles.menuIcon}>{icon}</div>
+      <span className={styles.menuLabel}>{label}</span>
+    </div>
+  );
+};
 
 export default function Menu() {
   const router = useRouter();
@@ -29,7 +32,7 @@ export default function Menu() {
 
   const onCreateRoom = (hash: string) => {
     router.push(`/room/${hash}`);
-  }
+  };
   return (
     <>
       <ModalCreateRoom
@@ -44,22 +47,19 @@ export default function Menu() {
         <div className={styles.menuActions}>
           <MenuButton
             label="Jogar"
-            icon={
-              <Play size={42} />
-            }
-            onClick={() => router.push(`/rooms`)} />
+            icon={<Play size={42} />}
+            onClick={() => router.push(`/rooms`)}
+          />
           <MenuButton
             label="Criar sala"
-            icon={
-              <ListPlus size={42} />
-            }
-            onClick={() => setShowModal(true)} />
+            icon={<ListPlus size={42} />}
+            onClick={() => setShowModal(true)}
+          />
           <MenuButton
             label="Salas criadas"
-            icon={
-              <List size={42} />
-            }
-            onClick={() => router.push(`/rooms`)} />
+            icon={<List size={42} />}
+            onClick={() => router.push(`/rooms`)}
+          />
         </div>
       </div>
     </>

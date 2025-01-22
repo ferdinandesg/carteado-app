@@ -11,7 +11,7 @@ export async function Authentication(
 
     const auth = await validateUser(parsedUser);
     socket.user = auth;
- 
+
     socket.join(socket.user.email);
     return next(null, true);
   } catch (error) {

@@ -3,14 +3,14 @@ import Deck from "shared/cards";
 
 export type PopulatedPlayer = Prisma.PlayerGetPayload<{
   include: {
-    user: true
-  }
-}>
+    user: true;
+  };
+}>;
 
 interface GamePlayer extends PopulatedPlayer {
   playedCards?: Card[];
   name?: string;
-  image?: string
+  image?: string;
   email?: string;
 }
 
@@ -42,16 +42,17 @@ export default class GameClass {
   givePlayerCards(userId: string): Card[] {
     const foundPlayer = this.playerExists(userId);
     if (!foundPlayer) return;
-    const hand = this.cards.giveTableCards()
-    foundPlayer.table = []
-    foundPlayer.hand = hand as Card[]
-    return hand as Card[]
+    const hand = this.cards.giveTableCards();
+    foundPlayer.table = [];
+    foundPlayer.hand = hand as Card[];
+    return hand as Card[];
   }
 
   canPlayCard(card: Card, userId: string): GamePlayer {
     const foundPlayer = this.playerExists(userId);
     if (!foundPlayer) throw "Jogador não encontrado!";
-    if (!this.players.every(p => p.status === "playing")) throw "Ainda não é possível jogar!";
+    if (!this.players.every((p) => p.status === "playing"))
+      throw "Ainda não é possível jogar!";
     const lastThree = this.bunch.slice(-3);
     if (
       lastThree.length === 3 &&
@@ -60,12 +61,12 @@ export default class GameClass {
       return foundPlayer;
     }
     if (foundPlayer.userId !== this.playerTurn) throw "Ainda não é sua vez!";
-    return foundPlayer
+    return foundPlayer;
   }
 
   playCard(card: Card, userId: string) {
     try {
-      const foundPlayer = this.canPlayCard(card, userId)
+      const foundPlayer = this.canPlayCard(card, userId);
       const result = this.applyRules(card, foundPlayer);
       return result;
     } catch (error) {
@@ -82,7 +83,6 @@ export default class GameClass {
       const [lastCard] = this.bunch.slice(-1);
       const currentCardSpecial = this.isSpecialCard(card);
       if (currentCardSpecial) {
-
       } else if (lastCard && !this.isSpecialCard(lastCard)) {
         // if the last card is not special, the current card should be higher
         if (lastCard.value! > card.value)
@@ -115,12 +115,13 @@ export default class GameClass {
 
   applySpecialCardRules(player: GamePlayer) {
     // find the current user and for each rank "2" card, should skip one turn
-    const turnsToSkip = (player.playedCards.filter((x) => x.rank === "2").length + 1) || 1;
+    const turnsToSkip =
+      player.playedCards.filter((x) => x.rank === "2").length + 1 || 1;
     this.skipTurns(player.userId, turnsToSkip);
 
     // find the current user and for each rank "10" card, should pick the last one and split the bunch
     const lastTenIndex = this.bunch.findIndex((x) => x.rank === "10");
-    if (lastTenIndex > -1) this.bunch = this.bunch.slice(lastTenIndex + 1);;
+    if (lastTenIndex > -1) this.bunch = this.bunch.slice(lastTenIndex + 1);
 
     // if in bunch we have a sequence in any place of four cards with the same rank, the bunch should be split
     for (let i = 0; i < this.bunch.length - 3; i++) {
@@ -135,17 +136,17 @@ export default class GameClass {
   endTurn(userId: string) {
     try {
       const foundPlayer = this.playerExists(userId);
-      if (!foundPlayer) return
+      if (!foundPlayer) return;
       if (foundPlayer.playedCards.length === 0)
         throw "Você precisa jogar alguma carta para poder pular a vez";
       this.applySpecialCardRules(foundPlayer);
-      this.players.forEach(p => p.playedCards = [])
+      this.players.forEach((p) => (p.playedCards = []));
       this.drawCards(foundPlayer);
       return {
         player: foundPlayer,
         bunch: this.bunch,
         turn: this.playerTurn,
-        error: false
+        error: false,
       };
     } catch (error) {
       throw { error: true, message: error };
@@ -163,8 +164,8 @@ export default class GameClass {
     }
 
     if (player.hand.length === 0 && !gameHasCards) {
-      player.hand = player.table.filter(x => !x.hidden);
-      player.table = player.table.filter(x => x.hidden);
+      player.hand = player.table.filter((x) => !x.hidden);
+      player.table = player.table.filter((x) => x.hidden);
     }
 
     return;
@@ -173,7 +174,7 @@ export default class GameClass {
   drawTable(userId: string) {
     try {
       const foundPlayer = this.playerExists(userId);
-      if (!foundPlayer) return
+      if (!foundPlayer) return;
       if (userId !== this.playerTurn) throw "Ainda não é sua vez!";
       this.bunch.forEach((card) => foundPlayer.hand.push(card));
       foundPlayer.playedCards = [];
@@ -188,11 +189,14 @@ export default class GameClass {
     try {
       if (userId !== this.playerTurn) throw "Ainda não é sua vez!";
       const foundPlayer = this.playerExists(userId);
-      if (!foundPlayer) return
-      if (!foundPlayer.playedCards.length) throw "Você não jogou nenhuma carta!";
+      if (!foundPlayer) return;
+      if (!foundPlayer.playedCards.length)
+        throw "Você não jogou nenhuma carta!";
       foundPlayer.hand.push(...foundPlayer.playedCards);
-      this.bunch = this.bunch.filter((x) => foundPlayer.playedCards.every((y) => y.toString !== x.toString));
-      foundPlayer.playedCards = []
+      this.bunch = this.bunch.filter((x) =>
+        foundPlayer.playedCards.every((y) => y.toString !== x.toString)
+      );
+      foundPlayer.playedCards = [];
       return { error: false, player: foundPlayer, bunch: this.bunch };
     } catch (error) {
       throw { error: true, message: error };
@@ -201,8 +205,10 @@ export default class GameClass {
 
   pickHand(userId: string, cards: Card[]) {
     const foundPlayer = this.playerExists(userId);
-    if (!foundPlayer) return
-    foundPlayer.table = foundPlayer.hand.filter(c => !cards.some((y) => c.toString === y.toString));
+    if (!foundPlayer) return;
+    foundPlayer.table = foundPlayer.hand.filter(
+      (c) => !cards.some((y) => c.toString === y.toString)
+    );
     foundPlayer.hand = cards;
     foundPlayer.status = "playing";
     return {
@@ -218,7 +224,7 @@ export default class GameClass {
       cards: this.cards.serialize(),
       playerTurn: this.playerTurn,
       status: this.status,
-      bunch: this.bunch
+      bunch: this.bunch,
     });
   }
 

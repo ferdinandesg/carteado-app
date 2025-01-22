@@ -6,21 +6,24 @@ import RoomItem from "@/components/RoomItem";
 
 import styles from "@styles/Rooms.module.scss";
 
-
 type RoomList = {
   rooms: RoomInterface[];
   onClick: (room: RoomInterface) => void;
-}
+};
 
 const RoomList = ({ rooms, onClick }: RoomList) => {
   return (
     <div className={styles.RoomList}>
       {rooms.map((room) => (
-        <RoomItem key={`room-${room.hash}`} room={room} onClick={onClick} />
+        <RoomItem
+          key={`room-${room.hash}`}
+          room={room}
+          onClick={onClick}
+        />
       ))}
     </div>
   );
-}
+};
 
 export default function Rooms() {
   const router = useRouter();
@@ -38,12 +41,13 @@ export default function Rooms() {
     <div className={styles.Rooms}>
       <SearchComponent />
       <div className={styles.RoomList}>
-        {isLoading &&
-          <span>Loading...</span>}
-        {
-          !isLoading && data?.length &&
-          <RoomList onClick={r => goToRoom(r.hash)} rooms={data} />
-        }
+        {isLoading && <span>Loading...</span>}
+        {!isLoading && data?.length && (
+          <RoomList
+            onClick={(r) => goToRoom(r.hash)}
+            rooms={data}
+          />
+        )}
       </div>
     </div>
   );

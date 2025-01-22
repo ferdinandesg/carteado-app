@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "../axios";
-import { Player } from 'shared/types';
-import { UserSession } from '@/models/Users';
+import { Player } from "shared/types";
+import { UserSession } from "@/models/Users";
 
 export type RoomInterface = {
   id: string;
@@ -16,18 +16,18 @@ export type RoomInterface = {
 };
 
 const rawFetchRooms = async () => {
-  const response = await axiosInstance.get('/rooms');
+  const response = await axiosInstance.get("/rooms");
   return response.data;
 };
 
 export default function useFetchRooms() {
   const { data, isLoading, isError } = useQuery<RoomInterface[]>({
-    queryKey: ['rooms'],
-    queryFn: rawFetchRooms
+    queryKey: ["rooms"],
+    queryFn: rawFetchRooms,
   });
   return {
     data,
     isLoading,
-    isError
-  }
+    isError,
+  };
 }

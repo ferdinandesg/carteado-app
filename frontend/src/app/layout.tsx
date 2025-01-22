@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { SocketProvider } from "@/contexts/socket.context";
 import "../styles/globals.scss";
 import { SessionProvider } from "next-auth/react";
@@ -9,8 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const inter = Inter({ subsets: ["latin"] });
 
-
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 export default function RootLayout({
   children,

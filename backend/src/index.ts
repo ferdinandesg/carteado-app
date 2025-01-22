@@ -12,12 +12,12 @@ routes(app);
 const httpServer = http.createServer(app);
 RedisClass.getInstance();
 SocketClass.init(httpServer);
-process.on('uncaughtException', (err) => {
-  console.error('Exceção não capturada detectada:', err);
+process.on("uncaughtException", (err) => {
+  console.error("Exceção não capturada detectada:", err);
 });
 
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Promise rejeitada sem tratamento:', reason);
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Promise rejeitada sem tratamento:", reason);
 });
 httpServer.listen(process.env.PORT, () =>
   console.log(`Running on: ${process.env.PORT}`)

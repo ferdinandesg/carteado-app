@@ -35,12 +35,10 @@
     &.ready {
       border: 6px solid lightgreen;
       box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-
     }
 
     &.notReady {
       border: 6px solid gray;
-
     }
 
     img {
@@ -70,5 +68,4 @@
       color: lightgray;
     }
   }
-
 }

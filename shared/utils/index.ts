@@ -1,2 +1,1 @@
-
-const nextPlayer = () => {}
+const nextPlayer = () => {};

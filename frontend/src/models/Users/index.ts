@@ -8,6 +8,7 @@ export type UserSession = {
   rank?: number;
 };
 
-export type PopulatedPlayer = Player & UserSession & {
-  user: UserSession;
-};
+export type PopulatedPlayer = Player &
+  UserSession & {
+    user: UserSession;
+  };
