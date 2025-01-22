@@ -11,6 +11,7 @@ export default function CardBunch({
   onClick = () => {},
   eiei,
 }: CardBunchProps) {
+  sdaasddsa;
   return (
     <div className={styles.centerDeck}>
       <div className={styles.wrap}>
