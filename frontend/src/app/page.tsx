@@ -9,7 +9,12 @@ import { useRouter } from "next/navigation";
 import styles from "@styles/Home.module.scss";
 import classNames from "classnames";
 import Image from "next/image";
+import { Pixelify_Sans } from "next/font/google";
 
+const pixelify = Pixelify_Sans({
+  weight: ["400"],
+  subsets: ["latin"],
+});
 type FormData = {
   name: string;
 };
@@ -64,18 +69,18 @@ export default function Home() {
         </Modal.Root>
       )}
 
-      <div className={classNames(styles.Home, "square-bg")}>
+      <div className={classNames(styles.Home, "square-bg", pixelify.className)}>
         <div className={styles.container}>
           <h1 className={styles.title}>Carteado</h1>
-          <div className="flex gap-2">
+          <div className={styles.authMethods}>
             <button
-              className="bg-white p-2 rounded hover:bg-gray-200"
+              className={styles.google}
               onClick={() => signIn("google")}>
               <Image
                 src="https://developers.google.com/identity/images/g-logo.png"
                 alt="Google Logo"
-                width={50}
-                height={50}
+                width={25}
+                height={25}
               />
               Continuar com o Google
             </button>
@@ -86,9 +91,7 @@ export default function Home() {
               Entrar como convidado
             </button>
           </div>
-          <span className="text-gray-300 text-sm cursor-pointer hover:underline">
-            Ver regras
-          </span>
+          <span className={styles.rulesButton}>Ver regras</span>
         </div>
       </div>
     </>

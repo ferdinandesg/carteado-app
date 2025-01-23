@@ -5,6 +5,7 @@ import useFetchRooms, { RoomInterface } from "@/hooks/rooms/useFetchRooms";
 import RoomItem from "@/components/RoomItem";
 
 import styles from "@styles/Rooms.module.scss";
+import classNames from "classnames";
 
 type RoomListType = {
   rooms: RoomInterface[];
@@ -38,7 +39,7 @@ export default function Rooms() {
   };
 
   return (
-    <div className={styles.Rooms}>
+    <div className={classNames(styles.Rooms)}>
       <SearchComponent />
       <div className={styles.RoomList}>
         {isLoading && <span>Loading...</span>}

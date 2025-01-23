@@ -1,6 +1,4 @@
 .Home {
-  // background-image: sripte-bg($background-color);
-  // background-size: 300px 450px;
   height: 100vh;
   width: 100vw;
   display: flex;
@@ -13,9 +11,34 @@
     display: flex;
     flex-direction: column;
     padding: $spacing-s;
+    border-radius: 5px;
     justify-content: space-around;
     background-color: $primary-color;
     align-items: center;
+  }
+
+  .authMethods {
+    display: flex;
+    width: 25%;
+    flex-direction: column;
+    justify-content: center;
+    gap: $spacing-m;
+    .google {
+      display: flex;
+      align-items: center;
+      border-radius: 50px;
+      overflow: hidden;
+      background-color: white;
+      justify-content: space-around;
+      padding: $spacing-s;
+      gap: $spacing-xs;
+      font-size: 0.9rem;
+
+      &:hover {
+        cursor: pointer;
+        text-decoration: underline;
+      }
+    }
   }
 
   .title {
@@ -25,5 +48,14 @@
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 2px;
+  }
+
+  .rulesButton {
+    cursor: pointer;
+    color: white;
+    font-size: 0.95rem;
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }

@@ -5,7 +5,8 @@
   flex-direction: column;
   gap: $spacing-m;
   padding: $spacing-m;
-
+  background-color: rgba(black, 0.2);
+  height: 100%;
   .searchBox {
     display: flex;
     margin: 0 auto;
@@ -49,13 +50,19 @@
     display: flex;
     flex-direction: column;
 
+    gap: $spacing-m;
     .RoomItem {
       display: flex;
       padding: $spacing-s;
       align-items: center;
       gap: $spacing-m;
+      background-color: darken($primary-color, 3);
       cursor: pointer;
-      background: generate-gradient($primary-color);
+      border-radius: 8px;
+
+      &:hover {
+        background-color: lighten($primary-color, 5);
+      }
 
       .owner {
         width: 80px;
@@ -67,13 +74,9 @@
       .roomInfo {
         display: flex;
         flex-direction: column;
-
         .roomHash {
-          font-size: 0.95rem;
-          font-weight: 500;
           color: white;
         }
-
         .roomName {
           font-size: 1.5rem;
           font-weight: bold;

@@ -8,7 +8,6 @@ import { Pixelify_Sans } from "next/font/google";
 import classNames from "classnames";
 
 const pixelify = Pixelify_Sans({
-  weight: ["400"],
   subsets: ["latin"],
 });
 
@@ -25,7 +24,12 @@ export default function RootLayout({
     return null;
   }
   return (
-    <div className={classNames(styles.RootLayout, pixelify.className)}>
+    <div
+      className={classNames(
+        styles.RootLayout,
+        "square-bg",
+        pixelify.className
+      )}>
       {children}
     </div>
   );
