@@ -7,7 +7,10 @@ import styles from "@styles/Menu.module.scss";
 import { Pixelify_Sans } from "next/font/google";
 import classNames from "classnames";
 
-const pixelify = Pixelify_Sans({ weight: ["700", "700"], subsets: ["latin"] });
+const pixelify = Pixelify_Sans({
+  weight: ["400"],
+  subsets: ["latin"],
+});
 
 export default function RootLayout({
   children,

@@ -1,0 +1,106 @@
+.ModalRoot {
+  width: 40%;
+  height: 35%;
+
+  .ModalContent {
+    display: flex;
+    flex-direction: column;
+    padding: $spacing-s;
+    gap: $spacing-s;
+    border-radius: 25px;
+    .backButton {
+      width: 70%;
+      margin-top: 10px;
+      margin: $spacing-s auto 0;
+      color: gray;
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+    .inputForm {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      .input {
+        width: 70%;
+        height: 50%;
+        margin-top: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        padding: $spacing-m;
+        font-weight: 300;
+      }
+
+      .button {
+        width: 50%;
+        height: 30px;
+        margin-top: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        background-color: #f0f0f0;
+        cursor: pointer;
+      }
+    }
+    .playersForm {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: $spacing-l;
+      button {
+        padding: $spacing-xs $spacing-m;
+        font-size: 36px;
+
+        border-radius: 10px;
+        &:hover {
+          background-color: lighten($color: $primary-color, $amount: 20);
+        }
+        &:active {
+          background-color: darken($color: $primary-color, $amount: 5);
+        }
+        &.selected {
+          background-color: $primary-color;
+        }
+      }
+    }
+    .createButton {
+      margin: 0 auto;
+      width: 70%;
+      margin: auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: black;
+      background-color: $primary-color;
+      gap: $spacing-m;
+      padding: $spacing-m;
+      font-size: 1.25rem;
+      cursor: pointer;
+
+      &:enabled {
+        &:hover {
+          background-color: lighten($color: $primary-color, $amount: 20);
+        }
+        &:active {
+          background-color: darken($color: $primary-color, $amount: 5);
+        }
+      }
+      &:disabled {
+        cursor: pointer;
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+    }
+
+    .errorFeedback {
+      color: red;
+      font-size: 12px;
+      margin-top: $spacing-s;
+    }
+  }
+}

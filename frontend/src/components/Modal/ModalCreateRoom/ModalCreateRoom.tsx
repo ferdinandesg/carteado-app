@@ -1,8 +1,11 @@
-import { useForm } from "react-hook-form";
 import Modal from "..";
 import usePostRoom from "@/hooks/rooms/usePostRoom";
 
-import { Check } from "lucide-react";
+import { ArrowLeftCircle, ArrowRightCircle, Check } from "lucide-react";
+
+import styles from "@styles/ModalCreateRoom.module.scss";
+import classNames from "classnames";
+import { useState } from "react";
 
 type RoomForm = {
   name: string;
@@ -15,81 +18,79 @@ interface ModalCreateRoomProps {
   onConfirm?: (roomHash: string) => void;
 }
 
+const players = [2, 3, 4];
+
 export default function ModalCreateRoom({
   isOpen,
   onClose = () => {},
   onConfirm = () => {},
 }: ModalCreateRoomProps) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<RoomForm>();
+  const [roomPayload, setRoomPayload] = useState<RoomForm>({
+    name: "",
+    size: 2,
+  });
   const { createRoom } = usePostRoom();
+  const isFormValid = roomPayload.name.length > 0;
 
-  const handleCreateRoom = handleSubmit(async (data) => {
+  const handleUpdateRoomPayload =
+    (key: keyof RoomForm) => (value: string | number) => {
+      setRoomPayload((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
+    };
+
+  const handleCreateRoom = async () => {
     try {
-      const room = await createRoom({ name: data.name, size: data.size });
+      const room = await createRoom(roomPayload);
       onConfirm(room.hash);
     } catch (error) {
       console.error(error);
     }
-  });
+  };
   if (!isOpen) return;
+
   return (
-    <Modal.Root className="w-1/4 h-auto">
-      <Modal.Header
-        onClose={() => onClose()}
-        title="Criar nova sala"></Modal.Header>
-      <Modal.Content className="p-4">
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col">
-            <label
-              htmlFor="username"
-              className="text-gray-600 text-sm">
-              Nome da sala
-            </label>
-            <input
-              {...register("name", { required: true })}
-              type="text"
-              id="username"
-              className="p-1 border-b border-b-gray-400 transition focus:outline-none focus:border-b-gray-700"
-            />
-            {errors.name && (
-              <span className="text-red-400 text-xs mt-2">
-                Nome da sala deve ser informado
-              </span>
-            )}
-          </div>
-          <div className="flex flex-col">
-            <label
-              htmlFor="size"
-              className="text-gray-600 text-sm">
-              Jogadores
-            </label>
-            <input
-              {...register("size", { required: true, max: 4, min: 2 })}
-              type="number"
-              maxLength={4}
-              id="size"
-              className="p-1 border-b border-b-gray-400 transition focus:outline-none focus:border-b-gray-700"
-            />
-            {errors.size && (
-              <span className="text-red-400 text-xs mt-2">
-                Quantidade de jogadores deve ser informado
-              </span>
-            )}
-          </div>
+    <Modal.Root className={styles.ModalRoot}>
+      <Modal.Content className={styles.ModalContent}>
+        <span
+          className={styles.backButton}
+          onClick={onClose}>
+          <ArrowLeftCircle size={20} />
+          Voltar
+        </span>
+        <div className={styles.inputForm}>
+          <input
+            type="text"
+            id="username"
+            placeholder="Nome da sala"
+            className={styles.input}
+            onChange={(e) => handleUpdateRoomPayload("name")(e.target.value)}
+          />
         </div>
+        <div className={styles.playersForm}>
+          {players.map((player) => (
+            <button
+              onClick={(e) =>
+                handleUpdateRoomPayload("size")(+e.currentTarget.value)
+              }
+              value={player}
+              key={`room-size-${player}`}
+              className={classNames(
+                roomPayload.size === player && styles.selected
+              )}>
+              {player}
+            </button>
+          ))}
+        </div>
+        <button
+          disabled={!isFormValid}
+          className={styles.createButton}
+          onClick={handleCreateRoom}>
+          <span>Criar sala</span>
+          <ArrowRightCircle size={24} />
+        </button>
       </Modal.Content>
-      <Modal.Footer>
-        <Modal.Buttons
-          className="bg-green-600"
-          onClick={() => handleCreateRoom()}
-          icon={<Check color="white" />}>
-          Confirmar
-        </Modal.Buttons>{" "}
-      </Modal.Footer>
     </Modal.Root>
   );
 }
