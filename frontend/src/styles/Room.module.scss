@@ -1,3 +1,14 @@
+.roomContainer {
+  display: flex;
+  height: 100vh;
+}
+.playersHud {
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+  height: 100%;
+  gap: $spacing-l;
+}
 .roomChat {
   height: 500px;
   position: fixed;

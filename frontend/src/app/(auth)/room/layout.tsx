@@ -9,9 +9,7 @@ export default function RootLayout({
 }) {
   return (
     <RoomProvider>
-      <GameProvider>
-        <div className="darkBg">{children}</div>
-      </GameProvider>
+      <GameProvider>{children}</GameProvider>
     </RoomProvider>
   );
 }

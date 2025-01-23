@@ -4,7 +4,7 @@ import { useSocket } from "@/contexts/socket.context";
 import Message from "./message";
 
 import styles from "@styles/Chat.module.scss";
-import { Mic } from "lucide-react";
+import { ChevronsDown, Mic } from "lucide-react";
 import classNames from "classnames";
 import Header from "./header";
 
@@ -108,10 +108,10 @@ export default function Chat({ roomId }: ChatProps) {
       </div>
       <form className={styles.messageForm}>
         <div className={styles.messageBox}>
-          <Mic
+          <ChevronsDown
             size={48}
             className={classNames(
-              styles.microphone,
+              styles.autoScroll,
               useAutoScroll && styles.active
             )}
             onClick={() => setUseAutoScroll(!useAutoScroll)}

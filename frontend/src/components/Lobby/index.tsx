@@ -27,7 +27,7 @@ export default function Lobby() {
   };
 
   return (
-    <div className={classNames(styles.LobbyContainer, "square-bg")}>
+    <div className={classNames(styles.LobbyContainer)}>
       <span className={classNames("animate-bounce", styles.waiting)}>
         Esperando jogadores
       </span>
@@ -40,11 +40,10 @@ export default function Lobby() {
         Estou pronto
       </button>
       <button
-        className="p-2 bg-green-600 text-white font-semibold"
+        className={styles.startGame}
         onClick={handleStartGame}>
         Start Game
       </button>
-      <Players roomId={roomId} />
     </div>
   );
 }

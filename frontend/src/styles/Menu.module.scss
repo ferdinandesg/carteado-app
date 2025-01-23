@@ -40,17 +40,7 @@
   border-radius: 4px;
   padding: $spacing-l $spacing-m;
   gap: $spacing-m;
-  background-color: $primary-color;
   position: relative;
-
-  &:hover {
-    background-color: lighten($primary-color, 10);
-  }
-
-  .menuIcon {
-    color: $secondary-color;
-    width: 20%;
-  }
 
   .menuLabel {
     color: $secondary-color;
@@ -60,5 +50,28 @@
     text-transform: uppercase;
     text-align: center;
     width: 50%;
+  }
+
+  &:disabled {
+    cursor: unset;
+    background-color: gray;
+
+    .menuLabel,
+    .menuIcon {
+      color: white;
+    }
+  }
+
+  &:enabled {
+    background-color: $primary-color;
+    color: white;
+    &:hover {
+      background-color: lighten($primary-color, 10);
+    }
+  }
+
+  .menuIcon {
+    color: $secondary-color;
+    width: 20%;
   }
 }

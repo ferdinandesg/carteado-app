@@ -9,6 +9,7 @@ import useRoomByHash from "@/hooks/rooms/useRoomByHash";
 import Chat from "@/components/Chat";
 
 import styles from "@styles/Room.module.scss";
+import Players from "@/components/Players";
 
 const RenderScreen = ({ status }: { status?: RoomStatus }) => {
   switch (status) {
@@ -45,11 +46,14 @@ export default function Room() {
     );
 
   return (
-    <div>
-      <RenderScreen status={room.status} />
-      <div className={styles.roomChat}>
-        <Chat roomId={room.hash} />
+    <div className={styles.roomContainer}>
+      <div className={styles.playersHud}>
+        <Players roomId={room.hash} />
       </div>
+      <RenderScreen status={room.status} />
+      {/* <div className={styles.roomChat}>
+        <Chat roomId={room.hash} />
+      </div> */}
     </div>
   );
 }

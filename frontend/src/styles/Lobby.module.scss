@@ -1,15 +1,31 @@
 .LobbyContainer {
   display: flex;
   flex-direction: column;
+  width: 100%;
   gap: $spacing-m;
-  width: 50%;
+  justify-content: center;
+  height: 100%;
   margin: 0 auto;
   align-items: center;
 
   .waiting {
     text-align: center;
-    margin: $spacing-m 0;
+    font-size: 3rem;
     color: white;
+  }
+  .startGame {
+    font-size: 1.5rem;
+    padding: $spacing-s;
+    color: white;
+    font-weight: bold;
+    background-color: #32cd32;
+    border-radius: 6px;
+    &:hover {
+      background-color: lighten($color: #32cd32, $amount: 10);
+    }
+    &:active {
+      background-color: darken($color: #32cd32, $amount: 10);
+    }
   }
 
   .statusButton {

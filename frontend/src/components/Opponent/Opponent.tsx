@@ -7,6 +7,7 @@ import { useState } from "react";
 import CardFan from "../CardFan";
 import { useGameContext } from "@/contexts/game.context";
 import classNames from "classnames";
+import Image from "next/image";
 
 export default function Opponent({ player }: { player: Player }) {
   const { game } = useGameContext();
@@ -23,9 +24,11 @@ export default function Opponent({ player }: { player: Player }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}>
       {player.image ? (
-        <img
+        <Image
           src={player.image}
-          alt={player.name}
+          alt={player.name || "opponent avatar"}
+          width={150}
+          height={100}
           className={styles.avatar}
         />
       ) : (

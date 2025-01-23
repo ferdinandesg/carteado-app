@@ -11,7 +11,7 @@
     justify-content: center;
     color: white;
     font-weight: 400;
-    background: generate-gradient($secondary-color);
+    background: $secondary-color;
     padding: $spacing-s;
   }
 
@@ -42,7 +42,7 @@
       padding: $spacing-s;
       gap: $spacing-s;
 
-      .microphone {
+      .autoScroll {
         padding: $spacing-s;
         cursor: pointer;
         border-radius: 25px;
@@ -55,12 +55,12 @@
       }
 
       input {
-        border-radius: 25px;
+        border-radius: 10px;
         padding: $spacing-s $spacing-m;
         background-color: transparent;
         border: 1px solid gray;
         transition: 200ms;
-        width: 50%;
+        width: 70%;
 
         &:focus-within {
           border-color: black;
@@ -74,11 +74,9 @@
       height: 100%;
       font-weight: bold;
       letter-spacing: 2px;
-      background-color: white;
-
+      background-color: $primary-color;
       &:hover {
-        background-color: lightgray;
-        color: lighten($color: black, $amount: 20);
+        background-color: lighten($primary-color, 10);
       }
 
       &:active {
