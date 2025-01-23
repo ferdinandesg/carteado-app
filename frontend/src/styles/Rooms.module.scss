@@ -7,6 +7,17 @@
   padding: $spacing-m;
   background-color: rgba(black, 0.2);
   height: 100%;
+  .backButton {
+    margin: $spacing-s auto;
+    color: lightgray;
+    display: flex;
+    gap: $spacing-xs;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
   .searchBox {
     display: flex;
     margin: 0 auto;
