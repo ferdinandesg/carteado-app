@@ -77,12 +77,6 @@ frontend/coverage-final.json
 backend/coverage-final.json
 
 # Arquivos de dependências de Docker e compilação
-docker-compose.override.yml
-docker-compose.log
-frontend/Dockerfile
-backend/Dockerfile
-frontend/docker-compose.yml
-backend/docker-compose.yml
 
 # Next.js específico
 frontend/.next/
