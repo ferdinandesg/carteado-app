@@ -11,6 +11,7 @@
 }
 .roomChat {
   height: 500px;
+  overflow-y: auto;
   position: fixed;
   bottom: 0;
   left: 0;
