@@ -3,6 +3,7 @@ import Image from "next/image";
 import styles from "@styles/UserCard.module.scss";
 import classNames from "classnames";
 import UserPlaceholder from "./UserPlaceholder";
+import RankMeter from "./RankMeter";
 
 type UserCardProps = {
   user?: {
@@ -11,11 +12,14 @@ type UserCardProps = {
     name: string;
     image?: string;
     status?: "READY" | "NOT_READY";
+    rank?: number;
   };
   size?: "small" | "medium" | "large";
 };
+
 export default function UserCard({ user, size = "large" }: UserCardProps) {
   const isUserReady = user?.status === "READY";
+  const userRank = user?.rank || 0;
 
   return (
     <div className={styles.UserCard}>
@@ -37,8 +41,12 @@ export default function UserCard({ user, size = "large" }: UserCardProps) {
         )}
       </div>
       <div className={styles.description}>
-        <span className={styles.title}>{user?.name}</span>
-        <span className={styles.email}>{user?.email}</span>
+        <h2 className={styles.title}>{user?.name}</h2>
+        <span>Rank:</span>
+        <RankMeter
+          currentValue={userRank}
+          maxValue={15}
+        />
       </div>
     </div>
   );

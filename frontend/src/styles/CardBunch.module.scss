@@ -30,8 +30,6 @@ $card-positions: ();
 
 .card {
   width: $card-width;
-  border: $card-border;
-  border-radius: $card-border-radius;
   position: relative;
   transition: transform 0.2s ease-in-out;
 

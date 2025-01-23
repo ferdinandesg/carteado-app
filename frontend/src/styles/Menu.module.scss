@@ -1,26 +1,34 @@
 .RootLayout {
   height: 100vh;
   width: 100vw;
-  background: $gradient-background;
 }
 
 .Menu {
-  background: $gradient-background;
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: $spacing-l;
   height: 100%;
-  align-items: center;
-
+  width: 100%;
   margin: 0 auto;
 
-  .user {
-  }
-
-  .menuActions {
+  .menuContent {
+    width: 70%;
+    height: 100%;
+    position: relative;
+    background-color: rgba(black, 0.5);
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
     gap: $spacing-l;
+
+    .menuActions {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-l;
+    }
   }
 }
 

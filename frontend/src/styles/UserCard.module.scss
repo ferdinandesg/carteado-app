@@ -1,12 +1,11 @@
 .UserCard {
-  display: flex;
   width: 100%;
+  display: flex;
   padding: $spacing-s;
-  border-radius: $spacing-s;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  justify-content: center;
   align-items: center;
-  gap: $spacing-s;
-  height: 100%;
+  gap: $spacing-l;
+  background-color: rgba(white, 0.15);
 
   .avatar {
     border-radius: 50%;
@@ -55,11 +54,10 @@
   .description {
     display: flex;
     flex-direction: column;
-    gap: $spacing-xs;
     color: $primary-color;
 
     .title {
-      font-size: 1.25rem;
+      font-size: 2rem;
       font-weight: bold;
     }
 

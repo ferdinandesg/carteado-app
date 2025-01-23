@@ -8,12 +8,11 @@ import { useRouter } from "next/navigation";
 
 import styles from "@styles/Home.module.scss";
 import classNames from "classnames";
-import { Pixelify_Sans } from "next/font/google";
+import Image from "next/image";
 
 type FormData = {
   name: string;
 };
-const pixelify = Pixelify_Sans({ weight: ["700", "700"], subsets: ["latin"] });
 export default function Home() {
   const { setShowModal, show } = useModalContext();
   const {
@@ -67,13 +66,17 @@ export default function Home() {
 
       <div className={classNames(styles.Home, "square-bg")}>
         <div className={styles.container}>
-          <h1 className={classNames(styles.title, pixelify.className)}>
-            Carteado
-          </h1>
+          <h1 className={styles.title}>Carteado</h1>
           <div className="flex gap-2">
             <button
               className="bg-white p-2 rounded hover:bg-gray-200"
               onClick={() => signIn("google")}>
+              <Image
+                src="https://developers.google.com/identity/images/g-logo.png"
+                alt="Google Logo"
+                width={50}
+                height={50}
+              />
               Continuar com o Google
             </button>
             <button

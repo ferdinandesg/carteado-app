@@ -9,9 +9,7 @@ interface CardBunchProps {
 export default function CardBunch({
   cards,
   onClick = () => {},
-  eiei,
 }: CardBunchProps) {
-  sdaasddsa;
   return (
     <div className={styles.centerDeck}>
       <div className={styles.wrap}>

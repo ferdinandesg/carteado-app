@@ -4,6 +4,10 @@ import { useRouter } from "next/navigation";
 import "react-toastify/dist/ReactToastify.css";
 
 import styles from "@styles/Menu.module.scss";
+import { Pixelify_Sans } from "next/font/google";
+import classNames from "classnames";
+
+const pixelify = Pixelify_Sans({ weight: ["700", "700"], subsets: ["latin"] });
 
 export default function RootLayout({
   children,
@@ -17,5 +21,9 @@ export default function RootLayout({
     router.push("/");
     return null;
   }
-  return <div className={styles.RootLayout}>{children}</div>;
+  return (
+    <div className={classNames(styles.RootLayout, pixelify.className)}>
+      {children}
+    </div>
+  );
 }

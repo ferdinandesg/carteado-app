@@ -27,7 +27,7 @@ export default function Lobby() {
   };
 
   return (
-    <div className={styles.LobbyContainer}>
+    <div className={classNames(styles.LobbyContainer, "square-bg")}>
       <span className={classNames("animate-bounce", styles.waiting)}>
         Esperando jogadores
       </span>

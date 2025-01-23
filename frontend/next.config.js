@@ -10,7 +10,7 @@ const nextConfig = {
     API_URL: "http://localhost:3001",
   },
   images: {
-    domains: ["lh3.googleusercontent.com"],
+    domains: ["lh3.googleusercontent.com", "developers.google.com"],
   },
   reactStrictMode: false,
   sassOptions: {
