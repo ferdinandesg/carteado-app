@@ -1,55 +1,22 @@
-.table {
+.Table {
   position: relative;
-  width: 100%;
-  height: 100%;
+  width: 600px;
+  height: 600px;
+  margin: 20px auto;
+
+  background: #228b22;
   border-radius: 50%;
-  border: 5px solid #2e2e2e;
-  background: radial-gradient(circle, #444, #222);
+  border: 4px solid #333;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .player {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   position: absolute;
   width: 100px;
-  height: 120px;
+  height: 80px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  z-index: 3;
-}
-
-/* 1 jogador */
-.bottom-center {
-  bottom: 10%;
-  left: 50%;
-  transform: translate(-50%, 0);
-}
-
-/* 2 jogadores */
-.top-center {
-  top: 10%;
-  left: 50%;
-  transform: translate(-50%, 0);
-}
-
-/* 3 jogadores */
-.top-left {
-  top: 20%;
-  left: 15%;
-}
-
-.top-right {
-  top: 20%;
-  right: 15%;
-}
-
-/* 4 jogadores */
-.bottom-left {
-  bottom: 10%;
-  left: 15%;
-}
-
-.bottom-right {
-  bottom: 10%;
-  right: 15%;
 }

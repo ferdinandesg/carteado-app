@@ -7,28 +7,26 @@ import { useGameContext } from "@/contexts/game.context";
 import Separator from "@/components/Separator";
 
 import styles from "@styles/ModalChoseCards.module.scss";
+import { withSound } from "@/components/buttons/withSound";
 interface ModalChoseCardsProps {
   isOpen: boolean;
 }
 
-const ConfirmButton = ({
-  onClick,
-  disabled,
-}: {
-  onClick: () => void;
-  disabled: boolean;
-}) => {
-  return (
-    <div className={styles.confirmButtonContainer}>
-      <button
-        onClick={onClick}
-        disabled={disabled}
-        className={styles.confirmButton}>
-        Confirmar
-      </button>
-    </div>
-  );
-};
+const ConfirmButton = withSound(
+  ({ onClick, disabled }: { onClick: () => void; disabled: boolean }) => {
+    return (
+      <div className={styles.confirmButtonContainer}>
+        <button
+          onClick={onClick}
+          disabled={disabled}
+          className={styles.confirmButton}>
+          Confirmar
+        </button>
+      </div>
+    );
+  },
+  {}
+);
 
 export default function ModalChoseCards({ isOpen }: ModalChoseCardsProps) {
   const { handlePickCards, player } = useGameContext();

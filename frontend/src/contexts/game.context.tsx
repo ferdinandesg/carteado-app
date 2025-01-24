@@ -73,9 +73,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     if (!socket) return;
     socket.emit("draw_table");
   };
-  console.log({
-    player,
-  });
+
   return (
     <GameContext.Provider
       value={{

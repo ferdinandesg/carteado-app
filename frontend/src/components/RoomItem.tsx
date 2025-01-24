@@ -4,6 +4,7 @@ import classNames from "classnames";
 import styles from "@styles/Rooms.module.scss";
 import Image from "next/image";
 import { Circle, Loader } from "lucide-react";
+import { withSound } from "./buttons/withSound";
 
 type RoomItemProps = {
   room: RoomInterface;
@@ -36,7 +37,7 @@ const RoomStatus = ({ status }: { status: "open" | "playing" }) => {
   );
 };
 
-export default function RoomItem({ room, onClick = () => {} }: RoomItemProps) {
+const RoomItem = ({ room, onClick = () => {} }: RoomItemProps) => {
   const ownerPic = room.owner?.image || "/images/default-avatar.png";
   return (
     <div
@@ -69,4 +70,8 @@ export default function RoomItem({ room, onClick = () => {} }: RoomItemProps) {
       </div>
     </div>
   );
-}
+};
+
+export default withSound(RoomItem, {
+  clickSrc: "/assets/sfx/button-click.mp3",
+});

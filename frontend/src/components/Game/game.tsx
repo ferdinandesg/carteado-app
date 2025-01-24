@@ -14,7 +14,6 @@ export default function Game() {
   return (
     <>
       <ModalChoseCards isOpen={player?.status === "chosing"} />
-
       <div className={styles.Game}>
         <div className={styles.gameTable}>
           <Table />
@@ -23,6 +22,7 @@ export default function Game() {
           {tableCards.map((card) => (
             <CardComponent
               card={card}
+              height={125}
               key={`player-table-${card.toString}`}
             />
           ))}

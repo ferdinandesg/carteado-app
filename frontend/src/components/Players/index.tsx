@@ -16,15 +16,12 @@ export default function Players({ roomId }: { roomId: string }) {
   console.log(players);
   return players.map((player) => {
     const isReady = isPlayerReady(player);
+    const statusClass = isReady ? styles.ready : styles.notReady;
     return (
       <div
         className={styles.Player}
         key={player.id}>
-        <div
-          className={classNames(
-            styles.avatar,
-            isReady ? styles.ready : styles.notReady
-          )}>
+        <div className={classNames(styles.avatar, statusClass)}>
           {player?.image ? (
             <Image
               alt="user.name"
@@ -42,12 +39,7 @@ export default function Players({ roomId }: { roomId: string }) {
             currentValue={player.rank || 0}
             size={25}
           />
-
-          <span
-            className={classNames(
-              styles.playerStatus,
-              isReady ? styles.ready : styles.notReady
-            )}>
+          <span className={classNames(styles.playerStatus, statusClass)}>
             {isReady ? "Pronto" : "Não pronto"}
           </span>
         </div>

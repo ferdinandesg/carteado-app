@@ -1,12 +1,13 @@
 import Modal from "..";
 import usePostRoom from "@/hooks/rooms/usePostRoom";
 
-import { ArrowLeftCircle, ArrowRightCircle, Check } from "lucide-react";
+import { ArrowRightCircle } from "lucide-react";
 
 import styles from "@styles/ModalCreateRoom.module.scss";
 import classNames from "classnames";
 import { useState } from "react";
 import BackButton from "@/components/buttons/BackButton";
+import { withSound } from "@/components/buttons/withSound";
 
 type RoomForm = {
   name: string;
@@ -20,6 +21,23 @@ interface ModalCreateRoomProps {
 }
 
 const players = [2, 3, 4];
+
+const CreateRoomButton = withSound(
+  ({ onClick, disabled }: { onClick: () => void; disabled: boolean }) => {
+    return (
+      <button
+        className={styles.createButton}
+        onClick={onClick}
+        disabled={disabled}>
+        <span>Criar sala</span>
+        <ArrowRightCircle size={24} />
+      </button>
+    );
+  },
+  {
+    clickSrc: "/assets/sfx/button-click.mp3",
+  }
+);
 
 export default function ModalCreateRoom({
   isOpen,
@@ -83,13 +101,10 @@ export default function ModalCreateRoom({
             </button>
           ))}
         </div>
-        <button
+        <CreateRoomButton
+          onClick={handleCreateRoom}
           disabled={!isFormValid}
-          className={styles.createButton}
-          onClick={handleCreateRoom}>
-          <span>Criar sala</span>
-          <ArrowRightCircle size={24} />
-        </button>
+        />
       </Modal.Content>
     </Modal.Root>
   );

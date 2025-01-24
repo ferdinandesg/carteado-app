@@ -3,10 +3,7 @@
   position: relative;
   flex-direction: column;
   align-items: center;
-  padding: $spacing-s;
-  border: 3px;
-  border-style: solid;
-  border-color: lightgray;
+  border: 2px solid transparent;
 
   &.isCurrentPlayerTurn {
     border-color: green;

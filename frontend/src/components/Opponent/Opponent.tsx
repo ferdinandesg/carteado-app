@@ -29,7 +29,6 @@ export default function Opponent({ player }: { player: Player }) {
           alt={player.name || "opponent avatar"}
           width={150}
           height={100}
-          className={styles.avatar}
         />
       ) : (
         <UserPlaceholder />

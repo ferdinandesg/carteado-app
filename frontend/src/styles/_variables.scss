@@ -15,8 +15,6 @@ $success-color: #3ced01;
 
 $gradient-background: generate-gradient($background-color);
 
-$font-family: "Roboto", sans-serif;
-
 // Stripes bg variable
 @function sripte-bg($color) {
   @return repeating-linear-gradient(

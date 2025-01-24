@@ -2,50 +2,60 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
-
-  .header {
-    height: 10%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 400;
-    background: $secondary-color;
-    padding: $spacing-s;
-  }
+  height: 50%;
 
   .messagesContainer {
     display: flex;
     flex-direction: column;
     padding: $spacing-s;
-    background: generate-gradient(lightgray);
     overflow-y: auto;
     height: 100%;
     gap: $spacing-m;
+
+    scrollbar-width: thin;
+    scrollbar-color: #bcbcbc transparent;
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-button {
+      display: none;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #bcbcbc;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: #999999;
+    }
   }
 
   .messageForm {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     width: 100%;
     max-height: 30%;
 
     .messageBox {
-      background-color: white;
+      overflow-y: auto;
       height: 100%;
       width: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: $spacing-s;
-      gap: $spacing-s;
+      border: none;
 
       .autoScroll {
         padding: $spacing-s;
         cursor: pointer;
-        border-radius: 25px;
+        border-radius: 5px;
         transition: 200ms;
 
         &:hover,
@@ -55,23 +65,27 @@
       }
 
       input {
-        border-radius: 10px;
+        background-color: white;
+        border-radius: 5px 0 0 5px;
         padding: $spacing-s $spacing-m;
-        background-color: transparent;
         border: 1px solid gray;
         transition: 200ms;
-        width: 70%;
+        width: 100%;
 
         &:focus-within {
           border-color: black;
+        }
+        &:focus-visible {
+          outline: none;
         }
       }
     }
 
     button {
       padding: $spacing-s;
+      height: 42px;
       color: black;
-      height: 100%;
+      border-radius: 0 5px 5px 0;
       font-weight: bold;
       letter-spacing: 2px;
       background-color: $primary-color;

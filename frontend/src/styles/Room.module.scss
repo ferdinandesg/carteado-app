@@ -55,6 +55,33 @@
       }
     }
   }
+
+  .roomActions {
+    display: flex;
+    padding: $spacing-m;
+    gap: $spacing-s;
+    justify-content: space-between;
+    .actionButton {
+      color: white;
+      display: flex;
+      justify-content: center;
+      border-radius: 4px;
+      padding: $spacing-m $spacing-s;
+      width: 50%;
+      &.outline {
+        background-color: transparent;
+        color: white;
+        span {
+          font-size: 1.25rem;
+          color: white;
+        }
+        &:hover {
+          background-color: $primary-color;
+          color: $primary-color;
+        }
+      }
+    }
+  }
 }
 .roomChat {
   height: 500px;
