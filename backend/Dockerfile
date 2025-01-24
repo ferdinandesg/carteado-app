@@ -2,12 +2,15 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copia a estrutura sem achatar pastas
-COPY . /app
+COPY tsconfig.base.json ./
 
-COPY package.json package-lock.json ./
+COPY backend/package.json ./backend/
+COPY backend/package-lock.json ./backend/
+COPY shared/ ./backend/shared/
+
+WORKDIR /app/backend
 RUN npm install
 
-COPY . .
+COPY backend/ ./
 
 CMD ["npm", "run", "dev"]

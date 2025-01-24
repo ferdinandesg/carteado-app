@@ -72,6 +72,4 @@ const RoomItem = ({ room, onClick = () => {} }: RoomItemProps) => {
   );
 };
 
-export default withSound(RoomItem, {
-  clickSrc: "/assets/sfx/button-click.mp3",
-});
+export default RoomItem;

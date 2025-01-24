@@ -43,7 +43,7 @@ const ActionButton = withSound(
     );
   },
   {
-    clickSrc: "/assets/sfx/button-click.mp3",
+    clickSrc: "/assets/sfx/button-hover.mp3",
   }
 );
 

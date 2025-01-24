@@ -1,21 +1,16 @@
-version: "3.8"
-
 include:
   - path: backend/docker-compose.yml
 
 services:
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./frontend/Dockerfile
     container_name: carteado_frontend
     ports:
       - "3000:3000"
     depends_on:
       - backend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
     environment:
       - API_URL=http://localhost:4000
     networks:
@@ -23,24 +18,18 @@ services:
 
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./backend/Dockerfile
     container_name: carteado_backend
     ports:
       - "4000:4000"
     depends_on:
       - mongodb
       - redis
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    environment:
-      - MONGO_URI=mongodb://mongodb:27017/carteado
-      - REDIS_HOST=redis
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - PORT=4000
     networks:
       - carteado_network
+    env_file:
+      - .env
 
 networks:
   carteado_network:

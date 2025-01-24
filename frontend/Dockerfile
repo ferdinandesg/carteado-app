@@ -1,11 +1,16 @@
 FROM node:18-alpine
+RUN apk add --no-cache python3 make g++
 
 WORKDIR /app
 
-RUN apk add --no-cache python3 make g++
-COPY package.json package-lock.json ./
+COPY tsconfig.base.json ./
+COPY frontend/package.json frontend/package.json
+COPY frontend/package-lock.json frontend/package-lock.json
+COPY shared/ ./frontend/shared
+
+WORKDIR /app/frontend
 RUN npm install
 
-COPY . .
+COPY frontend/ ./
 
 CMD ["npm", "run", "dev"]
