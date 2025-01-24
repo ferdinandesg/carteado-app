@@ -16,6 +16,7 @@ const CardFan: React.FC<CardFanProps> = ({ cards, onClick = () => {} }) => {
             key={index}
             className={styles.card}>
             <CardComponent
+              height={150}
               card={card}
               onClick={() => onClick(card)}
             />

@@ -35,7 +35,7 @@ export async function JoinRoomEventHandler(
           socket.join(roomId);
           socket.user.room = roomId;
           emitToUser(socket, "info", "Bem vindo de volta");
-          return;
+          break;
         }
         room.spectators.push(socket.user);
         await saveRoomState(roomId, room);

@@ -5,6 +5,7 @@ import styles from "@styles/Table.module.scss";
 import { useRef } from "react";
 import classNames from "classnames";
 import { Player } from "shared/types";
+import TableActions from "./TableActions";
 
 const PositionedPlayer = ({
   player,
@@ -73,6 +74,7 @@ export default function Table() {
         cards={bunchCards}
         onClick={retrieveCard}
       />
+      <TableActions />
     </div>
   );
 }

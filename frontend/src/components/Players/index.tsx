@@ -1,6 +1,5 @@
 "use client";
 import classNames from "classnames";
-import UserCard from "../UserCard";
 import useRoomByHash, { RoomPlayer } from "@/hooks/rooms/useRoomByHash";
 
 import styles from "@styles/Room.module.scss";
@@ -13,14 +12,14 @@ const isPlayerReady = (player: RoomPlayer) => player.status === "READY";
 export default function Players({ roomId }: { roomId: string }) {
   const { room } = useRoomByHash(roomId);
   const players = room?.players || [];
-  console.log(players);
-  return players.map((player) => {
+  console.log({ players });
+  return players.map((player, i) => {
     const isReady = isPlayerReady(player);
     const statusClass = isReady ? styles.ready : styles.notReady;
     return (
       <div
         className={styles.Player}
-        key={player.id}>
+        key={`player-pos-${i}`}>
         <div className={classNames(styles.avatar, statusClass)}>
           {player?.image ? (
             <Image

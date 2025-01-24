@@ -4,9 +4,6 @@ import { useSocket } from "@/contexts/socket.context";
 import Message from "./message";
 
 import styles from "@styles/Chat.module.scss";
-import { ChevronsDown } from "lucide-react";
-import classNames from "classnames";
-import Header from "./header";
 
 type MessageType = {
   message: string;
@@ -23,9 +20,9 @@ export default function Chat({ roomId }: ChatProps) {
 
   const { socket } = useSocket();
   const [localMessages, setMessages] = useState<MessageType[]>([]);
-  const [useAutoScroll, setUseAutoScroll] = useState<boolean>(true);
+  const [useAutoScroll] = useState<boolean>(true);
   const [isLoading, setLoading] = useState<boolean>(true);
-  const [unreadMessages, setUnreadMessages] = useState<number>(0);
+  const [, setUnreadMessages] = useState<number>(0);
 
   const updateMessages = (messages: MessageType | MessageType[]) => {
     console.log("Updating messages", messages);

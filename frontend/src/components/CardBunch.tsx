@@ -20,6 +20,7 @@ export default function CardBunch({
               className={styles.card}>
               <CardComponent
                 card={card}
+                height={150}
                 onClick={() => onClick(card)}
               />
             </div>

@@ -1,4 +1,3 @@
-$card-width: 100px;
 $card-border: 1px solid black;
 $card-border-radius: 5px;
 $hover-scale: 1.2;
@@ -16,35 +15,20 @@ $card-positions: (
 
 .wrap {
   margin: $spacing-m 0;
+  min-height: 150px;
   display: flex;
   position: relative;
   justify-content: center;
+  gap: $spacing-l;
 }
 
 .card {
-  width: $card-width;
   border-radius: $card-border-radius;
   position: relative;
-  top: 30px;
   transition: transform 0.2s ease-in-out;
 
-  @for $i from 1 through length($card-positions) {
-    $position: nth($card-positions, $i);
-    $left: nth($position, 1);
-    $top: nth($position, 2);
-    $rotate: nth($position, 3);
-
-    &:nth-child(#{$i}) {
-      left: $left;
-      top: $top;
-      transform: translateY(0px) rotate($rotate);
-    }
-
-    &:hover {
-      z-index: 2;
-      transform: translate(1px, $hover-offset-y)
-        rotate($rotate)
-        scale($hover-scale);
-    }
+  &:hover {
+    z-index: 2;
+    transform: translate(0px, $hover-offset-y) rotate(0deg) scale($hover-scale);
   }
 }
