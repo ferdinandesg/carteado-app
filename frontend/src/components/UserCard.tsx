@@ -43,10 +43,7 @@ export default function UserCard({ user, size = "large" }: UserCardProps) {
       <div className={styles.description}>
         <h2 className={styles.title}>{user?.name}</h2>
         <span>Rank:</span>
-        <RankMeter
-          currentValue={userRank}
-          maxValue={15}
-        />
+        <RankMeter currentValue={userRank} />
       </div>
     </div>
   );

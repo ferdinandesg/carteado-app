@@ -49,7 +49,7 @@ const Star: React.FC<StarProps> = ({
 };
 
 type StarRatingProps = {
-  maxValue: number;
+  maxValue?: number;
   currentValue: number;
   size?: number;
   color?: string;
@@ -57,7 +57,7 @@ type StarRatingProps = {
 };
 
 const RankMeter: React.FC<StarRatingProps> = ({
-  maxValue,
+  maxValue = 20,
   currentValue,
   size = 50,
   color = "gold",

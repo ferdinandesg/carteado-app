@@ -8,19 +8,7 @@
     padding: $spacing-s;
     gap: $spacing-s;
     border-radius: 25px;
-    .backButton {
-      margin-top: 10px;
-      margin: $spacing-s auto 0;
-      color: gray;
-      display: flex;
-      align-items: center;
-      gap: $spacing-xs;
-      cursor: pointer;
 
-      &:hover {
-        text-decoration: underline;
-      }
-    }
     .inputForm {
       display: flex;
       flex-direction: column;

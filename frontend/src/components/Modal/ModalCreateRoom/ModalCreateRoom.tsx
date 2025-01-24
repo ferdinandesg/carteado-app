@@ -6,6 +6,7 @@ import { ArrowLeftCircle, ArrowRightCircle, Check } from "lucide-react";
 import styles from "@styles/ModalCreateRoom.module.scss";
 import classNames from "classnames";
 import { useState } from "react";
+import BackButton from "@/components/buttons/BackButton";
 
 type RoomForm = {
   name: string;
@@ -53,12 +54,11 @@ export default function ModalCreateRoom({
   return (
     <Modal.Root className={styles.ModalRoot}>
       <Modal.Content className={styles.ModalContent}>
-        <span
-          className={styles.backButton}
-          onClick={onClose}>
-          <ArrowLeftCircle size={20} />
-          Voltar
-        </span>
+        <BackButton
+          color="dark"
+          onClick={onClose}
+          size={24}
+        />
         <div className={styles.inputForm}>
           <input
             type="text"

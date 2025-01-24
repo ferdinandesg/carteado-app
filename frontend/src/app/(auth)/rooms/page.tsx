@@ -7,6 +7,7 @@ import RoomItem from "@/components/RoomItem";
 import styles from "@styles/Rooms.module.scss";
 import classNames from "classnames";
 import { ArrowLeftCircle } from "lucide-react";
+import BackButton from "@/components/buttons/BackButton";
 
 type RoomListType = {
   rooms: RoomInterface[];
@@ -49,12 +50,10 @@ export default function Rooms() {
 
   return (
     <div className={classNames(styles.Rooms)}>
-      <span
-        className={styles.backButton}
-        onClick={goToMenu}>
-        <ArrowLeftCircle size={20} />
-        Voltar
-      </span>
+      <BackButton
+        onClick={goToMenu}
+        size={24}
+      />
       <SearchComponent />
       <div className={styles.RoomList}>
         {isLoading && <span>Loading...</span>}

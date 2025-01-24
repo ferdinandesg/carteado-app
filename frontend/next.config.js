@@ -7,7 +7,7 @@ const nextConfig = {
       "941760915080-or42cc6djhae2kqs91kv24cj8ajchlmf.apps.googleusercontent.com",
     GOOGLE_SECRET: "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",
     SECRET: "JWT",
-    API_URL: "http://localhost:4000",
+    API_URL: "http://localhost:3001",
   },
   images: {
     domains: ["lh3.googleusercontent.com", "developers.google.com"],

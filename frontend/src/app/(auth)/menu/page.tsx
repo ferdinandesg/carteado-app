@@ -9,39 +9,14 @@ import styles from "@styles/Menu.module.scss";
 import UserCard from "@/components/UserCard";
 import { List, ListPlus, Play } from "lucide-react";
 import classNames from "classnames";
-import { Pixelify_Sans } from "next/font/google";
-import { ButtonHTMLAttributes, HtmlHTMLAttributes } from "react";
-
-type MenuButtonProps = {
-  onClick: () => void;
-  icon: React.ReactNode;
-  label: string;
-};
-const pixelify = Pixelify_Sans({ weight: ["700", "700"], subsets: ["latin"] });
-
-const MenuButton = ({
-  onClick,
-  icon,
-  label,
-  ...props
-}: MenuButtonProps & ButtonHTMLAttributes<HTMLButtonElement>) => {
-  return (
-    <button
-      className={styles.MenuButton}
-      onClick={onClick}
-      {...props}>
-      <div className={styles.menuIcon}>{icon}</div>
-      <span className={styles.menuLabel}>{label}</span>
-    </button>
-  );
-};
+import MenuButton from "@/components/buttons/MenuButton";
 
 export default function Menu() {
   const router = useRouter();
   const { data } = useSession();
   const { show, setShowModal } = useModalContext();
 
-  const onCreateRoom = (hash: string) => {
+  const onCreateRoom = function (hash: string) {
     router.push(`/room/${hash}`);
   };
 

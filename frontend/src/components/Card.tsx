@@ -6,6 +6,7 @@ import { Card } from "shared/cards";
 import Image from "next/image";
 interface CardComponentProps extends HtmlHTMLAttributes<HTMLDivElement> {
   card: Card;
+  height?: number;
 }
 
 type AvailableSkins = "basics-dark" | "basics-light" | "poker" | "8bit";
@@ -25,12 +26,23 @@ const handleSkinPath = (skin: AvailableSkins, card: Card) => {
   }
 };
 
-export default function CardComponent({ card, ...rest }: CardComponentProps) {
+const CARD_RATIO = 63 / 88; // ~0.72
+
+export default function CardComponent({
+  card,
+  height = 70,
+  ...rest
+}: CardComponentProps) {
   const cardURL = handleSkinPath("8bit", card);
+  const width = height * CARD_RATIO;
   return (
     <div
       {...rest}
-      className={classNames(styles.Card)}>
+      className={classNames(styles.Card)}
+      style={{
+        width: `${width}px`,
+        height: `${height}px`,
+      }}>
       <Image
         src={cardURL}
         alt="Carta"

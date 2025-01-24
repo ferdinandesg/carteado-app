@@ -1,0 +1,61 @@
+.MenuButton {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  padding: $spacing-l $spacing-m;
+  gap: $spacing-m;
+  position: relative;
+
+  .menuLabel {
+    color: $secondary-color;
+    font-weight: bold;
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+    width: 50%;
+  }
+
+  &:disabled {
+    cursor: unset;
+    background-color: gray;
+
+    .menuLabel,
+    .menuIcon {
+      color: white;
+    }
+  }
+
+  &:enabled {
+    background-color: $primary-color;
+    color: white;
+    &:hover {
+      background-color: lighten($primary-color, 10);
+    }
+  }
+
+  .menuIcon {
+    color: $secondary-color;
+    width: 20%;
+  }
+}
+
+.BackButton {
+  margin-top: 10px;
+  margin: $spacing-s auto 0;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  cursor: pointer;
+
+  &.light {
+    color: lightgray;
+  }
+  &.dark {
+    color: gray;
+  }
+  &:hover {
+    text-decoration: underline;
+  }
+}

@@ -6,7 +6,7 @@ $spacing-l: 32px;
 $background-color: #133314;
 $primary-color: #f1b001;
 $secondary-color: #310c07;
-$therciary-color: #3ced01;
+$success-color: #3ced01;
 
 @function generate-gradient($color) {
   $darkened-color: darken($color, 30%);

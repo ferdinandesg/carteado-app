@@ -2,14 +2,34 @@ import CardComponent from "@/components/Card";
 import Modal from "..";
 import { useState } from "react";
 import { Card } from "shared/cards";
-import { Check } from "lucide-react";
+
+import { useGameContext } from "@/contexts/game.context";
+import Separator from "@/components/Separator";
 
 import styles from "@styles/ModalChoseCards.module.scss";
-import Separator from "@/components/Separator";
-import { useGameContext } from "@/contexts/game.context";
 interface ModalChoseCardsProps {
   isOpen: boolean;
 }
+
+const ConfirmButton = ({
+  onClick,
+  disabled,
+}: {
+  onClick: () => void;
+  disabled: boolean;
+}) => {
+  return (
+    <div className={styles.confirmButtonContainer}>
+      <button
+        onClick={onClick}
+        disabled={disabled}
+        className={styles.confirmButton}>
+        Confirmar
+      </button>
+    </div>
+  );
+};
+
 export default function ModalChoseCards({ isOpen }: ModalChoseCardsProps) {
   const { handlePickCards, player } = useGameContext();
   const handCards = player?.hand || [];
@@ -25,50 +45,43 @@ export default function ModalChoseCards({ isOpen }: ModalChoseCardsProps) {
   const selectCard = (card: Card) => {
     if (chosenCards.length < 3) setChosenCards((m) => [...m, card]);
   };
-
   const removeCard = (card: Card) =>
     setChosenCards((m) => [...m.filter((x) => x.toString !== card.toString)]);
-
   const cards = handCards.filter((h) => h.hidden !== true);
-
   const notChosenCards = cards.filter(
     (x) => !chosenCards.some((y) => y.toString === x.toString)
   );
   if (!isOpen) return null;
+
   return (
-    <Modal.Root>
-      <Modal.Header title="Escolha de cartas" />
-      <Modal.Content>
-        <div className={styles.ModalChoseCards}>
-          <div className={styles.notChosenCards}>
-            {notChosenCards.map((card) => (
-              <CardComponent
-                card={card}
-                key={`hand-${card.toString}`}
-                onClick={() => selectCard(card)}
-              />
-            ))}
-          </div>
-          <Separator text="Selecione sua mão" />
-          <div className="flex h-full">
-            {chosenCards.map((card) => (
-              <CardComponent
-                card={card}
-                key={`chosen-${card.toString}`}
-                onClick={() => removeCard(card)}
-              />
-            ))}
-          </div>
+    <div className={styles.Overlay}>
+      <div className={styles.ModalChoseCards}>
+        <div className={styles.cards}>
+          {notChosenCards.map((card) => (
+            <CardComponent
+              card={card}
+              height={150}
+              key={`hand-${card.toString}`}
+              onClick={() => selectCard(card)}
+            />
+          ))}
         </div>
-      </Modal.Content>
-      <Modal.Footer className="bg-white border-t">
-        <Modal.Buttons
-          className="bg-green-600"
-          onClick={pickHand}
-          icon={<Check color="white" />}
-          disabled={isLoading || chosenCards.length < 3}
-        />
-      </Modal.Footer>
-    </Modal.Root>
+        <Separator text="Selecione sua mão" />
+        <div className={styles.cards}>
+          {chosenCards.map((card) => (
+            <CardComponent
+              height={150}
+              card={card}
+              key={`chosen-${card.toString}`}
+              onClick={() => removeCard(card)}
+            />
+          ))}
+        </div>
+      </div>
+      <ConfirmButton
+        onClick={pickHand}
+        disabled={chosenCards.length !== 3}
+      />
+    </div>
   );
 }

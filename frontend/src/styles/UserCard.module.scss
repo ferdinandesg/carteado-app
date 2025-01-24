@@ -8,7 +8,7 @@
   background-color: rgba(white, 0.15);
 
   .avatar {
-    border-radius: 50%;
+    border-radius: 25px;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -37,11 +37,10 @@
     }
 
     &.notReady {
-      border: 6px solid gray;
+      border: 6px solid lightgray;
     }
 
     img {
-      border-radius: 50%;
       object-fit: cover;
     }
 
