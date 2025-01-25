@@ -23,10 +23,10 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 21.1.0
 
       - name: Install Dependencies (Root)
-        run: npm install
+        run: npm ci
 
       - name: Lint + Test Backend
         run: |
