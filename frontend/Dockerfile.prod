@@ -13,4 +13,6 @@ RUN npm install
 
 COPY frontend/ ./
 
-CMD ["npm", "run", "dev"]
+RUN npm run build
+
+CMD ["npm", "run", "start"]

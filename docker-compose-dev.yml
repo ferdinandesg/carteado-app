@@ -1,25 +1,26 @@
 include:
-  - path: backend/docker-compose.yml
+  - path: backend/docker-compose-dev.yml
 
 services:
   frontend:
     build:
       context: .
-      dockerfile: ./frontend/Dockerfile
+      dockerfile: ./frontend/Dockerfile.dev
     container_name: carteado_frontend
     ports:
       - "3000:3000"
     depends_on:
       - backend
     environment:
-      - API_URL=http://localhost:4000
+      - API_URL=http://172.29.64.1:4000
+      - NODE_ENV=development
     networks:
       - carteado_network
 
   backend:
     build:
       context: .
-      dockerfile: ./backend/Dockerfile
+      dockerfile: ./backend/Dockerfile.dev
     container_name: carteado_backend
     ports:
       - "4000:4000"
@@ -28,6 +29,8 @@ services:
       - redis
     networks:
       - carteado_network
+    environment:
+      - NODE_ENV=development
     env_file:
       - .env
 

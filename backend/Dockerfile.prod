@@ -1,0 +1,24 @@
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+COPY tsconfig.base.json ./
+
+COPY backend/package.json ./backend/
+COPY backend/package-lock.json ./backend/
+COPY shared/ ./backend/shared/
+
+WORKDIR /app/backend
+RUN npm install --production=false
+
+COPY backend/ ./
+
+RUN npm run build
+FROM node:18-alpine
+WORKDIR /app
+COPY --from=builder /app/backend/dist ./backend/dist
+COPY --from=builder /app/backend/package*.json ./
+RUN npm install --production
+
+EXPOSE 4000
+CMD ["node", "./dist/index.js"]

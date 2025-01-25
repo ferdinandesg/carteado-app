@@ -36,6 +36,7 @@ module.exports = {
         ignoreRestSiblings: true,
       },
     ],
+    "@typescript-eslint/no-require-imports": "warn",
   },
   ignorePatterns: ["node_modules/", "dist/", "build/"],
   plugins: ["prettier", "@typescript-eslint"],

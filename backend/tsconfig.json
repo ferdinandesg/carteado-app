@@ -14,8 +14,10 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "strict": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "typeRoots": ["src/@types"]
   },
-  "include": ["src/**/*.ts"],
+  "files": ["src/@types/express.d.ts"],
+  "include": ["src/**/*.ts", "shared/**/*.ts", "src/@types/express.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

@@ -57,6 +57,7 @@ backend/.env
 .env.development
 .env.production
 .env.test
+key.json
 
 # Logs de processos e runtime do sistema
 frontend/.eslintcache

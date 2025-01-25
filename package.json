@@ -8,7 +8,11 @@
     "format": "prettier --write .",
     "lint:backend": "cd backend && npm run lint",
     "lint:frontend": "cd frontend && npm run lint",
-    "lint": "npm run lint:backend && npm run lint:frontend"
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "start:dev": "docker-compose -f docker-compose.dev.yml up",
+    "start:prod": "docker-compose -f docker-compose.prod.yml up",
+    "deploy:dev": "docker-compose -f docker-compose-dev.yml up --build",
+    "deploy:prod": "docker-compose -f docker-compose-prod.yml up --build"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.6.1",
