@@ -64,13 +64,20 @@ jobs:
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
           echo "${{ secrets.GCP_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H 35.231.34.215 >> ~/.ssh/known_hosts
 
+      - name: Debug SSH Key
+        run: |
+          ls -la ~/.ssh/
+          cat ~/.ssh/id_rsa | head -n 5
+          ssh -v -i ~/.ssh/id_rsa ubuntu@35.231.34.215 echo "SSH connection successful"
+
       - name: Test SSH Connection
         run: |
-          ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@35.231.34.215 "echo 'SSH connection successful'"
+          ssh -v -o IdentitiesOnly=yes StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@35.231.34.215 "echo 'SSH connection successful'"
 
       - name: Deploy
         run: |
