@@ -70,11 +70,11 @@ jobs:
 
       - name: Deploy
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@35.231.34.215 << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@35.231.34.215
             cd ~/deploy
             echo "Atualizando serviços..."
-            docker-compose -f docker-compose-prod.yml pull  # Puxa imagens mais recentes
-            docker-compose -f docker-compose-prod.yml down  # Para os containers atuais
-            docker-compose -f docker-compose-prod.yml up -d  # Reinicia com as novas imagens
+            docker-compose -f docker-compose-prod.yml pull 
+            docker-compose -f docker-compose-prod.yml down
+            docker-compose -f docker-compose-prod.yml up -d
             docker system prune -af  # Limpa imagens antigas para liberar espaço
           EOF
