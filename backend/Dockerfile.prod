@@ -23,4 +23,4 @@ COPY --from=builder /app/backend/package*.json ./
 RUN npm install --production && npm install @prisma/client
 
 EXPOSE 4000
-CMD ["node", "dist/index.js"]
+CMD ["node", "backend/dist/index.js"]
