@@ -13,7 +13,7 @@ export async function Authentication(
     socket.user = auth;
 
     socket.join(socket.user.email);
-    return next(null);
+    return next();
   } catch (error) {
     console.error({ error });
   }

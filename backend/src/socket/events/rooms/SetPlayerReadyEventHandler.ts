@@ -1,12 +1,13 @@
 import { getRoomState } from "src/redis/room";
 import { SocketContext } from "../../../@types/socket";
 import getRoomPlayers from "src/socket/utils/getRoomPlayers";
-import emitToRoom from "src/socket/utils/emitToRoom";
+import emitToRoom from "@socket/utils/emitToRoom";
 
 export async function SetPlayerStatusEventHandler(
   context: SocketContext
 ): Promise<void> {
   const { socket, payload, channel } = context;
+  if (!socket.user?.room || !socket.user) return;
   socket.user.status = payload.status;
   const roomHash = socket.user.room;
   if (!roomHash) return;

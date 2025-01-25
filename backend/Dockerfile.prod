@@ -1,26 +1,32 @@
+# Etapa 1: Build
 FROM node:18-alpine AS builder
 
 WORKDIR /app
 
 COPY tsconfig.base.json ./
 
-COPY backend/package.json ./backend/
-COPY backend/package-lock.json ./backend/
+COPY backend/package.json backend/package-lock.json ./backend/
 COPY shared/ ./backend/shared/
 
 WORKDIR /app/backend
+
 RUN npm install --production=false
 
 COPY backend/ ./
+
 RUN npx prisma generate
 RUN npm run build
 
 FROM node:18-alpine
 
 WORKDIR /app/backend
+
 COPY --from=builder /app/backend/dist ./dist
 COPY --from=builder /app/backend/package*.json ./
+
 RUN npm install --production && npm install @prisma/client
 
 EXPOSE 4000
-CMD ["node", "backend/dist/index.js"]
+
+
+CMD ["npm", "run", "start"]

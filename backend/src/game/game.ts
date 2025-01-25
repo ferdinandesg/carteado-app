@@ -8,7 +8,7 @@ export type PopulatedPlayer = Prisma.PlayerGetPayload<{
 }>;
 
 interface GamePlayer extends PopulatedPlayer {
-  playedCards?: Card[];
+  playedCards: Card[];
   name?: string;
   image?: string;
   email?: string;
@@ -39,7 +39,7 @@ export default class GameClass {
     return foundPlayer;
   }
 
-  givePlayerCards(userId: string): Card[] {
+  givePlayerCards(userId: string): Card[] | undefined {
     const foundPlayer = this.playerExists(userId);
     if (!foundPlayer) return;
     const hand = this.cards.giveTableCards();

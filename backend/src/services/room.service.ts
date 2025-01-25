@@ -4,7 +4,7 @@ import { getRoomState, saveRoomState } from "../redis/room";
 import { randomUUID } from "node:crypto";
 
 export async function createRoom(
-  room: Partial<Room>,
+  { name, size }: { name: string; size: number },
   userId: string
 ): Promise<Room> {
   const uuid = randomUUID();
@@ -13,9 +13,9 @@ export async function createRoom(
   const createdRoom = await prisma.room.create({
     data: {
       hash,
-      name: room.name,
+      name: name,
       chatId: chat.id,
-      size: room.size,
+      size: size,
       ownerId: userId,
     },
   });

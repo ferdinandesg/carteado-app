@@ -9,7 +9,7 @@ export default function getRoomPlayers(
   roomHash: string,
   channel: Namespace
 ): RoomUsers[] {
-  const roomPlayers = [];
+  const roomPlayers: User[] = [];
   const room = channel.adapter.rooms.get(roomHash);
   if (!room) return roomPlayers;
   for (const socketId of room) {

@@ -12,6 +12,5 @@ export default function emitToRoom<T>(
   } else {
     action = channel.to(roomId);
   }
-
   action.emit(event, payload);
 }

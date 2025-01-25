@@ -1,7 +1,7 @@
 import { getRoomState, saveRoomState } from "src/redis/room";
 import { SocketContext } from "../../../@types/socket";
-import getRoomPlayers from "src/socket/utils/getRoomPlayers";
-import emitToRoom from "src/socket/utils/emitToRoom";
+import getRoomPlayers from "@socket/utils/getRoomPlayers";
+import emitToRoom from "@socket/utils/emitToRoom";
 import emitToUser from "src/socket/utils/emitToUser";
 import { getGameState } from "src/redis/game";
 
@@ -11,6 +11,7 @@ export async function JoinRoomEventHandler(
   try {
     const { payload, socket, channel } = context;
     const { roomId } = payload;
+    if (!socket.user?.room || !socket.user) return;
     const room = await getRoomState(roomId);
     if (!room) return;
 
@@ -18,7 +19,7 @@ export async function JoinRoomEventHandler(
       case "open": {
         const roomPlayers = getRoomPlayers(roomId, channel);
         if (roomPlayers.length >= room.size) throw "A sala está cheia.";
-        if (roomPlayers.find((player) => player.id === socket.user.id))
+        if (roomPlayers.find((player) => player.id === socket.user?.id))
           throw "Você já está na sala.";
         socket.join(roomId);
         socket.user.room = roomId;
@@ -27,9 +28,11 @@ export async function JoinRoomEventHandler(
       }
       case "playing": {
         const currentPlayers = await getGameState(room.hash);
+
         if (
+          currentPlayers &&
           currentPlayers.players.find(
-            (player) => player.userId === socket.user.id
+            (player) => player.userId === socket.user?.id
           )
         ) {
           socket.join(roomId);

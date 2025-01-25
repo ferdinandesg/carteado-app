@@ -4,17 +4,18 @@ import prisma from "../../../prisma";
 import { saveGameState } from "../../../redis/game";
 import { getRoomState, saveRoomState } from "../../../redis/room";
 import getRoomPlayers from "src/socket/utils/getRoomPlayers";
-import emitToRoom from "src/socket/utils/emitToRoom";
+import emitToRoom from "@socket/utils/emitToRoom";
 
 export async function StartGameEventHandler(
   context: SocketContext
 ): Promise<void> {
   const { socket, channel } = context;
+  if (!socket.user?.room || !socket.user) return;
   const roomHash = socket.user.room;
   try {
     const room = await getRoomState(roomHash);
-    const roomId = room.id;
     if (!room) throw "Sala não encontrada!";
+    const roomId = room.id;
     if (room.status !== "open") throw "A sala já está em jogo!";
     if (socket.user.id !== room.ownerId)
       throw "Apenas o dono da sala pode iniciar a partida!";
@@ -35,7 +36,7 @@ export async function StartGameEventHandler(
       include: { user: true },
     });
 
-    if (channel.adapter.rooms.get(roomId)?.size < room.size)
+    if (channel.adapter.rooms.get(roomId)?.size || 0 < room.size)
       throw "Faltam jogadores na sala!";
 
     emitToRoom(channel, room.hash, "info", "Iniciando partida");
@@ -50,7 +51,9 @@ export async function StartGameEventHandler(
     game.status = "playing";
     game.players.forEach((p) => {
       p.status = "chosing";
-      p.hand = game.givePlayerCards(p.userId);
+      const hand = game.givePlayerCards(p.userId);
+      if (!hand) throw "Erro ao distribuir cartas";
+      p.hand = hand;
       p.name = p.user.name;
       p.image = p.user.image;
       p.email = p.user.email;
