@@ -79,6 +79,10 @@ jobs:
         run: |
           ssh -v -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@35.231.34.215 "echo 'SSH connection successful'"
 
+      - name: Upload project files to VM
+        run: |
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose-prod.yml ubuntu@35.231.34.215:/home/ubuntu/deploy/
+
       - name: Deploy
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@35.231.34.215 << 'EOF'
