@@ -24,7 +24,7 @@ services:
     command: ["mongod", "--bind_ip_all"]
 
   backend:
-    image: docker.io/carteado/backend:1.0.0
+    image: ferdinandes/carteado-backend:latest
     container_name: carteado_backend
     ports:
       - "4000:4000"
@@ -41,7 +41,7 @@ services:
       - app_network
 
   frontend:
-    image: docker.io/carteado/frontend:1.0.0
+    image: ferdinandes/carteado-frontend:latest
     container_name: carteado_frontend
     ports:
       - "80:80"
