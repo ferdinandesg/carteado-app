@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node -r module-alias/register dist/index.js",
+    "start": "node -r module-alias/register dist/src/index.js",
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "lint": "tsc --noEmit && eslint ./src --format=pretty --color"
@@ -13,10 +13,11 @@
   "author": "",
   "license": "ISC",
   "_moduleAliases": {
-    "@socket": "./dist/socket",
-    "@controller": "./dist/controller",
-    "@routes": "./dist/routes",
-    "@services": "./dist/services"
+    "@socket": "./dist/src/socket",
+    "@controller": "./distsrc//controller",
+    "@routes": "./dist/src/routes",
+    "@services": "./dist/src/services",
+    "shared": "./dist/shared"
   },
   "dependencies": {
     "@prisma/client": "^6.2.1",
