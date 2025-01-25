@@ -45,13 +45,19 @@ jobs:
 
       - name: Build Docker images
         run: |
-          TAG=$(echo $GITHUB_SHA | head -c7)
+          TAG=$(echo "${GITHUB_SHA::7}" | tr -d '[:space:]')
+          echo "Tag is $TAG"
+          TAG2=$(echo $GITHUB_SHA | cut -c1-7)
+          echo "Tag2 is $TAG2"
           docker build -f backend/Dockerfile.prod -t ferdinandes/carteado-backend:$TAG -t ferdinandes/carteado-backend:latest .
           docker build -f frontend/Dockerfile.prod -t ferdinandes/carteado-frontend:$TAG -t ferdinandes/carteado-frontend:latest .
 
       - name: Login to DockerHub
         run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Debug TAG variable
+        run: echo "Tag is $TAG"
 
       - name: Push images
         run: |
