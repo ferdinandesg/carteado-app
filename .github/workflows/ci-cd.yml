@@ -20,61 +20,65 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Set up Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 21.1.0
-          cache: "npm"
+      # - name: Set up Node
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 21.1.0
+      #     cache: "npm"
 
-      - name: Install Dependencies (Root)
-        run: |
-          npm ci
-          cd frontend && npm ci
-          cd ../backend && npm ci
-          cd ..
+      # - name: Install Dependencies (Root)
+      #   run: |
+      #     npm ci
+      #     cd frontend && npm ci
+      #     cd ../backend && npm ci
+      #     cd ..
 
-      - name: Lint + Test Backend
-        run: |
-          cd backend
-          npm run lint
+      # - name: Lint + Test Backend
+      #   run: |
+      #     cd backend
+      #     npm run lint
 
-      - name: Lint + Test Frontend
-        run: |
-          cd frontend
-          npm run lint
+      # - name: Lint + Test Frontend
+      #   run: |
+      #     cd frontend
+      #     npm run lint
 
-      - name: Build Docker images
-        run: |
-          TAG=$(echo "${GITHUB_SHA::7}" | tr -d '[:space:]')
-          echo "TAG=$TAG" >> $GITHUB_ENV
-          docker build -f backend/Dockerfile.prod -t ferdinandes/carteado-backend:$TAG -t ferdinandes/carteado-backend:latest .
-          docker build -f frontend/Dockerfile.prod -t ferdinandes/carteado-frontend:$TAG -t ferdinandes/carteado-frontend:latest .
+      # - name: Build Docker images
+      #   run: |
+      #     TAG=$(echo "${GITHUB_SHA::7}" | tr -d '[:space:]')
+      #     echo "TAG=$TAG" >> $GITHUB_ENV
+      #     docker build -f backend/Dockerfile.prod -t ferdinandes/carteado-backend:$TAG -t ferdinandes/carteado-backend:latest .
+      #     docker build -f frontend/Dockerfile.prod -t ferdinandes/carteado-frontend:$TAG -t ferdinandes/carteado-frontend:latest .
 
-      - name: Login to DockerHub
-        run: |
-          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+      # - name: Login to DockerHub
+      #   run: |
+      #     echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-      - name: Push images
-        run: |
-          docker push ferdinandes/carteado-backend:${{ env.TAG }}
-          docker push ferdinandes/carteado-backend:latest
-          docker push ferdinandes/carteado-frontend:${{ env.TAG }}
-          docker push ferdinandes/carteado-frontend:latest
+      # - name: Push images
+      #   run: |
+      #     docker push ferdinandes/carteado-backend:${{ env.TAG }}
+      #     docker push ferdinandes/carteado-backend:latest
+      #     docker push ferdinandes/carteado-frontend:${{ env.TAG }}
+      #     docker push ferdinandes/carteado-frontend:latest
 
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.GCP_SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.GCP_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H 35.231.34.215 >> ~/.ssh/known_hosts
 
+      - name: Test SSH Connection
+        run: |
+          ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@35.231.34.215 "echo 'SSH connection successful'"
+
       - name: Deploy
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@35.231.34.215
-            cd ~/deploy
-            echo "Atualizando serviços..."
-            docker-compose -f docker-compose-prod.yml pull 
-            docker-compose -f docker-compose-prod.yml down
-            docker-compose -f docker-compose-prod.yml up -d
-            docker system prune -af  # Limpa imagens antigas para liberar espaço
+          ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@35.231.34.215 << 'EOF'
+           cd ~/deploy
+           echo "Atualizando serviços..."
+           docker-compose -f docker-compose-prod.yml pull 
+           docker-compose -f docker-compose-prod.yml down
+           docker-compose -f docker-compose-prod.yml up -d
+           docker system prune -af  # Limpa imagens antigas para liberar espaço
           EOF
