@@ -44,7 +44,7 @@ services:
     image: ferdinandes/carteado-frontend:latest
     container_name: carteado_frontend
     ports:
-      - "80:80"
+      - "3000:3000"
     depends_on:
       - backend
     environment:

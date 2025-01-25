@@ -8,6 +8,7 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     environment: production
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -20,46 +21,46 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # - name: Set up Node
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: 21.1.0
-      #     cache: "npm"
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 21.1.0
+          cache: "npm"
 
-      # - name: Install Dependencies (Root)
-      #   run: |
-      #     npm ci
-      #     cd frontend && npm ci
-      #     cd ../backend && npm ci
-      #     cd ..
+      - name: Install Dependencies (Root)
+        run: |
+          npm ci
+          cd frontend && npm ci
+          cd ../backend && npm ci
+          cd ..
 
-      # - name: Lint + Test Backend
-      #   run: |
-      #     cd backend
-      #     npm run lint
+      - name: Lint + Test Backend
+        run: |
+          cd backend
+          npm run lint
 
-      # - name: Lint + Test Frontend
-      #   run: |
-      #     cd frontend
-      #     npm run lint
+      - name: Lint + Test Frontend
+        run: |
+          cd frontend
+          npm run lint
 
-      # - name: Build Docker images
-      #   run: |
-      #     TAG=$(echo "${GITHUB_SHA::7}" | tr -d '[:space:]')
-      #     echo "TAG=$TAG" >> $GITHUB_ENV
-      #     docker build -f backend/Dockerfile.prod -t ferdinandes/carteado-backend:$TAG -t ferdinandes/carteado-backend:latest .
-      #     docker build -f frontend/Dockerfile.prod -t ferdinandes/carteado-frontend:$TAG -t ferdinandes/carteado-frontend:latest .
+      - name: Build Docker images
+        run: |
+          TAG=$(echo "${GITHUB_SHA::7}" | tr -d '[:space:]')
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          docker build -f backend/Dockerfile.prod -t ferdinandes/carteado-backend:$TAG -t ferdinandes/carteado-backend:latest .
+          docker build -f frontend/Dockerfile.prod -t ferdinandes/carteado-frontend:$TAG -t ferdinandes/carteado-frontend:latest .
 
       - name: Login to DockerHub
         run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-      # - name: Push images
-      #   run: |
-      #     docker push ferdinandes/carteado-backend:${{ env.TAG }}
-      #     docker push ferdinandes/carteado-backend:latest
-      #     docker push ferdinandes/carteado-frontend:${{ env.TAG }}
-      #     docker push ferdinandes/carteado-frontend:latest
+      - name: Push images
+        run: |
+          docker push ferdinandes/carteado-backend:${{ env.TAG }}
+          docker push ferdinandes/carteado-backend:latest
+          docker push ferdinandes/carteado-frontend:${{ env.TAG }}
+          docker push ferdinandes/carteado-frontend:latest
 
       - name: Set up SSH
         run: |
@@ -89,8 +90,7 @@ jobs:
             mkdir -p /home/ubuntu/deploy
             cd /home/ubuntu/deploy
             echo "Atualizando serviços..."
-            docker-compose -f docker-compose-prod.yml pull  # Puxa imagens mais recentes
-            docker-compose -f docker-compose-prod.yml down  # Para os containers atuais
-            docker-compose -f docker-compose-prod.yml up -d  # Reinicia com as novas imagens
-            docker system prune -af  # Limpa imagens antigas para liberar espaço
+            docker-compose -f docker-compose-prod.yml pull
+            docker-compose -f docker-compose-prod.yml up -d --no-deps backend frontend
+            docker system prune -af # Limpa imagens antigas para liberar espaço
           EOF

@@ -12,14 +12,15 @@ WORKDIR /app/backend
 RUN npm install --production=false
 
 COPY backend/ ./
-
 RUN npx prisma generate
 RUN npm run build
+
 FROM node:18-alpine
-WORKDIR /app
-COPY --from=builder /app/backend/dist ./backend/dist
+
+WORKDIR /app/backend
+COPY --from=builder /app/backend/dist ./dist
 COPY --from=builder /app/backend/package*.json ./
-RUN npm install --production
+RUN npm install --production && npm install @prisma/client
 
 EXPOSE 4000
-CMD ["node", "./dist/index.js"]
+CMD ["node", "dist/index.js"]
