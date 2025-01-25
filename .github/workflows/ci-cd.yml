@@ -3,8 +3,6 @@ name: CI-CD
 on:
   push:
     branches: ["master"]
-env:
-  TAG: ${{ github.sha::7 }}
 
 jobs:
   build-and-push:
@@ -47,6 +45,8 @@ jobs:
 
       - name: Build Docker images
         run: |
+          TAG=$(echo "${GITHUB_SHA::7}" | tr -d '[:space:]')
+          echo "TAG=$TAG" >> $GITHUB_ENV
           docker build -f backend/Dockerfile.prod -t ferdinandes/carteado-backend:$TAG -t ferdinandes/carteado-backend:latest .
           docker build -f frontend/Dockerfile.prod -t ferdinandes/carteado-frontend:$TAG -t ferdinandes/carteado-frontend:latest .
 
@@ -56,9 +56,9 @@ jobs:
 
       - name: Push images
         run: |
-          docker push ferdinandes/carteado-backend:$TAG
+          docker push ferdinandes/carteado-backend:${{ env.TAG }}
           docker push ferdinandes/carteado-backend:latest
-          docker push ferdinandes/carteado-frontend:$TAG
+          docker push ferdinandes/carteado-frontend:${{ env.TAG }}
           docker push ferdinandes/carteado-frontend:latest
 
       - name: Set up SSH
