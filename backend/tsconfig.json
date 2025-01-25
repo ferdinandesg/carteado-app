@@ -5,7 +5,7 @@
     "module": "commonjs",
     "baseUrl": "./",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./",
     "paths": {
       "@controller/*": ["src/controller/*"],
       "@routes/*": ["src/routes/*"],
