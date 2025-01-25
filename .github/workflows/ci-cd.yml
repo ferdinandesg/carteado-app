@@ -77,7 +77,7 @@ jobs:
 
       - name: Test SSH Connection
         run: |
-          ssh -v -o IdentitiesOnly=yes StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@35.231.34.215 "echo 'SSH connection successful'"
+          ssh -v -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@35.231.34.215 "echo 'SSH connection successful'"
 
       - name: Deploy
         run: |
