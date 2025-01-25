@@ -10,16 +10,6 @@
     "lint:frontend": "cd frontend && npm run lint",
     "lint": "npm run lint:backend && npm run lint:frontend"
   },
-  "lint-staged": {
-    "**/*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
-      "eslint"
-    ],
-    "**/*.{css,scss}": [
-      "stylelint --fix",
-      "stylelint"
-    ]
-  },
   "devDependencies": {
     "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
@@ -29,6 +19,7 @@
     "@typescript-eslint/parser": "^8.21.0",
     "eslint": "^9.19.0",
     "eslint-config-prettier": "^10.0.1",
+    "eslint-formatter-pretty": "^4.1.0",
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react": "^7.37.4",
     "globals": "^15.14.0",

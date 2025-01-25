@@ -1,5 +1,5 @@
 echo ">> Rodando lint-staged (lint e format para arquivos modificados)..."
-npx lint-staged
+npx lint-staged --quiet
 if [ $? -ne 0 ]; then
   echo "Lint falhou, commit bloqueado."
   exit 1
