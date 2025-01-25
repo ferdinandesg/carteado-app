@@ -6,7 +6,7 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint 'src/' .js,.jsx,.ts,.tsx --format=pretty --color"
+    "lint": "eslint ./src --format=pretty --color"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.64.2",
