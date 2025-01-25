@@ -35,12 +35,15 @@ jobs:
           npm run lint
 
       - name: Debugging Paths
-        run: ls -la frontend/
+        run: |
+          ls -la frontend/
+          npx eslint -v
 
       - name: Lint + Test Frontend
         run: |
           cd frontend
           export DEBUG=eslint:*
+          NODE_PATH=$(npm root)
           npm run lint
 
       - name: Build Docker images
