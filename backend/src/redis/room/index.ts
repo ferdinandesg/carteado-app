@@ -5,7 +5,7 @@ import { PopulatedPlayer } from "src/game/game";
 type PopulatedRoom = {
   spectators: User[];
   players: PopulatedPlayer[];
-} & Prisma.RoomGetPayload<{}>;
+} & Prisma.RoomGetPayload<object>;
 
 export async function getRoomState(
   roomId: string

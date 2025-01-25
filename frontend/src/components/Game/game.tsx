@@ -5,7 +5,6 @@ import { useGameContext } from "@/contexts/game.context";
 
 import styles from "@styles/Game.module.scss";
 import CardFan from "../CardFan";
-import TableActions from "../TableActions";
 
 export default function Game() {
   const { player, playCard } = useGameContext();

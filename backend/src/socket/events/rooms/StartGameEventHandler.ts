@@ -1,4 +1,3 @@
-import { Card } from "@prisma/client";
 import { SocketContext } from "../../../@types/socket";
 import GameClass from "../../../game/game";
 import prisma from "../../../prisma";

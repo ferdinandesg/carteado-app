@@ -4,7 +4,6 @@ import classNames from "classnames";
 import styles from "@styles/Rooms.module.scss";
 import Image from "next/image";
 import { Circle, Loader } from "lucide-react";
-import { withSound } from "./buttons/withSound";
 
 type RoomItemProps = {
   room: RoomInterface;

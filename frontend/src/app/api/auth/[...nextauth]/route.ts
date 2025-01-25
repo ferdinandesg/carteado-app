@@ -38,6 +38,7 @@ const handler = NextAuth({
         session.user.token = token;
         return session; // The return type will match the one returned in `useSession()`
       } catch (error) {
+        console.error("Erro na criação da sessão:", error);
         return session;
       }
     },

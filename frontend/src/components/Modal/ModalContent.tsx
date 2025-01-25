@@ -1,9 +1,9 @@
 import { HtmlHTMLAttributes } from "react";
 import { twMerge } from "tailwind-merge";
 
-interface ContentProps extends HtmlHTMLAttributes<HTMLDivElement> {}
-
-export default function Content({ ...props }: ContentProps) {
+export default function Content({
+  ...props
+}: HtmlHTMLAttributes<HTMLDivElement>) {
   return (
     <div className={twMerge("p-2 h-full bg-white", props.className)}>
       {props.children}

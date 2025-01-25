@@ -7,7 +7,7 @@ module.exports = {
   rules: {
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
-    "no-undef": "off",
+    "no-console": 1,
   },
   plugins: ["react"],
   settings: {

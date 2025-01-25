@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import prisma from "../../prisma";
 
 export default async function authorize(
-  req: any,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {

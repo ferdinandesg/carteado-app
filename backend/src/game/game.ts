@@ -81,9 +81,7 @@ export default class GameClass {
   applyRules(card: Card, player: GamePlayer) {
     try {
       const [lastCard] = this.bunch.slice(-1);
-      const currentCardSpecial = this.isSpecialCard(card);
-      if (currentCardSpecial) {
-      } else if (lastCard && !this.isSpecialCard(lastCard)) {
+      if (lastCard && !this.isSpecialCard(lastCard)) {
         // if the last card is not special, the current card should be higher
         if (lastCard.value! > card.value)
           throw "Você está jogando uma carta mais baixa que a da mesa";

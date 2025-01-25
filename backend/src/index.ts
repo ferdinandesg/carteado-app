@@ -16,7 +16,7 @@ process.on("uncaughtException", (err) => {
   console.error("Exceção não capturada detectada:", err);
 });
 
-process.on("unhandledRejection", (reason, promise) => {
+process.on("unhandledRejection", (reason) => {
   console.error("Promise rejeitada sem tratamento:", reason);
 });
 httpServer.listen(process.env.PORT, () =>

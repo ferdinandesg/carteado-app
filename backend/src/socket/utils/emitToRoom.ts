@@ -1,6 +1,6 @@
 import { Namespace, Socket } from "socket.io";
 
-export default function emitToRoom<T = any>(
+export default function emitToRoom<T>(
   channel: Socket | Namespace,
   roomId: string,
   event: string,

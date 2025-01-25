@@ -6,7 +6,6 @@ import RoomItem from "@/components/RoomItem";
 
 import styles from "@styles/Rooms.module.scss";
 import classNames from "classnames";
-import { ArrowLeftCircle } from "lucide-react";
 import BackButton from "@/components/buttons/BackButton";
 
 type RoomListType = {

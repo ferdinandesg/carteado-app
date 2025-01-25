@@ -3,7 +3,7 @@ import { validateUser } from "../../../services/auth.service";
 
 export async function Authentication(
   socket: Socket,
-  next: Function
+  next: (err?: Error) => void
 ): Promise<void> {
   try {
     const { user } = socket.handshake.query;
@@ -13,7 +13,7 @@ export async function Authentication(
     socket.user = auth;
 
     socket.join(socket.user.email);
-    return next(null, true);
+    return next(null);
   } catch (error) {
     console.error({ error });
   }

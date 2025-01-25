@@ -1,6 +1,6 @@
 import { Socket } from "socket.io";
 
-export default function emitToUser<T = any>(
+export default function emitToUser<T>(
   socket: Socket,
   event: string,
   payload: T

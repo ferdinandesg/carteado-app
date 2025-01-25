@@ -5,16 +5,27 @@ module.exports = {
     node: true,
     es2021: true,
   },
-  extends: ["eslint:recommended", "prettier"],
+  extends: [
+    "eslint:recommended",
+    "prettier",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:prettier/recommended",
+  ],
+  parser: "@typescript-eslint/parser",
   parserOptions: {
-    ecmaVersion: 2021,
+    ecmaVersion: 2020,
     sourceType: "module",
   },
   rules: {
-    "prettier/prettier": "off",
+    "no-undef": "off",
     "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-expressions": [
+      "error",
+      { allowShortCircuit: true },
+    ],
     "@typescript-eslint/no-unused-vars": [
-      "warn",
+      "error",
       {
         args: "all",
         argsIgnorePattern: "^_",

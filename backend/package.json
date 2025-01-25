@@ -2,11 +2,11 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "test": "echo \"Warn: no test created yet for backend\" && exit 1",
-    "lint": ""
+    "build": "tsc",
+    "lint": "eslint ./src --ext .ts  && echo '✓ Lint finalizado sem erros!'"
   },
   "keywords": [],
   "author": "",

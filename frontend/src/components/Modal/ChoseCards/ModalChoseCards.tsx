@@ -1,5 +1,4 @@
 import CardComponent from "@/components/Card";
-import Modal from "..";
 import { useState } from "react";
 import { Card } from "shared/cards";
 
@@ -32,13 +31,11 @@ export default function ModalChoseCards({ isOpen }: ModalChoseCardsProps) {
   const { handlePickCards, player } = useGameContext();
   const handCards = player?.hand || [];
   const [chosenCards, setChosenCards] = useState<Card[]>([]);
-  const [isLoading, setLoading] = useState<boolean>(false);
 
   const pickHand = () => {
     if (chosenCards.length !== 3) return;
     handlePickCards(chosenCards);
     setChosenCards([]);
-    setLoading(true);
   };
   const selectCard = (card: Card) => {
     if (chosenCards.length < 3) setChosenCards((m) => [...m, card]);

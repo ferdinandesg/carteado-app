@@ -3,7 +3,6 @@ import { SocketContext } from "../../../@types/socket";
 import getRoomPlayers from "src/socket/utils/getRoomPlayers";
 import emitToRoom from "src/socket/utils/emitToRoom";
 import emitToUser from "src/socket/utils/emitToUser";
-import prisma from "src/prisma";
 import { getGameState } from "src/redis/game";
 
 export async function JoinRoomEventHandler(
@@ -16,7 +15,7 @@ export async function JoinRoomEventHandler(
     if (!room) return;
 
     switch (room.status) {
-      case "open":
+      case "open": {
         const roomPlayers = getRoomPlayers(roomId, channel);
         if (roomPlayers.length >= room.size) throw "A sala está cheia.";
         if (roomPlayers.find((player) => player.id === socket.user.id))
@@ -25,7 +24,8 @@ export async function JoinRoomEventHandler(
         socket.user.room = roomId;
         socket.user.status = "NOT_READY";
         break;
-      case "playing":
+      }
+      case "playing": {
         const currentPlayers = await getGameState(room.hash);
         if (
           currentPlayers.players.find(
@@ -40,6 +40,7 @@ export async function JoinRoomEventHandler(
         room.spectators.push(socket.user);
         await saveRoomState(roomId, room);
         break;
+      }
       default:
         return;
     }

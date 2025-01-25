@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { createRoom, getRoom, listRooms } from "../services/room.service";
 
-export async function handleCreateRoom(req: any, res: Response) {
+export async function handleCreateRoom(req: Request, res: Response) {
   try {
     const { name, size } = req.body;
     const { user } = req;
@@ -13,13 +13,13 @@ export async function handleCreateRoom(req: any, res: Response) {
     res.status(400).json(error);
   }
 }
-export async function handleListRooms(req: Request, res: Response) {
+export async function handleListRooms(_req: Request, res: Response) {
   try {
     const rooms = await listRooms();
 
     res.status(200).json(rooms);
   } catch (error) {
-    throw error;
+    res.status(400).json(error);
   }
 }
 

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useSocket } from "@/contexts/socket.context";
-import Players from "../Players";
 import classNames from "classnames";
 import useRoomByHash from "@/hooks/rooms/useRoomByHash";
 import { useParams } from "next/navigation";
