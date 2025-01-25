@@ -1,9 +1,5 @@
 module.exports = {
-  extends: [
-    "../.eslintrc.js",
-    "plugin:react/recommended",
-    "next/core-web-vitals",
-  ],
+  extends: ["../.eslintrc.js", "plugin:react/recommended"],
   rules: {
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
