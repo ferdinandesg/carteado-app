@@ -28,14 +28,8 @@ jobs:
       - name: Install Dependencies (Root)
         run: npm ci
 
-      - name: Lint + Test Backend
+      - name: Linters + Tests
         run: |
-          cd backend
-          npm run lint
-
-      - name: Lint + Test Frontend
-        run: |
-          cd frontend
           npm run lint
 
       - name: Build Docker images
