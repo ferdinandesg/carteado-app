@@ -3,6 +3,8 @@ name: CI-CD
 on:
   push:
     branches: ["master"]
+env:
+  TAG: ${{ github.sha::7 }}
 
 jobs:
   build-and-push:
@@ -54,7 +56,6 @@ jobs:
 
       - name: Push images
         run: |
-          TAG=$(echo $GITHUB_SHA | cut -c1-7)
           docker push ferdinandes/carteado-backend:$TAG
           docker push ferdinandes/carteado-backend:latest
           docker push ferdinandes/carteado-frontend:$TAG
