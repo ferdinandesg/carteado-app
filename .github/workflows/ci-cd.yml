@@ -24,12 +24,23 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 21.1.0
+          cache: "npm"
 
       - name: Install Dependencies (Root)
         run: npm ci
 
-      - name: Linters + Tests
+      - name: Lint + Test Backend
         run: |
+          cd backend
+          npm run lint
+
+      - name: Debugging Paths
+        run: ls -la frontend/
+
+      - name: Lint + Test Frontend
+        run: |
+          cd frontend
+          export DEBUG=eslint:*
           npm run lint
 
       - name: Build Docker images
