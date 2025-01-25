@@ -13,6 +13,7 @@ RUN npm install --production=false
 
 COPY backend/ ./
 
+RUN npx prisma generate
 RUN npm run build
 FROM node:18-alpine
 WORKDIR /app
