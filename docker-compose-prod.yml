@@ -1,31 +1,33 @@
+include:
+  - path: backend/docker-compose-prod.yml
+
 services:
-  redis:
-    image: redis:7.0
-    container_name: redis
-    ports:
-      - "6379:6379"
-
-  mongodb:
-    image: mongo:6.0
-    container_name: mongodb
-    ports:
-      - "27017:27017"
-
   backend:
     image: docker.io/carteado/backend:1.0.0
     container_name: carteado_backend
     ports:
       - "4000:4000"
-    environment:
-      # variáveis, ex: MONGO_URL, REDIS_HOST
     depends_on:
       - mongodb
       - redis
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/carteado
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - FRONTEND_URL=http://35.231.34.215
+    restart: always
+    networks:
+      - app_network
 
   frontend:
     image: docker.io/carteado/frontend:1.0.0
     container_name: carteado_frontend
     ports:
-      - "3000:80" # se a imagem frontend estiver servindo em 80
+      - "80:80"
     depends_on:
       - backend
+    environment:
+      - API_URL=http://35.231.34.215:4000
+    restart: always
+    networks:
+      - app_network

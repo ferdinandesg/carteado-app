@@ -1,24 +1,34 @@
-services:
-  mongodb:
-    image: mongo:6.0
-    container_name: mongodb
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-    networks:
-      - carteado_network
+version: "3.8"
 
+services:
   redis:
     image: redis:7.0
     container_name: redis
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: always
     networks:
-      - carteado_network
+      - app_network
+    command: ["redis-server", "--appendonly", "yes"]
+
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    restart: always
+    networks:
+      - app_network
+    command: ["mongod", "--bind_ip_all"]
+
+volumes:
+  mongo_data:
+  redis_data:
 
 networks:
-  carteado_network:
-    name: carteado_network
+  app_network:
     driver: bridge

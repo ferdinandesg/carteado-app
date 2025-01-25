@@ -39,16 +39,19 @@ jobs:
 
       - name: Build Docker images
         run: |
-          docker build -f frontend/Dockerfile.prod -t ferdinandes/carteado-backend:latest .
-          docker build -f frontend/Dockerfile.prod -t ferdinandes/carteado-frontend:latest .
+          TAG=$(echo $GITHUB_SHA | head -c7)
+          docker build -f backend/Dockerfile.prod -t ferdinandes/carteado-backend:$TAG -t ferdinandes/carteado-backend:latest .
+          docker build -f frontend/Dockerfile.prod -t ferdinandes/carteado-frontend:$TAG -t ferdinandes/carteado-frontend:latest .
 
       - name: Login to DockerHub
         run: |
-          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Push images
         run: |
+          docker push ferdinandes/carteado-backend:$TAG
           docker push ferdinandes/carteado-backend:latest
+          docker push ferdinandes/carteado-frontend:$TAG
           docker push ferdinandes/carteado-frontend:latest
 
       - name: Set up SSH
@@ -57,7 +60,14 @@ jobs:
           echo "${{ secrets.GCP_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H 35.231.34.215 >> ~/.ssh/known_hosts
+
       - name: Deploy
         run: |
-          ssh -i ~/.ssh/id_rsa root@35.231.34.215 \
-            'cd /home/root/carteado && docker compose pull && docker compose up -d'
+          ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@35.231.34.215 << 'EOF'
+            cd ~/deploy
+            echo "Atualizando serviços..."
+            docker-compose -f docker-compose-prod.yml pull  # Puxa imagens mais recentes
+            docker-compose -f docker-compose-prod.yml down  # Para os containers atuais
+            docker-compose -f docker-compose-prod.yml up -d  # Reinicia com as novas imagens
+            docker system prune -af  # Limpa imagens antigas para liberar espaço
+          EOF
