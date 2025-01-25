@@ -81,11 +81,12 @@ jobs:
 
       - name: Deploy
         run: |
-          ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@35.231.34.215 << 'EOF'
-           cd ~/deploy
-           echo "Atualizando serviços..."
-           docker-compose -f docker-compose-prod.yml pull 
-           docker-compose -f docker-compose-prod.yml down
-           docker-compose -f docker-compose-prod.yml up -d
-           docker system prune -af  # Limpa imagens antigas para liberar espaço
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@35.231.34.215 << 'EOF'
+            mkdir -p /home/ubuntu/deploy
+            cd /home/ubuntu/deploy
+            echo "Atualizando serviços..."
+            docker-compose -f docker-compose-prod.yml pull  # Puxa imagens mais recentes
+            docker-compose -f docker-compose-prod.yml down  # Para os containers atuais
+            docker-compose -f docker-compose-prod.yml up -d  # Reinicia com as novas imagens
+            docker system prune -af  # Limpa imagens antigas para liberar espaço
           EOF
