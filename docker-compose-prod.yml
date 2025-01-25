@@ -1,7 +1,28 @@
-include:
-  - path: backend/docker-compose-prod.yml
-
 services:
+  redis:
+    image: redis:7.0
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: always
+    networks:
+      - app_network
+    command: ["redis-server", "--appendonly", "yes"]
+
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    restart: always
+    networks:
+      - app_network
+    command: ["mongod", "--bind_ip_all"]
+
   backend:
     image: docker.io/carteado/backend:1.0.0
     container_name: carteado_backend
@@ -31,3 +52,7 @@ services:
     restart: always
     networks:
       - app_network
+
+networks:
+  app_network:
+    driver: bridge
