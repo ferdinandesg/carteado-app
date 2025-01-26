@@ -22,7 +22,11 @@ services:
     depends_on:
       - backend
     environment:
-      - API_URL=https://carteado.ferdinandes.com.br/api
+      - API_URL=http://carteado_backend:4000
+      - NEXTAUTH_URL=https://carteado.ferdinandes.com.br
+      - GOOGLE_ID=${GOOGLE_ID}
+      - GOOGLE_SECRET=${GOOGLE_SECRET}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
     restart: always
     networks:
       - app_network
@@ -32,6 +36,9 @@ services:
     container_name: carteado_backend
     ports:
       - "4000:4000"
+    depends_on:
+      - mongodb
+      - redis
     environment:
       - PORT=4000
       - DATABASE_URL=mongodb://mongodb:27017/carteado
@@ -40,10 +47,6 @@ services:
     restart: always
     networks:
       - app_network
-
-networks:
-  app_network:
-    driver: bridge
 
   redis:
     image: redis:7.0
@@ -68,40 +71,6 @@ networks:
     networks:
       - app_network
     command: ["mongod", "--bind_ip_all"]
-
-  backend:
-    image: ferdinandes/carteado-backend:latest
-    container_name: carteado_backend
-    ports:
-      - "4000:4000"
-    depends_on:
-      - mongodb
-      - redis
-    environment:
-      - PORT=4000
-      - DATABASE_URL=mongodb://mongodb:27017/carteado
-      - REDIS_URL=redis://redis:6379
-      - FRONTEND_URL=http://carteado.ferdinandes.com.br
-    restart: always
-    networks:
-      - app_network
-
-  frontend:
-    image: ferdinandes/carteado-frontend:latest
-    container_name: carteado_frontend
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
-    environment:
-      - API_URL=http://carteado_backend:4000
-      - NEXTAUTH_URL=https://carteado.ferdinandes.com.br
-      - GOOGLE_ID=${GOOGLE_ID}
-      - GOOGLE_SECRET=${GOOGLE_SECRET}
-      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
-    restart: always
-    networks:
-      - app_network
 
 volumes:
   redis_data:
