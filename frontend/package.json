@@ -6,8 +6,7 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ./src --format=pretty --color",
-    "ssh": "ssh -i ~/.ssh/id_ed25519 ubuntu@35.231.34.215"
+    "lint": "eslint ./src --format=pretty --color"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.64.2",
