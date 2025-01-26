@@ -91,6 +91,8 @@ jobs:
             cd /home/ubuntu/deploy
             echo "Atualizando serviços..."
             export NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+            export GOOGLE_ID=${{ secrets.GOOGLE_ID }}
+            export GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}
             docker-compose -f docker-compose-prod.yml pull
             docker-compose -f docker-compose-prod.yml up -d --no-deps backend frontend
             docker system prune -af # Limpa imagens antigas para liberar espaço
