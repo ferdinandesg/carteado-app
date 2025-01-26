@@ -32,9 +32,9 @@ services:
       - mongodb
       - redis
     environment:
-      - MONGO_URI=mongodb://mongodb:27017/carteado
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
+      - PORT=4000
+      - DATABASE_URL=mongodb://mongodb:27017/carteado
+      - REDIS_URL=redis://redis:6379
       - FRONTEND_URL=http://35.231.34.215
     restart: always
     networks:
