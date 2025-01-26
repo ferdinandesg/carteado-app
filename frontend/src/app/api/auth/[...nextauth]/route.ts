@@ -10,7 +10,7 @@ const validateUser = async (payload: UserSession) => {
 };
 
 const handler = NextAuth({
-  secret: process.env.SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_ID!,

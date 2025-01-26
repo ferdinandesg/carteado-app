@@ -49,6 +49,7 @@ services:
       - backend
     environment:
       - API_URL=http://carteado.ferdinandes.com.br:4000
+      - NEXTAUTH_URL=https://carteado.ferdinandes.com.br
     restart: always
     networks:
       - app_network
