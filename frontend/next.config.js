@@ -17,10 +17,6 @@ const nextConfig = {
     includePaths: [path.join(__dirname, "styles")],
     prependData: `@use 'variables' as *;`,
   },
-  output: "standalone",
-  serverRuntimeConfig: {
-    API_URL: process.env.API_URL || "http://172.29.64.1:4000",
-  },
 };
 
 module.exports = nextConfig;

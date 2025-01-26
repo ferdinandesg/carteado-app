@@ -11,7 +11,7 @@
 To carry out the installation you just need to run the docker-compose file
 
 ```sh
-docker-compose up -d
+npm run start:dev
 ```
 
 and soon after the web application will be available on port `:3000`
