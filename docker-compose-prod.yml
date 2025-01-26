@@ -35,7 +35,7 @@ services:
       - PORT=4000
       - DATABASE_URL=mongodb://mongodb:27017/carteado
       - REDIS_URL=redis://redis:6379
-      - FRONTEND_URL=http://35.231.34.215
+      - FRONTEND_URL=http://carteado.ferdinandes.com.br
     restart: always
     networks:
       - app_network
@@ -48,7 +48,7 @@ services:
     depends_on:
       - backend
     environment:
-      - API_URL=http://35.231.34.215:4000
+      - API_URL=http://carteado.ferdinandes.com.br:4000
     restart: always
     networks:
       - app_network
