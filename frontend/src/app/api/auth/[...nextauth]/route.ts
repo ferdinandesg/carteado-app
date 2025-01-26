@@ -47,7 +47,10 @@ const handler = NextAuth({
       return "/menu";
     },
   },
-
+  pages: {
+    signIn: "/",
+    error: "/?error=oauth",
+  },
   theme: { colorScheme: "dark" },
 });
 
