@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@shared/*": ["shared/*"]
+      "shared/*": ["shared/*"]
     },
     "moduleResolution": "node",
     "strict": true,

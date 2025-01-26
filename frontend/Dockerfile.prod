@@ -6,7 +6,7 @@ WORKDIR /app
 COPY tsconfig.base.json ./
 COPY frontend/package.json frontend/package.json
 COPY frontend/package-lock.json frontend/package-lock.json
-COPY shared/ ./frontend/shared
+COPY shared/ ./shared
 
 WORKDIR /app/frontend
 RUN npm install

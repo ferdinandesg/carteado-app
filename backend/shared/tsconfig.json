@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../backend/dist/shared",
+    "rootDir": "./",
+    "composite": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
+}
