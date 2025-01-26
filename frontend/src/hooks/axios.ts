@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: `${process.env.API_URL}/api`,
+  baseURL: process.env.API_UR,
   headers: {
     "Content-Type": "application/json",
     "Cache-Control": "no-cache",
