@@ -24,6 +24,7 @@ services:
     environment:
       - API_URL=https://carteado.ferdinandes.com.br/api/v1
       - NEXTAUTH_URL=https://carteado.ferdinandes.com.br
+      - SOCKET_URL=https://carteado.ferdinandes.com.br/socket.io/
       - GOOGLE_ID=${GOOGLE_ID}
       - GOOGLE_SECRET=${GOOGLE_SECRET}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}

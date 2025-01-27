@@ -13,7 +13,8 @@ class SocketClass {
     this.io = new Server(server, {
       pingTimeout: 1000,
       cors: {
-        origin: "*",
+        origin: "https://carteado.ferdinandes.com.br",
+        methods: ["GET", "POST"],
       },
     });
     this.roomChannel = this.io.of("/api/v1/room");
