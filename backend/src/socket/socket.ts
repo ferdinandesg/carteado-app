@@ -13,11 +13,10 @@ class SocketClass {
     this.io = new Server(server, {
       pingTimeout: 1000,
       cors: {
-        origin: "https://carteado.ferdinandes.com.br",
-        methods: ["GET", "POST"],
+        origin: "*",
       },
     });
-    this.roomChannel = this.io.of("/api/v1/room");
+    this.roomChannel = this.io.of("/room");
     this.roomChannel.use(Authentication);
     this.roomChannel.on(CHANNEL.CLIENT.CONNECTION, async (socket: Socket) =>
       ConnectionEventHandler(socket, this.roomChannel)

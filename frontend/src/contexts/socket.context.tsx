@@ -30,11 +30,9 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       config.headers.Authorization = data?.user.id;
       return config;
     });
-    const instance = io("https://carteado.ferdinandes.com.br/room", {
+    const instance = io(`${process.env.NEXT_PUBLIC_API_URL}/room`, {
       reconnectionDelayMax: 10000,
       query: { user: JSON.stringify(data?.user) },
-      path: "/socket.io/",
-      transports: ["websocket"],
     });
     instance.on("error", (message) => toast(message));
     instance.on("info", (message) => toast(message));
