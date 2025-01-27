@@ -6,7 +6,8 @@ const nextConfig = {
     GOOGLE_ID: process.env.GOOGLE_ID,
     GOOGLE_SECRET: process.env.GOOGLE_SECRET,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-    NEXT_PUBLIC_API_URL: process.env.API_URL || "https://carteado_backend:4000",
+    NEXT_PUBLIC_API_URL:
+      process.env.API_URL || "https://carteado.ferdinandes.com.br",
   },
   images: {
     domains: ["lh3.googleusercontent.com", "developers.google.com"],

@@ -16,7 +16,7 @@ class SocketClass {
         origin: "*",
       },
     });
-    this.roomChannel = this.io.of("/api/v1/room");
+    this.roomChannel = this.io.of("/room");
     this.roomChannel.use(Authentication);
     this.roomChannel.on(CHANNEL.CLIENT.CONNECTION, async (socket: Socket) =>
       ConnectionEventHandler(socket, this.roomChannel)
