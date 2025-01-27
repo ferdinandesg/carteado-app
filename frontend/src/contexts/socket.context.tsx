@@ -33,6 +33,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     const instance = io(`${process.env.NEXT_PUBLIC_API_URL}/room`, {
       reconnectionDelayMax: 10000,
       query: { user: JSON.stringify(data?.user) },
+      transports: ["websocket"],
     });
     instance.on("error", (message) => toast(message));
     instance.on("info", (message) => toast(message));
