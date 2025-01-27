@@ -22,7 +22,7 @@ services:
     depends_on:
       - backend
     environment:
-      - API_URL=https://carteado.ferdinandes.com.br
+      - API_URL=https://carteado.ferdinandes.com.br/api/v1
       - NEXTAUTH_URL=https://carteado.ferdinandes.com.br
       - GOOGLE_ID=${GOOGLE_ID}
       - GOOGLE_SECRET=${GOOGLE_SECRET}
