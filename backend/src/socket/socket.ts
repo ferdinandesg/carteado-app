@@ -12,6 +12,7 @@ class SocketClass {
   static init(server: http.Server) {
     this.io = new Server(server, {
       pingTimeout: 1000,
+      path: "/carteado_socket",
       cors: {
         origin: "*",
         methods: ["GET", "POST"],

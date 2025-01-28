@@ -32,6 +32,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     });
     const instance = io(`${process.env.NEXT_PUBLIC_API_URL}/room`, {
       reconnectionDelayMax: 10000,
+      path: "/carteado_socket",
       query: { user: JSON.stringify(data?.user) },
       transports: ["websocket"],
     });
