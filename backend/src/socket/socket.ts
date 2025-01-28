@@ -14,6 +14,7 @@ class SocketClass {
       pingTimeout: 1000,
       cors: {
         origin: "*",
+        methods: ["GET", "POST"],
       },
     });
     this.roomChannel = this.io.of("/room");
