@@ -68,6 +68,7 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
     restart: always
     command: ["--replSet", "rs0", "--bind_ip_all", "--auth"]
     environment:
