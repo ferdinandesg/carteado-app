@@ -95,6 +95,6 @@ jobs:
             GOOGLE_ID=${{ secrets.GOOGLE_ID }} \
             GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }} \
             NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
-            docker-compose -f docker-compose-prod.yml up -d --no-deps nginx frontend backend
+            docker-compose -f docker-compose-prod.yml up -d nginx frontend backend
             docker system prune -af # Limpa imagens antigas para liberar espaço
           EOF
