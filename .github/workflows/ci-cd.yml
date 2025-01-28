@@ -83,7 +83,7 @@ jobs:
       - name: Upload project files to VM
         run: |
           scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose-prod.yml ubuntu@35.231.34.215:/home/ubuntu/deploy/
-          scp -i ~/.ssh/id_rsa -r docker-compose-prod.yml nginx/ ubuntu@35.231.34.215:/home/ubuntu/deploy
+          scp -i ~/.ssh/id_rsa -r docker-compose-prod.yml nginx/ ubuntu@35.231.34.215:/home/ubuntu/deploy/
 
       - name: Deploy
         run: |
