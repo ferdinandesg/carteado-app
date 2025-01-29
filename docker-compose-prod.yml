@@ -70,7 +70,15 @@ services:
       - mongo_data:/data/db
       - ./mongodb.conf:/etc/mongo/mongodb.conf:ro
     restart: always
-    command: ["mongod", "--config", "/etc/mongo/mongodb.conf"]
+    command:
+      [
+        "mongod",
+        "--config",
+        "/etc/mongo/mongodb.conf",
+        "--replSet",
+        "rs0",
+        "--bind_ip_all",
+      ]
     networks:
       - app_network
 
