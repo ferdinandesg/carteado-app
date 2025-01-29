@@ -38,11 +38,13 @@ services:
     ports:
       - "4000:4000"
     depends_on:
-      - mongodb
+      - mongodb1
+      - mongodb2
+      - mongodb3
       - redis
     environment:
       - PORT=4000
-      - DATABASE_URL=mongodb://mongodb:27017/carteado?replicaSet=rs0
+      - DATABASE_URL=mongodb://root:rootpassword@mongodb1:27017,mongodb2:27017,mongodb3:27017/carteado?replicaSet=rs0
       - REDIS_URL=redis://redis:6379
       - FRONTEND_URL=http://carteado.ferdinandes.com.br
     restart: always
