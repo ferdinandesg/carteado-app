@@ -90,7 +90,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa franmlfran@34.46.195.249 << 'EOF'
             mkdir -p /home/franmlfran/deploy
             cd /home/franmlfran/deploy
-            mv init-mongo.js /home/franmlfran/deploy/backend/init-mongo.js
             echo "Atualizando serviços..."
             docker-compose -f docker-compose-prod.yml pull
             GOOGLE_ID=${{ secrets.GOOGLE_ID }} \
