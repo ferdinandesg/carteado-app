@@ -22,8 +22,8 @@ services:
     depends_on:
       - backend
     environment:
-      - NEXT_PUBLIC_API_URL=http://carteado.ferdinandes.com.br
-      - NEXTAUTH_URL=http://carteado.ferdinandes.com.br
+      - NEXT_PUBLIC_API_URL=https://carteado.ferdinandes.com.br
+      - NEXTAUTH_URL=https://carteado.ferdinandes.com.br
       - SOCKET_URL=http://carteado.ferdinandes.com.br/socket.io/
       - GOOGLE_ID=${GOOGLE_ID}
       - GOOGLE_SECRET=${GOOGLE_SECRET}
