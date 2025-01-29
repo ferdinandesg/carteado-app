@@ -22,9 +22,9 @@ services:
     depends_on:
       - backend
     environment:
-      - NEXT_PUBLIC_API_URL=https://carteado.ferdinandes.com.br
-      - NEXTAUTH_URL=https://carteado.ferdinandes.com.br
-      - SOCKET_URL=https://carteado.ferdinandes.com.br/socket.io/
+      - NEXT_PUBLIC_API_URL=http://carteado.ferdinandes.com.br
+      - NEXTAUTH_URL=http://carteado.ferdinandes.com.br
+      - SOCKET_URL=http://carteado.ferdinandes.com.br/socket.io/
       - GOOGLE_ID=${GOOGLE_ID}
       - GOOGLE_SECRET=${GOOGLE_SECRET}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
@@ -44,7 +44,7 @@ services:
       - PORT=4000
       - DATABASE_URL=mongodb://mongodb:27017/carteado?replicaSet=rs0
       - REDIS_URL=redis://redis:6379
-      - FRONTEND_URL=https://carteado.ferdinandes.com.br
+      - FRONTEND_URL=http://carteado.ferdinandes.com.br
     restart: always
     networks:
       - app_network
