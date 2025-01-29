@@ -68,17 +68,9 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
-      - ./mongodb.conf:/etc/mongo/mongodb.conf:ro
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
     restart: always
-    command:
-      [
-        "mongod",
-        "--config",
-        "/etc/mongo/mongodb.conf",
-        "--replSet",
-        "rs0",
-        "--bind_ip_all",
-      ]
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--noauth"]
     networks:
       - app_network
 
