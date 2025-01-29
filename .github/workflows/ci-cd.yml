@@ -68,26 +68,27 @@ jobs:
           chmod 700 ~/.ssh
           echo "${{ secrets.GCP_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 34.46.195.249 >> ~/.ssh/known_hosts
+          ssh-keyscan -H {{ secrets.VM_EXTERNAL_IP }} >> ~/.ssh/known_hosts
 
       - name: Debug SSH Key
         run: |
           ls -la ~/.ssh/
           cat ~/.ssh/id_rsa | head -n 5
-          ssh -v -i ~/.ssh/id_rsa franmlfran@34.46.195.249 echo "SSH connection successful"
+          ssh -v -i ~/.ssh/id_rsa franmlfran@{{ secrets.VM_EXTERNAL_IP }} echo "SSH connection successful"
 
       - name: Test SSH Connection
         run: |
-          ssh -v -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa franmlfran@34.46.195.249 "echo 'SSH connection successful'"
+          ssh -v -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa franmlfran@{{ secrets.VM_EXTERNAL_IP }} "echo 'SSH connection successful'"
 
       - name: Upload project files to VM
         run: |
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose-prod.yml franmlfran@34.46.195.249:/home/franmlfran/deploy/
-          scp -i ~/.ssh/id_rsa -r docker-compose-prod.yml nginx/ franmlfran@34.46.195.249:/home/franmlfran/deploy/
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose-prod.yml franmlfran@{{ secrets.VM_EXTERNAL_IP }}:/home/franmlfran/deploy/
+          scp -i ~/.ssh/id_rsa -r docker-compose-prod.yml ./init-mongo.js nginx/ franmlfran@{{ secrets.VM_EXTERNAL_IP }}:/home/franmlfran/deploy/
 
       - name: Deploy
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa franmlfran@34.46.195.249 << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa franmlfran@{{ secrets.VM_EXTERNAL_IP }} << 'EOF'
+            mv /home/franmlfran/deploy/init-mongo.js /home/franmlfran/deploy/backend/init-mongo.js
             mkdir -p /home/franmlfran/deploy
             cd /home/franmlfran/deploy
             echo "Atualizando serviços..."
