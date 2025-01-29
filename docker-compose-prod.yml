@@ -107,7 +107,7 @@ services:
 
 volumes:
   redis_data:
-  mongo_ data:
+  mongo_data:
 
 networks:
   app_network:
