@@ -83,14 +83,14 @@ jobs:
       - name: Upload project files to VM
         run: |
           scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose-prod.yml franmlfran@34.46.195.249:/home/franmlfran/deploy/
-          scp -i ~/.ssh/id_rsa -r docker-compose-prod.yml ./init-mongo.js nginx/ franmlfran@34.46.195.249:/home/franmlfran/deploy/
+          scp -i ~/.ssh/id_rsa -r docker-compose-prod.yml mongodb.conf nginx/ franmlfran@34.46.195.249:/home/franmlfran/deploy/
 
       - name: Deploy
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa franmlfran@34.46.195.249 << 'EOF'
-            mv /home/franmlfran/deploy/init-mongo.js /home/franmlfran/deploy/backend/init-mongo.js
             mkdir -p /home/franmlfran/deploy
             cd /home/franmlfran/deploy
+            mv init-mongo.js /home/franmlfran/deploy/backend/init-mongo.js
             echo "Atualizando serviços..."
             docker-compose -f docker-compose-prod.yml pull
             GOOGLE_ID=${{ secrets.GOOGLE_ID }} \
