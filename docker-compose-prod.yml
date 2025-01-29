@@ -98,9 +98,9 @@ services:
 
 volumes:
   redis_data:
-  mongo1_data:
-  mongo2_data:
-  mongo3_data:
+  mongo_data1:
+  mongo_data2:
+  mongo_data3:
 
 networks:
   app_network:
