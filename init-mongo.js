@@ -1,5 +1,5 @@
 print("Configuring MongoDB replica set...");
-
+sleep(10000);
 rs.initiate({
   _id: "rs0",
   members: [
