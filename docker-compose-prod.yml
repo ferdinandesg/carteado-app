@@ -61,28 +61,23 @@ services:
       - app_network
     command: ["redis-server", "--appendonly", "yes"]
 
-  mongodb:
-    image: mongo:6.0
-    container_name: mongodb
+  mongodb1:
+    <<: *mongodb_base
+    container_name: mongodb1
     ports:
       - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-    restart: always
-    command:
-      [
-        "mongod",
-        "--replSet",
-        "rs0",
-        "--bind_ip_all",
-        "--noauth",
-        "--port",
-        "27017",
-      ]
 
-    networks:
-      - app_network
+  mongodb2:
+    <<: *mongodb_base
+    container_name: mongodb2
+    ports:
+      - "27018:27017"
+
+  mongodb3:
+    <<: *mongodb_base
+    container_name: mongodb3
+    ports:
+      - "27019:27017"
 
 volumes:
   redis_data:
@@ -91,3 +86,15 @@ volumes:
 networks:
   app_network:
     driver: bridge
+
+x-mongodb_base: &mongodb_base
+  image: mongo:6.0
+  environment:
+    - MONGO_INITDB_ROOT_USERNAME=root
+    - MONGO_INITDB_ROOT_PASSWORD=rootpassword
+  volumes:
+    - ./init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro
+    - mongo_data:/data/db
+  networks:
+    - app_network
+  command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
