@@ -42,7 +42,7 @@ services:
       - redis
     environment:
       - PORT=4000
-      - DATABASE_URL=mongodb://root:password@mongodb:27017/carteado?authSource=admin
+      - DATABASE_URL=mongodb://root:password@mongodb:27017/carteado
       - REDIS_URL=redis://redis:6379
       - FRONTEND_URL=http://carteado.ferdinandes.com.br
     restart: always
