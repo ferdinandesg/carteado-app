@@ -38,9 +38,7 @@ services:
     ports:
       - "4000:4000"
     depends_on:
-      - mongodb1
-      - mongodb2
-      - mongodb3
+      - mongodb
       - redis
     environment:
       - PORT=4000
