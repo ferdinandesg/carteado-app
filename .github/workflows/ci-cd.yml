@@ -83,7 +83,7 @@ jobs:
       - name: Upload project files to VM
         run: |
           scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose-prod.yml franmlfran@34.67.161.188:/home/franmlfran/deploy/
-          scp -i ~/.ssh/id_rsa -r docker-compose-prod.yml init-mongo.js nginx/ franmlfran@34.67.161.188:/home/franmlfran/deploy/
+          scp -i ~/.ssh/id_rsa -r docker-compose-prod.yml mongodb_rs/ nginx/ franmlfran@34.67.161.188:/home/franmlfran/deploy/
 
       - name: Deploy
         run: |

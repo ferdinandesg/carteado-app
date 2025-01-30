@@ -44,7 +44,7 @@ services:
       - redis
     environment:
       - PORT=4000
-      - DATABASE_URL=mongodb://mongodb1:27017,mongodb2:27017,mongodb3:27017/carteado?replicaSet=rs0
+      - DATABASE_URL=mongodb://root:password@mongodb:27017/carteado?authSource=admin
       - REDIS_URL=redis://redis:6379
       - FRONTEND_URL=http://carteado.ferdinandes.com.br
     restart: always
@@ -63,46 +63,28 @@ services:
       - app_network
     command: ["redis-server", "--appendonly", "yes"]
 
-  mongodb1:
-    container_name: mongodb1
-    image: mongo:6.0
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--noauth"]
-    volumes:
-      - mongo_data1:/data/db
-      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+  mongodb:
+    build:
+      context: ./mongodb_rs
+      args:
+        MONGO_VERSION: "6.0"
+    container_name: mongodb
     ports:
       - "27017:27017"
-    restart: always
-    networks:
-      - app_network
-
-  mongodb2:
-    container_name: mongodb2
-    image: mongo:6.0
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--noauth"]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: carteado
+      MONGO_REPLICA_PORT: 27017
+      MONGO_REPLICA_HOST: mongodb
     volumes:
-      - mongo_data2:/data/db
-      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-    restart: always
-    networks:
-      - app_network
-
-  mongodb3:
-    container_name: mongodb3
-    image: mongo:6.0
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--noauth"]
-    volumes:
-      - mongo_data3:/data/db
-      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-    restart: always
+      - mongodb_data:/data/db
     networks:
       - app_network
 
 volumes:
   redis_data:
-  mongo_data1:
-  mongo_data2:
-  mongo_data3:
+  mongodb_data:
 
 networks:
   app_network:
