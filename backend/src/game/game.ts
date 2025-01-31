@@ -74,7 +74,8 @@ export default class GameClass {
     }
   }
 
-  isSpecialCard(card: Card) {
+  isSpecialCard(card?: Card) {
+    if (!card) return false;
     return card.rank === "2" || card.rank === "10";
   }
 
@@ -120,7 +121,7 @@ export default class GameClass {
     this.skipTurns(player.userId, turnsToSkip);
 
     // find the current user and for each rank "10" card, should pick the last one and split the bunch
-    const lastTenIndex = this.bunch.findIndex((x) => x.rank === "10");
+    const lastTenIndex = this.bunch.map((b) => b.rank).lastIndexOf("10");
     if (lastTenIndex > -1) this.bunch = this.bunch.slice(lastTenIndex + 1);
 
     // if in bunch we have a sequence in any place of four cards with the same rank, the bunch should be split

@@ -25,7 +25,6 @@ export default function Chat({ roomHash }: ChatProps) {
   const [, setUnreadMessages] = useState<number>(0);
 
   const updateMessages = (messages: MessageType | MessageType[]) => {
-    console.log("Updating messages", messages);
     setMessages((m) => [
       ...m,
       ...(Array.isArray(messages) ? messages : [messages]),
@@ -39,7 +38,6 @@ export default function Chat({ roomHash }: ChatProps) {
 
   useEffect(() => {
     if (!socket) return;
-    console.log("Joining chat", roomHash);
     const events = {
       join_chat: (message: MessageType) => updateMessages(message),
       receive_message: (message: MessageType) => updateMessages(message),
@@ -54,7 +52,6 @@ export default function Chat({ roomHash }: ChatProps) {
     });
 
     return () => {
-      console.log("Leaving chat", roomHash);
       Object.keys(events).forEach((event) => {
         socket.off(event);
       });

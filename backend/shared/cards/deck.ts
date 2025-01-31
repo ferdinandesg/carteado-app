@@ -19,8 +19,8 @@ class Deck {
   private getFullDeck(): Card[] {
     const cards: Card[] = [];
 
-    for (let suit of ALL_SUITS) {
-      for (let rank of ALL_RANKS) {
+    for (const suit of ALL_SUITS) {
+      for (const rank of ALL_RANKS) {
         const value = RANK_TO_VALUE[rank];
         cards.push({
           suit,

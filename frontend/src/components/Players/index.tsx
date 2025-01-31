@@ -12,9 +12,8 @@ const isPlayerReady = (player: RoomPlayer) => player.status === "READY";
 export default function Players({ roomHash }: { roomHash: string }) {
   const { room } = useRoomByHash(roomHash);
   const players = room?.players || [];
-  console.log({ players });
   return players.map((player, i) => {
-    const isReady = isPlayerReady(player);
+    const isReady = isPlayerReady(player) || room?.status === "playing";
     const statusClass = isReady ? styles.ready : styles.notReady;
     return (
       <div

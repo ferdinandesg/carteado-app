@@ -2,10 +2,16 @@ import { Card } from "shared/cards";
 
 import styles from "@styles/CardBunch.module.scss";
 import CardComponent from "./Card";
+import { withSound } from "./buttons/withSound";
 interface CardBunchProps {
   cards: Card[];
   onClick?: (card: Card) => void;
 }
+
+const CardBunchWithSound = withSound(CardComponent, {
+  clickSrc: "/assets/sfx/button-hover.mp3",
+});
+
 export default function CardBunch({
   cards,
   onClick = () => {},
@@ -18,7 +24,7 @@ export default function CardBunch({
             <div
               key={index}
               className={styles.card}>
-              <CardComponent
+              <CardBunchWithSound
                 card={card}
                 height={150}
                 onClick={() => onClick(card)}
