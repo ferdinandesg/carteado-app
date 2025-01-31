@@ -1,18 +1,20 @@
 services:
   mongodb:
-    image: mongo
-    container_name: carteado_mongodb
-    restart: always
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--noauth"]
+    build:
+      context: ../mongodb_rs
+      args:
+        MONGO_VERSION: "6.0"
+    container_name: mongodb
     ports:
       - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: carteado
+      MONGO_REPLICA_PORT: 27017
+      MONGO_REPLICA_HOST: mongodb
     volumes:
       - mongo_data:/data/db
-      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-    networks:
-      - carteado_network
-    env_file:
-      - ../.env
 
   redis:
     image: redis
@@ -24,15 +26,8 @@ services:
     volumes:
       - redis_data:/data
     env_file:
-      - ../.env
-    networks:
-      - carteado_network
+      - .env
 
 volumes:
   mongo_data:
   redis_data:
-
-networks:
-  carteado_network:
-    name: carteado_network
-    driver: bridge

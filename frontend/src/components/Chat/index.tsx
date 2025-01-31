@@ -10,10 +10,10 @@ type MessageType = {
   name: string;
 };
 interface ChatProps {
-  roomId: string;
+  roomHash: string;
   isOpen?: boolean;
 }
-export default function Chat({ roomId }: ChatProps) {
+export default function Chat({ roomHash }: ChatProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const divRef = useRef<HTMLDivElement | null>(null);
   const chatRef = useRef<HTMLDivElement | null>(null);
@@ -39,7 +39,7 @@ export default function Chat({ roomId }: ChatProps) {
 
   useEffect(() => {
     if (!socket) return;
-    console.log("Joining chat", roomId);
+    console.log("Joining chat", roomHash);
     const events = {
       join_chat: (message: MessageType) => updateMessages(message),
       receive_message: (message: MessageType) => updateMessages(message),
@@ -48,13 +48,13 @@ export default function Chat({ roomId }: ChatProps) {
         setLoading(false);
       },
     };
-    socket.emit("join_chat", { roomId });
+    socket.emit("join_chat", { roomHash });
     Object.entries(events).forEach(([event, handler]) => {
       socket.on(event, handler);
     });
 
     return () => {
-      console.log("Leaving chat", roomId);
+      console.log("Leaving chat", roomHash);
       Object.keys(events).forEach((event) => {
         socket.off(event);
       });
@@ -74,7 +74,7 @@ export default function Chat({ roomId }: ChatProps) {
     e.preventDefault();
     const message = inputRef.current?.value;
     if (!message) return;
-    socket.emit("send_message", { roomId, message });
+    socket.emit("send_message", { roomHash, message });
     inputRef.current!.value = "";
   };
 

@@ -19,7 +19,7 @@ export interface SocketContext {
   socket: Socket;
   payload: {
     error: string;
-    roomId: string;
+    roomHash: string;
     status: string;
     message: string;
     card: Card;

@@ -35,14 +35,13 @@ export async function StartGameEventHandler(
       where: { roomId: room.id },
       include: { user: true },
     });
-
-    if (channel.adapter.rooms.get(roomId)?.size || 0 < room.size)
-      throw "Faltam jogadores na sala!";
+    const roomSize = channel.adapter.rooms.get(room.hash)?.size || 0;
+    if (roomSize < room.size) throw "Faltam jogadores na sala!";
 
     emitToRoom(channel, room.hash, "info", "Iniciando partida");
 
     await prisma.room.updateMany({
-      where: { hash: roomId, status: "open" },
+      where: { hash: roomHash, status: "open" },
       data: { status: "playing" },
     });
 

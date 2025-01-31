@@ -32,6 +32,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const currentPlayerIndex = game?.players.findIndex(
     (p) => p.userId === data?.user.id
   );
+  console.log({
+    game,
+  });
   const rotatedPlayers = [
     ...players.slice(currentPlayerIndex),
     ...players.slice(0, currentPlayerIndex),
@@ -40,9 +43,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!id || !socket) return;
-    socket.on("game_update", (updatedGame: GameState) =>
-      updateGame(updatedGame)
-    );
+    socket.on("game_update", (updatedGame: GameState) => {
+      console.log("Game updated", { updatedGame });
+      updateGame(updatedGame);
+    });
 
     return () => {
       socket.off("game_update");

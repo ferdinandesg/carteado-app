@@ -67,7 +67,7 @@ export default function Room() {
 
   useEffect(() => {
     if (isLoading || !socket) return;
-    socket.emit("join_room", { roomId: id });
+    socket.emit("join_room", { roomHash: id });
   }, [isLoading, socket]);
 
   if (isLoading)
@@ -84,15 +84,15 @@ export default function Room() {
     );
 
   const onLeaveRoom = () => {
-    // socket.emit("leave_room", { roomId: room.hash });
+    // socket.emit("leave_room", { roomHash: room.hash });
     router.push("/menu");
   };
 
   return (
     <div className={styles.roomContainer}>
       <div className={styles.playersHud}>
-        <Players roomId={room.hash} />
-        <Chat roomId={room.hash} />
+        <Players roomHash={room.hash} />
+        <Chat roomHash={room.hash} />
         <RoomActions onLeaveRoom={onLeaveRoom} />
       </div>
       <RenderScreen status={room.status} />

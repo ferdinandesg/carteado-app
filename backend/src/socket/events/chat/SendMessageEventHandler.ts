@@ -4,9 +4,12 @@ import prisma from "../../../prisma";
 import { saveMessages } from "../../../redis/chat";
 import emitToRoom from "@socket/utils/emitToRoom";
 
-const addMessage = async (roomId: string, message: Message): Promise<Chat> => {
+const addMessage = async (
+  roomHash: string,
+  message: Message
+): Promise<Chat> => {
   const room = await prisma.room.findFirst({
-    where: { hash: roomId },
+    where: { hash: roomHash },
     include: { chat: true },
   });
   if (!room) throw new Error("Sala não encontrada");
@@ -23,7 +26,7 @@ export async function SendMessageEventHandler(
 ): Promise<void> {
   try {
     const { payload, socket, channel } = context;
-    const roomHash = payload.roomId;
+    const roomHash = payload.roomHash;
     const messageDoc = {
       message: payload.message,
       name: socket.user.name,

@@ -8,16 +8,16 @@ type PopulatedRoom = {
 } & Prisma.RoomGetPayload<object>;
 
 export async function getRoomState(
-  roomId: string
+  roomHash: string
 ): Promise<PopulatedRoom | null> {
   const redis = await RedisClass.getInstance();
-  const data = await redis.get(`room:${roomId}`);
+  const data = await redis.get(`room:${roomHash}`);
   return data ? JSON.parse(data) : null;
 }
 
-export async function saveRoomState(roomId: string, roomState: object) {
+export async function saveRoomState(roomHash: string, roomState: object) {
   const redis = await RedisClass.getInstance();
-  await redis.set(`room:${roomId}`, JSON.stringify(roomState), {
-    EX: 3600,
+  await redis.set(`room:${roomHash}`, JSON.stringify(roomState), {
+    EX: 7200,
   });
 }

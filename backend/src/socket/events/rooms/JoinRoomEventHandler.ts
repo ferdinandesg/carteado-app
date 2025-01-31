@@ -10,24 +10,24 @@ export async function JoinRoomEventHandler(
 ): Promise<void> {
   try {
     const { payload, socket, channel } = context;
-    const { roomId } = payload;
-    if (!socket.user?.room || !socket.user) return;
-    const room = await getRoomState(roomId);
+    const { roomHash } = payload;
+    if (!roomHash || !socket.user) return;
+    const room = await getRoomState(roomHash);
     if (!room) return;
 
     switch (room.status) {
       case "open": {
-        const roomPlayers = getRoomPlayers(roomId, channel);
+        const roomPlayers = getRoomPlayers(roomHash, channel);
         if (roomPlayers.length >= room.size) throw "A sala está cheia.";
         if (roomPlayers.find((player) => player.id === socket.user?.id))
           throw "Você já está na sala.";
-        socket.join(roomId);
-        socket.user.room = roomId;
+        socket.join(roomHash);
+        socket.user.room = roomHash;
         socket.user.status = "NOT_READY";
         break;
       }
       case "playing": {
-        const currentPlayers = await getGameState(room.hash);
+        const currentPlayers = await getGameState(roomHash);
 
         if (
           currentPlayers &&
@@ -35,26 +35,26 @@ export async function JoinRoomEventHandler(
             (player) => player.userId === socket.user?.id
           )
         ) {
-          socket.join(roomId);
-          socket.user.room = roomId;
+          socket.join(roomHash);
+          socket.user.room = roomHash;
           emitToUser(socket, "info", "Bem vindo de volta");
           break;
         }
         room.spectators.push(socket.user);
-        await saveRoomState(roomId, room);
+        await saveRoomState(roomHash, room);
         break;
       }
       default:
         return;
     }
-    const updatedRoom = await getRoomState(roomId);
-    const newPlayers = getRoomPlayers(roomId, channel);
+    const updatedRoom = await getRoomState(roomHash);
+    const newPlayers = getRoomPlayers(roomHash, channel);
 
-    emitToRoom(channel, roomId, "room_update", {
+    emitToRoom(channel, roomHash, "room_update", {
       room: updatedRoom,
       players: newPlayers,
     });
-    emitToRoom(socket, roomId, "user_joined", {
+    emitToRoom(socket, roomHash, "user_joined", {
       message: `O usuário ${socket.user.name} entrou na sala.`,
       players: { user: socket.user, isOnline: true },
     });

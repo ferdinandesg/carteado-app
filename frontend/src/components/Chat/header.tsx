@@ -2,13 +2,13 @@ import useRoomByHash from "@/hooks/rooms/useRoomByHash";
 import styles from "@styles/Chat.module.scss";
 
 export default function Header({
-  roomId,
+  roomHash,
   messageCount,
 }: {
-  roomId: string;
+  roomHash: string;
   messageCount: number;
 }) {
-  const { room } = useRoomByHash(roomId);
+  const { room } = useRoomByHash(roomHash);
 
   return (
     <div className={styles.header}>

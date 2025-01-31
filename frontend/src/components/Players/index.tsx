@@ -9,8 +9,8 @@ import RankMeter from "../RankMeter";
 
 const isPlayerReady = (player: RoomPlayer) => player.status === "READY";
 
-export default function Players({ roomId }: { roomId: string }) {
-  const { room } = useRoomByHash(roomId);
+export default function Players({ roomHash }: { roomHash: string }) {
+  const { room } = useRoomByHash(roomHash);
   const players = room?.players || [];
   console.log({ players });
   return players.map((player, i) => {

@@ -7,6 +7,6 @@ export async function getGameByHash(req: Request, res: Response) {
     const game = await GameService.getGameByHash(hash);
     res.status(200).json(game);
   } catch (error) {
-    res.status(500).json({ message: error });
+    res.status(404).json({ message: error });
   }
 }
