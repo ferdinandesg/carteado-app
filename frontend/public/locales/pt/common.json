@@ -1,0 +1,71 @@
+{
+    "joinRoom": "Entrar em uma sala",
+    "joinAsGuest": "Entrar como convidado",
+    "googleAuth": "Entrar com Google",
+    "seeRules": "Ver regras",
+    "loading": "Carregando...",
+    "back": "Voltar",
+    "inviteUser": {
+        "placeholder": "Nome de usuário"
+    },
+    "Rules": {},
+    "Menu": {
+        "play": "Jogar",
+        "createRoom": "Criar sala",
+        "createdRooms": "Salas criadas"
+    },
+    "Room": {
+        "loading": "Carregando...",
+        "leave": "Sair",
+        "loadingRoom": "Carregando sala...",
+        "notFound": "Sala não encontrada"
+    },
+    "Lobby": {
+        "imReady": "Estou pronto",
+        "startGame": "Iniciar jogo",
+        "waitingPlayers": "Esperando jogadores..."
+    },
+    "Players": {
+        "status": {
+            "ready": "Pronto",
+            "notReady": "Não pronto",
+            "playing": "Jogando"
+        }
+    },
+    "RoomItem": {
+        "players": "Jogadores",
+        "status": "Status",
+        "join": "Entrar",
+        "leave": "Sair",
+        "rank": "Rank",
+        "open": "Aberta",
+        "playing": "Em jogo"
+    },
+    "TableActions": {
+        "drawTable": "Comprar cartas da mesa",
+        "endTurn": "Finalizar turno"
+    },
+    "ServerMessages": {
+        "errors": {
+            "ROOM_IS_PLAYING": "A sala já está em jogo",
+            "OWNER_SHOULD_BEGIN": "Apenas o dono da sala pode começar o jogo",
+            "ROOM_NOT_FOUND": "Sala não encontrado",
+            "NOT_YOUR_TURN": "Não é seu turno",
+            "MUST_PLAY_FIRST": "Você deve jogar primeiro",
+            "PLAYER_NOT_FOUND": "Jogador não encontrado",
+            "HAVE_NOT_PLAYED": "Você ainda não jogou uma carta",
+            "HAVE_NOT_STARTED": "O jogo ainda não começou",
+            "LOWER_RANK": "Você deve jogar uma carta de rank maior",
+            "DIFFERENT_CARD": "Você deve jogar uma carta igual a anterior ou especial",
+            "SUCCESS": "Sucesso",
+            "PLAYERS_NOT_READY": "Nem todos os jogadores estão prontos",
+            "ROOM_NOT_FULL": "A sala não está cheia"
+        },
+        "infos": {
+            "YOUR_TURN": "É seu turno",
+            "WELCOME_BACK": "Bem-vindo de volta",
+            "MATCH_STARTED": "O jogo começou",
+            "PLAYER_JOINED": "O jogador {{player}} entrou na sala"
+        }
+    }
+}

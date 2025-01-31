@@ -1,6 +1,7 @@
 import emitToRoom from "@socket/utils/emitToRoom";
 import { SocketContext } from "../../../@types/socket";
 import { getGameState, saveGameState } from "../../../redis/game";
+import ErrorHandler from "src/utils/error.handler";
 export async function DrawTableEventHandler(
   context: SocketContext
 ): Promise<void> {
@@ -9,15 +10,10 @@ export async function DrawTableEventHandler(
     const roomHash = socket.user.room;
     if (!roomHash) throw "Você não está em uma sala";
     const game = await getGameState(roomHash);
-    const result = game.drawTable(socket.user.id);
-    if (result && result.error) {
-      socket.emit("error", result.error);
-      return;
-    }
+    game.drawTable(socket.user.id);
     await saveGameState(roomHash, game);
     emitToRoom(channel, roomHash, "game_update", game);
-  } catch (er) {
-    console.error(er);
-    socket.emit("error", JSON.stringify(er));
+  } catch (error) {
+    ErrorHandler(error, socket);
   }
 }

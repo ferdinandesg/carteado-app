@@ -4,6 +4,7 @@ import { useSocket } from "@/contexts/socket.context";
 import Message from "./message";
 
 import styles from "@styles/Chat.module.scss";
+import { useTranslation } from "react-i18next";
 
 type MessageType = {
   message: string;
@@ -15,6 +16,7 @@ interface ChatProps {
 }
 export default function Chat({ roomHash }: ChatProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const { t } = useTranslation()
   const divRef = useRef<HTMLDivElement | null>(null);
   const chatRef = useRef<HTMLDivElement | null>(null);
 
@@ -39,7 +41,14 @@ export default function Chat({ roomHash }: ChatProps) {
   useEffect(() => {
     if (!socket) return;
     const events = {
-      join_chat: (message: MessageType) => updateMessages(message),
+      join_chat: (message: MessageType) => {
+        updateMessages({
+          name: "system",
+          message: t("ServerMessages.infos.PLAYER_JOINED", {
+            player: message.message
+          }),
+        })
+      },
       receive_message: (message: MessageType) => updateMessages(message),
       load_messages: (payload: MessageType[]) => {
         updateMessages(payload);

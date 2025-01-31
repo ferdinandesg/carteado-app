@@ -11,12 +11,14 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import axiosInstance from "@/hooks/axios";
+import { useTranslation } from "react-i18next";
 
 type SocketContextProps = {
   socket: Socket | undefined;
 };
 const SocketContext = createContext<SocketContextProps | null>(null);
 export function SocketProvider({ children }: { children: ReactNode }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const { data, status } = useSession({
     required: false,
@@ -36,8 +38,8 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       query: { user: JSON.stringify(data?.user) },
       transports: ["websocket"],
     });
-    instance.on("error", (message) => toast(message));
-    instance.on("info", (message) => toast(message));
+    instance.on("error", (message) => toast(t(`ServerMessages.errors.${message}`)));
+    instance.on("info", (message) => toast(t(`ServerMessages.infos.${message}`)));
     setSocket(instance);
   }, [status]);
 

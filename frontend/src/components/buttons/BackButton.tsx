@@ -4,6 +4,7 @@ import { withSound } from "./withSound";
 import styles from "@styles/Buttons.module.scss";
 import { ButtonHTMLAttributes } from "react";
 import classNames from "classnames";
+import { useTranslation } from "react-i18next";
 
 type BackButtonType = {
   size: number;
@@ -11,12 +12,13 @@ type BackButtonType = {
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 const BackButton = ({ size, color = "light", ...props }: BackButtonType) => {
+  const { t } = useTranslation()
   return (
     <button
       className={classNames(styles.BackButton, styles[color])}
       {...props}>
       <ArrowLeftCircle size={size} />
-      <span>Voltar</span>
+      <span>{t("back")}</span>
     </button>
   );
 };

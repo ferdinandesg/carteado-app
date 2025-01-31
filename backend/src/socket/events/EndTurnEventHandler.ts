@@ -1,6 +1,7 @@
 import emitToRoom from "@socket/utils/emitToRoom";
 import { SocketContext } from "../../@types/socket";
 import { getGameState, saveGameState } from "../../redis/game";
+import ErrorHandler from "src/utils/error.handler";
 export async function EndTurnEventHandler(
   context: SocketContext
 ): Promise<void> {
@@ -9,12 +10,10 @@ export async function EndTurnEventHandler(
   if (!room) return;
   try {
     const game = await getGameState(room);
-    const result = game.endTurn(socket.user.id);
-    if (!result || result.error) throw result?.error;
+    game.endTurn(socket.user.id);
     await saveGameState(room, game);
     emitToRoom(channel, room, "game_update", game);
-  } catch (er) {
-    console.error(er);
-    socket.emit("error", typeof er === "string" ? er : JSON.stringify(er));
+  } catch (error) {
+    ErrorHandler(error, socket);
   }
 }

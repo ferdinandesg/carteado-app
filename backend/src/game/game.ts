@@ -50,9 +50,9 @@ export default class GameClass {
 
   canPlayCard(card: Card, userId: string): GamePlayer {
     const foundPlayer = this.playerExists(userId);
-    if (!foundPlayer) throw "Jogador não encontrado!";
+    if (!foundPlayer) throw "PLAYER_NOT_FOUND";
     if (!this.players.every((p) => p.status === "playing"))
-      throw "Ainda não é possível jogar!";
+      throw "HAVE_NOT_STARTED";
     const lastThree = this.bunch.slice(-3);
     if (
       lastThree.length === 3 &&
@@ -60,7 +60,7 @@ export default class GameClass {
     ) {
       return foundPlayer;
     }
-    if (foundPlayer.userId !== this.playerTurn) throw "Ainda não é sua vez!";
+    if (foundPlayer.userId !== this.playerTurn) throw "NOT_YOUR_TURN";
     return foundPlayer;
   }
 
@@ -70,7 +70,7 @@ export default class GameClass {
       const result = this.applyRules(card, foundPlayer);
       return result;
     } catch (error) {
-      return { error: true, message: error };
+      throw { error: true, message: error };
     }
   }
 
@@ -86,21 +86,20 @@ export default class GameClass {
         this.isSpecialCard(lastCard) || this.isSpecialCard(card);
       if (lastCard && !hasSpecialCard) {
         // if the last card is not special, the current card should be higher
-        if (lastCard.value! > card.value)
-          throw "Você está jogando uma carta mais baixa que a da mesa";
+        if (lastCard.value! > card.value) throw "LOWER_RANK";
 
         // if the last card is not special, the current card should be the same rank
         if (lastCard?.rank !== card.rank && player.playedCards.length > 0) {
-          throw "Sua carta é diferente da anterior!";
+          throw "DIFFERENT_CARD";
         }
       }
 
       this.bunch.push(card);
       player.hand = player.hand.filter((x) => x.toString !== card.toString);
       player.playedCards.push(card);
-      return { error: false, message: "Carta jogada com sucesso!" };
+      return { error: false, message: "SUCCESS" };
     } catch (error) {
-      return { error: true, message: error };
+      throw { error: true, message: error };
     }
   }
 
@@ -108,7 +107,7 @@ export default class GameClass {
     const currentPlayerIndex = this.players.findIndex(
       (x) => x.userId === fromUser
     );
-    if (currentPlayerIndex === -1) throw "Jogador não encontrado!";
+    if (currentPlayerIndex === -1) throw "PLAYER_NOT_FOUND";
     const nextPlayerIndex = (currentPlayerIndex + 1) % this.players.length;
     this.playerTurn = this.players[nextPlayerIndex].userId;
     if (turns > 1) this.skipTurns(this.playerTurn, turns - 1);
@@ -138,8 +137,7 @@ export default class GameClass {
     try {
       const foundPlayer = this.playerExists(userId);
       if (!foundPlayer) return;
-      if (foundPlayer.playedCards.length === 0)
-        throw "Você precisa jogar alguma carta para poder pular a vez";
+      if (foundPlayer.playedCards.length === 0) throw "MUST_PLAY_FIRST";
       this.applySpecialCardRules(foundPlayer);
       this.players.forEach((p) => (p.playedCards = []));
       this.drawCards(foundPlayer);
@@ -148,6 +146,7 @@ export default class GameClass {
         bunch: this.bunch,
         turn: this.playerTurn,
         error: false,
+        message: "SUCCESS",
       };
     } catch (error) {
       throw { error: true, message: error };
@@ -176,11 +175,11 @@ export default class GameClass {
     try {
       const foundPlayer = this.playerExists(userId);
       if (!foundPlayer) return;
-      if (userId !== this.playerTurn) throw "Ainda não é sua vez!";
+      if (userId !== this.playerTurn) throw "NOT_YOUR_TURN";
       this.bunch.forEach((card) => foundPlayer.hand.push(card));
       foundPlayer.playedCards = [];
       this.bunch = [];
-      return { error: false, player: foundPlayer };
+      return { player: foundPlayer };
     } catch (error) {
       throw { error: true, message: error };
     }
@@ -188,11 +187,10 @@ export default class GameClass {
 
   retrieveCard(userId: string) {
     try {
-      if (userId !== this.playerTurn) throw "Ainda não é sua vez!";
+      if (userId !== this.playerTurn) throw "NOT_YOUR_TURN";
       const foundPlayer = this.playerExists(userId);
       if (!foundPlayer) return;
-      if (!foundPlayer.playedCards.length)
-        throw "Você não jogou nenhuma carta!";
+      if (!foundPlayer.playedCards.length) throw "HAVE_NOT_PLAYED";
       foundPlayer.hand.push(...foundPlayer.playedCards);
       this.bunch = this.bunch.filter((x) =>
         foundPlayer.playedCards.every((y) => y.toString !== x.toString)

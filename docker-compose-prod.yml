@@ -29,6 +29,11 @@ services:
       - GOOGLE_SECRET=${GOOGLE_SECRET}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
     restart: always
+    logging:
+      driver: "gcp"
+      options:
+        gcp-project-id: "empyrean-engine-448903-c0"
+        gcp-log-name: "carteado_frontend"
     networks:
       - app_network
 
@@ -46,6 +51,11 @@ services:
       - REDIS_URL=redis://redis:6379
       - FRONTEND_URL=http://carteado.ferdinandes.com.br
     restart: always
+    logging:
+      driver: "gcp"
+      options:
+        gcp-project-id: "empyrean-engine-448903-c0"
+        gcp-log-name: "carteado_backend"
     networks:
       - app_network
 

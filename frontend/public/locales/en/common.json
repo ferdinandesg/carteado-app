@@ -1,0 +1,71 @@
+{
+    "joinRoom": "Join a room",
+    "joinAsGuest": "Join as a guest",
+    "googleAuth": "Join with Google",
+    "seeRules": "See rules",
+    "loading": "Loading...",
+    "back": "Back",
+    "inviteUser": {
+        "placeholder": "Username"
+    },
+    "Rules": {},
+    "Menu": {
+        "play": "Play",
+        "createRoom": "Create room",
+        "createdRooms": "Created rooms"
+    },
+    "Room": {
+        "loading": "Loading...",
+        "leave": "Leave",
+        "loadingRoom": "Loading room...",
+        "notFound": "Room not found"
+    },
+    "Lobby": {
+        "imReady": "I'm ready",
+        "startGame": "Start game",
+        "waitingPlayers": "Waiting for players..."
+    },
+    "Players": {
+        "status": {
+            "ready": "Ready",
+            "notReady": "Not ready",
+            "playing": "Playing"
+        }
+    },
+    "RoomItem": {
+        "players": "Players",
+        "status": "Status",
+        "join": "Join",
+        "leave": "Leave",
+        "rank": "Rank",
+        "open": "Open",
+        "playing": "In game"
+    },
+    "TableActions": {
+        "drawTable": "Draw cards from the table",
+        "endTurn": "End turn"
+    },
+    "ServerMessages": {
+        "errors": {
+            "ROOM_IS_PLAYING": "The room is already in game",
+            "OWNER_SHOULD_BEGIN": "Only the room owner can start the game",
+            "ROOM_NOT_FOUND": "Room not found",
+            "NOT_YOUR_TURN": "It's not your turn",
+            "MUST_PLAY_FIRST": "You must play first",
+            "PLAYER_NOT_FOUND": "Player not found",
+            "HAVE_NOT_PLAYED": "You haven't played a card yet",
+            "HAVE_NOT_STARTED": "The game hasn't started yet",
+            "LOWER_RANK": "You must play a higher rank card",
+            "DIFFERENT_CARD": "You must play a card equal to the previous one or special",
+            "SUCCESS": "Success",
+            "PLAYERS_NOT_READY": "Not all players are ready",
+            "ROOM_NOT_FULL": "The room is not full"
+        },
+        "infos": {
+            "YOUR_TURN": "It's your turn",
+            "WELCOME_BACK": "Welcome back",
+            "MATCH_STARTED": "The game has started",
+            "PLAYER_JOINED": "Player {{ player }} joined the room"
+        }
+    }
+}

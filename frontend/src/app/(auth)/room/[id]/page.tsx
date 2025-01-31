@@ -12,15 +12,17 @@ import Players from "@/components/Players";
 import Chat from "@/components/Chat";
 import classNames from "classnames";
 import { withSound } from "@/components/buttons/withSound";
+import { useTranslation } from "react-i18next";
 
 const RenderScreen = ({ status }: { status?: RoomStatus }) => {
+  const { t } = useTranslation();
   switch (status) {
     case "open":
       return <Lobby />;
     case "playing":
       return <Game />;
     default:
-      <div>Loading...</div>;
+      <div>{t("loading")}</div>;
   }
 };
 
@@ -48,18 +50,20 @@ const ActionButton = withSound(
 );
 
 const RoomActions = ({ onLeaveRoom }: { onLeaveRoom: () => void }) => {
+  const { t } = useTranslation();
   return (
     <div className={styles.roomActions}>
       <ActionButton
         onClick={onLeaveRoom}
         outline
-        icon={<span>Sair</span>}
+        icon={<span>{t("Room.leave")}</span>}
       />
     </div>
   );
 };
 
 export default function Room() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { id } = useParams();
   const { socket } = useSocket();
@@ -73,13 +77,13 @@ export default function Room() {
   if (isLoading)
     return (
       <h1 className="text-white font-semibold text-center pt-5">
-        Carregando a sala...
+        {t("loading")}
       </h1>
     );
   if (!room)
     return (
       <h1 className="text-white font-semibold text-center pt-5">
-        Sala não encontrada
+        {t("Room.notFound")}
       </h1>
     );
 

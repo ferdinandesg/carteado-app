@@ -5,8 +5,10 @@ import useRoomByHash from "@/hooks/rooms/useRoomByHash";
 import { useParams } from "next/navigation";
 
 import styles from "@styles/Lobby.module.scss";
+import { useTranslation } from "react-i18next";
 
 export default function Lobby() {
+  const { t } = useTranslation();
   const { socket } = useSocket();
   const [isPlayerReady, setIsPlayerReady] = useState<boolean>(false);
   const { id } = useParams();
@@ -28,7 +30,7 @@ export default function Lobby() {
   return (
     <div className={classNames(styles.LobbyContainer)}>
       <span className={classNames("animate-bounce", styles.waiting)}>
-        Esperando jogadores
+        {t("Lobby.waitingPlayers")}
       </span>
       <button
         className={classNames(
@@ -36,12 +38,12 @@ export default function Lobby() {
           isPlayerReady ? styles.ready : styles.notReady
         )}
         onClick={handleReadyClick}>
-        Estou pronto
+        {t("Lobby.imReady")}
       </button>
       <button
         className={styles.startGame}
         onClick={handleStartGame}>
-        Start Game
+        {t("Lobby.startGame")}
       </button>
     </div>
   );

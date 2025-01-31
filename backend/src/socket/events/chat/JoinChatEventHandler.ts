@@ -14,7 +14,7 @@ export async function JoinChatEventHandler(
   emitToUser(socket, "load_messages", messages);
   emitToRoom(socket, roomHash, "join_chat", {
     name: "system",
-    message: `${socket.user.name} entrou na sala`,
+    message: socket.user.name,
   });
   console.log(
     `Emitted to: ${roomHash} - load_messages for ${socket.user.name}`

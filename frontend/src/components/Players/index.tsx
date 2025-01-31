@@ -6,15 +6,19 @@ import styles from "@styles/Room.module.scss";
 import UserPlaceholder from "../UserPlaceholder";
 import Image from "next/image";
 import RankMeter from "../RankMeter";
+import { useTranslation } from "react-i18next";
 
 const isPlayerReady = (player: RoomPlayer) => player.status === "READY";
 
 export default function Players({ roomHash }: { roomHash: string }) {
+  const { t } = useTranslation();
   const { room } = useRoomByHash(roomHash);
   const players = room?.players || [];
+
   return players.map((player, i) => {
     const isReady = isPlayerReady(player) || room?.status === "playing";
     const statusClass = isReady ? styles.ready : styles.notReady;
+    const statusLabel = isReady ? t("Players.status.ready") : t("Players.status.notReady");
     return (
       <div
         className={styles.Player}
@@ -22,7 +26,7 @@ export default function Players({ roomHash }: { roomHash: string }) {
         <div className={classNames(styles.avatar, statusClass)}>
           {player?.image ? (
             <Image
-              alt="user.name"
+              alt={player.name}
               src={player.image}
               layout="fill"
               objectFit="contain"
@@ -38,7 +42,7 @@ export default function Players({ roomHash }: { roomHash: string }) {
             size={25}
           />
           <span className={classNames(styles.playerStatus, statusClass)}>
-            {isReady ? "Pronto" : "Não pronto"}
+            {statusLabel}
           </span>
         </div>
       </div>

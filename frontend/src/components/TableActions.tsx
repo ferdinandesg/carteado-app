@@ -2,6 +2,7 @@ import { useGameContext } from "@/contexts/game.context";
 
 import styles from "@styles/Game.module.scss";
 import { withSound } from "./buttons/withSound";
+import { useTranslation } from "react-i18next";
 
 type ButtonProps = {
   onClick: () => void;
@@ -29,6 +30,7 @@ const ButtonWithSound = ({
 };
 
 export default function TableActions() {
+  const { t } = useTranslation()
   const { game, endTurn, drawTable } = useGameContext();
   const isGameStarted = game?.status === "playing";
   if (!isGameStarted) return;
@@ -36,12 +38,12 @@ export default function TableActions() {
     <div className={styles.actions}>
       <ButtonWithSound
         onClick={drawTable}
-        text="Buy table cards"
+        text={t("TableActions.drawTable")}
         clickSrc="/assets/sfx/hurt.mp3"
       />
       <ButtonWithSound
         onClick={endTurn}
-        text="End turn"
+        text={t("TableActions.endTurn")}
         clickSrc="/assets/sfx/your-turn.mp3"
       />
     </div>

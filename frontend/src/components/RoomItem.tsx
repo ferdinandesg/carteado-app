@@ -4,6 +4,7 @@ import classNames from "classnames";
 import styles from "@styles/Rooms.module.scss";
 import Image from "next/image";
 import { Circle, Loader } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type RoomItemProps = {
   room: RoomInterface;
@@ -11,6 +12,7 @@ type RoomItemProps = {
 };
 
 const RoomStatus = ({ status }: { status: "open" | "playing" }) => {
+  const { t } = useTranslation();
   let icon = null;
   if (status === "open") {
     icon = (
@@ -31,12 +33,14 @@ const RoomStatus = ({ status }: { status: "open" | "playing" }) => {
   return (
     <span className={classNames(styles.roomStatus, styles[status])}>
       {icon}
-      <span className={styles.label}>{status}</span>
+      <span className={styles.label}>{t(`RoomItem.${status}`)}</span>
     </span>
   );
 };
 
-const RoomItem = ({ room, onClick = () => {} }: RoomItemProps) => {
+const RoomItem = ({ room, onClick = () => { } }: RoomItemProps) => {
+  const { t } = useTranslation();
+
   const ownerPic = room.owner?.image || "/images/default-avatar.png";
   return (
     <div
@@ -57,13 +61,13 @@ const RoomItem = ({ room, onClick = () => {} }: RoomItemProps) => {
       <div className={styles.roomData}>
         <RoomStatus status={room.status} />
         <div className={styles.infoCount}>
-          <span className={styles.label}>Jogadores</span>
+          <span className={styles.label}>{t("RoomItem.players")}</span>
           <span className={styles.count}>
             {room.players.length}/{room.size}
           </span>
         </div>
         <div className={styles.infoCount}>
-          <span className={styles.label}>Rank</span>
+          <span className={styles.label}>{t("RoomItem.rank")}</span>
           <span className={styles.count}>{room.owner?.rank}</span>
         </div>
       </div>

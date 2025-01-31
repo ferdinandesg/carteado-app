@@ -5,6 +5,7 @@ import { saveGameState } from "../../../redis/game";
 import { getRoomState, saveRoomState } from "../../../redis/room";
 import getRoomPlayers from "src/socket/utils/getRoomPlayers";
 import emitToRoom from "@socket/utils/emitToRoom";
+import ErrorHandler from "src/utils/error.handler";
 
 export async function StartGameEventHandler(
   context: SocketContext
@@ -14,15 +15,14 @@ export async function StartGameEventHandler(
   const roomHash = socket.user.room;
   try {
     const room = await getRoomState(roomHash);
-    if (!room) throw "Sala não encontrada!";
+    if (!room) throw "ROOM_NOT_FOUND";
     const roomId = room.id;
-    if (room.status !== "open") throw "A sala já está em jogo!";
-    if (socket.user.id !== room.ownerId)
-      throw "Apenas o dono da sala pode iniciar a partida!";
+    if (room.status !== "open") throw "ROOM_IS_PLAYING";
+    if (socket.user.id !== room.ownerId) throw "OWNER_SHOULD_BEGIN";
 
     const users = getRoomPlayers(room.hash, channel);
     const isAllUsersReady = users.every((user) => user.status === "READY");
-    if (!isAllUsersReady) throw "Nem todos os jogadores estão prontos!";
+    if (!isAllUsersReady) throw "PLAYERS_NOT_READY";
 
     await prisma.player.createMany({
       data: users.map((user) => ({
@@ -36,9 +36,9 @@ export async function StartGameEventHandler(
       include: { user: true },
     });
     const roomSize = channel.adapter.rooms.get(room.hash)?.size || 0;
-    if (roomSize < room.size) throw "Faltam jogadores na sala!";
+    if (roomSize < room.size) throw "ROOM_NOT_FULL";
 
-    emitToRoom(channel, room.hash, "info", "Iniciando partida");
+    emitToRoom(channel, room.hash, "info", "MATCH_STARTED");
 
     await prisma.room.updateMany({
       where: { hash: roomHash, status: "open" },
@@ -51,8 +51,7 @@ export async function StartGameEventHandler(
     game.players.forEach((p) => {
       p.status = "chosing";
       const hand = game.givePlayerCards(p.userId);
-      if (!hand) throw "Erro ao distribuir cartas";
-      p.hand = hand;
+      p.hand = hand || [];
       p.name = p.user.name;
       p.image = p.user.image;
       p.email = p.user.email;
@@ -71,9 +70,7 @@ export async function StartGameEventHandler(
       room: newRoom,
       players: game.players,
     });
-  } catch (er) {
-    channel.emit("error", JSON.stringify({ message: er }));
-    console.error(er);
-    throw er;
+  } catch (error) {
+    ErrorHandler(error, socket);
   }
 }

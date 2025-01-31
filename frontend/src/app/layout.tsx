@@ -6,6 +6,9 @@ import { Inter } from "next/font/google";
 import { ModalProvider } from "@/components/Modal/ModalContext";
 import { ToastContainer } from "react-toastify";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { appWithTranslation } from "next-i18next";
+import { I18nextProvider } from "react-i18next";
+import i18n from "i18next.config";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,28 +20,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <SessionProvider>
-          <QueryClientProvider client={queryClient}>
-            <SocketProvider>
-              <ModalProvider>{children}</ModalProvider>
-            </SocketProvider>
-            <ToastContainer
-              position="top-right"
-              autoClose={2000}
-              hideProgressBar
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss={false}
-              draggable={false}
-              pauseOnHover={false}
-              theme="light"
-            />
-          </QueryClientProvider>
-        </SessionProvider>
-      </body>
-    </html>
+    <I18nextProvider i18n={i18n}>
+      <html lang="en">
+        <body className={inter.className}>
+          <SessionProvider>
+            <QueryClientProvider client={queryClient}>
+              <SocketProvider>
+                <ModalProvider>{children}</ModalProvider>
+              </SocketProvider>
+              <ToastContainer
+                position="top-right"
+                autoClose={2000}
+                hideProgressBar
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss={false}
+                draggable={false}
+                pauseOnHover={false}
+                theme="light"
+              />
+            </QueryClientProvider>
+          </SessionProvider>
+        </body>
+      </html>
+    </I18nextProvider>
   );
 }

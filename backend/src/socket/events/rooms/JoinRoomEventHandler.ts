@@ -4,12 +4,13 @@ import getRoomPlayers from "@socket/utils/getRoomPlayers";
 import emitToRoom from "@socket/utils/emitToRoom";
 import emitToUser from "src/socket/utils/emitToUser";
 import { getGameState } from "src/redis/game";
+import ErrorHandler from "src/utils/error.handler";
 
 export async function JoinRoomEventHandler(
   context: SocketContext
 ): Promise<void> {
+  const { payload, socket, channel } = context;
   try {
-    const { payload, socket, channel } = context;
     const { roomHash } = payload;
     if (!roomHash || !socket.user) return;
     const room = await getRoomState(roomHash);
@@ -37,7 +38,7 @@ export async function JoinRoomEventHandler(
         ) {
           socket.join(roomHash);
           socket.user.room = roomHash;
-          emitToUser(socket, "info", "Bem vindo de volta");
+          emitToUser(socket, "info", "WELCOME_BACK");
           break;
         }
         room.spectators.push(socket.user);
@@ -58,11 +59,7 @@ export async function JoinRoomEventHandler(
       message: `O usuário ${socket.user.name} entrou na sala.`,
       players: { user: socket.user, isOnline: true },
     });
-  } catch (er) {
-    if (typeof er === "string") {
-      context.socket.emit("error", { message: er });
-      return;
-    }
-    throw er;
+  } catch (error) {
+    ErrorHandler(error, socket);
   }
 }
