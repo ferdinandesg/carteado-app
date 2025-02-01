@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 
 interface WithSoundOptions {
   hoverSrc?: string;
@@ -23,16 +23,19 @@ export function withSound<P extends HandlerProps>(
     const hoverAudioRef = useRef<HTMLAudioElement | null>(null);
     const clickAudioRef = useRef<HTMLAudioElement | null>(null);
 
-    if (!hoverAudioRef.current && hoverSrc) {
-      const audio = new Audio(hoverSrc);
-      audio.volume = AUDIO_VOLUME;
-      hoverAudioRef.current = audio;
-    }
-    if (!clickAudioRef.current && clickSrc) {
-      const audio = new Audio(clickSrc);
-      audio.volume = AUDIO_VOLUME;
-      clickAudioRef.current = audio;
-    }
+    useEffect(() => {
+      if (hoverSrc && !hoverAudioRef.current) {
+        const audio = new Audio(hoverSrc);
+        audio.volume = AUDIO_VOLUME;
+        hoverAudioRef.current = audio;
+      }
+
+      if (clickSrc && !clickAudioRef.current) {
+        const audio = new Audio(clickSrc);
+        audio.volume = AUDIO_VOLUME;
+        clickAudioRef.current = audio;
+      }
+    }, [hoverSrc, clickSrc]);
 
     const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
       if (hoverAudioRef.current && !isDisabled) {
@@ -52,6 +55,7 @@ export function withSound<P extends HandlerProps>(
           console.warn("Não foi possível tocar o som de clique:", err);
         });
       }
+
       if (props.onClick) {
         props.onClick(event);
       }
