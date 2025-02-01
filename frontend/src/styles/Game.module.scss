@@ -10,10 +10,10 @@
     position: absolute;
     display: flex;
     justify-content: space-between;
-    width: 180%;
+    width: 190%;
     top: 50%;
     transform: translateY(-50%);
-    right: -31%;
+    right: -43%;
     z-index: 2;
 
     button {
@@ -48,6 +48,37 @@
 
     div {
       width: 32%;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .Game {
+    height: 80%;
+    .actions {
+      width: 160%;
+      right: -30%;
+
+      button {
+        font-size: 1.25rem;
+        padding: $spacing-xs;
+        max-width: 100px;
+      }
+    }
+
+    .gameTable {
+      display: flex;
+      justify-content: center;
+      height: 400px;
+      width: 400px;
+    }
+
+    .cardTable {
+      height: 150px;
+
+      div {
+        width: 32%;
+      }
     }
   }
 }

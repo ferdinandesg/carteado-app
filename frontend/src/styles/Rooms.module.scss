@@ -100,7 +100,6 @@
         margin-left: auto;
         justify-content: space-around;
         width: 50%;
-
         .roomStatus {
           display: flex;
           flex-direction: column;
@@ -144,6 +143,15 @@
           font-weight: bold;
         }
       }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .Rooms {
+    width: 100%;
+    .searchBox {
+      width: 100%;
     }
   }
 }

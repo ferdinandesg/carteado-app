@@ -33,3 +33,15 @@
     }
   }
 }
+
+
+@media (max-width: 768px) {
+  .Menu {
+    .menuContent {
+      width: 100%;
+      .menuActions {
+        width: 80%;
+      }
+    }
+  }
+}

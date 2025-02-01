@@ -74,7 +74,7 @@
         "playing": "In game"
     },
     "TableActions": {
-        "drawTable": "Draw cards from the table",
+        "drawTable": "Draw cards",
         "endTurn": "End turn"
     },
     "ServerMessages": {

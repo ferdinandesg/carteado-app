@@ -7,6 +7,8 @@
   flex-direction: column;
   padding-top: 20px;
   height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
   gap: $spacing-l;
   width: 30%;
 
@@ -89,4 +91,32 @@
   position: fixed;
   bottom: 0;
   left: 0;
+}
+
+@media (max-width: 768px) {
+  .roomContainer {
+    flex-direction: column-reverse;
+    .playersHud {
+      flex-grow: 1;
+      overflow-y: auto;
+      width: 100%;
+      align-items: center;
+
+      .Player {
+        width: 100%;
+        .avatar {
+          width: 80px;
+          height: 80px;
+        }
+        .metadata {
+          .username {
+            font-size: 1rem;
+          }
+          .playerStatus {
+            font-size: 1.5rem;
+          }
+        }
+      }
+    }
+  }
 }

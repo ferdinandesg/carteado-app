@@ -36,3 +36,21 @@
     left: -100px;
   }
 }
+
+
+@media (max-width: 768px) {
+  .Table {
+    width: 100%;
+    height: 90%;
+    .player {
+      width: 80px;
+      height: 60px;
+    }
+    .remaining {
+      width: 80px;
+      height: 60px;
+      font-size: 3rem;
+      left: -40px;
+    }
+  }
+}

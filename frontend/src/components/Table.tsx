@@ -54,7 +54,8 @@ export default function Table() {
   const centerX = tableWidth / 2;
   const centerY = tableHeight / 2;
   const angleOffset = Math.PI / 2;
-  const radius = 230;
+
+  const radius = (tableHeight / 2) - 50;
 
   return (
     <div
@@ -73,6 +74,7 @@ export default function Table() {
         />
       ))}
       <CardBunch
+        tableHeight={tableWidth}
         cards={bunchCards}
         onClick={retrieveCard}
       />

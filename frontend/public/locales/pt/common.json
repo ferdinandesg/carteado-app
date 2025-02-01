@@ -74,7 +74,7 @@
         "playing": "Em jogo"
     },
     "TableActions": {
-        "drawTable": "Comprar cartas da mesa",
+        "drawTable": "Comprar cartas",
         "endTurn": "Finalizar turno"
     },
     "ServerMessages": {

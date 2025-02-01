@@ -52,3 +52,21 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .Overlay {
+    .ModalChoseCards {
+      height: 50%;
+      width: 90%;
+
+      .cards {
+        flex-wrap: wrap;
+        gap: $spacing-s;
+        justify-content: center;
+      }
+    }
+    .confirmButtonContainer {
+      width: 50%;
+    }
+  }
+}

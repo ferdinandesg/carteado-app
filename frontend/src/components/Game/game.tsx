@@ -17,7 +17,9 @@ export default function Game() {
     <>
       <ModalChoseCards isOpen={isPlayerChoosing} />
       <div className={styles.Game}>
-        <div className={styles.gameTable}>{!isPlayerChoosing && <Table />}</div>
+        <div className={styles.gameTable}>
+          {!isPlayerChoosing && <Table />}
+        </div>
         <CardFan
           cards={handCards}
           onClick={playCard}

@@ -66,3 +66,37 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .UserCard {
+    flex-direction: column;
+    gap: $spacing-s;
+
+    .avatar {
+      &.small {
+        width: 72px;
+        height: 72px;
+      }
+
+      &.medium {
+        width: 112px;
+        height: 112px;
+      }
+
+      &.large {
+        width: 160px;
+        height: 160px;
+      }
+    }
+
+    .description {
+      .title {
+        font-size: 1.5rem;
+      }
+
+      .email {
+        font-size: 0.75rem;
+      }
+    }
+  }
+}

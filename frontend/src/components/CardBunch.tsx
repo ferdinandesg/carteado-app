@@ -6,6 +6,7 @@ import { withSound } from "./buttons/withSound";
 interface CardBunchProps {
   cards: Card[];
   onClick?: (card: Card) => void;
+  tableHeight?: number;
 }
 
 const CardBunchWithSound = withSound(CardComponent, {
@@ -14,8 +15,12 @@ const CardBunchWithSound = withSound(CardComponent, {
 
 export default function CardBunch({
   cards,
-  onClick = () => {},
+  onClick = () => { },
+  tableHeight = 150,
 }: CardBunchProps) {
+  const cardHeight = tableHeight > 300
+    ? tableHeight / 3
+    : tableHeight / 2;
   return (
     <div className={styles.centerDeck}>
       <div className={styles.wrap}>
@@ -26,7 +31,7 @@ export default function CardBunch({
               className={styles.card}>
               <CardBunchWithSound
                 card={card}
-                height={150}
+                height={cardHeight}
                 onClick={() => onClick(card)}
               />
             </div>

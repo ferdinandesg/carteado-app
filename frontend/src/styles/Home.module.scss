@@ -59,3 +59,22 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .Home {
+    .container {
+      width: 90%;
+      height: 80%;
+
+      .authMethods {
+        width: 60%;
+
+        .google {
+          padding: $spacing-s;
+          font-size: 0.95rem;
+      }
+
+    }
+  }
+}
+}
