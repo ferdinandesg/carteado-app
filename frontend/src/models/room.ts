@@ -1,7 +1,7 @@
 import { Card } from "shared/cards";
 import { Player } from "shared/types";
 
-export type RoomStatus = "open" | "playing";
+export type RoomStatus = "open" | "playing" | "finished";
 
 export interface RoomInterface {
   id: string;

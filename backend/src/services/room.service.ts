@@ -25,6 +25,7 @@ export async function createRoom(
 
 export async function listRooms() {
   const rooms = await prisma.room.findMany({
+    where: { status: { in: ["open", "playing"] } },
     include: { players: true, owner: true },
     orderBy: { createdAt: "desc" },
   });
@@ -42,5 +43,13 @@ export async function getRoom(hash: string) {
   });
 
   if (!room) throw "Sala não encontrada";
+  return room;
+}
+
+export async function expireRoomByHash(hash: string) {
+  const room = await prisma.room.updateMany({
+    where: { hash, status: { not: "finished" } },
+    data: { status: "expired" },
+  });
   return room;
 }

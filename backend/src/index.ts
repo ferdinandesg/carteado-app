@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(cors());
 routes(app);
 const httpServer = http.createServer(app);
-RedisClass.getInstance();
+RedisClass.getDataClient();
 SocketClass.init(httpServer);
 process.on("uncaughtException", (err) => {
   console.error("Exceção não capturada detectada:", err);

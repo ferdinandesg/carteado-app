@@ -5,17 +5,20 @@ import { useGameContext } from "@/contexts/game.context";
 
 import styles from "@styles/Game.module.scss";
 import CardFan from "../CardFan";
+import ModalGameFinished from "../Modal/ModalGameFinished/ModalGameFinished";
 
 export default function Game() {
-  const { player, playCard } = useGameContext();
+  const { player, playCard, game } = useGameContext();
   const handCards = player?.hand || [];
   const tableCards = player?.table.sort((a) => (a.hidden ? 1 : -1)) || [];
 
   const isPlayerChoosing = player?.status === "chosing";
+  const isFinished = game?.status === "finished";
 
   return (
     <>
       <ModalChoseCards isOpen={isPlayerChoosing} />
+      <ModalGameFinished isOpen={isFinished} />
       <div className={styles.Game}>
         <div className={styles.gameTable}>
           {!isPlayerChoosing && <Table />}

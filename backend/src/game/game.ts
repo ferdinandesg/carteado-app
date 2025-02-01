@@ -141,11 +141,15 @@ export default class GameClass {
       this.applySpecialCardRules(foundPlayer);
       this.players.forEach((p) => (p.playedCards = []));
       this.drawCards(foundPlayer);
+      if (foundPlayer.hand.length === 0) {
+        this.status = "finished";
+        this.playerTurn = foundPlayer.userId;
+        return { player: foundPlayer, status: this.status };
+      }
       return {
         player: foundPlayer,
         bunch: this.bunch,
         turn: this.playerTurn,
-        error: false,
         message: "SUCCESS",
       };
     } catch (error) {

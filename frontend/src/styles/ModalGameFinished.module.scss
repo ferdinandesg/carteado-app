@@ -1,0 +1,44 @@
+.Overlay {
+  position: absolute;
+  z-index: 25;
+  background-color: rgba(black, 0.75);
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  .ModalGameFinished {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 40%;
+    width: 50%;
+    margin: 0 auto;
+    align-items: center;
+    justify-content: center;
+    .gameWinnerInfo {
+      color: white;
+      display: flex;
+      .info {
+        font-size: 2rem;
+      }
+      .winner {
+        color: $success-color;
+        font-size: 3.5rem;
+      }
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .Overlay {
+    .ModalGameFinished {
+      height: 50%;
+      width: 90%;
+    }
+  }
+}

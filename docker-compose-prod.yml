@@ -59,7 +59,8 @@ services:
     restart: always
     networks:
       - app_network
-    command: ["redis-server", "--appendonly", "yes"]
+    command:
+      ["redis-server", "--notify-keyspace-events", "Ex", "--appendonly", "yes"]
 
   mongodb:
     build:

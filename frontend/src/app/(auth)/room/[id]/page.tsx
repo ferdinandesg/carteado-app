@@ -21,6 +21,7 @@ const RenderScreen = ({ status }: { status?: RoomStatus }) => {
     case "open":
       return <Lobby />;
     case "playing":
+    case "finished":
       return <Game />;
     default:
       <div>{t("loading")}</div>;

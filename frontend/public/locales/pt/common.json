@@ -62,7 +62,9 @@
         "waitingPlayers": "Esperando jogadores..."
     },
     "Game": {
-        "choseYourHand": "Selecione sua mão"
+        "choseYourHand": "Selecione sua mão",
+        "gameFinished": "O jogo acabou",
+        "winner": "Vencedor: {{winner}}"
     },
     "Players": {
         "status": {
