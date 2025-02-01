@@ -13,6 +13,7 @@ import Chat from "@/components/Chat";
 import classNames from "classnames";
 import { withSound } from "@/components/buttons/withSound";
 import { useTranslation } from "react-i18next";
+import useTitle from "@/hooks/useTitle";
 
 const RenderScreen = ({ status }: { status?: RoomStatus }) => {
   const { t } = useTranslation();
@@ -63,9 +64,14 @@ const RoomActions = ({ onLeaveRoom }: { onLeaveRoom: () => void }) => {
 };
 
 export default function Room() {
-  const { t } = useTranslation();
-  const router = useRouter();
+  const { t } = useTranslation()
   const { id } = useParams();
+  useTitle({
+    title: t("pageTitles.lobby", {
+      hash: String(id)
+    })
+  });
+  const router = useRouter();
   const { socket } = useSocket();
   const { room, isLoading } = useRoomByHash(String(id));
 

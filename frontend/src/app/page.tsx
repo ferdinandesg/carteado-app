@@ -17,36 +17,34 @@ function Home() {
   const router = useRouter();
   const goToRules = () => router.push("/rules");
   return (
-    <>
-      <div className={classNames(styles.Home, "square-bg", pixelify.className)}>
-        <div className={styles.container}>
-          <h1 className={styles.title}>Carteado</h1>
-          <div className={styles.authMethods}>
-            <button
-              className={styles.google}
-              onClick={() => signIn("google")}>
-              <Image
-                src="https://developers.google.com/identity/images/g-logo.png"
-                alt="Google Logo"
-                width={25}
-                height={25}
-              />
-              {t("googleAuth")}
-            </button>
-            <button
-              disabled
-              className="bg-gray-500 text-white hover:bg-gray-500 transition p-2 rounded">
-              {t("joinAsGuest")}
-            </button>
-          </div>
-          <span
-            onClick={goToRules}
-            className={styles.rulesButton}>
-            {t("seeRules")}
-          </span>
+    <div className={classNames(styles.Home, "square-bg", pixelify.className)}>
+      <div className={styles.container}>
+        <h1 className={styles.title}>Carteado</h1>
+        <div className={styles.authMethods}>
+          <button
+            className={styles.google}
+            onClick={() => signIn("google")}>
+            <Image
+              src="https://developers.google.com/identity/images/g-logo.png"
+              alt="Google Logo"
+              width={25}
+              height={25}
+            />
+            {t("googleAuth")}
+          </button>
+          <button
+            disabled
+            className="bg-gray-500 text-white hover:bg-gray-500 transition p-2 rounded">
+            {t("joinAsGuest")}
+          </button>
         </div>
+        <span
+          onClick={goToRules}
+          className={styles.rulesButton}>
+          {t("seeRules")}
+        </span>
       </div>
-    </>
+    </div>
   );
 }
 

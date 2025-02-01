@@ -7,6 +7,13 @@
     "send": "Enviar",
     "back": "Voltar",
     "confirm": "Confirmar",
+    "pageTitles": {
+        "home": "Carteado",
+        "rules": "Regras do Jogo",
+        "menu": "Menu",
+        "rooms": "Salas",
+        "lobby": "Lobby {{hash}}"
+    },
     "inviteUser": {
         "placeholder": "Nome de usuário"
     },

@@ -8,6 +8,7 @@ import styles from "@styles/Rooms.module.scss";
 import classNames from "classnames";
 import BackButton from "@/components/buttons/BackButton";
 import { useTranslation } from "react-i18next";
+import useTitle from "@/hooks/useTitle";
 
 type RoomListType = {
   rooms: RoomInterface[];
@@ -29,7 +30,9 @@ const RoomList = ({ rooms, onClick }: RoomListType) => {
 };
 
 export default function Rooms() {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
+  useTitle({ title: t("pageTitles.rooms") });
+
   const router = useRouter();
   const { data, isLoading } = useFetchRooms();
 

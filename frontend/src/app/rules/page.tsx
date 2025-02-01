@@ -1,6 +1,7 @@
 "use client";
 import BackButton from '@/components/buttons/BackButton';
 import CardComponent from '@/components/Card';
+import useTitle from '@/hooks/useTitle';
 import styles from '@styles/Rules.module.scss';
 import classNames from 'classnames';
 import { Pixelify_Sans } from 'next/font/google';
@@ -11,7 +12,7 @@ const pixelify = Pixelify_Sans({
 });
 function Rules() {
     const { t } = useTranslation()
-
+    useTitle({ title: t("pageTitles.rules") });
     return (
         <div className={classNames("square-bg", styles.Rules, pixelify.className)}>
             <div className={styles.rulesContainer}>

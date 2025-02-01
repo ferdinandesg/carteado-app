@@ -11,9 +11,11 @@ import { List, ListPlus, Play } from "lucide-react";
 import classNames from "classnames";
 import MenuButton from "@/components/buttons/MenuButton";
 import { useTranslation } from "react-i18next";
+import useTitle from "@/hooks/useTitle";
 
 export default function Menu() {
   const { t } = useTranslation()
+  useTitle({ title: t("pageTitles.menu") });
 
   const router = useRouter();
   const { data } = useSession();
