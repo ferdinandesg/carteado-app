@@ -91,6 +91,7 @@ jobs:
             mkdir -p /home/franmlfran/deploy
             cd /home/franmlfran/deploy
             echo "Atualizando serviços..."
+            docker-compose -f docker-compose-prod.yml down
             docker-compose -f docker-compose-prod.yml pull
             GOOGLE_ID=${{ secrets.GOOGLE_ID }} \
             GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }} \
