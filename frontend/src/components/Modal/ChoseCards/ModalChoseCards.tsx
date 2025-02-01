@@ -7,19 +7,20 @@ import Separator from "@/components/Separator";
 
 import styles from "@styles/ModalChoseCards.module.scss";
 import { withSound } from "@/components/buttons/withSound";
+import { useTranslation } from "react-i18next";
 interface ModalChoseCardsProps {
   isOpen: boolean;
 }
 
 const ConfirmButton = withSound(
-  ({ onClick, disabled }: { onClick: () => void; disabled: boolean }) => {
+  ({ onClick, disabled, text }: { onClick: () => void; disabled: boolean, text: string }) => {
     return (
       <div className={styles.confirmButtonContainer}>
         <button
           onClick={onClick}
           disabled={disabled}
           className={styles.confirmButton}>
-          Confirmar
+          {text}
         </button>
       </div>
     );
@@ -28,6 +29,7 @@ const ConfirmButton = withSound(
 );
 
 export default function ModalChoseCards({ isOpen }: ModalChoseCardsProps) {
+  const { t } = useTranslation()
   const { handlePickCards, player } = useGameContext();
   const handCards = player?.hand || [];
   const [chosenCards, setChosenCards] = useState<Card[]>([]);
@@ -61,7 +63,7 @@ export default function ModalChoseCards({ isOpen }: ModalChoseCardsProps) {
             />
           ))}
         </div>
-        <Separator text="Selecione sua mão" />
+        <Separator text={(t("Game.choseYourHand"))} />
         <div className={styles.cards}>
           {chosenCards.map((card) => (
             <CardComponent
@@ -74,6 +76,7 @@ export default function ModalChoseCards({ isOpen }: ModalChoseCardsProps) {
         </div>
       </div>
       <ConfirmButton
+        text={t("confirm")}
         onClick={pickHand}
         disabled={chosenCards.length !== 3}
       />

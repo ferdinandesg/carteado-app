@@ -45,6 +45,7 @@ const PositionedPlayer = ({
 };
 
 export default function Table() {
+  const { cards } = useGameContext();
   const tableRef = useRef<HTMLDivElement>(null);
   const { rotatedPlayers, bunchCards, retrieveCard } = useGameContext();
 
@@ -54,6 +55,7 @@ export default function Table() {
   const centerY = tableHeight / 2;
   const angleOffset = Math.PI / 2;
   const radius = 230;
+
   return (
     <div
       ref={tableRef}
@@ -74,6 +76,9 @@ export default function Table() {
         cards={bunchCards}
         onClick={retrieveCard}
       />
+      <div className={styles.remaining}>
+        {cards.length}
+      </div>
       <TableActions />
     </div>
   );

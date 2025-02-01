@@ -1,0 +1,19 @@
+.LanguageSwitcher {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+    z-index: 9999;
+  }
+  
+  .languageIcon {
+    cursor: pointer;
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .languageIcon:hover {
+    transform: scale(1.1);
+  }
+  

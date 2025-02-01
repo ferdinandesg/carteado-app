@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 type BackButtonType = {
   size: number;
-  color?: "light" | "dark";
+  color?: "light" | "dark" | "white";
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 const BackButton = ({ size, color = "light", ...props }: BackButtonType) => {

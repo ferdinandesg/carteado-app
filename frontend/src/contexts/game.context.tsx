@@ -18,6 +18,7 @@ interface GameContextProps {
   rotatedPlayers: Player[];
   game?: GameState;
   playCard: (card: Card) => void;
+  cards: Card[]
 }
 
 const GameContext = createContext<GameContextProps | null>(null);
@@ -37,6 +38,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     ...players.slice(currentPlayerIndex),
     ...players.slice(0, currentPlayerIndex),
   ];
+  
   const { socket } = useSocket();
 
   useEffect(() => {
@@ -87,6 +89,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         retrieveCard,
         handlePickCards,
         playCard,
+        cards: game?.cards.cards || []
       }}>
       {children}
     </GameContext.Provider>

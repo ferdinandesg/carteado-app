@@ -9,10 +9,6 @@ type ButtonProps = {
   text: string;
 };
 
-const Button = ({ onClick, text }: ButtonProps) => (
-  <button onClick={onClick}>{text}</button>
-);
-
 const ButtonWithSound = ({
   clickSrc,
   text,
@@ -28,6 +24,10 @@ const ButtonWithSound = ({
     />
   );
 };
+
+const Button = ({ onClick, text }: ButtonProps) => (
+  <button onClick={onClick}>{text}</button>
+);
 
 export default function TableActions() {
   const { t } = useTranslation()

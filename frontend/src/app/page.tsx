@@ -6,6 +6,7 @@ import styles from "@styles/Home.module.scss";
 import classNames from "classnames";
 import Image from "next/image";
 import { Pixelify_Sans } from "next/font/google";
+import { useRouter } from "next/navigation";
 
 const pixelify = Pixelify_Sans({
   weight: ["400"],
@@ -13,6 +14,8 @@ const pixelify = Pixelify_Sans({
 });
 function Home() {
   const { t } = useTranslation()
+  const router = useRouter();
+  const goToRules = () => router.push("/rules");
   return (
     <>
       <div className={classNames(styles.Home, "square-bg", pixelify.className)}>
@@ -36,7 +39,9 @@ function Home() {
               {t("joinAsGuest")}
             </button>
           </div>
-          <span className={styles.rulesButton}>
+          <span
+            onClick={goToRules}
+            className={styles.rulesButton}>
             {t("seeRules")}
           </span>
         </div>

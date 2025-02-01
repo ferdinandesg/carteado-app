@@ -8,12 +8,16 @@ import CardFan from "../CardFan";
 import { useGameContext } from "@/contexts/game.context";
 import classNames from "classnames";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 
 export default function Opponent({ player }: { player: Player }) {
+  const { data } = useSession()
+  const userId = data?.user?.id
   const { game } = useGameContext();
   const isCurrentPlayerTurn = game?.playerTurn === player.userId;
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const opponentCards = player.table.sort((a) => (a.hidden ? 1 : -1));
+  const isSamePlayer = userId === player.userId;
 
   return (
     <div
@@ -36,7 +40,7 @@ export default function Opponent({ player }: { player: Player }) {
       <p className={styles.name}>
         {player.name} ({player.hand.length})
       </p>
-      {isHovered && (
+      {isHovered && !isSamePlayer && (
         <div className={styles.infoBox}>
           <p>Cartas na mão: {player.hand.length}</p>
           <p>Cartas na mesa:</p>

@@ -115,7 +115,7 @@ export default function Chat({ roomHash }: ChatProps) {
         <button
           placeholder="Digite sua mensagem..."
           onClick={(e) => sendMessage(e)}>
-          Enviar
+          {t("send")}
         </button>
       </form>
     </div>

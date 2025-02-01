@@ -4,15 +4,44 @@
     "googleAuth": "Entrar com Google",
     "seeRules": "Ver regras",
     "loading": "Carregando...",
+    "send": "Enviar",
     "back": "Voltar",
+    "confirm": "Confirmar",
     "inviteUser": {
         "placeholder": "Nome de usuário"
     },
-    "Rules": {},
+    "Rules": {
+        "title": "Regras do Jogo",
+        "intro": "Bem-vindo ao CARTEADO! Aqui estão as regras:",
+        "rule1Title": "Como o jogo começa",
+        "rule1Text": "O jogo começa com você escolhendo entre 6 cartas. Você escolhe 3 cartas que serão usadas no final da partida e ficam viradas para baixo, e 3 cartas que irão diretamente para sua mão.",
+        "rule2Title": "Regras para jogar cartas",
+        "rule2Text": "Sempre que for a sua vez, você deve jogar uma carta igual ou maior que a carta na mesa.",
+        "rule3Title": "Cartas especiais",
+        "rule3Text": "As cartas 2 e 10 possuem poderes especiais:",
+        "specialCards2": "Carta 2: Pula a vez do próximo jogador.",
+        "specialCards10": "Carta 10: Limpa todas as cartas da mesa.",
+        "rule4Title": "Sequências de 4 cartas",
+        "rule4Text": "Quando você tiver 4 cartas com o mesmo número ou letra, você pode limpar a mesa. Além disso, você pode jogar a última carta que complete a sequência de 4 cartas, mesmo fora da sua vez.",
+        "rule5Title": "Como comprar cartas",
+        "rule5Text": "Você nunca compra cartas diretamente, mas sempre deve manter pelo menos 3 cartas na mão enquanto houver cartas disponíveis para comprar.",
+        "rule6Title": "Final do jogo",
+        "rule6Text": "Quando não houver mais cartas para comprar, você deve subir as cartas viradas para cima que ainda possui. Quando essas cartas acabarem, você escolhe aleatoriamente uma das cartas viradas para baixo para jogar."
+    },
     "Menu": {
         "play": "Jogar",
         "createRoom": "Criar sala",
         "createdRooms": "Salas criadas"
+    },
+    "CreateRoom": {
+        "create": "Criar sala",
+        "roomName": "Nome da sala",
+        "maxPlayers": "Máximo de jogadores",
+        "password": "Senha",
+        "private": "Privada",
+        "public": "Pública",
+        "createRoom": "Criar sala",
+        "roomCreated": "Sala criada com sucesso"
     },
     "Room": {
         "loading": "Carregando...",
@@ -24,6 +53,9 @@
         "imReady": "Estou pronto",
         "startGame": "Iniciar jogo",
         "waitingPlayers": "Esperando jogadores..."
+    },
+    "Game": {
+        "choseYourHand": "Selecione sua mão"
     },
     "Players": {
         "status": {

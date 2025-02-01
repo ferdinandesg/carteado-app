@@ -1,0 +1,57 @@
+.Rules {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  .rulesContainer {
+    color: white;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    gap: $spacing-s;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background-color: $primary-color;
+    scrollbar-width: none;
+  }
+
+  .rulesTitle {
+    text-align: center;
+    font-size: 2rem;
+  }
+
+  .introText {
+    font-size: 1.5rem;
+    color: #34495e;
+    text-align: center;
+  }
+
+  .ruleTitle {
+    font-size: 1.5rem;
+    color: white;
+  }
+
+  .ruleText {
+    color: #34495e;
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  .specialCardsList {
+    list-style-type: disc;
+    padding-left: 20px;
+  }
+
+  .specialCard {
+    display: flex;
+    color: #34495e;
+    align-items: center;
+    gap: $spacing-s;
+  }
+}
+@media (max-width: 768px) {
+  .rulesContainer {
+    padding: 1rem;
+  }
+}
