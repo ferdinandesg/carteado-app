@@ -1,0 +1,89 @@
+.Overlay {
+  position: absolute;
+  z-index: 25;
+  background-color: rgba(black, 0.75);
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  .ModalJoinAsGuest {
+    background-color: white;
+    width: 40%;
+    padding: $spacing-l;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: $spacing-m;
+
+    .title {
+      text-align: center;
+      font-size: 1.25rem;
+    }
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      width: 70%;
+      margin: 0 auto;
+      button {
+        padding: $spacing-s;
+      }
+      .backButton {
+        color: gray;
+        display: flex;
+        cursor: pointer;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
+      .confirmButton {
+        background-color: $success-color;
+        color: white;
+        display: flex;
+        cursor: pointer;
+
+        &:hover {
+          background-color: lighten($success-color, 10);
+        }
+      }
+    }
+    .inputForm {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      .input {
+        width: 70%;
+        height: 50%;
+        margin-top: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        padding: $spacing-m;
+        font-weight: 300;
+      }
+
+      .button {
+        width: 50%;
+        height: 30px;
+        margin-top: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        background-color: #f0f0f0;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .Overlay {
+    .ModalGameFinished {
+      height: 50%;
+      width: 90%;
+    }
+  }
+}

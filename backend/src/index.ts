@@ -11,20 +11,22 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 routes(app);
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: "Muitas requisições, tente novamente mais tarde.",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use(limiter);
 const httpServer = http.createServer(app);
 RedisClass.getDataClient();
 SocketClass.init(httpServer);
 process.on("uncaughtException", (err) => {
   console.error("Exceção não capturada detectada:", err);
 });
-
-const limiter = rateLimit({
-  windowMs: 5 * 60 * 1000,
-  max: 100,
-  message: "Muitas requisições, tente novamente mais tarde.",
-});
-
-app.use(limiter);
 
 process.on("unhandledRejection", (reason) => {
   console.error("Promise rejeitada sem tratamento:", reason);

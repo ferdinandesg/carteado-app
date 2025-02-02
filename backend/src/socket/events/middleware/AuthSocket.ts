@@ -8,8 +8,8 @@ export async function Authentication(
   try {
     const { user } = socket.handshake.query;
     const parsedUser = JSON.parse(String(user));
-
-    const auth = await validateUser(parsedUser);
+    const auth =
+      parsedUser.role === "guest" ? parsedUser : await validateUser(parsedUser);
     socket.user = auth;
 
     socket.join(socket.user.email);

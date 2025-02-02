@@ -7,17 +7,23 @@ import classNames from "classnames";
 import Image from "next/image";
 import { Pixelify_Sans } from "next/font/google";
 import { useRouter } from "next/navigation";
+import ModalJoinAsGuest from "@/components/Modal/ModalJoinAsGuest/ModalJoinAsGuest";
+import { useState } from "react";
 
 const pixelify = Pixelify_Sans({
   weight: ["400"],
   subsets: ["latin"],
 });
 function Home() {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
   const { t } = useTranslation()
   const router = useRouter();
   const goToRules = () => router.push("/rules");
+
   return (
     <div className={classNames(styles.Home, "square-bg", pixelify.className)}>
+      <ModalJoinAsGuest isOpen={isOpen} onClose={() => setIsOpen(false)} />
       <div className={styles.container}>
         <h1 className={styles.title}>Carteado</h1>
         <div className={styles.authMethods}>
@@ -33,7 +39,7 @@ function Home() {
             {t("googleAuth")}
           </button>
           <button
-            disabled
+            onClick={() => setIsOpen(true)}
             className="bg-gray-500 text-white hover:bg-gray-500 transition p-2 rounded">
             {t("joinAsGuest")}
           </button>

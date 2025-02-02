@@ -4,5 +4,6 @@
   "semi": true,
   "singleQuote": false,
   "bracketSameLine": true,
-  "singleAttributePerLine": true
+  "singleAttributePerLine": true,
+  "endOfLine": "auto"
 }

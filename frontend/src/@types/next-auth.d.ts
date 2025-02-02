@@ -13,12 +13,14 @@ declare module "next-auth" {
       image?: string;
       token?: JWT | undefined;
       rank?: number;
+      accessToken?: string;
+      role: "guest" | "user";
     };
   }
 
   interface User {
     id: string;
-    role: string;
+    role: "guest" | "user";
   }
 }
 declare module "next-auth/jwt" {

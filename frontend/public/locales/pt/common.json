@@ -14,6 +14,10 @@
         "rooms": "Salas",
         "lobby": "Lobby {{hash}}"
     },
+    "Home": {
+        "joinAsGuest": "Entrar como convidado",
+        "guestNickname": "Apelido do convidado"
+    },
     "inviteUser": {
         "placeholder": "Nome de usuário"
     },
@@ -88,6 +92,7 @@
     },
     "ServerMessages": {
         "errors": {
+            "GUEST_CREATION": "Erro ao criar convidado",
             "ROOM_IS_PLAYING": "A sala já está em jogo",
             "OWNER_SHOULD_BEGIN": "Apenas o dono da sala pode começar o jogo",
             "ROOM_NOT_FOUND": "Sala não encontrado",

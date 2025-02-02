@@ -60,8 +60,9 @@
   .RoomList {
     display: flex;
     flex-direction: column;
-
     gap: $spacing-m;
+    overflow-y: auto;
+    scrollbar-width: none;
     .RoomItem {
       display: flex;
       padding: $spacing-s;
