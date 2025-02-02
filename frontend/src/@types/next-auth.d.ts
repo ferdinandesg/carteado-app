@@ -1,4 +1,5 @@
 import { JWT } from "next-auth/jwt";
+import { UserRole } from "shared/types";
 
 declare module "next-auth" {
   /**
@@ -14,13 +15,13 @@ declare module "next-auth" {
       token?: JWT | undefined;
       rank?: number;
       accessToken?: string;
-      role: "guest" | "user";
+      role: UserRole;
     };
   }
 
   interface User {
     id: string;
-    role: "guest" | "user";
+    role: UserRole;
   }
 }
 declare module "next-auth/jwt" {

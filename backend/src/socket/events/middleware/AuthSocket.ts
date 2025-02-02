@@ -1,20 +1,15 @@
 import { Socket } from "socket.io";
-import { validateUser } from "../../../services/auth.service";
+import { verifyJWTToken } from "@routes/middlewares/auth";
 
 export async function Authentication(
   socket: Socket,
   next: (err?: Error) => void
 ): Promise<void> {
-  try {
-    const { user } = socket.handshake.query;
-    const parsedUser = JSON.parse(String(user));
-    const auth =
-      parsedUser.role === "guest" ? parsedUser : await validateUser(parsedUser);
-    socket.user = auth;
+  const token = socket.handshake.auth.token;
+  const user = await verifyJWTToken(token);
+  if (!user) return next(new Error("Unauthorized"));
+  socket.user = user;
 
-    socket.join(socket.user.email);
-    return next();
-  } catch (error) {
-    console.error({ error });
-  }
+  socket.join(socket.user.email);
+  return next();
 }

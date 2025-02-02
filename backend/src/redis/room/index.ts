@@ -1,9 +1,10 @@
-import { Prisma, User } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import RedisClass from "../client";
 import { PopulatedPlayer } from "src/game/game";
+import { GuestType, SocketUser } from "shared/types";
 
 type PopulatedRoom = {
-  spectators: User[];
+  spectators: (SocketUser | GuestType)[];
   players: PopulatedPlayer[];
 } & Prisma.RoomGetPayload<object>;
 

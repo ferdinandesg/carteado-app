@@ -1,11 +1,9 @@
-import { User } from "@prisma/client";
-import { GuestType } from "shared/types";
-export {};
+import { GuestType, SocketUser } from "shared/types";
 
 declare global {
   namespace Express {
     export interface Request {
-      user: User | GuestType;
+      user: SocketUser | GuestType;
     }
   }
 }

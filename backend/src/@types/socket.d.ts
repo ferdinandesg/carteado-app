@@ -1,17 +1,10 @@
 import { Card } from "@prisma/client";
+import { GuestType, SocketUser } from "shared/types";
 import { Socket, Namespace } from "socket.io";
 
 declare module "socket.io" {
   interface Socket {
-    user: {
-      id: string;
-      email: string;
-      name: string;
-      image: string;
-      rank: number;
-      room?: string;
-      status?: string;
-    };
+    user: SocketUser | GuestType;
   }
 }
 

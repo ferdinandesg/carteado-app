@@ -4,20 +4,21 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import jwt from "jsonwebtoken";
 import Credentials from "next-auth/providers/credentials";
-import { GuestType } from "shared/types";
+import { UserRole } from "shared/types";
 
 const validateUser = async (payload: UserSession) => {
   const response = await axiosInstance.post("/auth", payload);
-  const user = await response.data;
-  return user;
+  return response.data;
 };
 
 const validateGuestUser = async (name: string) => {
-  const response = await axiosInstance.post("/auth/guest", {
-    username: name,
-  });
-  const user = await response.data;
-  return user;
+  const response = await axiosInstance.post("/auth/guest", { username: name });
+  return response.data;
+};
+
+const generateJWT = ({ id, role }: { id: string; role: UserRole }) => {
+  const secretKey = process.env.JWT_SECRET_KEY || "secret";
+  return jwt.sign({ id: id, role: role }, secretKey);
 };
 
 const handler = NextAuth({
@@ -29,11 +30,8 @@ const handler = NextAuth({
         username: { label: "Username", type: "text" },
       },
       async authorize(credentials) {
-        if (credentials?.username) {
-          const guestUser = await validateGuestUser(credentials.username);
-          if (!guestUser) return null;
-          return guestUser;
-        }
+        if (!credentials?.username) return null;
+        return validateGuestUser(credentials.username);
       },
     }),
     GoogleProvider({
@@ -45,41 +43,30 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user, account }) {
       if (account && user) {
-        const assignUserToToken = (user: UserSession | GuestType) => {
-          const secretKey = "secret";
-          const encodedToken = jwt.sign(
-            { id: user.id, role: user.role },
-            secretKey
-          );
-          console.log({
-            encodedToken,
-          });
-          token.id = user.id;
-          token.name = user.name;
-          token.email = user.email;
-          token.role = user.role;
-          token.accessToken = encodedToken;
-        };
-
-        if (user.role === "guest") {
-          assignUserToToken(user as GuestType);
-        } else {
-          try {
-            const validatedUser = await validateUser(user as UserSession);
-            assignUserToToken(validatedUser);
-          } catch (error) {
-            console.error("Erro na validação do usuário:", error);
-          }
+        try {
+          const userData =
+            user.role === "guest"
+              ? user
+              : await validateUser(user as UserSession);
+          token.id = userData.id;
+          token.name = userData.name;
+          token.email = userData.email;
+          token.role = userData.role;
+        } catch (error) {
+          console.error("Erro na validação do usuário:", error);
         }
       }
-
       return token;
     },
+
     async session({ session, token }) {
       try {
-        session.user.accessToken = token.accessToken as string;
+        const accessToken = generateJWT({
+          id: String(token.id),
+          role: String(token.role) as UserRole,
+        });
         session.user.id = token.id;
-        session.user.token = token;
+        session.user.accessToken = accessToken;
         return session;
       } catch (error) {
         console.error("Erro na criação da sessão:", error);
@@ -91,10 +78,12 @@ const handler = NextAuth({
       return "/menu";
     },
   },
+
   pages: {
     signIn: "/",
     error: "/?error=oauth",
   },
+
   theme: { colorScheme: "dark" },
 });
 

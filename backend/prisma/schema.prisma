@@ -19,6 +19,7 @@ model User {
   email  String
   Player Player[]
   rank   Int
+  role   String?  @default("user")
   rooms  Room[]   @relation("owner")
 }
 

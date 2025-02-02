@@ -1,7 +1,7 @@
-import { GuestType } from "shared/types";
+import { EmptyGuestType, GuestType } from "shared/types";
 import RedisClass from "src/redis/client";
 
-export async function saveGuest(guest: GuestType): Promise<void> {
+export async function saveGuest(guest: EmptyGuestType): Promise<void> {
   const redis = await RedisClass.getDataClient();
   const serializedGuest = JSON.stringify(guest);
   await redis.set(`guest:${guest.id}`, serializedGuest, {

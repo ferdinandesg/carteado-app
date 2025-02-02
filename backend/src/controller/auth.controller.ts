@@ -6,7 +6,7 @@ export async function handleValidateUser(req: Request, res: Response) {
   try {
     const { email, name, image } = loginSchema.parse(req.body);
 
-    const response = await validateUser({ email, name, image });
+    const response = await validateUser({ email, name, image, rank: 0 });
     res.status(200).json(response);
   } catch (error) {
     res.status(400).json(error);

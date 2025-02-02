@@ -2,11 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import prisma from "../../prisma";
 import { getGuest } from "src/redis/guests";
+import { SocketUser, UserRole } from "shared/types";
 
 const secretKey = "secret";
 
 type JwtPayload = {
-  role: "guest" | "user";
+  role: UserRole;
   id: string;
 };
 
@@ -20,7 +21,7 @@ const promisifyVerifyToken = (token: string): Promise<JwtPayload> =>
     });
   });
 
-const verifyToken = async (token: string) => {
+export const verifyJWTToken = async (token: string) => {
   const decoded = await promisifyVerifyToken(token);
   if (!decoded) {
     throw new Error("Token inválido");
@@ -28,9 +29,9 @@ const verifyToken = async (token: string) => {
   if (decoded.role === "guest") {
     return await getGuest(decoded.id);
   }
-  return await prisma.user.findUnique({
+  return (await prisma.user.findUnique({
     where: { id: decoded.id },
-  });
+  })) as SocketUser;
 };
 
 export default async function authorize(
@@ -43,8 +44,7 @@ export default async function authorize(
     res.status(401).json({ message: "NOT_AUTHORIZED" });
     return;
   }
-  const user = await verifyToken(token);
-
+  const user = await verifyJWTToken(token);
   if (!user) {
     res.status(401).json({ message: "NOT_AUTHORIZED" });
     return;
