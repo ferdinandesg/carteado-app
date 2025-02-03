@@ -6,7 +6,7 @@ export async function handleCreateRoom(req: Request, res: Response) {
     const { name, size } = req.body;
     const { user } = req;
     if (!name) throw "A sala não pode ser criada sem nome";
-    const newRoom = await createRoom({ name, size: +size }, user.id);
+    const newRoom = await createRoom({ name, size: +size }, user);
 
     res.status(201).json(newRoom);
   } catch (error) {

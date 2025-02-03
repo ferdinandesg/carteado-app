@@ -15,15 +15,15 @@ export async function JoinRoomEventHandler(
     if (!roomHash || !socket.user) return;
     const room = await getRoomState(roomHash);
     if (!room) return;
-
+    socket.join(roomHash);
+    socket.user.room = roomHash;
     switch (room.status) {
       case "open": {
         const roomPlayers = getRoomPlayers(roomHash, channel);
         if (roomPlayers.length >= room.size) throw "A sala está cheia.";
         if (roomPlayers.find((player) => player.id === socket.user?.id))
           throw "Você já está na sala.";
-        socket.join(roomHash);
-        socket.user.room = roomHash;
+
         socket.user.status = "NOT_READY";
         break;
       }
@@ -36,8 +36,6 @@ export async function JoinRoomEventHandler(
             (player) => player.userId === socket.user?.id
           )
         ) {
-          socket.join(roomHash);
-          socket.user.room = roomHash;
           emitToUser(socket, "info", "WELCOME_BACK");
           break;
         }

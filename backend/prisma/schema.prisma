@@ -48,8 +48,8 @@ model Room {
   chat      Chat     @relation(fields: [chatId], references: [id])
   chatId    String   @db.ObjectId
   createdAt DateTime @default(now())
-  owner     User     @relation("owner", fields: [ownerId], references: [id])
-  ownerId   String   @db.ObjectId
+  owner     User?     @relation("owner", fields: [ownerId], references: [id])
+  ownerId   String?   @db.ObjectId
   game      Game?
   gameId    String?  @db.ObjectId
 }

@@ -2,10 +2,11 @@ import { Room } from "@prisma/client";
 import prisma from "../prisma";
 import { getRoomState, saveRoomState } from "../redis/room";
 import { randomUUID } from "node:crypto";
+import { GuestType, SocketUser } from "shared/types";
 
 export async function createRoom(
   { name, size }: { name: string; size: number },
-  userId: string
+  user: SocketUser | GuestType
 ): Promise<Room> {
   const uuid = randomUUID();
   const hash = uuid.substring(uuid.length - 4);
@@ -16,7 +17,7 @@ export async function createRoom(
       name: name,
       chatId: chat.id,
       size: size,
-      ownerId: userId,
+      ...(user.role === "user" && { ownerId: user.id }),
     },
   });
   await saveRoomState(hash, createdRoom);
