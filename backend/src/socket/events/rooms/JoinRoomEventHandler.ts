@@ -12,29 +12,29 @@ export async function JoinRoomEventHandler(
   const { payload, socket, channel } = context;
   try {
     const { roomHash } = payload;
+    console.log({
+      roomHash,
+      user: socket.user,
+    });
     if (!roomHash || !socket.user) return;
     const room = await getRoomState(roomHash);
-    if (!room) return;
+    if (!room) throw "ROOM_NOT_FOUND";
     socket.join(roomHash);
     socket.user.room = roomHash;
     switch (room.status) {
       case "open": {
         const roomPlayers = getRoomPlayers(roomHash, channel);
-        if (roomPlayers.length >= room.size) throw "A sala está cheia.";
-        if (roomPlayers.find((player) => player.id === socket.user?.id))
-          throw "Você já está na sala.";
+        if (roomPlayers.length > room.size) throw "ROOM_IS_FULL";
 
         socket.user.status = "NOT_READY";
         break;
       }
       case "playing": {
-        const currentPlayers = await getGameState(roomHash);
+        const game = await getGameState(roomHash);
 
         if (
-          currentPlayers &&
-          currentPlayers.players.find(
-            (player) => player.userId === socket.user?.id
-          )
+          game &&
+          game.players.find((player) => player.userId === socket.user?.id)
         ) {
           emitToUser(socket, "info", "WELCOME_BACK");
           break;
@@ -48,7 +48,6 @@ export async function JoinRoomEventHandler(
     }
     const updatedRoom = await getRoomState(roomHash);
     const newPlayers = getRoomPlayers(roomHash, channel);
-
     emitToRoom(channel, roomHash, "room_update", {
       room: updatedRoom,
       players: newPlayers,

@@ -29,7 +29,6 @@ export default function RootLayout({
         </head>
         <body className={inter.className}>
           <header>
-
             <LanguageSwitcher />
           </header>
           <SessionProvider>

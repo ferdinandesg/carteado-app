@@ -34,3 +34,5 @@ process.on("unhandledRejection", (reason) => {
 httpServer.listen(process.env.PORT, () =>
   console.log(`Running on: ${process.env.PORT}`)
 );
+
+export default httpServer;

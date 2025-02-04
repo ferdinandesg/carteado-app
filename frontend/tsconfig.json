@@ -28,9 +28,12 @@
       "@hooks/*": ["./src/hooks/*"],
       "@contexts/*": ["./src/contexts/*"],
       "@models/*": ["./src/contexts/*"],
-      "@styles/*": ["./src/styles/*"]
-    }
+      "@styles/*": ["./src/styles/*"],
+      "@tests/*": ["./src/tests/*"]
+    },
+    "types": ["@testing-library/jest-dom"]
   },
+
   "include": [
     "next-env.d.ts",
     "**/*.ts",
@@ -40,4 +43,3 @@
   ],
   "exclude": ["node_modules"]
 }
-
