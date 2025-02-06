@@ -12,7 +12,7 @@ export default function Game() {
   const handCards = player?.hand || [];
   const tableCards = player?.table.sort((a) => (a.hidden ? 1 : -1)) || [];
 
-  const isPlayerChoosing = player?.status === "chosing";
+  const isPlayerChoosing = player?.status === "choosing";
   const isFinished = game?.status === "finished";
 
   return (
@@ -24,7 +24,7 @@ export default function Game() {
           {!isPlayerChoosing && <Table />}
         </div>
         <CardFan
-          cards={handCards}
+          cards={handCards.sort((a, b) => a.value - b.value)}
           onClick={playCard}
         />
         <div className={styles.cardTable}>
@@ -33,6 +33,7 @@ export default function Game() {
               card={card}
               height={125}
               key={`player-table-${card.toString}`}
+              onClick={() => playCard(card)}
             />
           ))}
         </div>

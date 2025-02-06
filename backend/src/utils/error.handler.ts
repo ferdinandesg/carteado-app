@@ -12,7 +12,7 @@ export default function ErrorHandler(
 ) {
   console.log("Error: ", error);
   if (typeof error === "string") {
-    emitToUser(socket, "error", error);
+    return emitToUser(socket, "error", error);
   }
 
   if (
@@ -21,7 +21,7 @@ export default function ErrorHandler(
     "error" in error &&
     "message" in error
   ) {
-    emitToUser(socket, "error", error.message);
+    return emitToUser(socket, "error", error.message);
   }
   throw error;
 }

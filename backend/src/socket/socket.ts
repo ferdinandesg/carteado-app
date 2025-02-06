@@ -23,6 +23,7 @@ class SocketClass {
     this.roomChannel.on(CHANNEL.CLIENT.CONNECTION, async (socket: Socket) =>
       ConnectionEventHandler(socket, this.roomChannel)
     );
+    return this.io;
   }
 }
 

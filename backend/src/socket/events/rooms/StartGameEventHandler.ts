@@ -1,47 +1,12 @@
 import { SocketContext } from "../../../@types/socket";
-import GameClass, { PopulatedPlayer } from "../../../game/game";
 import prisma from "../../../prisma";
 import { saveGameState } from "../../../redis/game";
 import { getRoomState, saveRoomState } from "../../../redis/room";
-import getRoomPlayers, { RoomUsers } from "src/socket/utils/getRoomPlayers";
+import getRoomPlayers from "src/socket/utils/getRoomPlayers";
 import emitToRoom from "@socket/utils/emitToRoom";
 import ErrorHandler from "src/utils/error.handler";
-
-const createPlayers = async (
-  users: RoomUsers[],
-  roomId: string
-): Promise<PopulatedPlayer[]> => {
-  const authUsers = users.filter((u) => u.role === "user");
-  const guests = users.filter((u) => u.role === "guest");
-  if (authUsers.length) {
-    await prisma.player.createMany({
-      data: authUsers.map((user) => ({
-        roomId,
-        status: "chosing",
-        userId: user.id,
-      })),
-    });
-  }
-  const players = await prisma.player.findMany({
-    where: { roomId },
-    include: { user: true },
-  });
-
-  return [
-    ...players,
-    ...guests.map((guest) => ({
-      roomId,
-      status: "chosing",
-      userId: guest.id,
-      user: {
-        id: guest.id,
-        name: guest.name,
-        email: guest.email,
-        image: guest.image,
-      },
-    })),
-  ] as PopulatedPlayer[];
-};
+import { createPlayers } from "./utils";
+import { CarteadoGame, CarteadoGameRules } from "src/game/CarteadoGameRules";
 
 export async function StartGameEventHandler(
   context: SocketContext
@@ -73,25 +38,15 @@ export async function StartGameEventHandler(
     });
 
     room.players = players;
-    const game = new GameClass(room.players);
-    game.status = "playing";
-    game.players.forEach((p) => {
-      p.status = "chosing";
-      const hand = game.givePlayerCards(p.userId);
-      p.hand = hand || [];
-      p.name = p.user.name;
-      p.image = p.user.image;
-      p.email = p.user.email;
-    });
-
+    const carteadoRules = new CarteadoGameRules();
+    const game = new CarteadoGame(room.players, carteadoRules);
+    game.startGame();
     await saveGameState(room.hash, game);
-
     const newRoom = {
       ...room,
       status: "playing",
     };
     await saveRoomState(room.hash, newRoom);
-
     emitToRoom(channel, room.hash, "game_update", game);
     emitToRoom(channel, room.hash, "room_update", {
       room: newRoom,

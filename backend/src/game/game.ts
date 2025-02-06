@@ -1,245 +1,79 @@
-import { Card, Prisma } from "@prisma/client";
-import Deck from "shared/cards";
+import Deck, { Card } from "shared/cards";
+import { IGameRules } from "./IGameRules";
 
-export type PopulatedPlayer = Prisma.PlayerGetPayload<{
-  include: {
-    user: true;
-  };
-}>;
-
-interface GamePlayer extends PopulatedPlayer {
-  playedCards: Card[];
-  name?: string;
-  image?: string;
-  email?: string;
+export enum GameStatus {
+  OPEN = "open",
+  PLAYING = "playing",
+  FINISHED = "finished",
 }
 
-export default class GameClass {
-  playerTurn: string;
-  cards: Deck;
-  bunch: Card[] = [];
-  players: GamePlayer[] = [];
-  status: "open" | "playing" | "finished" = "open";
+export enum PlayerStatus {
+  CHOOSING = "choosing",
+  PLAYING = "playing",
+}
 
-  constructor(players: PopulatedPlayer[]) {
-    const gamePlayers: GamePlayer[] = players?.map((x) => ({
-      ...x,
-      playedCards: [],
-    }));
-    this.players = gamePlayers;
-    this.cards = new Deck();
-    const playerTurn = gamePlayers[0];
+export interface GamePlayer {
+  userId: string;
+  status: PlayerStatus;
+  hand: Card[];
+  playedCards: Card[];
+  table: Card[];
+}
 
-    this.playerTurn = playerTurn.userId;
+export class Game<G extends Game<G, R>, R extends IGameRules<G>> {
+  public rulesName: string;
+  public players: GamePlayer[];
+  public deck: Deck;
+  public bunch: Card[];
+  public status: GameStatus;
+  public playerTurn: string;
+  public rules: R;
+
+  constructor(players: GamePlayer[], rules: R, rulesName: string) {
+    this.players = players;
+    this.rules = rules;
+    this.rulesName = rulesName;
+
+    this.deck = new Deck();
+    this.bunch = [];
+    this.status = GameStatus.OPEN;
+    this.playerTurn =
+      players[Math.floor(Math.random() * players.length)].userId;
   }
 
-  playerExists(userId: string) {
-    const foundPlayer = this.players.find((x) => x.userId === userId);
-    if (!foundPlayer) return false;
-    return foundPlayer;
+  public getPlayer(userId: string): GamePlayer | undefined {
+    return this.players.find((p) => p.userId === userId);
   }
 
-  givePlayerCards(userId: string): Card[] | undefined {
-    const foundPlayer = this.playerExists(userId);
-    if (!foundPlayer) return;
-    const hand = this.cards.giveTableCards();
-    foundPlayer.table = [];
-    foundPlayer.hand = hand as Card[];
-    return hand as Card[];
+  public startGame() {
+    this.rules.dealInitialHands(this as unknown as G);
   }
 
-  canPlayCard(card: Card, userId: string): GamePlayer {
-    const foundPlayer = this.playerExists(userId);
-    if (!foundPlayer) throw "PLAYER_NOT_FOUND";
-    if (!this.players.every((p) => p.status === "playing"))
-      throw "HAVE_NOT_STARTED";
-    const lastThree = this.bunch.slice(-3);
-    if (
-      lastThree.length === 3 &&
-      lastThree.every((x) => x.rank === card.rank)
-    ) {
-      return foundPlayer;
-    }
-    if (foundPlayer.userId !== this.playerTurn) throw "NOT_YOUR_TURN";
-    return foundPlayer;
+  public playCard(userId: string, card: Card) {
+    this.rules.canPlayCard(this as unknown as G, userId, card);
+    this.rules.applyPlayCard(this as unknown as G, userId, card);
   }
 
-  playCard(card: Card, userId: string) {
-    try {
-      const foundPlayer = this.canPlayCard(card, userId);
-      const result = this.applyRules(card, foundPlayer);
-      return result;
-    } catch (error) {
-      throw { error: true, message: error };
-    }
+  public endTurn(userId: string) {
+    this.rules.validateEndTurn(this as unknown as G, userId);
+    this.rules.applyEndTurn(this as unknown as G, userId);
   }
 
-  isSpecialCard(card?: Card) {
-    if (!card) return false;
-    return card.rank === "2" || card.rank === "10";
-  }
-
-  applyRules(card: Card, player: GamePlayer) {
-    try {
-      const [lastCard] = this.bunch.slice(-1);
-      const hasSpecialCard =
-        this.isSpecialCard(lastCard) || this.isSpecialCard(card);
-      if (lastCard && !hasSpecialCard) {
-        // if the last card is not special, the current card should be higher
-        if (lastCard.value! > card.value) throw "LOWER_RANK";
-
-        // if the last card is not special, the current card should be the same rank
-        if (lastCard?.rank !== card.rank && player.playedCards.length > 0) {
-          throw "DIFFERENT_CARD";
-        }
-      }
-
-      this.bunch.push(card);
-      player.hand = player.hand.filter((x) => x.toString !== card.toString);
-      player.playedCards.push(card);
-      return { error: false, message: "SUCCESS" };
-    } catch (error) {
-      throw { error: true, message: error };
-    }
-  }
-
-  skipTurns(fromUser: string, turns: number) {
-    const currentPlayerIndex = this.players.findIndex(
-      (x) => x.userId === fromUser
-    );
-    if (currentPlayerIndex === -1) throw "PLAYER_NOT_FOUND";
-    const nextPlayerIndex = (currentPlayerIndex + 1) % this.players.length;
-    this.playerTurn = this.players[nextPlayerIndex].userId;
-    if (turns > 1) this.skipTurns(this.playerTurn, turns - 1);
-  }
-
-  applySpecialCardRules(player: GamePlayer) {
-    // find the current user and for each rank "2" card, should skip one turn
-    const turnsToSkip =
-      player.playedCards.filter((x) => x.rank === "2").length + 1 || 1;
-    this.skipTurns(player.userId, turnsToSkip);
-
-    // find the current user and for each rank "10" card, should pick the last one and split the bunch
-    const lastTenIndex = this.bunch.map((b) => b.rank).lastIndexOf("10");
-    if (lastTenIndex > -1) this.bunch = this.bunch.slice(lastTenIndex + 1);
-
-    // if in bunch we have a sequence in any place of four cards with the same rank, the bunch should be split
-    for (let i = 0; i < this.bunch.length - 3; i++) {
-      const sequence = this.bunch.slice(i, i + 4);
-      if (sequence.every((x) => x.rank === sequence[0].rank)) {
-        this.bunch = this.bunch.slice(i + 4);
-        break;
-      }
-    }
-  }
-
-  endTurn(userId: string) {
-    try {
-      const foundPlayer = this.playerExists(userId);
-      if (!foundPlayer) return;
-      if (foundPlayer.playedCards.length === 0) throw "MUST_PLAY_FIRST";
-      this.applySpecialCardRules(foundPlayer);
-      this.players.forEach((p) => (p.playedCards = []));
-      this.drawCards(foundPlayer);
-      if (foundPlayer.hand.length === 0) {
-        this.status = "finished";
-        this.playerTurn = foundPlayer.userId;
-        return { player: foundPlayer, status: this.status };
-      }
-      return {
-        player: foundPlayer,
-        bunch: this.bunch,
-        turn: this.playerTurn,
-        message: "SUCCESS",
-      };
-    } catch (error) {
-      throw { error: true, message: error };
-    }
-  }
-
-  drawCards(player: GamePlayer) {
-    if (player.hand.length > 3) return;
-    const gameHasCards = this.cards.getCards().length > 0;
-    while (player.hand.length < 3 && gameHasCards) {
-      const draweeCard = this.cards.draw();
-      if (!draweeCard) return;
-      delete draweeCard.hidden;
-      player.hand.push(draweeCard as Card);
-    }
-
-    if (player.hand.length === 0 && !gameHasCards) {
-      player.hand = player.table.filter((x) => !x.hidden);
-      player.table = player.table.filter((x) => x.hidden);
-    }
-
-    return;
-  }
-
-  drawTable(userId: string) {
-    try {
-      const foundPlayer = this.playerExists(userId);
-      if (!foundPlayer) return;
-      if (userId !== this.playerTurn) throw "NOT_YOUR_TURN";
-      this.bunch.forEach((card) => foundPlayer.hand.push(card));
-      foundPlayer.playedCards = [];
-      this.bunch = [];
-      return { player: foundPlayer };
-    } catch (error) {
-      throw { error: true, message: error };
-    }
-  }
-
-  retrieveCard(userId: string) {
-    try {
-      if (userId !== this.playerTurn) throw "NOT_YOUR_TURN";
-      const foundPlayer = this.playerExists(userId);
-      if (!foundPlayer) return;
-      if (!foundPlayer.playedCards.length) throw "HAVE_NOT_PLAYED";
-      foundPlayer.hand.push(...foundPlayer.playedCards);
-      this.bunch = this.bunch.filter((x) =>
-        foundPlayer.playedCards.every((y) => y.toString !== x.toString)
-      );
-      foundPlayer.playedCards = [];
-      return { error: false, player: foundPlayer, bunch: this.bunch };
-    } catch (error) {
-      throw { error: true, message: error };
-    }
-  }
-
-  pickHand(userId: string, cards: Card[]) {
-    const foundPlayer = this.playerExists(userId);
-    if (!foundPlayer) return;
-    foundPlayer.table = foundPlayer.hand.filter(
-      (c) => !cards.some((y) => c.toString === y.toString)
-    );
-    foundPlayer.hand = cards;
-    foundPlayer.status = "playing";
-    return {
-      player: foundPlayer,
-      turn: this.playerTurn,
-      isFinished: this.players.every((x) => x.table.length),
-    };
+  public skipTurns(fromUser: string, times: number) {
+    const idx = this.players.findIndex((pl) => pl.userId === fromUser);
+    if (idx < 0) throw new Error("PLAYER_NOT_FOUND");
+    const nextIndex = (idx + times) % this.players.length;
+    this.playerTurn = this.players[nextIndex].userId;
   }
 
   public serialize(): string {
     return JSON.stringify({
       players: this.players,
-      cards: this.cards.serialize(),
-      playerTurn: this.playerTurn,
-      status: this.status,
+      deck: this.deck.serialize(),
       bunch: this.bunch,
+      status: this.status,
+      playerTurn: this.playerTurn,
+      rulesName: this.rulesName,
     });
-  }
-
-  public static deserialize(serializedGame: string): GameClass {
-    const data = JSON.parse(serializedGame);
-    const game = new GameClass(data.players);
-    const cards = Deck.deserialize(data.cards);
-    game.cards = cards;
-    game.playerTurn = data.playerTurn;
-    game.status = data.status;
-    game.players = data.players;
-    game.bunch = data.bunch;
-    return game;
   }
 }

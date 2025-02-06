@@ -3,10 +3,10 @@ import { createRoom, getRoom, listRooms } from "@services/room.service";
 
 export async function handleCreateRoom(req: Request, res: Response) {
   try {
-    const { name, size } = req.body;
+    const { name, size, rule } = req.body;
     const { user } = req;
     if (!name) throw "A sala não pode ser criada sem nome";
-    const newRoom = await createRoom({ name, size: +size }, user);
+    const newRoom = await createRoom({ name, size: +size, rule }, user);
 
     res.status(201).json(newRoom);
   } catch (error) {

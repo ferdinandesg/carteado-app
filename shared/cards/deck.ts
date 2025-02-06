@@ -75,13 +75,11 @@ class Deck {
   }
 
   public serialize(): string {
-    return JSON.stringify({
-      cards: this.cards,
-    });
+    return JSON.stringify(this.cards);
   }
 
   public static deserialize(serialized: string): Deck {
-    const { cards } = JSON.parse(serialized);
+    const cards = JSON.parse(serialized);
     const deck = new Deck();
     deck.cards = cards;
     return deck;

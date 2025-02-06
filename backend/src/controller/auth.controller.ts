@@ -22,3 +22,9 @@ export async function handleValidateGuest(req: Request, res: Response) {
     res.status(400).json(error);
   }
 }
+
+export async function protectedRoute(req: Request, res: Response) {
+  res
+    .status(200)
+    .json({ message: "Welcome to the protected route", user: req.user });
+}

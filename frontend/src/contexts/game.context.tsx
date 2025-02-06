@@ -38,7 +38,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     ...players.slice(currentPlayerIndex),
     ...players.slice(0, currentPlayerIndex),
   ];
-  
+
   const { socket } = useSocket();
 
   useEffect(() => {
@@ -77,6 +77,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     socket.emit("draw_table");
   };
 
+  console.log({
+    game
+  })
+
   return (
     <GameContext.Provider
       value={{
@@ -89,7 +93,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         retrieveCard,
         handlePickCards,
         playCard,
-        cards: game?.cards.cards || []
+        cards: game?.deck.cards || []
       }}>
       {children}
     </GameContext.Provider>

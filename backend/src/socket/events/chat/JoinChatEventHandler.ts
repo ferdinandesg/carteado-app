@@ -1,6 +1,6 @@
 import emitToUser from "src/socket/utils/emitToUser";
-import { SocketContext } from "../../../@types/socket";
-import { getMessages } from "../../../redis/chat";
+import { SocketContext } from "src/@types/socket";
+import { getMessages } from "src/redis/chat";
 import emitToRoom from "@socket/utils/emitToRoom";
 
 export async function JoinChatEventHandler(
@@ -9,6 +9,7 @@ export async function JoinChatEventHandler(
   const { socket, payload } = context;
   const roomHash = payload?.roomHash;
   if (!roomHash || !socket.user) return;
+  socket.join(roomHash);
   const messages = await getMessages(roomHash);
   // should emit to the user who is requesting
   emitToUser(socket, "load_messages", messages);

@@ -23,7 +23,7 @@ export interface Card {
   hidden?: boolean;
   suit: Suit;
   rank: Rank;
-  value?: Value;
+  value: Value;
   secondaryValue: Value | null;
   toString: CardAsString;
 }
