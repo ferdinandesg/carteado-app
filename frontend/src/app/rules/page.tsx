@@ -41,7 +41,8 @@ function Rules() {
                                 rank: "2",
                                 suit: "hearts",
                                 secondaryValue: 2,
-                                toString: "2 of hearts"
+                                toString: "2 of hearts",
+                                value: 2
                             }} />
                             {t('Rules.specialCards2')}</li>
                         <li className={styles.specialCard}>
@@ -49,7 +50,8 @@ function Rules() {
                                 rank: "10",
                                 suit: "hearts",
                                 secondaryValue: 10,
-                                toString: "10 of hearts"
+                                toString: "10 of hearts",
+                                value: 10
                             }} />
                             {t('Rules.specialCards10')}</li>
                     </ul>
