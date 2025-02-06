@@ -18,6 +18,7 @@ export interface GamePlayer {
   hand: Card[];
   playedCards: Card[];
   table: Card[];
+  teamId: string;
 }
 
 export class Game<G extends Game<G, R>, R extends IGameRules<G>> {

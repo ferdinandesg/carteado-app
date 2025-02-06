@@ -14,6 +14,9 @@ interface GameContextProps {
   endTurn: () => void;
   drawTable: () => void;
   handlePickCards: (cards: Card[]) => void;
+  askTruco: () => void;
+  rejectTruco: () => void;
+  acceptTruco: () => void;
   player?: Player;
   rotatedPlayers: Player[];
   game?: GameState;
@@ -77,9 +80,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
     socket.emit("draw_table");
   };
 
-  console.log({
-    game
-  })
+  const askTruco = () => {
+    if (!socket) return;
+    socket.emit("ask_truco");
+  }
+  const rejectTruco = () => {
+    if (!socket) return;
+    socket.emit("reject_truco");
+  }
+  const acceptTruco = () => {
+    if (!socket) return;
+    socket.emit("accept_truco");
+  }
 
   return (
     <GameContext.Provider
@@ -93,6 +105,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
         retrieveCard,
         handlePickCards,
         playCard,
+        askTruco,
+        rejectTruco,
+        acceptTruco,
         cards: game?.deck.cards || []
       }}>
       {children}

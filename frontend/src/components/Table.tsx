@@ -5,7 +5,6 @@ import styles from "@styles/Table.module.scss";
 import { useRef } from "react";
 import classNames from "classnames";
 import { Player } from "shared/types";
-import TableActions from "./TableActions";
 
 const PositionedPlayer = ({
   player,
@@ -15,6 +14,7 @@ const PositionedPlayer = ({
   radius,
   numPlayers,
   i,
+  OpponentComponent
 }: {
   player: Player;
   centerX: number;
@@ -23,6 +23,7 @@ const PositionedPlayer = ({
   radius: number;
   numPlayers: number;
   i: number;
+  OpponentComponent: React.ComponentType<{ player: Player }>;
 }) => {
   const angle = angleOffset - (2 * Math.PI * i) / numPlayers;
   const x = centerX + radius * Math.cos(angle);
@@ -39,12 +40,17 @@ const PositionedPlayer = ({
       key={player.userId}
       className={classNames(styles.player)}
       style={playerStyle}>
-      <Opponent player={player} />
+      <OpponentComponent player={player} />
     </div>
   );
 };
 
-export default function Table() {
+type TableProps = {
+  tableActions: React.ReactNode;
+  OpponentComponent: React.ComponentType<{ player: Player }>;
+}
+
+export default function Table({ tableActions, OpponentComponent }: TableProps) {
   const { cards } = useGameContext();
   const tableRef = useRef<HTMLDivElement>(null);
   const { rotatedPlayers, bunchCards, retrieveCard } = useGameContext();
@@ -71,6 +77,7 @@ export default function Table() {
           angleOffset={angleOffset}
           radius={radius}
           i={i}
+          OpponentComponent={OpponentComponent}
         />
       ))}
       <CardBunch
@@ -81,7 +88,7 @@ export default function Table() {
       <div className={styles.remaining}>
         {cards.length}
       </div>
-      <TableActions />
+      {tableActions}
     </div>
   );
 }

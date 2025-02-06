@@ -27,7 +27,6 @@ export async function JoinRoomEventHandler(
       }
       case "playing": {
         const game = await getGameState(roomHash);
-
         if (
           game &&
           game.players.find((player) => player.userId === socket.user?.id)

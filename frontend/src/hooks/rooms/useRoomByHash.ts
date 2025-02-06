@@ -13,6 +13,7 @@ type RoomsInterface = {
   status: RoomStatus;
   createdAt: string;
   players: RoomPlayer[];
+  rule: "CarteadoGameRules" | "TrucoGameRules";
 };
 const fetchRoomByHash = async (hash: string) => {
   const response = await axiosInstance.get(`/rooms/${hash}`);

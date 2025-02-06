@@ -1,43 +1,22 @@
-import CardComponent from "../Card";
-import Table from "../Table";
-import ModalChoseCards from "../Modal/ChoseCards/ModalChoseCards";
-import { useGameContext } from "@/contexts/game.context";
+import useRoomByHash from "@/hooks/rooms/useRoomByHash";
+import CarteadoGame from "./carteado.game";
+import TrucoGame from "./truco.game";
 
-import styles from "@styles/Game.module.scss";
-import CardFan from "../CardFan";
-import ModalGameFinished from "../Modal/ModalGameFinished/ModalGameFinished";
+export default function Game({ roomHash }: { roomHash: string }) {
+  const { room, isLoading } = useRoomByHash(roomHash);
+  if (isLoading || !room) return;
 
-export default function Game() {
-  const { player, playCard, game } = useGameContext();
-  const handCards = player?.hand || [];
-  const tableCards = player?.table.sort((a) => (a.hidden ? 1 : -1)) || [];
+  if (room.rule === "CarteadoGameRules") {
+    return (
+      <CarteadoGame />
+    )
+  }
 
-  const isPlayerChoosing = player?.status === "choosing";
-  const isFinished = game?.status === "finished";
+  if (room.rule === "TrucoGameRules") {
+    return (
+      <TrucoGame />
+    )
+  }
 
-  return (
-    <>
-      <ModalChoseCards isOpen={isPlayerChoosing} />
-      <ModalGameFinished isOpen={isFinished} />
-      <div className={styles.Game}>
-        <div className={styles.gameTable}>
-          {!isPlayerChoosing && <Table />}
-        </div>
-        <CardFan
-          cards={handCards.sort((a, b) => a.value - b.value)}
-          onClick={playCard}
-        />
-        <div className={styles.cardTable}>
-          {tableCards.map((card) => (
-            <CardComponent
-              card={card}
-              height={125}
-              key={`player-table-${card.toString}`}
-              onClick={() => playCard(card)}
-            />
-          ))}
-        </div>
-      </div>
-    </>
-  );
+  return null
 }

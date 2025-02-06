@@ -1,7 +1,6 @@
 import { Player } from "shared/types";
 
 import UserPlaceholder from "../UserPlaceholder";
-
 import styles from "@styles/Opponent.module.scss";
 import { useState } from "react";
 import CardFan from "../CardFan";
@@ -16,7 +15,7 @@ export default function Opponent({ player }: { player: Player }) {
   const { game } = useGameContext();
   const isCurrentPlayerTurn = game?.playerTurn === player.userId;
   const [isHovered, setIsHovered] = useState<boolean>(false);
-  const opponentCards = player.table.sort((a) => (a.hidden ? 1 : -1));
+  const opponentCards = player.table?.sort((a) => (a.hidden ? 1 : -1));
   const isSamePlayer = userId === player.userId;
 
   return (

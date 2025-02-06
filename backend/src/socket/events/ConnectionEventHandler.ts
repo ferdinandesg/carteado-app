@@ -11,6 +11,9 @@ import { SendMessageEventHandler } from "./chat/SendMessageEventHandler";
 import { EndTurnEventHandler } from "./EndTurnEventHandler";
 import { DisconnectingEventHandler } from "./DisconnectingEventHandler";
 import { SetPlayerStatusEventHandler } from "./rooms/SetPlayerReadyEventHandler";
+import { AskTrucoEventHandler } from "./cards/AskTrucoEventHandler";
+import { RejectTrucoEventHandler } from "./cards/RejectTrucoEventHandler";
+import { AcceptTrucoEventHandler } from "./cards/AcceptTrucoEventHandler";
 
 export async function ConnectionEventHandler(
   socket: Socket,
@@ -55,6 +58,16 @@ export async function ConnectionEventHandler(
   socket.on(CHANNEL.CLIENT.DRAW_TABLE, (payload) =>
     DrawTableEventHandler({ ...context, payload })
   );
+
+  socket.on("ask_truco", (payload) => {
+    AskTrucoEventHandler({ ...context, payload });
+  });
+  socket.on("reject_truco", (payload) => {
+    RejectTrucoEventHandler({ ...context, payload });
+  });
+  socket.on("accept_truco", (payload) => {
+    AcceptTrucoEventHandler({ ...context, payload });
+  });
 
   socket.on("disconnecting", () => DisconnectingEventHandler({ ...context }));
 }

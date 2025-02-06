@@ -7,6 +7,7 @@ import emitToRoom from "@socket/utils/emitToRoom";
 import ErrorHandler from "src/utils/error.handler";
 import { createPlayers } from "./utils";
 import { CarteadoGame, CarteadoGameRules } from "src/game/CarteadoGameRules";
+import { TrucoGame, TrucoGameRules } from "src/game/TrucoGameRules";
 
 export async function StartGameEventHandler(
   context: SocketContext
@@ -38,8 +39,14 @@ export async function StartGameEventHandler(
     });
 
     room.players = players;
-    const carteadoRules = new CarteadoGameRules();
-    const game = new CarteadoGame(room.players, carteadoRules);
+    let game: CarteadoGame | TrucoGame;
+    if (room.rule === "CarteadoGameRules") {
+      const carteadoRules = new CarteadoGameRules();
+      game = new CarteadoGame(room.players, carteadoRules);
+    } else {
+      const trucoRules = new TrucoGameRules();
+      game = new TrucoGame(room.players, trucoRules);
+    }
     game.startGame();
     await saveGameState(room.hash, game);
     const newRoom = {

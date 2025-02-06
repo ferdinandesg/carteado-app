@@ -15,14 +15,14 @@ import { withSound } from "@/components/buttons/withSound";
 import { useTranslation } from "react-i18next";
 import useTitle from "@/hooks/useTitle";
 
-const RenderScreen = ({ status }: { status?: RoomStatus }) => {
+const RenderScreen = ({ status, roomHash }: { status?: RoomStatus, roomHash: string }) => {
   const { t } = useTranslation();
   switch (status) {
     case "open":
       return <Lobby />;
     case "playing":
     case "finished":
-      return <Game />;
+      return <Game roomHash={roomHash} />;
     default:
       <div>{t("loading")}</div>;
   }
@@ -106,7 +106,7 @@ export default function Room() {
         <Chat roomHash={room.hash} />
         <RoomActions onLeaveRoom={onLeaveRoom} />
       </div>
-      <RenderScreen status={room.status} />
+      <RenderScreen status={room.status} roomHash={String(id)} />
     </div>
   );
 }

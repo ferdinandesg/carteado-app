@@ -1,12 +1,12 @@
 .ModalRoot {
   width: 40%;
-  height: 35%;
+  height: 45%;
 
   .ModalContent {
     display: flex;
     flex-direction: column;
     padding: $spacing-s;
-    gap: $spacing-s;
+    gap: $spacing-m;
     border-radius: 25px;
 
     .inputForm {

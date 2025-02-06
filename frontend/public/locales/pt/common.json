@@ -88,7 +88,10 @@
     },
     "TableActions": {
         "drawTable": "Comprar cartas",
-        "endTurn": "Finalizar turno"
+        "endTurn": "Finalizar turno",
+        "accept": "Aceitar",
+        "reject": "Rejeitar",
+        "truco": "Truco"
     },
     "ServerMessages": {
         "errors": {
@@ -105,7 +108,10 @@
             "DIFFERENT_CARD": "Você deve jogar uma carta igual a anterior ou especial",
             "SUCCESS": "Sucesso",
             "PLAYERS_NOT_READY": "Nem todos os jogadores estão prontos",
-            "ROOM_NOT_FULL": "A sala não está cheia"
+            "ROOM_NOT_FULL": "A sala não está cheia",
+            "CANT_ASK_TRUCO": "Você não pode pedir truco fora da sua vez",
+            "CANT_ASK_TRUCO_SAME_TEAM": "Você já pediu truco",
+            "CANT_PLAY_TRUCO_PENDING": "Você não pode jogar enquanto o truco está pendente"
         },
         "infos": {
             "YOUR_TURN": "É seu turno",

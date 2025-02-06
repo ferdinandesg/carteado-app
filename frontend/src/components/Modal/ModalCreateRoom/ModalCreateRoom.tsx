@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 type RoomForm = {
   name: string;
   size: number;
+  rule: "CarteadoGameRules" | "TrucoGameRules";
 };
 
 interface ModalCreateRoomProps {
@@ -49,6 +50,7 @@ export default function ModalCreateRoom({
   const [roomPayload, setRoomPayload] = useState<RoomForm>({
     name: "",
     size: 2,
+    rule: "CarteadoGameRules",
   });
   const { createRoom } = usePostRoom();
   const isFormValid = roomPayload.name.length > 0;
@@ -63,6 +65,11 @@ export default function ModalCreateRoom({
 
   const handleCreateRoom = async () => {
     try {
+      const {
+        rule,
+        size,
+      } = roomPayload;
+      if (rule === "TrucoGameRules" && size === 3) return
       const room = await createRoom(roomPayload);
       onConfirm(room.hash);
     } catch (error) {
@@ -103,6 +110,31 @@ export default function ModalCreateRoom({
             </button>
           ))}
         </div>
+        <div className={styles.playersForm}>
+          <button
+            onClick={(e) =>
+              handleUpdateRoomPayload("rule")(e.currentTarget.value)
+            }
+            value="CarteadoGameRules"
+            key={`room-rule-CarteadoGameRules`}
+            className={classNames(
+              roomPayload.rule === "CarteadoGameRules" && styles.selected
+            )}>
+            Carteado
+          </button>
+          <button
+            onClick={(e) =>
+              handleUpdateRoomPayload("rule")(e.currentTarget.value)
+            }
+            value="TrucoGameRules"
+            key={`room-rule-TrucoGameRules`}
+            className={classNames(
+              roomPayload.rule === "TrucoGameRules" && styles.selected
+            )}>
+            Truco
+          </button>
+        </div>
+
         <CreateRoomButton
           text={t("CreateRoom.create")}
           onClick={handleCreateRoom}
