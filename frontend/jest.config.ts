@@ -12,6 +12,7 @@ const config: Config = {
   clearMocks: true,
   collectCoverage: true,
   coverageDirectory: "coverage",
+  rootDir: "./",
   coverageProvider: "v8",
   moduleNameMapper: pathsToModuleNameMapper(
     tsconfig.compilerOptions.paths || {},

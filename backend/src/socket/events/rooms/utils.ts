@@ -1,5 +1,5 @@
 import { RoomUsers } from "@socket/utils/getRoomPlayers";
-import { PopulatedPlayer } from "src/game/game";
+import { GamePlayer } from "src/game/game";
 import prisma from "src/prisma";
 
 export async function persistAuthUsers(authUsers: RoomUsers[], roomId: string) {
@@ -8,26 +8,26 @@ export async function persistAuthUsers(authUsers: RoomUsers[], roomId: string) {
   await prisma.player.createMany({
     data: authUsers.map((user) => ({
       roomId,
-      status: "chosing",
+      status: "choosing",
       userId: user.id,
     })),
   });
 }
 
-export async function fetchDbPlayers(roomId: string) {
+export async function fetchDbPlayers(roomId: string): Promise<GamePlayer[]> {
   return prisma.player.findMany({
     where: { roomId },
     include: { user: true },
-  });
+  }) as unknown as GamePlayer[];
 }
 
 export function buildGuestPlayers(
   guests: RoomUsers[],
   roomId: string
-): PopulatedPlayer[] {
+): GamePlayer[] {
   return guests.map((guest) => ({
     roomId,
-    status: "chosing",
+    status: "choosing",
     userId: guest.id,
     user: {
       id: guest.id,
@@ -35,20 +35,20 @@ export function buildGuestPlayers(
       email: guest.email,
       image: guest.image,
     },
-  })) as PopulatedPlayer[];
+  })) as unknown as GamePlayer[];
 }
 
 export function mergeDbPlayersAndGuests(
-  dbPlayers: PopulatedPlayer[],
-  guestPlayers: PopulatedPlayer[]
-): PopulatedPlayer[] {
+  dbPlayers: GamePlayer[],
+  guestPlayers: GamePlayer[]
+): GamePlayer[] {
   return [...dbPlayers, ...guestPlayers];
 }
 
 export async function createPlayers(
   users: RoomUsers[],
   roomId: string
-): Promise<PopulatedPlayer[]> {
+): Promise<GamePlayer[]> {
   const authUsers = users.filter((u) => u.role === "user");
   const guests = users.filter((u) => u.role === "guest");
   await persistAuthUsers(authUsers, roomId);

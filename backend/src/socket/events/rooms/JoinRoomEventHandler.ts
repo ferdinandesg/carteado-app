@@ -12,10 +12,6 @@ export async function JoinRoomEventHandler(
   const { payload, socket, channel } = context;
   try {
     const { roomHash } = payload;
-    console.log({
-      roomHash,
-      user: socket.user,
-    });
     if (!roomHash || !socket.user) return;
     const room = await getRoomState(roomHash);
     if (!room) throw "ROOM_NOT_FOUND";

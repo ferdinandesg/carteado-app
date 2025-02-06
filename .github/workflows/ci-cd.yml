@@ -37,12 +37,12 @@ jobs:
       - name: Lint + Test Backend
         run: |
           cd backend
-          npm run lint
+          npm run lint && npm test
 
       - name: Lint + Test Frontend
         run: |
           cd frontend
-          npm run lint
+          npm run lint && npm test
 
       - name: Build Docker images
         run: |

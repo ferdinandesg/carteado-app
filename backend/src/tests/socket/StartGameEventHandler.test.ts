@@ -1,9 +1,6 @@
-import GameClass from "src/game/game";
-import { socketTestSetup } from "./socket.setup.test";
-import { closeSockets, createTestSocket } from "./utils";
-import { Socket } from "socket.io-client";
-// import { getRoomState } from "src/redis/room";
-// import { getGameState, saveGameState } from "src/redis/game";
+import { CarteadoGame } from "src/game/CarteadoGameRules";
+import { socketTestSetup } from "./socket.setup";
+import { closeSockets, createTestSocket, waitForEvent } from "./utils";
 
 jest.mock("src/redis/room", () => ({
   saveRoomState: jest.fn(),
@@ -18,7 +15,7 @@ jest.mock("@socket/events/rooms/utils", () => ({
   createPlayers: jest.fn().mockResolvedValue([
     {
       roomId: "room-test",
-      status: "chosing",
+      status: "choosing",
       userId: "userA-valid-token",
       user: {
         id: "userA-valid-token",
@@ -28,7 +25,7 @@ jest.mock("@socket/events/rooms/utils", () => ({
     },
     {
       roomId: "room-test",
-      status: "chosing",
+      status: "choosing",
       userId: "userA-valid-token",
       user: {
         id: "userB-valid-token",
@@ -43,6 +40,7 @@ jest.mock("src/redis/game", () => ({
   getGameState: jest.fn(),
   saveGameState: jest.fn(),
 }));
+
 jest.mock("src/redis/room", () => ({
   getRoomState: jest.fn().mockResolvedValue({
     hash: "room-test",
@@ -54,28 +52,21 @@ jest.mock("src/redis/room", () => ({
   saveRoomState: jest.fn(),
 }));
 
-function waitForEvent<T>(socket: Socket, eventName: string): Promise<T> {
-  return new Promise((resolve, reject) => {
-    socket.once(eventName, (data: T) => resolve(data));
-    socket.once("error", (err) => reject(err));
-  });
-}
-
-const assertGame = (game: GameClass) => {
+const assertGame = (game: CarteadoGame) => {
   expect(game.status).toBe("playing");
   expect(game.players).toHaveLength(2);
-  expect(game.players[0].status).toBe("chosing");
-  expect(game.players[1].status).toBe("chosing");
+  expect(game.players[0].status).toBe("choosing");
+  expect(game.players[1].status).toBe("choosing");
   expect(game.players[0].hand).toHaveLength(9);
   expect(game.players[0].hand).toHaveLength(9);
   expect(game.players[1].hand).toHaveLength(9);
 };
 
 describe("StartGameEventHandler - integration", () => {
-  socketTestSetup();
-
+  const { getPort } = socketTestSetup();
   it("should not start if the room is not full", async () => {
-    const socketA = createTestSocket("userA-valid-token");
+    const port = getPort();
+    const socketA = createTestSocket("userA-valid-token", port);
     await waitForEvent<void>(socketA, "connect");
     socketA.emit("join_room", { roomHash: "room-test" });
     socketA.emit("set_player_status", { status: "READY" });
@@ -88,8 +79,9 @@ describe("StartGameEventHandler - integration", () => {
   });
 
   it("should not start if the room is not ready", async () => {
-    const socketA = createTestSocket("userA-valid-token");
-    const socketB = createTestSocket("userB-valid-token");
+    const port = getPort();
+    const socketA = createTestSocket("userA-valid-token", port);
+    const socketB = createTestSocket("userB-valid-token", port);
     await waitForEvent<void>(socketA, "connect");
     await waitForEvent<void>(socketB, "connect");
     socketA.emit("join_room", { roomHash: "room-test" });
@@ -104,23 +96,28 @@ describe("StartGameEventHandler - integration", () => {
   });
 
   it("should start the game if room is valid", async () => {
-    const socketA = createTestSocket("userA-valid-token");
-    const socketB = createTestSocket("userB-valid-token");
+    const port = getPort();
+    const socketA = createTestSocket("userA-valid-token", port);
+    const socketB = createTestSocket("userB-valid-token", port);
 
     await waitForEvent<void>(socketA, "connect");
     await waitForEvent<void>(socketB, "connect");
 
     socketA.emit("join_room", { roomHash: "room-test" });
+    await waitForEvent<void>(socketA, "room_update");
+
     socketA.emit("set_player_status", { status: "READY" });
+    await waitForEvent<void>(socketA, "room_update");
 
     socketB.emit("join_room", { roomHash: "room-test" });
-    socketB.emit("set_player_status", { status: "READY" });
+    await waitForEvent<void>(socketB, "room_update");
 
-    // Wait the sockets to be ready
-    await new Promise((r) => setTimeout(r, 1500));
+    socketB.emit("set_player_status", { status: "READY" });
+    await waitForEvent<void>(socketB, "room_update");
+
     socketA.emit("start_game");
     const game = await waitForEvent(socketA, "game_update");
-    assertGame(game as GameClass);
+    assertGame(game as CarteadoGame);
     closeSockets(socketA, socketB);
   });
 });

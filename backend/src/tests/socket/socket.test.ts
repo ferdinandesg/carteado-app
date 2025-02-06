@@ -1,28 +1,30 @@
-import { io } from "socket.io-client";
-import { socketTestSetup } from "./socket.setup.test";
-
+import { socketTestSetup } from "./socket.setup";
+import { closeSockets, createTestSocket } from "./utils";
+jest.mock("src/redis/client", () => {
+  return {
+    getDataClient: jest.fn().mockResolvedValue("mocked-redis-client"),
+  };
+});
 describe("Socket Class", () => {
-  socketTestSetup();
+  const { getPort } = socketTestSetup();
   it("should connect to socket.io and authenticate", (done) => {
-    const socket = io("http://localhost:4000/room", {
-      path: "/carteado_socket",
-      auth: { token: "valid-token" },
-    });
+    const port = getPort();
+    const socket = createTestSocket("valid-token", port);
 
     socket.on("connect", () => {
       expect(socket.connected).toBe(true);
       done();
+      closeSockets(socket);
     });
   });
 
   it("should reject socket connection if authentication fails", (done) => {
-    const socket = io("http://localhost:4000/room", {
-      path: "/carteado_socket",
-      auth: { token: "invalid-token" },
-    });
+    const port = getPort();
+    const socket = createTestSocket("empty-token", port);
 
     socket.on("connect_error", (err) => {
       expect(err.message).toBe("Unauthorized");
+      closeSockets(socket);
       done();
     });
 

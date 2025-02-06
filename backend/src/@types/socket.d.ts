@@ -1,4 +1,4 @@
-import { Card } from "@prisma/client";
+import { Card } from "shared/cards";
 import { GuestType, SocketUser } from "shared/types";
 import { Socket, Namespace } from "socket.io";
 

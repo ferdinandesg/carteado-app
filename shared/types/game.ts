@@ -5,7 +5,7 @@ export type Player = {
   name?: string;
   table: Card[];
   isOnline?: boolean;
-  status?: "chosing" | "playing";
+  status?: "choosing" | "playing";
   image?: string;
   userId: string;
 };
@@ -19,7 +19,7 @@ export interface GameState {
   playerTurn: string;
   winner: string | null;
   status: "playing" | "finished";
-  cards: {
+  deck: {
     cards: Card[];
     numberOfFullDecks: number;
   };

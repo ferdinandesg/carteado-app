@@ -1,3 +1,4 @@
+import { AddressInfo } from "net";
 import http from "http";
 import { Server } from "socket.io";
 import SocketClass from "@socket/socket";
@@ -16,20 +17,29 @@ jest.mock("@routes/middlewares/auth", () => ({
     }
   }),
 }));
+
 export function socketTestSetup() {
+  let httpServer: http.Server;
   let ioServer: Server;
+  let port: number;
 
   beforeAll((done) => {
-    const server = http.createServer();
-    ioServer = SocketClass.init(server);
-    server.listen(4000, () => {
+    httpServer = http.createServer();
+    ioServer = SocketClass.init(httpServer);
+    httpServer.listen(0, () => {
+      port = (httpServer.address() as AddressInfo).port;
       done();
     });
   });
 
-  afterAll(() => {
+  afterAll((done) => {
     ioServer.close();
+    httpServer.close();
+    done();
   });
 
-  return { getIoServer: () => ioServer };
+  return {
+    getIoServer: () => ioServer,
+    getPort: () => port,
+  };
 }

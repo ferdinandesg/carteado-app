@@ -1,7 +1,7 @@
-import { socketTestSetup } from "./socket.setup.test";
+import { socketTestSetup } from "./socket.setup";
 import { getRoomState } from "src/redis/room";
 import { getGameState } from "src/redis/game";
-import { createTestSocket } from "./utils";
+import { closeSockets, createTestSocket } from "./utils";
 
 jest.mock("src/redis/game", () => ({
   getGameState: jest.fn(),
@@ -18,10 +18,10 @@ jest.mock("src/redis/room", () => ({
 }));
 
 describe("JoinRoomEventHandler - integration", () => {
-  socketTestSetup();
-
+  const { getPort } = socketTestSetup();
   it("user should be able to join room", (done) => {
-    const socket = createTestSocket("valid-token");
+    const port = getPort();
+    const socket = createTestSocket("valid-token", port);
 
     socket.on("room_update", (room) => {
       try {
@@ -32,6 +32,7 @@ describe("JoinRoomEventHandler - integration", () => {
           status: "NOT_READY",
           room: "room-test",
           email: "valid-token@test.com",
+          role: "user",
         });
         done();
       } catch (err) {
@@ -45,9 +46,10 @@ describe("JoinRoomEventHandler - integration", () => {
     });
   });
   it("should return error if room is full", (done) => {
-    const socketA = createTestSocket("userA-valid-token");
-    const socketB = createTestSocket("userB-valid-token");
-    const socketC = createTestSocket("userC-valid-token");
+    const port = getPort();
+    const socketA = createTestSocket("userA-valid-token", port);
+    const socketB = createTestSocket("userB-valid-token", port);
+    const socketC = createTestSocket("userC-valid-token", port);
 
     socketA.on("connect", () => {
       socketA.emit("join_room", { roomHash: "room-test" });
@@ -60,20 +62,21 @@ describe("JoinRoomEventHandler - integration", () => {
     });
     socketC.on("error", (error) => {
       try {
+        console.log(" SDADASADSADSASDADSDASADS");
+        console.log(error);
         expect(error).toBe("ROOM_IS_FULL");
         done();
       } catch (err) {
         done(err);
       } finally {
-        socketA.close();
-        socketB.close();
-        socketC.close();
+        closeSockets(socketA, socketB, socketC);
       }
     });
   });
   it("should return error if room does not exist", (done) => {
     (getRoomState as jest.Mock).mockResolvedValue(null);
-    const socket = createTestSocket("userA-valid-token");
+    const port = getPort();
+    const socket = createTestSocket("userA-valid-token", port);
 
     socket.on("connect", () => {
       socket.emit("join_room", { roomHash: "room-test" });
@@ -81,6 +84,7 @@ describe("JoinRoomEventHandler - integration", () => {
     socket.on("error", (error) => {
       expect(error).toBe("ROOM_NOT_FOUND");
       done();
+      closeSockets(socket);
     });
   });
   it("should return same user to room if already in room", (done) => {
@@ -97,7 +101,8 @@ describe("JoinRoomEventHandler - integration", () => {
         },
       ],
     });
-    const socket = createTestSocket("valid-token");
+    const port = getPort();
+    const socket = createTestSocket("valid-token", port);
     socket.on("info", (message) => {
       try {
         expect(message).toBe("WELCOME_BACK");
@@ -123,7 +128,8 @@ describe("JoinRoomEventHandler - integration", () => {
     (getGameState as jest.Mock).mockResolvedValue({
       players: [],
     });
-    const socket = createTestSocket("valid-token");
+    const port = getPort();
+    const socket = createTestSocket("valid-token", port);
 
     socket.on("room_update", ({ room }) => {
       try {
@@ -133,6 +139,7 @@ describe("JoinRoomEventHandler - integration", () => {
           name: "valid-token",
           email: "valid-token@test.com",
           room: "room-test",
+          role: "user",
         });
         done();
       } catch (err) {

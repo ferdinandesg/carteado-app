@@ -5,7 +5,15 @@ import { randomUUID } from "node:crypto";
 import { GuestType, SocketUser } from "shared/types";
 
 export async function createRoom(
-  { name, size }: { name: string; size: number },
+  {
+    name,
+    size,
+    rule,
+  }: {
+    name: string;
+    size: number;
+    rule: "CarteadoGameRules" | "TrucoGameRules";
+  },
   user: SocketUser | GuestType
 ): Promise<Room> {
   const uuid = randomUUID();
@@ -14,6 +22,7 @@ export async function createRoom(
   const createdRoom = await prisma.room.create({
     data: {
       hash,
+      rule,
       name: name,
       chatId: chat.id,
       size: size,

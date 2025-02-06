@@ -1,5 +1,4 @@
 import { SocketContext } from "../../../@types/socket";
-import GameClass from "../../../game/game";
 import prisma from "../../../prisma";
 import { saveGameState } from "../../../redis/game";
 import { getRoomState, saveRoomState } from "../../../redis/room";
@@ -7,6 +6,7 @@ import getRoomPlayers from "src/socket/utils/getRoomPlayers";
 import emitToRoom from "@socket/utils/emitToRoom";
 import ErrorHandler from "src/utils/error.handler";
 import { createPlayers } from "./utils";
+import { CarteadoGame, CarteadoGameRules } from "src/game/CarteadoGameRules";
 
 export async function StartGameEventHandler(
   context: SocketContext
@@ -38,27 +38,16 @@ export async function StartGameEventHandler(
     });
 
     room.players = players;
-    const game = new GameClass(room.players);
-    game.status = "playing";
-    game.players.forEach((p) => {
-      p.status = "chosing";
-      const hand = game.givePlayerCards(p.userId);
-      p.hand = hand || [];
-      p.name = p.user.name;
-      p.image = p.user.image;
-      p.email = p.user.email;
-    });
+    const carteadoRules = new CarteadoGameRules();
+    const game = new CarteadoGame(room.players, carteadoRules);
+    game.startGame();
     await saveGameState(room.hash, game);
-    console.log({
-      game,
-    });
     const newRoom = {
       ...room,
       status: "playing",
     };
     await saveRoomState(room.hash, newRoom);
     emitToRoom(channel, room.hash, "game_update", game);
-    console.log("Emitted game_update");
     emitToRoom(channel, room.hash, "room_update", {
       room: newRoom,
       players: game.players,
