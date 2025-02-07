@@ -13,4 +13,5 @@ export interface RoomInterface {
   size: number;
   players: Player[];
   bunch: Card[];
+  rule: "CarteadoGameRules" | "TrucoGameRules";
 }
