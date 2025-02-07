@@ -12,6 +12,14 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "_moduleAliases": {
+    "@socket": "./dist/src/socket",
+    "@controller": "./dist/src/controller",
+    "@routes": "./dist/src/routes",
+    "@services": "./dist/src/services",
+    "shared": "./dist/shared",
+    "src": "./dist/src"
+  },
   "dependencies": {
     "@prisma/client": "^6.2.1",
     "cors": "^2.8.5",
