@@ -8,6 +8,7 @@ import Image from "next/image";
 import RankMeter from "../RankMeter";
 import { useTranslation } from "react-i18next";
 import { useGameContext } from "@/contexts/game.context";
+import Shaky from "../Shaky";
 
 const isPlayerReady = (player: RoomPlayer) => player.status === "READY";
 
@@ -19,9 +20,6 @@ export default function Players({ roomHash }: { roomHash: string }) {
 
   const getPlayerTeam = (player: RoomPlayer) => {
     if (!game) return null;
-    console.log({
-      teams: game.teams, player
-    })
     return game.teams.find((team) => team.userIds.includes(player.id || ""));
   }
 
@@ -55,9 +53,11 @@ export default function Players({ roomHash }: { roomHash: string }) {
           <span className={classNames(styles.playerStatus, statusClass)}>
             {statusLabel}
           </span>
-          <span>
-            {team?.id}
-          </span>
+          {team?.id &&
+            <Shaky value={team?.points}>
+              <span className={styles.teamInfo}>{team?.id} - {team?.points} - {team?.roundPoints}</span>
+            </Shaky>
+          }
         </div>
       </div>
     );

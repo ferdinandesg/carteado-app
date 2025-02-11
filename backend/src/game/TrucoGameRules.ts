@@ -23,6 +23,12 @@ const suitValueMap: Record<string, number> = {
   clubs: 3,
 };
 
+type HandResult = {
+  winnerTeamId?: string | null;
+  bunch: Card[];
+  round: number;
+};
+
 export class TrucoGame extends Game<TrucoGame, ITrucoGameRules> {
   public vira: Card | null = null;
   public manilha: string = "";
@@ -31,6 +37,7 @@ export class TrucoGame extends Game<TrucoGame, ITrucoGameRules> {
   public rounds = 0;
   public trucoAcceptedBy: string = "";
   public teams: Team[] = [];
+  public handsResults: HandResult[] = [];
 
   constructor(players: GamePlayer[], rules: ITrucoGameRules) {
     super(players, rules, "TrucoGameRules");
@@ -76,6 +83,7 @@ export class TrucoGame extends Game<TrucoGame, ITrucoGameRules> {
     baseData.rounds = this.rounds;
     baseData.trucoAcceptedBy = this.trucoAcceptedBy;
     baseData.teams = this.teams;
+    baseData.handsResults = this.handsResults;
 
     return JSON.stringify(baseData);
   }
@@ -164,14 +172,8 @@ export class TrucoGameRules implements ITrucoGameRules {
     if (!askingTeamId) return;
 
     const team = game.teams.find((t) => t.id === askingTeamId);
-    if (team) {
-      team.roundPoints += game.currentBet;
-      if (team.roundPoints >= 12) {
-        game.status = GameStatus.FINISHED;
-      }
-    }
-
-    game.rules.dealInitialHands(game);
+    if (!team) throw "TEAM_NOT_FOUND";
+    this.finishRound(game, team);
   }
 
   canPlayCard(game: TrucoGame, userId: string, _card: Card) {
@@ -207,37 +209,93 @@ export class TrucoGameRules implements ITrucoGameRules {
     const isEndOfTurn = game.players.every(
       (p) => p.playedCards.length === player.playedCards.length
     );
-
     if (!isEndOfTurn) {
       game.skipTurns(game.playerTurn, 1);
       return;
     }
 
-    const handIsEmpty = game.players.every((p) => p.hand.length === 0);
-    const [winningPlayerId, ...winners] = this.findWinnerByHighestCard(
+    const [winningPlayerId, ...possibleTies] = this.findWinnerByHighestCard(
       game.bunch,
       game
     );
-    if (!winningPlayerId) throw "WINNER_NOT_FOUND";
-    const winningTeamId = this.findTeamByUserId(game, winningPlayerId);
-    if (!winningTeamId) throw "TEAM_NOT_FOUND";
-    const team = game.teams.find((t) => t.id === winningTeamId);
-    if (!team) throw "TEAM_NOT_FOUND";
 
-    if (handIsEmpty) {
-      team.roundPoints += game.currentBet;
-    } else if (!winners.length) {
-      team.points += game.currentBet;
+    const isTie = possibleTies.length > 0;
+
+    let winningTeam: Team | undefined;
+    let winningTeamId: string | null = null;
+
+    if (!isTie && winningPlayerId) {
+      winningTeamId = this.findTeamByUserId(game, winningPlayerId);
+      if (!winningTeamId) throw "TEAM_NOT_FOUND";
+
+      winningTeam = game.teams.find((t) => t.id === winningTeamId);
+      if (!winningTeam) throw "TEAM_NOT_FOUND";
     }
-    game.playerTurn = winningPlayerId;
 
-    if (team.roundPoints >= 12) {
+    if (winningTeam) {
+      winningTeam.points += 1;
+    }
+
+    game.handsResults.push({
+      winnerTeamId: winningTeamId,
+      bunch: game.bunch,
+      round: game.rounds,
+    });
+
+    if (winningTeam && winningTeam.points === 2) {
+      this.finishRound(game, winningTeam);
+      return;
+    }
+
+    const gameResultsPerRound = game.handsResults.filter(
+      (g) => g.round === game.rounds
+    );
+
+    if (gameResultsPerRound.length === 3) {
+      const teamA = game.teams[0];
+      const teamB = game.teams[1];
+
+      if (teamA.points === 1 && teamB.points === 0 && winningTeam === teamA) {
+        this.finishRound(game, teamA);
+        return;
+      } else if (
+        teamB.points === 1 &&
+        teamA.points === 0 &&
+        winningTeam === teamB
+      ) {
+        this.finishRound(game, teamB);
+        return;
+      } else {
+        this.finishRoundWithoutWinner(game);
+        return;
+      }
+    }
+
+    if (!isTie && winningPlayerId) {
+      game.playerTurn = winningPlayerId;
+    } else {
+      game.skipTurns(game.playerTurn, 1);
+    }
+  }
+
+  private finishRound(game: TrucoGame, winningTeam: Team) {
+    winningTeam.roundPoints += game.currentBet;
+
+    if (winningTeam.roundPoints >= 12) {
       game.status = GameStatus.FINISHED;
-    }
-    const isWon = (handIsEmpty && team.points === 1) || team.points >= 2;
-    if (isWon) {
-      team.roundPoints += this.currentBet;
+    } else {
       game.rules.dealInitialHands(game);
+    }
+
+    for (const t of game.teams) {
+      t.points = 0;
+    }
+  }
+
+  private finishRoundWithoutWinner(game: TrucoGame) {
+    game.rules.dealInitialHands(game);
+    for (const t of game.teams) {
+      t.points = 0;
     }
   }
 

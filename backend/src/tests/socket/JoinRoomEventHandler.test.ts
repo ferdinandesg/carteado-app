@@ -62,8 +62,6 @@ describe("JoinRoomEventHandler - integration", () => {
     });
     socketC.on("error", (error) => {
       try {
-        console.log(" SDADASADSADSASDADSDASADS");
-        console.log(error);
         expect(error).toBe("ROOM_IS_FULL");
         done();
       } catch (err) {

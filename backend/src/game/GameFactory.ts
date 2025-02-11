@@ -38,6 +38,7 @@ export class GameFactory {
     game.rounds = obj.rounds;
     game.trucoAcceptedBy = obj.trucoAcceptedBy;
     game.teams = obj.teams;
+    game.handsResults = obj.handsResults;
 
     return game;
   }

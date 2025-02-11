@@ -36,25 +36,26 @@ export default function TrucoActions() {
     const { askTruco, rejectTruco, acceptTruco, game } = useGameContext();
     const { t } = useTranslation()
 
-    const isTrucoPending = game?.trucoAskedBy && !game?.trucoAcceptedBy
-    const isTrucoAskedByMyTeam = game?.teams.some(team =>
-        team.userIds.includes(game.trucoAskedBy) &&
-        team.userIds.includes(data?.user.id || "-")
-    )
+    const myTeam = game?.teams.find(team => team.userIds.includes(data?.user.id || "-"))
+    const isTrucoPending = Boolean(game?.trucoAskedBy && !game?.trucoAcceptedBy)
+    const isTrucoAskedByMyTeam = myTeam?.userIds.includes(game?.trucoAskedBy || "")
+    const isTrucoPendingByMyTeam = isTrucoAskedByMyTeam && !game?.trucoAcceptedBy
 
-    const canAskTruco = game?.playerTurn === data?.user.id && !isTrucoPending && !isTrucoAskedByMyTeam
+    const canAcceptReject = isTrucoPending && !isTrucoAskedByMyTeam
+
+    const canAskTruco = !isTrucoAskedByMyTeam && !isTrucoPendingByMyTeam
 
     return <div className={styles.trucoActions}>
         <div className={styles.acceptReject}>
             <ButtonWithSound
                 onClick={acceptTruco}
-                disabled={!isTrucoPending}
+                disabled={!canAcceptReject}
                 text={t("TableActions.accept")}
                 clickSrc="/assets/sfx/hurt.mp3"
             />
             <ButtonWithSound
                 onClick={rejectTruco}
-                disabled={!isTrucoPending}
+                disabled={!canAcceptReject}
                 text={t("TableActions.reject")}
                 clickSrc="/assets/sfx/hurt.mp3"
             />

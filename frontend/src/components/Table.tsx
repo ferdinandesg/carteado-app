@@ -5,6 +5,7 @@ import { useRef } from "react";
 import classNames from "classnames";
 import { PlayerWithUser } from "shared/types";
 import CardComponent from "./Card";
+import Shaky from "./Shaky";
 
 const PositionedPlayer = ({
   player,
@@ -85,7 +86,11 @@ export default function Table({ tableActions, OpponentComponent }: TableProps) {
         />
       ))}
       <div className={styles.vira}>
-        {vira && <CardComponent height={cardHeight / 1.25} card={vira} />}
+        {vira &&
+          <Shaky value={vira.rank}>
+            <CardComponent height={cardHeight / 1.25} card={vira} />
+          </Shaky>
+        }
       </div>
       <CardBunch
         cardHeight={cardHeight}
