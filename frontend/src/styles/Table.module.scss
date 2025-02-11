@@ -20,6 +20,12 @@
     text-align: center;
   }
 
+  .vira {
+    position: absolute;
+    top: 25%;
+    left: 10%;
+    rotate: -15deg;
+  }
   .remaining {
     position: absolute;
     width: 100px;
@@ -36,7 +42,6 @@
     left: -100px;
   }
 }
-
 
 @media (max-width: 768px) {
   .Table {

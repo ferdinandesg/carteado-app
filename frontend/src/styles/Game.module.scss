@@ -6,6 +6,25 @@
   position: relative;
   flex-direction: column;
 
+  .TrucoHud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.5rem;
+    color: white;
+    width: 45%;
+    .currentBet {
+      display: flex;
+      align-items: center;
+      gap: $spacing-m;
+    }
+
+    .currentBet span {
+      font-size: 2.5rem;
+      display: inline-block;
+    }
+  }
+
   .trucoActions {
     position: absolute;
     display: flex;
@@ -35,18 +54,25 @@
     z-index: 2;
   }
   button {
-    background-color: $primary-color;
     font-size: 1.75rem;
     transition: background-color 0.3s;
     word-break: break-all;
     max-width: 250px;
     padding: $spacing-s;
     color: white;
-    &:hover {
-      background-color: lighten($primary-color, 10);
+    &:disabled {
+      background-color: gray;
+      opacity: 0.5;
+      cursor: not-allowed;
     }
-    &:active {
-      background-color: darken($primary-color, 10);
+    &:enabled {
+      background-color: $primary-color;
+      &:hover {
+        background-color: lighten($primary-color, 10);
+      }
+      &:active {
+        background-color: darken($primary-color, 10);
+      }
     }
   }
 

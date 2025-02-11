@@ -86,6 +86,10 @@
         "open": "Aberta",
         "playing": "Em jogo"
     },
+    "Truco": {
+        "currentBet": "Aposta atual",
+        "rounds": "Rodadas - {{rounds}}/12"
+    },
     "TableActions": {
         "drawTable": "Comprar cartas",
         "endTurn": "Finalizar turno",
@@ -111,7 +115,10 @@
             "ROOM_NOT_FULL": "A sala não está cheia",
             "CANT_ASK_TRUCO": "Você não pode pedir truco fora da sua vez",
             "CANT_ASK_TRUCO_SAME_TEAM": "Você já pediu truco",
-            "CANT_PLAY_TRUCO_PENDING": "Você não pode jogar enquanto o truco está pendente"
+            "CANT_PLAY_TRUCO_PENDING": "Você não pode jogar enquanto o truco está pendente",
+            "CANT_ACCEPT_TRUCO": "Você não pode aceitar o truco",
+            "CANT_REJECT_TRUCO": "Você não pode rejeitar o truco",
+            "CANT_ASK_TRUCO_ANYMORE": "A partida já está no máximo de truco"
         },
         "infos": {
             "YOUR_TURN": "É seu turno",

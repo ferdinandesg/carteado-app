@@ -1,10 +1,10 @@
 import { useGameContext } from "@/contexts/game.context";
 import CardBunch from "./CardBunch";
-import Opponent from "./Opponent/Opponent";
 import styles from "@styles/Table.module.scss";
 import { useRef } from "react";
 import classNames from "classnames";
-import { Player } from "shared/types";
+import { PlayerWithUser } from "shared/types";
+import CardComponent from "./Card";
 
 const PositionedPlayer = ({
   player,
@@ -16,14 +16,14 @@ const PositionedPlayer = ({
   i,
   OpponentComponent
 }: {
-  player: Player;
+  player: PlayerWithUser;
   centerX: number;
   centerY: number;
   angleOffset: number;
   radius: number;
   numPlayers: number;
   i: number;
-  OpponentComponent: React.ComponentType<{ player: Player }>;
+  OpponentComponent: React.ComponentType<{ player: PlayerWithUser }>;
 }) => {
   const angle = angleOffset - (2 * Math.PI * i) / numPlayers;
   const x = centerX + radius * Math.cos(angle);
@@ -47,11 +47,13 @@ const PositionedPlayer = ({
 
 type TableProps = {
   tableActions: React.ReactNode;
-  OpponentComponent: React.ComponentType<{ player: Player }>;
+  OpponentComponent: React.ComponentType<{ player: PlayerWithUser }>;
 }
 
 export default function Table({ tableActions, OpponentComponent }: TableProps) {
-  const { cards } = useGameContext();
+  const { cards, game } = useGameContext();
+  const isTruco = game?.rulesName === "TrucoGameRules"
+  const vira = game?.vira
   const tableRef = useRef<HTMLDivElement>(null);
   const { rotatedPlayers, bunchCards, retrieveCard } = useGameContext();
 
@@ -62,7 +64,9 @@ export default function Table({ tableActions, OpponentComponent }: TableProps) {
   const angleOffset = Math.PI / 2;
 
   const radius = (tableHeight / 2) - 50;
-
+  const cardHeight = tableHeight > 300
+    ? tableHeight / 3
+    : tableHeight / 2;
   return (
     <div
       ref={tableRef}
@@ -80,14 +84,17 @@ export default function Table({ tableActions, OpponentComponent }: TableProps) {
           OpponentComponent={OpponentComponent}
         />
       ))}
+      <div className={styles.vira}>
+        {vira && <CardComponent height={cardHeight / 1.25} card={vira} />}
+      </div>
       <CardBunch
-        tableHeight={tableWidth}
+        cardHeight={cardHeight}
         cards={bunchCards}
         onClick={retrieveCard}
       />
-      <div className={styles.remaining}>
+      {!isTruco && <div className={styles.remaining}>
         {cards.length}
-      </div>
+      </div>}
       {tableActions}
     </div>
   );

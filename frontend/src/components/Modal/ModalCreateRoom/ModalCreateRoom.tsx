@@ -22,7 +22,10 @@ interface ModalCreateRoomProps {
   onConfirm?: (roomHash: string) => void;
 }
 
-const players = [2, 3, 4];
+const players = {
+  carteado: [2, 3, 4],
+  truco: [2, 4],
+};
 
 const CreateRoomButton = withSound(
   ({ onClick, disabled, text }: { onClick: () => void; disabled: boolean, text: string }) => {
@@ -78,6 +81,7 @@ export default function ModalCreateRoom({
   };
   if (!isOpen) return;
 
+  const roomSize = roomPayload.rule === "CarteadoGameRules" ? players.carteado : players.truco
   return (
     <Modal.Root className={styles.ModalRoot}>
       <Modal.Content className={styles.ModalContent}>
@@ -96,7 +100,7 @@ export default function ModalCreateRoom({
           />
         </div>
         <div className={styles.playersForm}>
-          {players.map((player) => (
+          {roomSize.map((player) => (
             <button
               onClick={(e) =>
                 handleUpdateRoomPayload("size")(+e.currentTarget.value)

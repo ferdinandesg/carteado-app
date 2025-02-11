@@ -31,13 +31,13 @@ export class GameFactory {
     game.bunch = obj.bunch;
     game.status = obj.status as GameStatus;
     game.playerTurn = obj.playerTurn;
-
     game.vira = obj.vira;
     game.manilha = obj.manilha;
     game.currentBet = obj.currentBet;
-    game.roundOwner = obj.roundOwner;
+    game.trucoAskedBy = obj.trucoAskedBy;
     game.rounds = obj.rounds;
     game.trucoAcceptedBy = obj.trucoAcceptedBy;
+    game.teams = obj.teams;
 
     return game;
   }

@@ -1,12 +1,13 @@
 "use client";
 import { Card } from "shared/cards";
-import { Player, GameState } from "shared/types";
+import { GameState, PlayerWithUser } from "shared/types";
 
 import { ReactNode, createContext, useContext, useEffect } from "react";
 import { useSocket } from "./socket.context";
 import { useSession } from "next-auth/react";
 import useGameState from "@/hooks/useGameState";
 import { useParams } from "next/navigation";
+import { User } from "next-auth";
 
 interface GameContextProps {
   bunchCards: Card[];
@@ -17,8 +18,8 @@ interface GameContextProps {
   askTruco: () => void;
   rejectTruco: () => void;
   acceptTruco: () => void;
-  player?: Player;
-  rotatedPlayers: Player[];
+  player?: PlayerWithUser;
+  rotatedPlayers: PlayerWithUser[];
   game?: GameState;
   playCard: (card: Card) => void;
   cards: Card[]
