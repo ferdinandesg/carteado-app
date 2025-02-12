@@ -30,7 +30,7 @@ export default function ModalGameFinished({ isOpen }: ModalGameFinishedProps) {
         router.push("/menu");
     }
 
-    const winner = game?.teams.length ? game?.teams.find(t => t.score >= 12)?.id : player?.name;
+    const winner = game?.teams?.length ? game?.teams?.find(t => t.score >= 12)?.id : player?.name;
 
     return (
         <div className={styles.Overlay}>
