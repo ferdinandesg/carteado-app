@@ -23,7 +23,7 @@ export default function Players({ roomHash }: { roomHash: string }) {
 
   const getPlayerTeam = (player: RoomPlayer) => {
     if (!game) return null;
-    return game.teams.find((team) => team.userIds.includes(player.id || ""));
+    return game.teams?.find((team) => team.userIds.includes(player.id || ""));
   }
 
   const actualRound = game?.rounds || 0;
