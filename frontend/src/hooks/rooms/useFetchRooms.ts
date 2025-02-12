@@ -11,6 +11,7 @@ export type RoomInterface = {
   status: "open" | "playing";
   owner?: UserSession;
   ownerId?: string;
+  rule: "CarteadoGameRules" | "TrucoGameRules";
   createdAt: string;
   players: Player[];
 };

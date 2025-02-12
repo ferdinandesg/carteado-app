@@ -1,33 +1,12 @@
-import Deck, { Card } from "shared/cards";
+import Deck, {
+  Card,
+  getCardValue,
+  getNextRank,
+  TRUCO_RANK_ORDER,
+} from "shared/cards";
 import { IGameRules } from "./IGameRules";
 import { Game, GamePlayer, GameStatus, PlayerStatus } from "./game";
-import { Team } from "shared/types";
-
-const TRUCO_RANK_ORDER: Record<string, number> = {
-  "3": 14,
-  "2": 13,
-  A: 12,
-  K: 11,
-  J: 10,
-  Q: 9,
-  "7": 8,
-  "6": 7,
-  "5": 6,
-  "4": 5,
-};
-
-const suitValueMap: Record<string, number> = {
-  diamonds: 0,
-  spades: 1,
-  hearts: 2,
-  clubs: 3,
-};
-
-type HandResult = {
-  winnerTeamId?: string | null;
-  bunch: Card[];
-  round: number;
-};
+import { HandResult, Team } from "shared/types";
 
 export class TrucoGame extends Game<TrucoGame, ITrucoGameRules> {
   public vira: Card | null = null;
@@ -46,14 +25,14 @@ export class TrucoGame extends Game<TrucoGame, ITrucoGameRules> {
         {
           id: "TEAM_A",
           userIds: [players[0].userId],
-          points: 0,
-          roundPoints: 0,
+          roundWins: 0,
+          score: 0,
         },
         {
           id: "TEAM_B",
           userIds: [players[1].userId],
-          points: 0,
-          roundPoints: 0,
+          roundWins: 0,
+          score: 0,
         },
       ];
     } else if (players.length === 4) {
@@ -61,14 +40,14 @@ export class TrucoGame extends Game<TrucoGame, ITrucoGameRules> {
         {
           id: "TEAM_A",
           userIds: [players[0].userId, players[2].userId],
-          points: 0,
-          roundPoints: 0,
+          roundWins: 0,
+          score: 0,
         },
         {
           id: "TEAM_B",
           userIds: [players[1].userId, players[3].userId],
-          points: 0,
-          roundPoints: 0,
+          roundWins: 0,
+          score: 0,
         },
       ];
     }
@@ -93,7 +72,6 @@ type ITrucoGameRules = IGameRules<TrucoGame> & {
   askTruco(game: TrucoGame, userId: string): void;
   acceptTruco(game: TrucoGame, userId: string): void;
   rejectTruco(game: TrucoGame, userId: string): void;
-  getNextRank(rank: string): string;
   findTeamByUserId(game: TrucoGame, userId: string): string | null;
   isTrucoPending(game: TrucoGame): boolean;
 };
@@ -103,6 +81,12 @@ export class TrucoGameRules implements ITrucoGameRules {
   currentBet = 1;
   trucoAskedBy = "";
   dealInitialHands(game: TrucoGame) {
+    this.resetRoundState(game);
+    this.distributeHands(game);
+    this.setupViraAndManilha(game);
+  }
+
+  private resetRoundState(game: TrucoGame) {
     game.deck = new Deck();
     game.status = GameStatus.PLAYING;
     game.rounds++;
@@ -110,27 +94,37 @@ export class TrucoGameRules implements ITrucoGameRules {
     game.trucoAskedBy = "";
     game.trucoAcceptedBy = "";
     game.vira = null;
-    game.teams.forEach((t) => (t.points = 0));
+    game.teams.forEach((t) => (t.roundWins = 0));
+  }
+
+  private distributeHands(game: TrucoGame) {
     const allowedRanks = Object.keys(TRUCO_RANK_ORDER);
-    game.players.forEach((p) => {
-      p.status = PlayerStatus.PLAYING;
-      p.playedCards = [];
-      p.hand = [];
+
+    for (const player of game.players) {
+      player.status = PlayerStatus.PLAYING;
+      player.playedCards = [];
+      player.hand = [];
+
       for (let i = 0; i < 3; i++) {
-        let c = game.deck.draw();
-        if (c) {
-          while (!allowedRanks.includes(c!.rank)) {
-            c = game.deck.draw();
-          }
-        }
-        p.hand.push(c as Card);
+        const card = this.drawValidCard(game.deck, allowedRanks);
+        player.hand.push(card);
       }
-    });
-    game.vira = game.deck.draw() as Card;
-    while (!allowedRanks.includes(game.vira.rank)) {
-      game.vira = game.deck.draw() as Card;
     }
-    game.manilha = this.getNextRank(game.vira.rank);
+  }
+
+  private setupViraAndManilha(game: TrucoGame) {
+    const allowedRanks = Object.keys(TRUCO_RANK_ORDER);
+
+    game.vira = this.drawValidCard(game.deck, allowedRanks);
+    game.manilha = getNextRank(game.vira.rank);
+  }
+
+  private drawValidCard(deck: Deck, allowedRanks: string[]): Card {
+    let card = deck.draw();
+    while (card && !allowedRanks.includes(card.rank)) {
+      card = deck.draw();
+    }
+    return card as Card;
   }
 
   findTeamByUserId(game: TrucoGame, userId: string): string | null {
@@ -173,6 +167,7 @@ export class TrucoGameRules implements ITrucoGameRules {
 
     const team = game.teams.find((t) => t.id === askingTeamId);
     if (!team) throw "TEAM_NOT_FOUND";
+    game.currentBet -= 3;
     this.finishRound(game, team);
   }
 
@@ -218,7 +213,6 @@ export class TrucoGameRules implements ITrucoGameRules {
       game.bunch,
       game
     );
-
     const isTie = possibleTies.length > 0;
 
     let winningTeam: Team | undefined;
@@ -233,18 +227,58 @@ export class TrucoGameRules implements ITrucoGameRules {
     }
 
     if (winningTeam) {
-      winningTeam.points += 1;
+      winningTeam.roundWins += 1;
     }
 
     game.handsResults.push({
       winnerTeamId: winningTeamId,
-      bunch: game.bunch,
+      bunch: [...game.bunch],
       round: game.rounds,
     });
 
-    if (winningTeam && winningTeam.points === 2) {
-      this.finishRound(game, winningTeam);
+    if (this.checkRoundEnding(game, winningTeam)) {
+      game.bunch = [];
       return;
+    }
+
+    this.moveTurn(game, isTie, winningPlayerId);
+
+    game.bunch = [];
+  }
+
+  private moveTurn(game: TrucoGame, isTie: boolean, winningPlayerId?: string) {
+    if (!isTie && winningPlayerId) {
+      game.playerTurn = winningPlayerId;
+    } else {
+      game.skipTurns(game.playerTurn, 1);
+    }
+  }
+
+  private finishRound(game: TrucoGame, winningTeam: Team) {
+    winningTeam.score += game.currentBet;
+
+    if (winningTeam.score >= 12) {
+      game.status = GameStatus.FINISHED;
+    } else {
+      game.rules.dealInitialHands(game);
+    }
+
+    for (const t of game.teams) {
+      t.roundWins = 0;
+    }
+  }
+
+  private finishRoundWithoutWinner(game: TrucoGame) {
+    game.rules.dealInitialHands(game);
+    for (const t of game.teams) {
+      t.roundWins = 0;
+    }
+  }
+
+  private checkRoundEnding(game: TrucoGame, winningTeam?: Team): boolean {
+    if (winningTeam && winningTeam.roundWins === 2) {
+      this.finishRound(game, winningTeam);
+      return true;
     }
 
     const gameResultsPerRound = game.handsResults.filter(
@@ -255,48 +289,43 @@ export class TrucoGameRules implements ITrucoGameRules {
       const teamA = game.teams[0];
       const teamB = game.teams[1];
 
-      if (teamA.points === 1 && teamB.points === 0 && winningTeam === teamA) {
+      if (teamA.roundWins === 1 && teamB.roundWins === 1) {
+        const firstHand = gameResultsPerRound[0];
+        if (firstHand.winnerTeamId) {
+          const firstHandTeam = game.teams.find(
+            (t) => t.id === firstHand.winnerTeamId
+          );
+          if (firstHandTeam) {
+            this.finishRound(game, firstHandTeam);
+          } else {
+            this.finishRoundWithoutWinner(game);
+          }
+        } else {
+          this.finishRoundWithoutWinner(game);
+        }
+        return true;
+      }
+      if (
+        teamA.roundWins === 1 &&
+        teamB.roundWins === 0 &&
+        winningTeam === teamA
+      ) {
         this.finishRound(game, teamA);
-        return;
+        return true;
       } else if (
-        teamB.points === 1 &&
-        teamA.points === 0 &&
+        teamB.roundWins === 1 &&
+        teamA.roundWins === 0 &&
         winningTeam === teamB
       ) {
         this.finishRound(game, teamB);
-        return;
-      } else {
-        this.finishRoundWithoutWinner(game);
-        return;
+        return true;
       }
+
+      this.finishRoundWithoutWinner(game);
+      return true;
     }
 
-    if (!isTie && winningPlayerId) {
-      game.playerTurn = winningPlayerId;
-    } else {
-      game.skipTurns(game.playerTurn, 1);
-    }
-  }
-
-  private finishRound(game: TrucoGame, winningTeam: Team) {
-    winningTeam.roundPoints += game.currentBet;
-
-    if (winningTeam.roundPoints >= 12) {
-      game.status = GameStatus.FINISHED;
-    } else {
-      game.rules.dealInitialHands(game);
-    }
-
-    for (const t of game.teams) {
-      t.points = 0;
-    }
-  }
-
-  private finishRoundWithoutWinner(game: TrucoGame) {
-    game.rules.dealInitialHands(game);
-    for (const t of game.teams) {
-      t.points = 0;
-    }
+    return false;
   }
 
   private findWinnerByHighestCard(bunch: Card[], game: TrucoGame): string[] {
@@ -348,42 +377,4 @@ export class TrucoGameRules implements ITrucoGameRules {
 
     return sortedWinners.map((p) => p.userId);
   }
-
-  getNextRank(rank: string): string {
-    switch (rank) {
-      case "3":
-        return "4";
-      case "2":
-        return "3";
-      case "A":
-        return "2";
-      case "K":
-        return "A";
-      case "J":
-        return "K";
-      case "Q":
-        return "J";
-      case "7":
-        return "6";
-      case "6":
-        return "5";
-      case "5":
-        return "4";
-      case "4":
-        return "3";
-      default:
-        return "J";
-    }
-  }
-}
-
-function getCardValue(card: Card, manilhaRank: string): number {
-  const suitVal = suitValueMap[card.suit] ?? 0;
-
-  if (card.rank === manilhaRank) {
-    return 100 + suitVal;
-  }
-
-  const rankVal = TRUCO_RANK_ORDER[card.rank] ?? 0;
-  return rankVal * 4;
 }

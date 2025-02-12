@@ -74,7 +74,9 @@
         "status": {
             "ready": "Pronto",
             "notReady": "Não pronto",
-            "playing": "Jogando"
+            "playing": "Jogando",
+            "yourTurn": "Sua vez",
+            "waiting": "Esperando"
         }
     },
     "RoomItem": {
@@ -84,7 +86,10 @@
         "leave": "Sair",
         "rank": "Rank",
         "open": "Aberta",
-        "playing": "Em jogo"
+        "playing": "Em jogo",
+        "rule": "Modo de jogo",
+        "TrucoGameRules": "Truco",
+        "CarteadoGameRules": "Carteado"
     },
     "Truco": {
         "currentBet": "Aposta atual",

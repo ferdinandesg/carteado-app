@@ -15,11 +15,17 @@ export type PlayerWithUser = Player & {
   user: User;
 };
 
+export type HandResult = {
+  winnerTeamId?: string | null;
+  bunch: Card[];
+  round: number;
+};
+
 export type Team = {
   id: "TEAM_A" | "TEAM_B";
   userIds: string[];
-  points: number;
-  roundPoints: number;
+  roundWins: number;
+  score: number;
 };
 export interface GameState {
   players: PlayerWithUser[];
@@ -38,6 +44,7 @@ export interface GameState {
   currentBet?: number;
   teams: Team[];
   rulesName: "CarteadoGameRules" | "TrucoGameRules";
+  handsResults: HandResult[];
   deck: {
     cards: Card[];
     numberOfFullDecks: number;

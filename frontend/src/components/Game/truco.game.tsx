@@ -7,13 +7,16 @@ import TrucoOpponent from "./truco.opponent";
 import { useTranslation } from "react-i18next";
 import CurrentBet from "./CurrentBet";
 import Shaky from "../Shaky";
+import ModalGameFinished from "../Modal/ModalGameFinished/ModalGameFinished";
 
 export default function TrucoGame() {
     const { t } = useTranslation();
     const { player, playCard, game } = useGameContext();
     const handCards = player?.hand || [];
+    const isFinished = game?.status === "finished";
 
     return <div className={styles.Game}>
+        <ModalGameFinished isOpen={isFinished} />
         <div className={styles.TrucoHud}>
             <CurrentBet />
             <div className={styles.rounds}>
@@ -24,8 +27,8 @@ export default function TrucoGame() {
             <div className={styles.teamPoints}>
                 {game?.teams.map(t => (
                     <div key={t.id} className={styles.teamPoints}>
-                        <Shaky value={t.roundPoints}>
-                            {t.id}: {t.roundPoints} - {t.points}
+                        <Shaky value={t.roundWins}>
+                            {t.id}: {t.roundWins} - {t.score}
                         </Shaky>
                     </div>
                 ))}

@@ -1,0 +1,48 @@
+.HandsResults {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-s;
+  position: relative;
+  $card-width: 100px;
+  $card-border: 1px solid black;
+  $card-border-radius: 5px;
+  $hover-scale: 1.5;
+  $hover-offset-y: -20px;
+  $card-count: 15;
+
+  $card-positions: ();
+  @for $i from 1 through $card-count {
+    $card-positions: append($card-positions, (0px, 0px, -10deg));
+  }
+
+  .wrap {
+    margin-left: $spacing-m;
+    display: flex;
+    left: 0;
+    position: absolute;
+    justify-content: center;
+  }
+
+  .card {
+    width: $card-width;
+    position: relative;
+    transition: transform 0.2s ease-in-out;
+
+    @for $i from 1 through $card-count {
+      $left: -($card-width - 20px) * $i;
+      $top: 0px;
+      $rotate: nth(nth($card-positions, $i), 3);
+
+      &:nth-child(#{$i}) {
+        left: $left;
+        top: $top;
+        transform: translateY(0px) rotate($rotate);
+      }
+
+      &:hover {
+        z-index: 2;
+        transform: translate(1px, $hover-offset-y) rotate($rotate) scale(1.1);
+      }
+    }
+  }
+}

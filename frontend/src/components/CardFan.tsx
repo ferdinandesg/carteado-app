@@ -7,7 +7,7 @@ interface CardFanProps {
   onClick?: (card: Card) => void;
 }
 
-const CardFan: React.FC<CardFanProps> = ({ cards, onClick = () => {} }) => {
+const CardFan: React.FC<CardFanProps> = ({ cards, onClick = () => { } }) => {
   return (
     <div className={styles.wrap}>
       {cards.map((card, index) => {

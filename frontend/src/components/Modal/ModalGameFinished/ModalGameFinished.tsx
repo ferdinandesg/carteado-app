@@ -13,9 +13,9 @@ interface ModalGameFinishedProps {
 
 export default function ModalGameFinished({ isOpen }: ModalGameFinishedProps) {
     const { t } = useTranslation()
+    const { game } = useGameContext();
     const router = useRouter();
     const { player } = useGameContext();
-
 
     useEffect(() => {
         if (!isOpen) return
@@ -30,6 +30,8 @@ export default function ModalGameFinished({ isOpen }: ModalGameFinishedProps) {
         router.push("/menu");
     }
 
+    const winner = game?.teams.length ? game?.teams.find(t => t.score >= 12)?.id : player?.name;
+
     return (
         <div className={styles.Overlay}>
             <div className={styles.ModalGameFinished}>
@@ -37,7 +39,7 @@ export default function ModalGameFinished({ isOpen }: ModalGameFinishedProps) {
                     <h1 className={styles.info}>{t("Game.gameFinished")}</h1>
                     <h2 className={styles.winner}>
                         {t("Game.winner", {
-                            winner: player?.name
+                            winner
                         })}</h2>
                 </div>
                 <BackButton

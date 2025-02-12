@@ -43,3 +43,23 @@ export const RANK_TO_VALUE: Record<Rank, Value | Value[]> = {
   K: 13,
   A: [14, 1],
 };
+
+export const TRUCO_RANK_ORDER: Record<string, number> = {
+  "3": 14,
+  "2": 13,
+  A: 12,
+  K: 11,
+  J: 10,
+  Q: 9,
+  "7": 8,
+  "6": 7,
+  "5": 6,
+  "4": 5,
+};
+
+export const suitValueMap: Record<string, number> = {
+  diamonds: 0,
+  spades: 1,
+  hearts: 2,
+  clubs: 3,
+};

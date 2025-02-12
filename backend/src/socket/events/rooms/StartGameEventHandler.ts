@@ -20,9 +20,10 @@ export async function StartGameEventHandler(
     if (!room) throw "ROOM_NOT_FOUND";
     const roomId = room.id;
     if (room.status !== "open") throw "ROOM_IS_PLAYING";
+
     if (
-      socket.user.id !== room.ownerId ||
-      (socket.user.role === "guest" && !room.ownerId)
+      (socket.user.role === "user" && socket.user.id !== room.ownerId) ||
+      (socket.user.role === "guest" && room.ownerId)
     )
       throw "OWNER_SHOULD_BEGIN";
 

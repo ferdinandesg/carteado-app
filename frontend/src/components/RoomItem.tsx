@@ -42,6 +42,7 @@ const RoomItem = ({ room, onClick = () => { } }: RoomItemProps) => {
   const { t } = useTranslation();
 
   const ownerPic = room.owner?.image || "/images/default-avatar.png";
+
   return (
     <div
       onClick={() => onClick(room)}
@@ -60,6 +61,14 @@ const RoomItem = ({ room, onClick = () => { } }: RoomItemProps) => {
       </div>
       <div className={styles.roomData}>
         <RoomStatus status={room.status} />
+        <div className={styles.infoCount}>
+          <span className={styles.label}>
+            {t("RoomItem.rule")}:
+          </span>
+          <span className={styles.count}>
+            {t(`RoomItem.${room.rule}`)}
+          </span>
+        </div>
         <div className={styles.infoCount}>
           <span className={styles.label}>{t("RoomItem.players")}</span>
           <span className={styles.count}>

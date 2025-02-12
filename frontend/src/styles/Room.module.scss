@@ -52,13 +52,17 @@
           color: $success-color;
         }
         &.notReady {
-          color: red;
+          color: $primary-color;
         }
       }
 
       .teamInfo {
         color: white;
       }
+    }
+    .history {
+      display: flex;
+      gap: $spacing-l;
     }
   }
 
