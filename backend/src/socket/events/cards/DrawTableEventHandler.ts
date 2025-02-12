@@ -11,7 +11,7 @@ export async function DrawTableEventHandler(
     const roomHash = socket.user.room;
     if (!roomHash) throw "Você não está em uma sala";
     const game = (await getGameState(roomHash)) as CarteadoGame;
-    game.rules.drawTable(game, socket.user.id);
+    game.rules.pickUpBunch(game, socket.user.id);
     await saveGameState(roomHash, game);
     emitToRoom(channel, roomHash, "game_update", game);
   } catch (error) {

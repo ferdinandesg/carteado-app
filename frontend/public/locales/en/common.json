@@ -1,12 +1,23 @@
 {
     "joinRoom": "Join a room",
-    "joinAsGuest": "Join as a guest",
-    "googleAuth": "Join with Google",
-    "seeRules": "See rules",
+    "joinAsGuest": "Join as guest",
+    "googleAuth": "Sign in with Google",
+    "seeRules": "View rules",
     "loading": "Loading...",
     "send": "Send",
     "back": "Back",
     "confirm": "Confirm",
+    "pageTitles": {
+        "home": "Carteado",
+        "rules": "Game Rules",
+        "menu": "Menu",
+        "rooms": "Rooms",
+        "lobby": "Lobby {{hash}}"
+    },
+    "Home": {
+        "joinAsGuest": "Join as guest",
+        "guestNickname": "Guest nickname"
+    },
     "inviteUser": {
         "placeholder": "Username"
     },
@@ -14,19 +25,19 @@
         "title": "Game Rules",
         "intro": "Welcome to CARTEADO! Here are the rules:",
         "rule1Title": "How the game starts",
-        "rule1Text": "The game starts with you choosing from 6 cards. You pick 3 cards to be used at the end of the game, placed face down, and 3 cards that go directly into your hand.",
+        "rule1Text": "The game starts with you choosing from 6 cards. You select 3 cards that will be used at the end of the game and remain face down, and 3 cards that go directly into your hand.",
         "rule2Title": "Rules for playing cards",
-        "rule2Text": "Whenever it's your turn, you must play a card equal to or greater than the card on the table.",
+        "rule2Text": "Whenever it's your turn, you must play a card equal to or higher than the card on the table.",
         "rule3Title": "Special cards",
         "rule3Text": "Cards 2 and 10 have special powers:",
         "specialCards2": "Card 2: Skips the next player's turn.",
-        "specialCards10": "Card 10: Clears all cards on the table.",
+        "specialCards10": "Card 10: Clears all cards from the table.",
         "rule4Title": "Sequences of 4 cards",
-        "rule4Text": "When you have 4 cards with the same number or letter, you can clear the table. Additionally, you can play the last card that completes the sequence of 4 cards, even outside your turn.",
+        "rule4Text": "When you have 4 cards with the same number or letter, you can clear the table. Additionally, you can play the last card that completes a sequence of 4 cards, even outside your turn.",
         "rule5Title": "How to draw cards",
         "rule5Text": "You never draw cards directly, but you must always keep at least 3 cards in hand while there are cards available to draw.",
         "rule6Title": "End of the game",
-        "rule6Text": "When there are no more cards to draw, you must flip up the face-down cards you still have. When these cards run out, you randomly choose one of the face-down cards to play."
+        "rule6Text": "When there are no more cards to draw, you must play the face-up cards you still have. When those are gone, you randomly choose one of the face-down cards to play."
     },
     "Menu": {
         "play": "Play",
@@ -36,12 +47,12 @@
     "CreateRoom": {
         "create": "Create room",
         "roomName": "Room name",
-        "maxPlayers": "Max players",
+        "maxPlayers": "Maximum players",
         "password": "Password",
         "private": "Private",
         "public": "Public",
         "createRoom": "Create room",
-        "roomCreated": "Room created successfully"
+        "roomCreated": "Room successfully created"
     },
     "Room": {
         "loading": "Loading...",
@@ -55,13 +66,17 @@
         "waitingPlayers": "Waiting for players..."
     },
     "Game": {
-        "choseYourHand": "Select your hand"
+        "choseYourHand": "Select your hand",
+        "gameFinished": "The game is over",
+        "winner": "Winner: {{winner}}"
     },
     "Players": {
         "status": {
             "ready": "Ready",
             "notReady": "Not ready",
-            "playing": "Playing"
+            "playing": "Playing",
+            "yourTurn": "Your turn",
+            "waiting": "Waiting"
         }
     },
     "RoomItem": {
@@ -71,27 +86,44 @@
         "leave": "Leave",
         "rank": "Rank",
         "open": "Open",
-        "playing": "In game"
+        "playing": "In game",
+        "rule": "Game mode",
+        "TrucoGameRules": "Truco",
+        "CarteadoGameRules": "Carteado"
+    },
+    "Truco": {
+        "currentBet": "Current bet",
+        "rounds": "Rounds - {{rounds}}/12"
     },
     "TableActions": {
-        "drawTable": "Draw cards",
-        "endTurn": "End turn"
+        "pickUpBunch": "Draw cards",
+        "endTurn": "End turn",
+        "accept": "Accept",
+        "reject": "Reject",
+        "truco": "Truco"
     },
     "ServerMessages": {
         "errors": {
+            "GUEST_CREATION": "Error creating guest",
             "ROOM_IS_PLAYING": "The room is already in game",
             "OWNER_SHOULD_BEGIN": "Only the room owner can start the game",
             "ROOM_NOT_FOUND": "Room not found",
             "NOT_YOUR_TURN": "It's not your turn",
             "MUST_PLAY_FIRST": "You must play first",
             "PLAYER_NOT_FOUND": "Player not found",
-            "HAVE_NOT_PLAYED": "You haven't played a card yet",
-            "HAVE_NOT_STARTED": "The game hasn't started yet",
+            "HAVE_NOT_PLAYED": "You have not played a card yet",
+            "HAVE_NOT_STARTED": "The game has not started yet",
             "LOWER_RANK": "You must play a higher rank card",
-            "DIFFERENT_CARD": "You must play a card equal to or special like the previous one",
+            "DIFFERENT_CARD": "You must play a card equal to the previous one or a special card",
             "SUCCESS": "Success",
             "PLAYERS_NOT_READY": "Not all players are ready",
-            "ROOM_NOT_FULL": "The room is not full"
+            "ROOM_NOT_FULL": "The room is not full",
+            "CANT_ASK_TRUCO": "You cannot call truco out of your turn",
+            "CANT_ASK_TRUCO_SAME_TEAM": "You have already called truco",
+            "CANT_PLAY_TRUCO_PENDING": "You cannot play while truco is pending",
+            "CANT_ACCEPT_TRUCO": "You cannot accept truco",
+            "CANT_REJECT_TRUCO": "You cannot reject truco",
+            "CANT_ASK_TRUCO_ANYMORE": "The game has reached the maximum truco level"
         },
         "infos": {
             "YOUR_TURN": "It's your turn",

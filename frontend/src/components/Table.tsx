@@ -56,7 +56,7 @@ export default function Table({ tableActions, OpponentComponent }: TableProps) {
   const isTruco = game?.rulesName === "TrucoGameRules"
   const vira = game?.vira
   const tableRef = useRef<HTMLDivElement>(null);
-  const { rotatedPlayers, bunchCards, retrieveCard } = useGameContext();
+  const { rotatedPlayers, bunchCards, undoPlay } = useGameContext();
 
   const tableWidth = tableRef.current?.clientWidth || 0;
   const tableHeight = tableRef.current?.clientHeight || 0;
@@ -95,7 +95,7 @@ export default function Table({ tableActions, OpponentComponent }: TableProps) {
       <CardBunch
         cardHeight={cardHeight}
         cards={bunchCards}
-        onClick={retrieveCard}
+        onClick={undoPlay}
       />
       {!isTruco && <div className={styles.remaining}>
         {cards.length}

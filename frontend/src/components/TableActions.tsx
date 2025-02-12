@@ -31,14 +31,14 @@ const Button = ({ onClick, text }: ButtonProps) => (
 
 export default function TableActions() {
   const { t } = useTranslation()
-  const { game, endTurn, drawTable } = useGameContext();
+  const { game, endTurn, pickUpBunch } = useGameContext();
   const isGameStarted = game?.status === "playing";
   if (!isGameStarted) return;
   return (
     <div className={styles.actions}>
       <ButtonWithSound
-        onClick={drawTable}
-        text={t("TableActions.drawTable")}
+        onClick={pickUpBunch}
+        text={t("TableActions.pickUpBunch")}
         clickSrc="/assets/sfx/hurt.mp3"
       />
       <ButtonWithSound

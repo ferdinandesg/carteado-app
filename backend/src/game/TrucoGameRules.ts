@@ -247,7 +247,7 @@ export class TrucoGameRules implements ITrucoGameRules {
   }
 
   private moveTurn(game: TrucoGame, isTie: boolean, winningPlayerId?: string) {
-    if (!isTie && winningPlayerId) {
+    if (isTie && winningPlayerId) {
       game.playerTurn = winningPlayerId;
     } else {
       game.skipTurns(game.playerTurn, 1);

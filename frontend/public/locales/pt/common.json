@@ -96,7 +96,7 @@
         "rounds": "Rodadas - {{rounds}}/12"
     },
     "TableActions": {
-        "drawTable": "Comprar cartas",
+        "pickUpBunch": "Comprar cartas",
         "endTurn": "Finalizar turno",
         "accept": "Aceitar",
         "reject": "Rejeitar",

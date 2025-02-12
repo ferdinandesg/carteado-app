@@ -11,9 +11,9 @@ import { User } from "next-auth";
 
 interface GameContextProps {
   bunchCards: Card[];
-  retrieveCard: () => void;
+  undoPlay: () => void;
   endTurn: () => void;
-  drawTable: () => void;
+  pickUpBunch: () => void;
   handlePickCards: (cards: Card[]) => void;
   askTruco: () => void;
   rejectTruco: () => void;
@@ -66,7 +66,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     socket.emit("pick_hand", { cards });
   };
 
-  const retrieveCard = () => {
+  const undoPlay = () => {
     if (!socket) return;
     socket.emit("retrieve_card");
   };
@@ -76,7 +76,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     socket.emit("end_turn");
   };
 
-  const drawTable = () => {
+  const pickUpBunch = () => {
     if (!socket) return;
     socket.emit("draw_table");
   };
@@ -102,8 +102,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         rotatedPlayers,
         bunchCards: game?.bunch || [],
         endTurn,
-        drawTable,
-        retrieveCard,
+        pickUpBunch,
+        undoPlay,
         handlePickCards,
         playCard,
         askTruco,

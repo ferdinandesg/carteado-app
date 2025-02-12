@@ -20,9 +20,9 @@ export default function useCards() {
     socket!.emit("pick_hand", { cards });
   };
 
-  const retrieveCard = (card: Card) => {
+  const undoPlay = (card: Card) => {
     socket?.emit("retrieve_card", { card });
   };
 
-  return { playCard, handlePickCards, retrieveCard };
+  return { playCard, handlePickCards, undoPlay };
 }

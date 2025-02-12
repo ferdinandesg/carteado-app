@@ -12,7 +12,7 @@ export async function RetrieveCardEventHandler(
     const roomHash = socket.user.room;
     if (!roomHash) throw "Você não está em uma sala";
     const game = (await getGameState(roomHash)) as CarteadoGame;
-    game.rules.retrieveCard(game, socket.user.id);
+    game.rules.undoPlay(game, socket.user.id);
     await saveGameState(roomHash, game);
     emitToRoom(channel, roomHash, "game_update", game);
   } catch (error) {
