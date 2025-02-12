@@ -26,13 +26,13 @@ export function getNextRank(rank: string): string {
     case "Q":
       return "J";
     case "7":
-      return "6";
+      return "Q";
     case "6":
-      return "5";
+      return "7";
     case "5":
-      return "4";
+      return "6";
     case "4":
-      return "3";
+      return "5";
     default:
       return "J";
   }
