@@ -15,6 +15,7 @@ frontend/.next/
 frontend/out/
 frontend/.nuxt/
 frontend/dist/
+shared/dist/
 backend/dist/
 backend/build/
 

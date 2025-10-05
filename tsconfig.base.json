@@ -4,10 +4,12 @@
     "paths": {
       "shared/*": ["shared/*"]
     },
-    "moduleResolution": "node",
     "strict": true,
+    "moduleResolution": "node",
     "resolveJsonModule": true,
-    "esModuleInterop": true
-  },
-  "include": ["shared", "frontend", "backend"]
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "isolatedModules": true
+  }
 }

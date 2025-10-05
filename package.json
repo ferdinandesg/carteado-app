@@ -11,6 +11,7 @@
     "test:backend": "npx jest --config=backend/jest.config.ts",
     "test:frontend": "npx jest --config=frontend/jest.config.ts",
     "lint": "npm run lint:backend && npm run lint:frontend",
+    "build": "tsc -b",
     "start:dev": "docker-compose -f docker-compose-dev.yml up",
     "start:prod": "docker-compose -f docker-compose-prod.yml up",
     "deploy:dev": "docker-compose -f docker-compose-dev.yml up --build",

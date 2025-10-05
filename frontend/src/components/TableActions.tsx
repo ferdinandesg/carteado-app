@@ -1,5 +1,3 @@
-import { useGameContext } from "@/contexts/game.context";
-
 import styles from "@styles/Game.module.scss";
 import { withSound } from "./buttons/withSound";
 import { useTranslation } from "react-i18next";

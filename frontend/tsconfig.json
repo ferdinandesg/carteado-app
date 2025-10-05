@@ -30,7 +30,8 @@
       "@contexts/*": ["./src/contexts/*"],
       "@models/*": ["./src/contexts/*"],
       "@styles/*": ["./src/styles/*"],
-      "@tests/*": ["./src/tests/*"]
+      "@tests/*": ["./src/tests/*"],
+      "shared/*": ["../shared/*"]
     },
     "types": ["@testing-library/jest-dom"]
   },
