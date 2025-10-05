@@ -10,8 +10,8 @@
     "lint:frontend": "cd frontend && npm run lint",
     "test:backend": "npx jest --config=backend/jest.config.ts",
     "test:frontend": "npx jest --config=frontend/jest.config.ts",
-    "lint": "npm run lint:backend && npm run lint:frontend",
-    "build": "tsc -b",
+    "build": "npm run build -ws",
+    "lint": "npm run lint -ws --if-present",
     "start:dev": "docker-compose -f docker-compose-dev.yml up",
     "start:prod": "docker-compose -f docker-compose-prod.yml up",
     "deploy:dev": "docker-compose -f docker-compose-dev.yml up --build",
@@ -39,5 +39,11 @@
     "ts-jest": "^29.4.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
-  }
+  },
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ]
 }

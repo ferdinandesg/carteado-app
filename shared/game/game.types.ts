@@ -1,4 +1,4 @@
-import { Card } from "../cards";
+import { Card } from "shared/cards";
 import { PlayerStatus } from "./base.player";
 
 export enum GameStatus {

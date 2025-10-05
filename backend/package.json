@@ -6,9 +6,8 @@
   "scripts": {
     "start": "node -r module-alias/register dist/src/index.js",
     "dev": "nodemon src/index.ts",
-    "build:shared": "cd ../shared && npm run build",
-    "build": "npm run build:shared && tsc --build",
-    "lint": "npm run build:shared && tsc --noEmit && eslint ./src --format=pretty --color"
+    "build": "tsc --build",
+    "lint": "tsc --build --dry && tsc --noEmit && eslint ./src --format=pretty --color"
   },
   "keywords": [],
   "author": "",

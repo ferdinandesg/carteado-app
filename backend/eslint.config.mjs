@@ -15,26 +15,14 @@ const compat = new FlatCompat({
 export default [
   ...compat.extends("../.eslintrc.js"),
   {
-    ignores: ["dist", "node_modules"],
     languageOptions: {
       globals: {
         ...globals.node,
       },
     },
+
     rules: {
-      "no-console": [
-        1,
-        {
-          allow: ["warn", "error"],
-        },
-      ],
-    },
-    files: ["src/**/*.ts"],
-  },
-  {
-    files: ["src/tests/**/*.ts", "src/**/*.test.ts"],
-    rules: {
-      "no-console": 0,
+      "no-console": 1,
     },
   },
 ];

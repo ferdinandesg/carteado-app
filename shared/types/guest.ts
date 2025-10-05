@@ -16,10 +16,10 @@ type UserMeta = {
   room: string;
   status: string;
   isRegistered: boolean;
-  image: string;
+  image?: string;
 };
 
-export type EmptyGuestType = Omit<GuestType, "room" | "status" | "image">;
+export type EmptyGuestType = Omit<GuestType, "room" | "status">;
 
 export type GuestType = UserMeta & {
   role: "guest";

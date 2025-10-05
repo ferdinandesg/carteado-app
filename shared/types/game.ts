@@ -1,4 +1,4 @@
-import { PlayerStatus } from "../game";
+import { PlayerStatus } from "shared/game";
 import { Card } from "../cards";
 import { User } from "./guest";
 

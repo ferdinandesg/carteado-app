@@ -1,4 +1,4 @@
-import { GuestType, Participant, SocketUser } from "../types";
+import { GuestType, Participant, SocketUser } from "shared/types";
 import { PlayerStatus } from "./base.player";
 
 export const createParticipantObject = (
