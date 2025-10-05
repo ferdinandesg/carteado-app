@@ -10,6 +10,7 @@ export enum GameStatus {
 export interface GamePlayer {
   userId: string;
   status: PlayerStatus;
+  name: string;
   hand: Card[];
   playedCards: Card[];
   table: Card[];

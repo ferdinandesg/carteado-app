@@ -13,12 +13,14 @@ describe("CarteadoGameRules", () => {
       {
         userId: "player1",
         hand: [],
+        name: "Player 1",
         table: [],
         playedCards: [],
         status: PlayerStatus.CHOOSING,
       },
       {
         userId: "player2",
+        name: "Player 2",
         hand: [],
         table: [],
         playedCards: [],

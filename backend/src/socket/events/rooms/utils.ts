@@ -22,16 +22,16 @@ export async function createPlayers(
 
   // 3. Busca todos os players recém-criados, incluindo a relação com User
   // É aqui que a "mágica" acontece. O Prisma fará o "join".
-  const createdPlayers = await prisma.player.findMany({
+  const createdPlayers = (await prisma.player.findMany({
     where: { roomId },
     include: {
       user: true, // Inclui o documento User se a relação existir
     },
-  });
+  })) as unknown as GamePlayer[];
   const createdPlayersWithIds = createdPlayers.map((player) => ({
     ...player,
     userId:
       player.userId || participants.find((p) => p.name === player.name)?.userId,
   }));
-  return createdPlayersWithIds as unknown as GamePlayer[];
+  return createdPlayersWithIds as GamePlayer[];
 }
