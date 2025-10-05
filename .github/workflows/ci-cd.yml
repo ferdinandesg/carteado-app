@@ -29,9 +29,9 @@ jobs:
 
       - name: Install Dependencies (Root)
         run: |
-          npm ci
-          cd frontend && npm ci
-          cd ../backend && npm ci
+          npm i
+          cd frontend && npm i
+          cd ../backend && npm i
           cd ..
 
       - name: Lint + Test Backend
