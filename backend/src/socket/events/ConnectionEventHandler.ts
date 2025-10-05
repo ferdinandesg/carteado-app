@@ -14,13 +14,29 @@ import { SetPlayerStatusEventHandler } from "./rooms/SetPlayerReadyEventHandler"
 import { AskTrucoEventHandler } from "./cards/AskTrucoEventHandler";
 import { RejectTrucoEventHandler } from "./cards/RejectTrucoEventHandler";
 import { AcceptTrucoEventHandler } from "./cards/AcceptTrucoEventHandler";
+import { LeaveRoomEventHandler } from "./rooms/LeaveRoomEventHandler";
+import { retrieveSession } from "src/redis/userSession";
+
+const retrieveUserData = async (socket: Socket) => {
+  const session = await retrieveSession(socket.user.id);
+  if (session) {
+    console.log(`User Id: ${socket.user.id} reconnected`);
+    socket.user.room = session.roomHash;
+    socket.user.status = session.status;
+    socket.emit("reconnected", {
+      message: "WELCOME_BACK",
+    });
+  }
+  console.log(`User Id: ${socket.user.id} connected`);
+};
 
 export async function ConnectionEventHandler(
   socket: Socket,
   channel: Namespace
 ): Promise<void> {
-  console.log(`Socket Id: ${socket.id}`);
   const context = { socket, channel };
+
+  await retrieveUserData(socket);
 
   //CHAT EVENTS
   socket.on(CHANNEL.CLIENT.JOIN_CHAT, (payload) =>
@@ -33,6 +49,9 @@ export async function ConnectionEventHandler(
   //ROOM EVENTS
   socket.on(CHANNEL.CLIENT.JOIN_ROOM, (payload) =>
     JoinRoomEventHandler({ ...context, payload })
+  );
+  socket.on(CHANNEL.CLIENT.LEAVE_ROOM, (payload) =>
+    LeaveRoomEventHandler({ ...context, payload })
   );
   socket.on(CHANNEL.CLIENT.START_GAME, (payload) =>
     StartGameEventHandler({ ...context, payload })

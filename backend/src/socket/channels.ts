@@ -11,7 +11,7 @@ export const CHANNEL = {
     END_TURN: "end_turn",
     PICK_HAND: "pick_hand",
     DRAW_TABLE: "draw_table",
-    LEAVE_ROOM: "leave_room",
+    LEAVE_ROOM: "quit",
     SET_PLAYER_STATUS: "set_player_status",
   },
 };

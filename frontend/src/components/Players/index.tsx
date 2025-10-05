@@ -1,27 +1,28 @@
 "use client";
 import classNames from "classnames";
-import useRoomByHash, { RoomPlayer } from "@/hooks/rooms/useRoomByHash";
+import useRoomByHash from "@/hooks/rooms/useRoomByHash";
 
 import styles from "@styles/Room.module.scss";
 import UserPlaceholder from "../UserPlaceholder";
 import Image from "next/image";
 import RankMeter from "../RankMeter";
 import { useTranslation } from "react-i18next";
-import { useGameContext } from "@/contexts/game.context";
 import Shaky from "../Shaky";
 import HandsResults from "../HandsResults";
-import { useSession } from "next-auth/react";
+import { selectPlayers, useGameStore } from "@/contexts/game.store";
+import { Player } from "shared/types";
+import { PlayerStatus } from "shared/game";
 
-const isPlayerReady = (player: RoomPlayer) => player.status === "READY";
+const isPlayerReady = (player: Player) => player.status === PlayerStatus.READY;
 
 export default function Players({ roomHash }: { roomHash: string }) {
   const { t } = useTranslation();
   const { room } = useRoomByHash(roomHash);
-  const { game } = useGameContext();
-  const players = room?.players || [];
+  const { game } = useGameStore();
+  const players = useGameStore(selectPlayers);
   const isRoomPlaying = room?.status === "playing";
 
-  const getPlayerTeam = (player: RoomPlayer) => {
+  const getPlayerTeam = (player: Player) => {
     if (!game) return null;
     return game.teams?.find((team) => team.userIds.includes(player.id || ""));
   }
@@ -33,9 +34,9 @@ export default function Players({ roomHash }: { roomHash: string }) {
     const isUserTurn = game?.playerTurn === player.id;
     const statusLabel = () => {
       if (isRoomPlaying) {
-        return isUserTurn ? t("Players.status.yourTurn") : t("Players.status.waiting");
+        return isUserTurn ? t("Participants.status.yourTurn") : t("Participants.status.waiting");
       }
-      return isReady ? t("Players.status.ready") : t("Players.status.notReady");
+      return isReady ? t("Participants.status.ready") : t("Participants.status.notReady");
     }
 
     const statusClass = () => {
@@ -62,10 +63,11 @@ export default function Players({ roomHash }: { roomHash: string }) {
         )}>
           {player?.image ? (
             <Image
-              alt={player.name}
+              alt={player.name || ""}
               src={player.image}
-              layout="fill"
               objectFit="contain"
+              width={100}
+              height={100}
             />
           ) : (
             <UserPlaceholder />
@@ -74,7 +76,7 @@ export default function Players({ roomHash }: { roomHash: string }) {
         <div className={styles.metadata}>
           <span className={styles.username}>{player.name}</span>
           <RankMeter
-            currentValue={player.rank || 0}
+            currentValue={0}
             size={25}
           />
           <span className={classNames(styles.playerStatus, statusClass())}>

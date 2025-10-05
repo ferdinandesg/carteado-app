@@ -1,36 +1,21 @@
 import Deck, { Card } from "shared/cards";
 import { IGameRules } from "./IGameRules";
+import { BasePlayer, GameStatus } from "shared/game";
 
-export enum GameStatus {
-  OPEN = "open",
-  PLAYING = "playing",
-  FINISHED = "finished",
-}
-
-export enum PlayerStatus {
-  CHOOSING = "choosing",
-  PLAYING = "playing",
-}
-
-export interface GamePlayer {
-  userId: string;
-  status: PlayerStatus;
-  hand: Card[];
-  playedCards: Card[];
-  table: Card[];
-  teamId: string;
-}
-
-export class Game<G extends Game<G, R>, R extends IGameRules<G>> {
+export class Game<
+  G extends Game<G, R, P>,
+  R extends IGameRules<G, P>,
+  P extends BasePlayer,
+> {
   public rulesName: string;
-  public players: GamePlayer[];
+  public players: P[];
   public deck: Deck;
   public bunch: Card[];
   public status: GameStatus;
   public playerTurn: string;
   public rules: R;
 
-  constructor(players: GamePlayer[], rules: R, rulesName: string) {
+  constructor(players: P[], rules: R, rulesName: string) {
     this.players = players;
     this.rules = rules;
     this.rulesName = rulesName;
@@ -42,7 +27,7 @@ export class Game<G extends Game<G, R>, R extends IGameRules<G>> {
       players[Math.floor(Math.random() * players.length)].userId;
   }
 
-  public getPlayer(userId: string): GamePlayer | undefined {
+  public getPlayer(userId: string): P | undefined {
     return this.players.find((p) => p.userId === userId);
   }
 

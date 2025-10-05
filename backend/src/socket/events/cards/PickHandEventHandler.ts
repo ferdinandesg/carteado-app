@@ -14,7 +14,7 @@ export async function PickHandEventHandler(
 
   game.rules.pickHand(game, socket.user.id, cards);
 
-  emitToRoom(channel, roomHash, "game_update", game);
+  emitToRoom(channel, roomHash, "game_updated", game);
 
   await saveGameState(roomHash, game);
 }

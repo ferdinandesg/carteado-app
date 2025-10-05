@@ -1,13 +1,14 @@
+"use client";
 import CardComponent from "@/components/Card";
 import { useState } from "react";
 import { Card } from "shared/cards";
 
-import { useGameContext } from "@/contexts/game.context";
 import Separator from "@/components/Separator";
 
 import styles from "@styles/ModalChoseCards.module.scss";
 import { withSound } from "@/components/buttons/withSound";
 import { useTranslation } from "react-i18next";
+import { selectCurrentPlayer, useGameStore } from "@/contexts/game.store";
 interface ModalChoseCardsProps {
   isOpen: boolean;
 }
@@ -30,7 +31,9 @@ const ConfirmButton = withSound(
 
 export default function ModalChoseCards({ isOpen }: ModalChoseCardsProps) {
   const { t } = useTranslation()
-  const { handlePickCards, player } = useGameContext();
+  const { handlePickCards } = useGameStore();
+  const player = useGameStore(selectCurrentPlayer);
+
   const handCards = player?.hand || [];
   const [chosenCards, setChosenCards] = useState<Card[]>([]);
 

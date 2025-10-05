@@ -19,7 +19,7 @@
 
   .authMethods {
     display: flex;
-    width: 25%;
+    width: 50%;
     flex-direction: column;
     justify-content: center;
     gap: $spacing-m;
@@ -72,9 +72,8 @@
         .google {
           padding: $spacing-s;
           font-size: 0.95rem;
+        }
       }
-
     }
   }
-}
 }

@@ -5,10 +5,11 @@ import Deck, {
   TRUCO_RANK_ORDER,
 } from "shared/cards";
 import { IGameRules } from "./IGameRules";
-import { Game, GamePlayer, GameStatus, PlayerStatus } from "./game";
+import { Game } from "./game";
 import { HandResult, Team } from "shared/types";
+import { GameStatus, PlayerStatus, TrucoPlayer } from "shared/game";
 
-export class TrucoGame extends Game<TrucoGame, ITrucoGameRules> {
+export class TrucoGame extends Game<TrucoGame, ITrucoGameRules, TrucoPlayer> {
   public vira: Card | null = null;
   public manilha: string = "";
   public currentBet = 1;
@@ -18,7 +19,8 @@ export class TrucoGame extends Game<TrucoGame, ITrucoGameRules> {
   public teams: Team[] = [];
   public handsResults: HandResult[] = [];
 
-  constructor(players: GamePlayer[], rules: ITrucoGameRules) {
+  constructor(players: TrucoPlayer[]) {
+    const rules = new TrucoGameRules();
     super(players, rules, "TrucoGameRules");
     if (players.length === 2) {
       this.teams = [
@@ -68,7 +70,7 @@ export class TrucoGame extends Game<TrucoGame, ITrucoGameRules> {
   }
 }
 
-type ITrucoGameRules = IGameRules<TrucoGame> & {
+type ITrucoGameRules = IGameRules<TrucoGame, TrucoPlayer> & {
   askTruco(game: TrucoGame, userId: string): void;
   acceptTruco(game: TrucoGame, userId: string): void;
   rejectTruco(game: TrucoGame, userId: string): void;
@@ -345,7 +347,7 @@ export class TrucoGameRules implements ITrucoGameRules {
 
     if (!bestCards.length) return [];
 
-    const winnerPlayers: GamePlayer[] = [];
+    const winnerPlayers: TrucoPlayer[] = [];
     for (const p of game.players) {
       const found = p.playedCards.some((c) =>
         bestCards.some((bc) => bc.toString === c.toString)
@@ -356,7 +358,7 @@ export class TrucoGameRules implements ITrucoGameRules {
     }
 
     if (winnerPlayers.length === 1) return winnerPlayers.map((p) => p.userId);
-    const getLastIndexForPlayer = (player: GamePlayer): number => {
+    const getLastIndexForPlayer = (player: TrucoPlayer): number => {
       let lastIndex = -1;
       for (const card of player.playedCards) {
         if (bestCards.some((bc) => bc.toString === card.toString)) {

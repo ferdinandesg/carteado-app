@@ -1,4 +1,3 @@
-import { useGameContext } from "@/contexts/game.context";
 import styles from "@styles/Game.module.scss";
 import CardFan from "../CardFan";
 import Table from "../Table";
@@ -8,10 +7,13 @@ import { useTranslation } from "react-i18next";
 import CurrentBet from "./CurrentBet";
 import Shaky from "../Shaky";
 import ModalGameFinished from "../Modal/ModalGameFinished/ModalGameFinished";
+import { selectCurrentPlayer, useGameStore } from "@/contexts/game.store";
 
 export default function TrucoGame() {
     const { t } = useTranslation();
-    const { player, playCard, game } = useGameContext();
+    const { playCard, game } = useGameStore();
+    const player = useGameStore(selectCurrentPlayer);
+
     const handCards = player?.hand || [];
     const isFinished = game?.status === "finished";
 

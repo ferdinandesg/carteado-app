@@ -1,11 +1,11 @@
 "use client"
-import { useGameContext } from "@/contexts/game.context";
-
 import styles from "@styles/ModalGameFinished.module.scss";
 import { useTranslation } from "react-i18next";
 import BackButton from "@/components/buttons/BackButton";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { selectCurrentPlayer, selectPlayers, useGameStore } from "@/contexts/game.store";
+import { useSession } from "next-auth/react";
 
 interface ModalGameFinishedProps {
     isOpen: boolean;
@@ -13,9 +13,10 @@ interface ModalGameFinishedProps {
 
 export default function ModalGameFinished({ isOpen }: ModalGameFinishedProps) {
     const { t } = useTranslation()
-    const { game } = useGameContext();
+    const { game } = useGameStore();
+    const player = useGameStore(selectCurrentPlayer);
+
     const router = useRouter();
-    const { player } = useGameContext();
 
     useEffect(() => {
         if (!isOpen) return

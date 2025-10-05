@@ -3,6 +3,7 @@ import { useGameContext } from "@/contexts/game.context";
 import styles from "@styles/Game.module.scss";
 import { withSound } from "./buttons/withSound";
 import { useTranslation } from "react-i18next";
+import { useGameStore } from "@/contexts/game.store";
 
 type ButtonProps = {
   onClick: () => void;
@@ -31,7 +32,8 @@ const Button = ({ onClick, text }: ButtonProps) => (
 
 export default function TableActions() {
   const { t } = useTranslation()
-  const { game, endTurn, pickUpBunch } = useGameContext();
+  const { game, endTurn, pickUpBunch } = useGameStore();
+
   const isGameStarted = game?.status === "playing";
   if (!isGameStarted) return;
   return (

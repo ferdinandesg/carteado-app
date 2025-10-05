@@ -72,7 +72,7 @@ const RoomItem = ({ room, onClick = () => { } }: RoomItemProps) => {
         <div className={styles.infoCount}>
           <span className={styles.label}>{t("RoomItem.players")}</span>
           <span className={styles.count}>
-            {room.players.length}/{room.size}
+            {room.participants.length}/{room.size}
           </span>
         </div>
         <div className={styles.infoCount}>

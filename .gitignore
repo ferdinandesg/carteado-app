@@ -57,6 +57,8 @@ backend/.env
 .env.development
 .env.production
 .env.test
+
+# Ensure service account keys & secrets are ignored
 key.json
 
 # Logs de processos e runtime do sistema

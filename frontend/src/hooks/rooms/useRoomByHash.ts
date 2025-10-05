@@ -1,18 +1,15 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "../axios";
-import { PopulatedPlayer } from "@/models/Users";
 import { RoomStatus } from "@/models/room";
+import { Participant } from "shared/types";
 
-export type RoomPlayer = PopulatedPlayer & {
-  status?: "READY" | "NOT_READY";
-};
-type RoomsInterface = {
+export type RoomsInterface = {
   id: string;
   hash: string;
   name: string;
   status: RoomStatus;
   createdAt: string;
-  players: RoomPlayer[];
+  participants: Participant[];
   rule: "CarteadoGameRules" | "TrucoGameRules";
 };
 const fetchRoomByHash = async (hash: string) => {

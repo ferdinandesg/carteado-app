@@ -39,7 +39,6 @@ export default function Chat({ roomHash }: ChatProps) {
   };
 
   useEffect(() => {
-    if (!socket) return;
     const events = {
       join_chat: (message: MessageType) => {
         updateMessages({
@@ -76,7 +75,6 @@ export default function Chat({ roomHash }: ChatProps) {
   }, [localMessages, useAutoScroll]);
 
   const sendMessage = (e: FormEvent) => {
-    if (!socket) return;
     e.preventDefault();
     const message = inputRef.current?.value;
     if (!message) return;
@@ -109,15 +107,15 @@ export default function Chat({ roomHash }: ChatProps) {
         <div className={styles.messageBox}>
           <input
             ref={inputRef}
+            placeholder={t("chatPlaceholder")}
             type="text"
           />
         </div>
         <button
-          placeholder="Digite sua mensagem..."
           onClick={(e) => sendMessage(e)}>
           {t("send")}
         </button>
       </form>
-    </div>
+    </div >
   );
 }

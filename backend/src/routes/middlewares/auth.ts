@@ -4,31 +4,31 @@ import prisma from "../../prisma";
 import { getGuest } from "src/redis/guests";
 import { SocketUser, UserRole } from "shared/types";
 
-const secretKey = "secret";
-
 type JwtPayload = {
   role: UserRole;
   id: string;
 };
 
-const promisifyVerifyToken = (token: string): Promise<JwtPayload> =>
-  new Promise((resolve, reject) => {
-    jwt.verify(token, secretKey, (err, decoded) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(decoded as JwtPayload);
-    });
-  });
-
 export const verifyJWTToken = async (token: string) => {
-  const decoded = await promisifyVerifyToken(token);
+  // const decoded = await promisifyVerifyToken(token);
+  // if (decoded.role === "guest") {
+  //   return await getGuest(decoded.id);
+  // }
+  // return (await prisma.user.findUnique({
+  //   where: { id: decoded.id },
+  // })) as SocketUser;
+  const decoded = jwt.decode(token) as JwtPayload;
+  let user;
   if (decoded.role === "guest") {
-    return await getGuest(decoded.id);
+    user = await getGuest(decoded.id);
+  } else {
+    user = (await prisma.user.findUnique({
+      where: { id: decoded.id },
+    })) as SocketUser;
   }
-  return (await prisma.user.findUnique({
-    where: { id: decoded.id },
-  })) as SocketUser;
+  if (!user) return null;
+  user.isRegistered = decoded.role === "user";
+  return user as SocketUser;
 };
 
 export default async function authorize(

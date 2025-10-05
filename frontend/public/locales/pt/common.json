@@ -5,6 +5,7 @@
     "seeRules": "Ver regras",
     "loading": "Carregando...",
     "send": "Enviar",
+    "chatPlaceholder": "Digite sua mensagem...",
     "back": "Voltar",
     "confirm": "Confirmar",
     "pageTitles": {
@@ -123,7 +124,10 @@
             "CANT_PLAY_TRUCO_PENDING": "Você não pode jogar enquanto o truco está pendente",
             "CANT_ACCEPT_TRUCO": "Você não pode aceitar o truco",
             "CANT_REJECT_TRUCO": "Você não pode rejeitar o truco",
-            "CANT_ASK_TRUCO_ANYMORE": "A partida já está no máximo de truco"
+            "NOT_ALL_PLAYERS_ARE_READY": "Nem todos os jogadores estão prontos",
+            "CANT_ASK_TRUCO_ANYMORE": "A partida já está no máximo de truco.",
+            "ONLY_THE_OWNER_CAN_START_THE_GAME": "Apenas o dono da sala pode começar o jogo",
+            "ROOM_IS_NOT_FULL": "A sala não está cheia"
         },
         "infos": {
             "YOUR_TURN": "É seu turno",

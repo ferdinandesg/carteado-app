@@ -1,7 +1,7 @@
-import { TrucoGame, TrucoGameRules } from "./TrucoGameRules";
-import { CarteadoGame, CarteadoGameRules } from "./CarteadoGameRules";
-import { GamePlayer, GameStatus } from "./game";
+import { TrucoGame } from "./TrucoGameRules";
+import { CarteadoGame } from "./CarteadoGameRules";
 import Deck from "shared/cards";
+import { GamePlayer, GameStatus } from "shared/game";
 
 export class GameFactory {
   public static deserialize(json: string) {
@@ -22,10 +22,9 @@ export class GameFactory {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private static makeTrucoGame(obj: any): TrucoGame {
-    const rules = new TrucoGameRules();
-    const players = obj.players as GamePlayer[];
+    const players = obj.players;
 
-    const game = new TrucoGame(players, rules);
+    const game = new TrucoGame(players);
 
     game.deck = Deck.deserialize(obj.deck);
     game.bunch = obj.bunch;
@@ -45,9 +44,8 @@ export class GameFactory {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private static makeCarteadoGame(obj: any): CarteadoGame {
-    const rules = new CarteadoGameRules();
     const players = obj.players as GamePlayer[];
-    const game = new CarteadoGame(players, rules);
+    const game = new CarteadoGame(players);
 
     game.deck = Deck.deserialize(obj.deck);
     game.bunch = obj.bunch;

@@ -1,12 +1,14 @@
+import { PlayerStatus } from "../game";
 import { Card } from "../cards";
 import { User } from "./guest";
 
 export type Player = {
+  id: string;
   hand: Card[];
   name?: string;
   table: Card[];
   isOnline?: boolean;
-  status?: "choosing" | "playing";
+  status?: PlayerStatus;
   image?: string;
   userId: string;
 };

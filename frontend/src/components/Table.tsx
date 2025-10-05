@@ -1,11 +1,11 @@
-import { useGameContext } from "@/contexts/game.context";
 import CardBunch from "./CardBunch";
 import styles from "@styles/Table.module.scss";
 import { useRef } from "react";
 import classNames from "classnames";
-import { PlayerWithUser } from "shared/types";
+import { Player } from "shared/types";
 import CardComponent from "./Card";
 import Shaky from "./Shaky";
+import { selectPlayers, useGameStore } from "@/contexts/game.store";
 
 const PositionedPlayer = ({
   player,
@@ -17,14 +17,14 @@ const PositionedPlayer = ({
   i,
   OpponentComponent
 }: {
-  player: PlayerWithUser;
+  player: Player;
   centerX: number;
   centerY: number;
   angleOffset: number;
   radius: number;
   numPlayers: number;
   i: number;
-  OpponentComponent: React.ComponentType<{ player: PlayerWithUser }>;
+  OpponentComponent: React.ComponentType<{ player: Player }>;
 }) => {
   const angle = angleOffset - (2 * Math.PI * i) / numPlayers;
   const x = centerX + radius * Math.cos(angle);
@@ -48,15 +48,16 @@ const PositionedPlayer = ({
 
 type TableProps = {
   tableActions: React.ReactNode;
-  OpponentComponent: React.ComponentType<{ player: PlayerWithUser }>;
+  OpponentComponent: React.ComponentType<{ player: Player }>;
 }
 
 export default function Table({ tableActions, OpponentComponent }: TableProps) {
-  const { cards, game } = useGameContext();
+  const { game, undoPlay } = useGameStore();
+  const players = useGameStore(selectPlayers);
+
   const isTruco = game?.rulesName === "TrucoGameRules"
   const vira = game?.vira
   const tableRef = useRef<HTMLDivElement>(null);
-  const { rotatedPlayers, bunchCards, undoPlay } = useGameContext();
 
   const tableWidth = tableRef.current?.clientWidth || 0;
   const tableHeight = tableRef.current?.clientHeight || 0;
@@ -72,10 +73,10 @@ export default function Table({ tableActions, OpponentComponent }: TableProps) {
     <div
       ref={tableRef}
       className={styles.Table}>
-      {rotatedPlayers.map((player, i) => (
+      {players.map((player, i) => (
         <PositionedPlayer
           player={player}
-          numPlayers={rotatedPlayers.length}
+          numPlayers={players.length}
           key={player.userId}
           centerX={centerX}
           centerY={centerY}
@@ -94,11 +95,11 @@ export default function Table({ tableActions, OpponentComponent }: TableProps) {
       </div>
       <CardBunch
         cardHeight={cardHeight}
-        cards={bunchCards}
+        cards={game?.bunch || []}
         onClick={undoPlay}
       />
       {!isTruco && <div className={styles.remaining}>
-        {cards.length}
+        {game?.bunch.length}
       </div>}
       {tableActions}
     </div>

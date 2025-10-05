@@ -1,9 +1,11 @@
-import { Room } from "@prisma/client";
 import prisma from "../prisma";
-import { getRoomState, saveRoomState } from "../redis/room";
+import {
+  getRoomState,
+  RoomWithParticipants,
+  saveRoomState,
+} from "../redis/room";
 import { randomUUID } from "node:crypto";
 import { GuestType, SocketUser } from "shared/types";
-
 export async function createRoom(
   {
     name,
@@ -15,7 +17,7 @@ export async function createRoom(
     rule: "CarteadoGameRules" | "TrucoGameRules";
   },
   user: SocketUser | GuestType
-): Promise<Room> {
+): Promise<RoomWithParticipants> {
   const uuid = randomUUID();
   const hash = uuid.substring(uuid.length - 4);
   const chat = await prisma.chat.create({});
@@ -29,31 +31,52 @@ export async function createRoom(
       ...(user.role === "user" && { ownerId: user.id }),
     },
   });
-  await saveRoomState(hash, createdRoom);
-  return createdRoom;
+  const room = {
+    ...createdRoom,
+    participants: [],
+  };
+  await saveRoomState(hash, room);
+  return room;
 }
 
 export async function listRooms() {
-  const rooms = await prisma.room.findMany({
+  const dbRooms = await prisma.room.findMany({
     where: { status: { in: ["open", "playing"] } },
-    include: { players: true, owner: true },
     orderBy: { createdAt: "desc" },
   });
+
+  const cacheRooms = (await Promise.all(
+    dbRooms.map(async (room) => {
+      const roomCache = await getRoomState(room.hash);
+      return roomCache || room;
+    })
+  )) as RoomWithParticipants[];
+  const rooms = dbRooms.reduce<RoomWithParticipants[]>((acc, room) => {
+    const cacheRoom = cacheRooms.find((r) => r.hash === room.hash);
+    acc.push({
+      ...room,
+      participants: cacheRoom?.participants || [],
+    });
+    return acc;
+  }, []);
+
   return rooms;
 }
 
-export async function getRoom(hash: string) {
+export async function getRoom(hash: string): Promise<RoomWithParticipants> {
   const roomCache = await getRoomState(hash);
+  console.log({
+    roomCache,
+  });
   if (roomCache) {
     return roomCache;
   }
   const room = await prisma.room.findFirst({
     where: { hash },
-    include: { players: { include: { user: true } } },
   });
 
   if (!room) throw "Sala não encontrada";
-  return room;
+  return { ...room, participants: [] };
 }
 
 export async function expireRoomByHash(hash: string) {

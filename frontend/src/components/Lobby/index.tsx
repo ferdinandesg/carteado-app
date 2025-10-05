@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 
 import styles from "@styles/Lobby.module.scss";
 import { useTranslation } from "react-i18next";
+import { PlayerStatus } from "shared/game";
 
 export default function Lobby() {
   const { t } = useTranslation();
@@ -16,14 +17,13 @@ export default function Lobby() {
   const { room } = useRoomByHash(String(id));
 
   const handleReadyClick = () => {
-    if (!socket || !room) return;
-    const newStatus = !isPlayerReady ? "READY" : "NOT_READY";
+    if (!room) return;
+    const newStatus = !isPlayerReady ? PlayerStatus.READY : PlayerStatus.NOT_READY;
     setIsPlayerReady((prev) => !prev);
     socket.emit("set_player_status", { status: newStatus });
   };
 
   const handleStartGame = () => {
-    if (!socket) return;
     socket.emit("start_game", { roomId });
   };
 

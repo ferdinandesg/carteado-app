@@ -1,0 +1,106 @@
+Repository review
+
+High-level positives
+
+Clear separation: backend, frontend, shared (good for mono-repo evolution).
+Shared game/card logic extracted (prevents duplication).
+Docker support for dev/prod plus nginx reverse proxy (deploy-friendly).
+Jest + ESLint + Tailwind + i18next already in place.
+Domain-ish grouping in backend (game, room, auth, services, controllers).
+Use of Redis + Mongo + Prisma suggests intentional layering.
+Notable issues / inconsistencies
+
+Incomplete / empty GameError.ts (dead file).
+Mixed concern folders: services, controller, game, redis, room — boundaries not explicit.
+Tests scattered (game/CarteadoGameRules.test.ts, backend tests/ folder, frontend src/tests/) → fragmentation.
+Duplicate Jest configs per package without a root shared base.
+Potential secret (key.json) committed at root.
+Hooks live in \_ instead of conventional .husky.
+Naming inconsistency: plural vs singular (cards/ vs room/, game/ vs games behavior).
+Redis folder mirrors domain (redis/chat, redis/game, etc.) — could become leaky infrastructure coupling.
+Mixed file naming styles (some kebab-case, some camelCase, some PascalCase for non-components).
+Docker: separate dev/prod Dockerfiles but could DRY via multistage base.
+Config scattered; no unified runtime config module with schema validation.
+Prisma + Mongo coexist (Mongo for runtime + Prisma for relational?)—architectural rationale not documented.
+Absence of CI pipelines / quality gates (no workflows folder shown).
+No workspace root tooling for monorepo (e.g. pnpm/yarn workspaces file).
+Frontend + backend share types manually—risk of drift if not versioned/built as a package.
+shared not clearly published (is it TypeScript project reference? not sure).
+Error handling pattern unclear (only one placeholder file).
+Lack of boundary for application vs domain vs infrastructure (everything blended).
+Socket logic path not clear (socket/... placeholder).
+Recommended target structure (conceptual) / package.json (workspaces) pnpm-workspace.yaml (or yarn workspaces) /backend src/ domain/ (pure game + room rules, entities, value objects) application/ (use-cases / services orchestrating domain) infrastructure/ http (controllers, routes, middlewares) persistence (prisma, mongo, redis adapters) sockets config/ errors/ tests/ /frontend src/ app/ components/ lib/ (data fetchers, adapters) domain-shim/ (light wrappers around shared domain if needed) tests/ /shared src/ domain/ (cards, game rules if isomorphic) types/ utils/ /tools (scripts, generators) /deploy (compose, k8s manifests, nginx) .husky/ .github/workflows/
+
+Key improvements (prioritized)
+
+Quick wins (week 1)
+
+Remove or implement GameError.ts; create a base DomainError + typed error map.
+Centralize environment config: add backend/src/config/index.ts with Zod schema (env validation).
+Move secrets: delete key.json from repo; load via env or sealed secret.
+Unify test placement (choose colocated tests or central /tests, not both).
+Add root shared Jest + ESLint config and extend in packages.
+Add .husky directory and move git hooks; use simple-git-hooks or husky standard.
+Document stack decisions in README.md (databases rationale, shared module usage).
+Medium (weeks 2–4)
+
+Introduce monorepo tooling: pnpm or Turborepo; convert shared into a buildable package consumed by backend/frontend (publish locally via workspaces).
+Establish layering: domain (no imports from infra), application (coordinates), infrastructure (framework code).
+Abstract Redis access: provide repository or cache service interfaces; avoid domain importing redis path directly.
+Create unified error handling middleware (Express) mapping domain/app errors to HTTP status codes.
+DRY Dockerfiles: multistage with shared base (node deps install once).
+Add CI pipeline (lint, type-check, test, build) and optional preview deploy.
+Add code ownership / module boundaries (e.g. using eslint-plugin-boundaries).
+Longer term
+
+Consider generating shared API/types (tRPC / OpenAPI) to eliminate manual request/response type drift.
+Evaluate whether both Mongo + Prisma (SQL) are necessary; consolidate if possible to reduce cognitive load.
+Add performance + load testing (k6 / Artillery) for real-time game flows.
+Implement snapshot or property-based tests for game rule correctness.
+Introduce feature flags system if game variants will grow.
+Add metrics & observability layer (structured logging, OpenTelemetry, Prometheus endpoints).
+Container security: add Trivy scan in CI.
+Testing improvements
+
+Add a fast unit test layer for pure domain functions (no framework).
+Separate integration tests (Redis, DB, sockets) into a distinct jest project or tag.
+Use test data builders/factories to reduce duplication.
+Consider contract tests for shared types consumed by frontend.
+Type sharing improvements
+
+Use project references (tsconfig) and enforce imports from shared via path alias @shared/\*.
+Export domain events / value objects to keep game logic truly isomorphic.
+Consistency & naming
+
+Adopt consistent file naming: either kebab-case for files or PascalCase for classes only.
+Standardize folder naming: all plural or all singular (recommend plural for collections).
+Rename game/ rules file names to align (e.g. TrucoGameRules.ts vs CarteadoGameRules.ts → consistent suffix).
+Config & runtime
+
+Add scripts/ wait-for or use docker healthchecks for dependent services.
+Provide env.example per package.
+Add runtime version pinning: .nvmrc or .tool-versions.
+Frontend suggestions
+
+Move cross-cutting helpers to src/lib/.
+Co-locate component-specific styles/tests with component.
+Ensure server/client component boundaries explicit (Next 13+).
+Developer experience
+
+Add make or Powershell task scripts for: install, dev, test, build, lint.
+Enable incremental build caching (Turborepo / pnpm + TS project refs).
+Pre-commit: lint-staged already present—extend to run type-check on staged TS (quick) with tsc --noEmit.
+Security / quality
+
+Add dependency scanning (GitHub Dependabot).
+Enforce commit message style (Conventional Commits) for changelog generation.
+Add rate limiting & input validation middleware (zod / express-validator) beyond auth.
+Suggested immediate concrete actions (order)
+
+Remove key.json, rotate secret, add to .gitignore.
+Implement GameError.ts with a base error and an error catalog.
+Create backend/src/config/env.ts with Zod validation and replace ad-hoc process.env usage.
+Introduce root tsconfig.base.json (already present) → ensure each package extends and enable path aliases for @shared.
+Add pnpm-workspace.yaml (or yarn) and convert shared to a published workspace package.
+Consolidate Jest configs via shared preset (jest.preset.cjs).
+Move tests into consistent locations and remove duplicates.

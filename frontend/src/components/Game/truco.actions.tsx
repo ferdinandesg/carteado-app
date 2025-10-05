@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { withSound } from "../buttons/withSound";
 import { useGameContext } from "@/contexts/game.context";
 import { useSession } from "next-auth/react";
+import { useGameStore } from "@/contexts/game.store";
 type ButtonProps = {
     onClick: () => void;
     text: string;
@@ -33,7 +34,7 @@ const Button = ({ onClick, text, disabled }: ButtonProps) => (
 
 export default function TrucoActions() {
     const { data } = useSession();
-    const { askTruco, rejectTruco, acceptTruco, game } = useGameContext();
+    const { askTruco, rejectTruco, acceptTruco, game } = useGameStore();
     const { t } = useTranslation()
 
     const myTeam = game?.teams.find(team => team.userIds.includes(data?.user.id || "-"))

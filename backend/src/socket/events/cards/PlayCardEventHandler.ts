@@ -15,7 +15,7 @@ export async function PlayCardEventHandler(
     game.playCard(socket.user.id, card);
 
     await saveGameState(roomHash, game);
-    emitToRoom(channel, roomHash, "game_update", game);
+    emitToRoom(channel, roomHash, "game_updated", game);
   } catch (error) {
     ErrorHandler(error, socket);
   }

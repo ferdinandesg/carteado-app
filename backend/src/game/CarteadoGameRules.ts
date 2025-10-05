@@ -1,21 +1,32 @@
 import { Card } from "shared/cards";
 import { IGameRules } from "./IGameRules";
-import { Game, GamePlayer, GameStatus, PlayerStatus } from "./game";
+import { Errors } from "../errors/GameError";
+import { Game } from "./game";
+import { CarteadoPlayer, GameStatus, PlayerStatus } from "shared/game";
 
-export class CarteadoGame extends Game<CarteadoGame, ICarteadoGameRules> {
-  constructor(players: GamePlayer[], rules: ICarteadoGameRules) {
+export class CarteadoGame extends Game<
+  CarteadoGame,
+  ICarteadoGameRules,
+  CarteadoPlayer
+> {
+  constructor(players: CarteadoPlayer[]) {
+    const rules = new CarteadoGameRules();
     super(players, rules, "CarteadoGameRules");
   }
 }
 
-export type ICarteadoGameRules = IGameRules<CarteadoGame> & {
-  isSpecialCard(game: CarteadoGame, player: GamePlayer, card?: Card): boolean;
-  applySpecialCardRules(game: CarteadoGame, player: GamePlayer): void;
-  drawCards(game: CarteadoGame, player: GamePlayer): void;
+export type ICarteadoGameRules = IGameRules<CarteadoGame, CarteadoPlayer> & {
+  isSpecialCard(
+    game: CarteadoGame,
+    player: CarteadoPlayer,
+    card?: Card
+  ): boolean;
+  applySpecialCardRules(game: CarteadoGame, player: CarteadoPlayer): void;
+  drawCards(game: CarteadoGame, player: CarteadoPlayer): void;
   pickUpBunch(game: CarteadoGame, userId: string): void;
   undoPlay(game: CarteadoGame, userId: string): void;
   pickHand(game: CarteadoGame, userId: string, cards: Card[]): void;
-  addHiddenCardToHand(player: GamePlayer, card: Card): void;
+  addHiddenCardToHand(player: CarteadoPlayer, card: Card): void;
 };
 
 export class CarteadoGameRules implements ICarteadoGameRules {
@@ -39,11 +50,15 @@ export class CarteadoGameRules implements ICarteadoGameRules {
     return lastFour.every((x) => x.rank === lastFour[0].rank);
   }
 
-  private isHiddenAndEmpty(card: Card, player: GamePlayer): boolean {
+  private isHiddenAndEmpty(card: Card, player: CarteadoPlayer): boolean {
     return Boolean(card.hidden && player.hand.length === 0);
   }
 
-  isSpecialCard(game: CarteadoGame, player: GamePlayer, card?: Card): boolean {
+  isSpecialCard(
+    game: CarteadoGame,
+    player: CarteadoPlayer,
+    card?: Card
+  ): boolean {
     if (!card) return false;
     return (
       this.isRankTwoOrTen(card) ||
@@ -54,14 +69,14 @@ export class CarteadoGameRules implements ICarteadoGameRules {
 
   canPlayCard(game: CarteadoGame, userId: string, card: Card) {
     const foundPlayer = game.getPlayer(userId);
-    if (!foundPlayer) throw "PLAYER_NOT_FOUND";
+    if (!foundPlayer) throw Errors.playerNotInRoom({ userId });
 
     if (card.hidden && foundPlayer.hand.length > 0) {
-      throw "CANT_PLAY_HIDDEN_YET";
+      throw Errors.invariant("CANT_PLAY_HIDDEN_YET");
     }
 
-    if (!game.players.every((p) => p.status === PlayerStatus.PLAYING)) {
-      throw "HAVE_NOT_STARTED";
+    if (game.players.some((p) => p.status !== PlayerStatus.PLAYING)) {
+      throw Errors.invariant("PLAYERS_NOT_READY");
     }
 
     const lastThree = game.bunch.slice(-3);
@@ -72,16 +87,19 @@ export class CarteadoGameRules implements ICarteadoGameRules {
       return foundPlayer;
     }
 
-    if (foundPlayer.userId !== game.playerTurn) throw "NOT_YOUR_TURN";
+    if (foundPlayer.userId !== game.playerTurn)
+      throw Errors.conflict("NOT_YOUR_TURN");
 
     return foundPlayer;
   }
 
-  private skipTurnsForTwos(game: CarteadoGame, player: GamePlayer) {
+  private skipTurnsForTwos(game: CarteadoGame, player: CarteadoPlayer) {
     const twosCount = player.playedCards.filter((x) => x.rank === "2").length;
     if (twosCount > 0) {
       game.skipTurns(player.userId, twosCount + 1);
+      return;
     }
+    game.skipTurns(game.playerTurn, 1);
   }
 
   private removeBunchAfterTen(game: CarteadoGame) {
@@ -101,7 +119,7 @@ export class CarteadoGameRules implements ICarteadoGameRules {
     }
   }
 
-  applySpecialCardRules(game: CarteadoGame, player: GamePlayer) {
+  applySpecialCardRules(game: CarteadoGame, player: CarteadoPlayer) {
     this.skipTurnsForTwos(game, player);
     this.removeBunchAfterTen(game);
     this.removeFourOfAKind(game);
@@ -109,7 +127,7 @@ export class CarteadoGameRules implements ICarteadoGameRules {
 
   private validatePlayCard(
     game: CarteadoGame,
-    player: GamePlayer,
+    player: CarteadoPlayer,
     card: Card,
     lastCard?: Card
   ) {
@@ -119,15 +137,19 @@ export class CarteadoGameRules implements ICarteadoGameRules {
 
     if (lastCard && !hasSpecialCard) {
       if (lastCard.value! > card.value) {
-        throw "LOWER_RANK";
+        throw Errors.invariant("LOWER_RANK");
       }
       if (lastCard.rank !== card.rank && player.playedCards.length > 0) {
-        throw "DIFFERENT_CARD";
+        throw Errors.invariant("DIFFERENT_CARD");
       }
     }
   }
 
-  private executePlayCard(game: CarteadoGame, player: GamePlayer, card: Card) {
+  private executePlayCard(
+    game: CarteadoGame,
+    player: CarteadoPlayer,
+    card: Card
+  ) {
     card.hidden = false;
     game.bunch.push(card);
 
@@ -139,7 +161,7 @@ export class CarteadoGameRules implements ICarteadoGameRules {
 
   applyPlayCard(game: CarteadoGame, userId: string, card: Card) {
     const player = game.getPlayer(userId);
-    if (!player) throw "PLAYER_NOT_FOUND";
+    if (!player) throw Errors.playerNotInRoom({ userId });
 
     try {
       const lastCard = game.bunch[game.bunch.length - 1];
@@ -153,7 +175,7 @@ export class CarteadoGameRules implements ICarteadoGameRules {
     }
   }
 
-  addHiddenCardToHand(player: GamePlayer, card: Card) {
+  addHiddenCardToHand(player: CarteadoPlayer, card: Card) {
     card.hidden = false;
     player.hand.push(card);
     player.table = player.table.filter((x) => x.toString !== card.toString);
@@ -164,7 +186,7 @@ export class CarteadoGameRules implements ICarteadoGameRules {
     return;
   }
 
-  public drawCards(game: CarteadoGame, player: GamePlayer) {
+  public drawCards(game: CarteadoGame, player: CarteadoPlayer) {
     if (player.hand.length > 3) return;
     const gameHasCards = game.deck.getCards().length > 0;
 
@@ -183,8 +205,8 @@ export class CarteadoGameRules implements ICarteadoGameRules {
 
   public pickUpBunch(game: CarteadoGame, userId: string) {
     const foundPlayer = game.getPlayer(userId);
-    if (!foundPlayer) throw "PLAYER_NOT_FOUND";
-    if (userId !== game.playerTurn) throw "NOT_YOUR_TURN";
+    if (!foundPlayer) throw Errors.playerNotInRoom({ userId });
+    if (userId !== game.playerTurn) throw Errors.conflict("NOT_YOUR_TURN");
 
     game.bunch.forEach((card) => foundPlayer.hand.push(card));
     foundPlayer.playedCards = [];
@@ -192,10 +214,11 @@ export class CarteadoGameRules implements ICarteadoGameRules {
   }
 
   public undoPlay(game: CarteadoGame, userId: string) {
-    if (userId !== game.playerTurn) throw "NOT_YOUR_TURN";
+    if (userId !== game.playerTurn) throw Errors.conflict("NOT_YOUR_TURN");
     const foundPlayer = game.getPlayer(userId);
-    if (!foundPlayer) throw "PLAYER_NOT_FOUND";
-    if (!foundPlayer.playedCards.length) throw "HAVE_NOT_PLAYED";
+    if (!foundPlayer) throw Errors.playerNotInRoom({ userId });
+    if (!foundPlayer.playedCards.length)
+      throw Errors.invariant("MUST_PLAY_FIRST");
 
     foundPlayer.hand.push(...foundPlayer.playedCards);
 
@@ -222,7 +245,7 @@ export class CarteadoGameRules implements ICarteadoGameRules {
     });
   }
 
-  private checkGameFinished(game: CarteadoGame, player: GamePlayer) {
+  private checkGameFinished(game: CarteadoGame, player: CarteadoPlayer) {
     if (player.hand.length === 0 && player.table.length === 0) {
       game.status = GameStatus.FINISHED;
       game.playerTurn = player.userId;
@@ -231,10 +254,10 @@ export class CarteadoGameRules implements ICarteadoGameRules {
 
   applyEndTurn(game: CarteadoGame, userId: string) {
     const player = game.getPlayer(userId);
-    if (!player) throw "PLAYER_NOT_FOUND";
+    if (!player) throw Errors.playerNotInRoom({ userId });
 
     if (player.playedCards.length === 0) {
-      throw "MUST_PLAY_FIRST";
+      throw Errors.invariant("MUST_PLAY_FIRST");
     }
 
     this.applySpecialCardRules(game, player);

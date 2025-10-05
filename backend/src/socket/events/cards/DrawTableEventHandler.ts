@@ -13,7 +13,7 @@ export async function DrawTableEventHandler(
     const game = (await getGameState(roomHash)) as CarteadoGame;
     game.rules.pickUpBunch(game, socket.user.id);
     await saveGameState(roomHash, game);
-    emitToRoom(channel, roomHash, "game_update", game);
+    emitToRoom(channel, roomHash, "game_updated", game);
   } catch (error) {
     ErrorHandler(error, socket);
   }

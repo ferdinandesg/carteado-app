@@ -14,7 +14,7 @@ export async function RetrieveCardEventHandler(
     const game = (await getGameState(roomHash)) as CarteadoGame;
     game.rules.undoPlay(game, socket.user.id);
     await saveGameState(roomHash, game);
-    emitToRoom(channel, roomHash, "game_update", game);
+    emitToRoom(channel, roomHash, "game_updated", game);
   } catch (error) {
     ErrorHandler(error, socket);
   }

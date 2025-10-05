@@ -1,16 +1,12 @@
-import { Prisma } from "@prisma/client";
 import RedisClass from "../client";
-import { GuestType, SocketUser } from "shared/types";
-import { GamePlayer } from "src/game/game";
+import { Participant } from "shared/types/room";
 
-type PopulatedRoom = {
-  spectators: (SocketUser | GuestType)[];
-  players: GamePlayer[];
-} & Prisma.RoomGetPayload<object>;
+import { Room } from "@prisma/client";
+export type RoomWithParticipants = Room & { participants: Participant[] };
 
 export async function getRoomState(
   roomHash: string
-): Promise<PopulatedRoom | null> {
+): Promise<RoomWithParticipants | null> {
   const redis = await RedisClass.getDataClient();
   const data = await redis.get(`room:${roomHash}`);
   return data ? JSON.parse(data) : null;

@@ -1,59 +1,37 @@
-import { RoomUsers } from "@socket/utils/getRoomPlayers";
-import { GamePlayer } from "src/game/game";
+import { GamePlayer } from "shared/game";
+import { Participant } from "shared/types";
 import prisma from "src/prisma";
 
-export async function persistAuthUsers(authUsers: RoomUsers[], roomId: string) {
-  if (authUsers.length === 0) return;
-
-  await prisma.player.createMany({
-    data: authUsers.map((user) => ({
-      roomId,
-      status: "choosing",
-      userId: user.id,
-    })),
-  });
-}
-
-export async function fetchDbPlayers(roomId: string): Promise<GamePlayer[]> {
-  return prisma.player.findMany({
-    where: { roomId },
-    include: { user: true },
-  }) as unknown as GamePlayer[];
-}
-
-export function buildGuestPlayers(
-  guests: RoomUsers[],
-  roomId: string
-): GamePlayer[] {
-  return guests.map((guest) => ({
-    roomId,
-    status: "choosing",
-    userId: guest.id,
-    user: {
-      id: guest.id,
-      name: guest.name,
-      email: guest.email,
-      image: guest.image,
-    },
-  })) as unknown as GamePlayer[];
-}
-
-export function mergeDbPlayersAndGuests(
-  dbPlayers: GamePlayer[],
-  guestPlayers: GamePlayer[]
-): GamePlayer[] {
-  return [...dbPlayers, ...guestPlayers];
-}
-
 export async function createPlayers(
-  users: RoomUsers[],
+  participants: Participant[],
   roomId: string
 ): Promise<GamePlayer[]> {
-  const authUsers = users.filter((u) => u.role === "user");
-  const guests = users.filter((u) => u.role === "guest");
-  await persistAuthUsers(authUsers, roomId);
-  const dbPlayers = await fetchDbPlayers(roomId);
-  const guestPlayers = buildGuestPlayers(guests, roomId);
+  // 1. Prepara os dados para o `createMany`
+  const playersToCreate = participants.map((p) => ({
+    roomId,
+    name: p.name,
+    status: "choosing", // ou outro status inicial
+    // O userId só é adicionado se o participante for um usuário registrado
+    userId: p.isRegistered ? p.userId : undefined,
+  }));
 
-  return mergeDbPlayersAndGuests(dbPlayers, guestPlayers);
+  // 2. Cria todos os registros de Player no banco de dados de uma vez
+  await prisma.player.createMany({
+    data: playersToCreate,
+  });
+
+  // 3. Busca todos os players recém-criados, incluindo a relação com User
+  // É aqui que a "mágica" acontece. O Prisma fará o "join".
+  const createdPlayers = await prisma.player.findMany({
+    where: { roomId },
+    include: {
+      user: true, // Inclui o documento User se a relação existir
+    },
+  });
+  const createdPlayersWithIds = createdPlayers.map((player) => ({
+    ...player,
+    userId:
+      player.userId || participants.find((p) => p.name === player.name)?.userId,
+  }));
+  return createdPlayersWithIds as unknown as GamePlayer[];
 }

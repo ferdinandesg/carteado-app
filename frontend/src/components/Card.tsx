@@ -43,8 +43,9 @@ export default function CardComponent({
       <Image
         src={cardURL}
         alt="Carta"
-        layout="fill"
         objectFit="contain"
+        width={100}
+        height={100}
         priority
       />
     </div>

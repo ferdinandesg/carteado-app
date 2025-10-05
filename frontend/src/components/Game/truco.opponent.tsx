@@ -1,15 +1,15 @@
-import { useGameContext } from "@/contexts/game.context"
 import classNames from "classnames"
-import { PlayerWithUser } from "shared/types"
+import { Player } from "shared/types"
 import styles from "@styles/Opponent.module.scss";
 import UserPlaceholder from "../UserPlaceholder"
 import Image from "next/image"
+import { useGameStore } from "@/contexts/game.store";
 
 type TrucoOpponentProps = {
-    player: PlayerWithUser
+    player: Player
 }
 export default function TrucoOpponent({ player }: TrucoOpponentProps) {
-    const { game } = useGameContext();
+    const { game } = useGameStore();
     const isCurrentPlayerTurn = game?.playerTurn === player.userId;
     const teamId = game?.teams.find((team) => team.userIds.includes(player.userId))?.id || ""
     const trucoAskedBy = game?.trucoAskedBy === player.userId;
@@ -21,9 +21,9 @@ export default function TrucoOpponent({ player }: TrucoOpponentProps) {
                 styles[teamId]
             )}>
             {trucoAskedBy && <div className={styles.trucoAskedBy}></div>}
-            {player.user.image ? (
+            {player.image ? (
                 <Image
-                    src={player.user.image}
+                    src={player.image}
                     alt={player.name || "opponent avatar"}
                     width={150}
                     height={100}

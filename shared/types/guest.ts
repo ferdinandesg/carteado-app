@@ -9,24 +9,23 @@ export type User = {
 };
 
 type UserMeta = {
+  id: string;
+  email: string;
+  name: string;
   rank: number;
   room: string;
   status: string;
+  isRegistered: boolean;
+  image: string;
 };
 
-export type EmptyGuestType = Omit<GuestType, "room" | "status">;
+export type EmptyGuestType = Omit<GuestType, "room" | "status" | "image">;
 
 export type GuestType = UserMeta & {
-  id: string;
-  email: string;
-  name: string;
   role: "guest";
+  isRegistered: boolean;
 };
 
 export type SocketUser = UserMeta & {
-  id: string;
-  email: string;
-  name: string;
   role: "user";
-  image: string;
 };

@@ -4,15 +4,15 @@ import UserPlaceholder from "../UserPlaceholder";
 import styles from "@styles/Opponent.module.scss";
 import { useState } from "react";
 import CardFan from "../CardFan";
-import { useGameContext } from "@/contexts/game.context";
 import classNames from "classnames";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { useGameStore } from "@/contexts/game.store";
 
 export default function Opponent({ player }: { player: Player }) {
   const { data } = useSession()
   const userId = data?.user?.id
-  const { game } = useGameContext();
+  const { game } = useGameStore();
   const isCurrentPlayerTurn = game?.playerTurn === player.userId;
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const opponentCards = player.table?.sort((a) => (a.hidden ? 1 : -1));

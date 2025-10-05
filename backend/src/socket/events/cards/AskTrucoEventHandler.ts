@@ -15,7 +15,7 @@ export async function AskTrucoEventHandler(
     game.rules.askTruco(game, socket.user.id);
 
     await saveGameState(roomHash, game);
-    emitToRoom(channel, roomHash, "game_update", game);
+    emitToRoom(channel, roomHash, "game_updated", game);
   } catch (error) {
     ErrorHandler(error, socket);
   }

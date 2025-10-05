@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "../axios";
-import { Player } from "shared/types";
+import { Participant } from "shared/types";
 import { UserSession } from "@/models/Users";
 
 export type RoomInterface = {
@@ -13,7 +13,7 @@ export type RoomInterface = {
   ownerId?: string;
   rule: "CarteadoGameRules" | "TrucoGameRules";
   createdAt: string;
-  players: Player[];
+  participants: Participant[];
 };
 
 const rawFetchRooms = async () => {
@@ -27,7 +27,7 @@ export default function useFetchRooms() {
     queryFn: rawFetchRooms,
   });
   return {
-    data,
+    data: data || [],
     isLoading,
     isError,
   };

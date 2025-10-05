@@ -61,7 +61,7 @@ export default function Rooms() {
       <SearchComponent />
       <div className={styles.RoomList}>
         {isLoading && <span>{t("loading")}</span>}
-        {!isLoading && data?.length && (
+        {!isLoading && data.length > 0 && (
           <RoomList
             onClick={(r) => goToRoom(r.hash)}
             rooms={data}

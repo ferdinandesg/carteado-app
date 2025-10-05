@@ -35,6 +35,7 @@ export async function validateGuestUser(
     name: username,
     role: "guest",
     rank: 0,
+    isRegistered: false,
   };
   await saveGuest(guestUser);
   return guestUser;

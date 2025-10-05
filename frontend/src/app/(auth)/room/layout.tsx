@@ -1,5 +1,5 @@
 "use client";
-import { GameProvider } from "@/contexts/game.context";
+import { GameController } from "@/contexts/game.controller";
 import { RoomProvider } from "@/contexts/room.context";
 
 export default function RootLayout({
@@ -9,7 +9,8 @@ export default function RootLayout({
 }) {
   return (
     <RoomProvider>
-      <GameProvider>{children}</GameProvider>
+      <GameController />
+      {children}
     </RoomProvider>
   );
 }

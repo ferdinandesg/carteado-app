@@ -16,10 +16,21 @@ const pixelify = Pixelify_Sans({
 });
 function Home() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-
+  const [isLoadingGoogle, setIsLoadingGoogle] = useState<boolean>(false);
   const { t } = useTranslation()
   const router = useRouter();
   const goToRules = () => router.push("/rules");
+
+  const handleGoogleSignIn = async () => {
+    setIsLoadingGoogle(true);
+    try {
+      await signIn("google");
+    } catch (error) {
+      console.error("Error signing in with Google:", error);
+    } finally {
+      setIsLoadingGoogle(false);
+    }
+  };
 
   return (
     <div className={classNames(styles.Home, "square-bg", pixelify.className)}>
@@ -29,7 +40,10 @@ function Home() {
         <div className={styles.authMethods}>
           <button
             className={styles.google}
-            onClick={() => signIn("google")}>
+            disabled={isLoadingGoogle}
+            aria-busy={isLoadingGoogle}
+            aria-label={isLoadingGoogle ? t("loading") : t("googleAuth")}
+            onClick={handleGoogleSignIn}>
             <Image
               src="https://developers.google.com/identity/images/g-logo.png"
               alt="Google Logo"

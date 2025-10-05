@@ -8,20 +8,19 @@ export default function useCards() {
   const [, setPickCards] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!socket) return;
     socket.on("pick_hands", () => setPickCards(true));
   }, []);
 
   function playCard(card: Card) {
-    socket!.emit("play_card", { card });
+    socket.emit("play_card", { card });
   }
 
   const handlePickCards = (cards: Card[]) => {
-    socket!.emit("pick_hand", { cards });
+    socket.emit("pick_hand", { cards });
   };
 
   const undoPlay = (card: Card) => {
-    socket?.emit("retrieve_card", { card });
+    socket.emit("retrieve_card", { card });
   };
 
   return { playCard, handlePickCards, undoPlay };

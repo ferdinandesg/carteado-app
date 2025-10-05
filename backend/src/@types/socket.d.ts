@@ -1,4 +1,5 @@
 import { Card } from "shared/cards";
+import { PlayerStatus } from "shared/game";
 import { GuestType, SocketUser } from "shared/types";
 import { Socket, Namespace } from "socket.io";
 
@@ -13,7 +14,7 @@ export interface SocketContext {
   payload: {
     error: string;
     roomHash: string;
-    status: string;
+    status: PlayerStatus;
     message: string;
     card: Card;
     cards: Card[];

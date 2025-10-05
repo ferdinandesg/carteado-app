@@ -6,14 +6,11 @@ import {
   useEffect,
 } from "react";
 import { useSocket } from "./socket.context";
-import { RoomInterface, RoomStatus } from "@/models/room";
+import { RoomStatus } from "@/models/room";
 import { useParams } from "next/navigation";
-import useRoomByHash, { RoomPlayer } from "@/hooks/rooms/useRoomByHash";
+import useRoomByHash, { RoomsInterface } from "@/hooks/rooms/useRoomByHash";
 
-type UpdateRoomType = {
-  room: RoomInterface;
-  players: RoomPlayer[];
-};
+
 
 type RoomContextProps = {
   name: string;
@@ -28,15 +25,17 @@ export function RoomProvider({ children }: { children: ReactNode }) {
   const { updateRoom, room } = useRoomByHash(id as string);
 
   useEffect(() => {
-    if (!id || !socket) return;
-    socket.on("room_update", (updatedRoom: UpdateRoomType) => {
-      updateRoom({
-        ...updatedRoom.room,
-        players: updatedRoom.players,
-      });
+    if (!id) return;
+    console.log({
+      room,
+      id
+    })
+    socket.on("room_update", (updatedRoom: RoomsInterface) => {
+      updateRoom(updatedRoom);
     });
 
     return () => {
+      socket.emit("quit");
       socket.off("room_update");
     };
   }, [id, socket]);

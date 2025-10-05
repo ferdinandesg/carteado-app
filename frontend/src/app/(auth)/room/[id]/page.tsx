@@ -77,7 +77,7 @@ export default function Room() {
   const { room, isLoading } = useRoomByHash(String(id));
 
   useEffect(() => {
-    if (isLoading || !socket) return;
+    if (isLoading) return;
     socket.emit("join_room", { roomHash: id });
   }, [isLoading, socket]);
 
@@ -95,7 +95,7 @@ export default function Room() {
     );
 
   const onLeaveRoom = () => {
-    // socket.emit("leave_room", { roomHash: room.hash });
+    socket.emit("leave_room", { roomHash: room.hash });
     router.push("/menu");
   };
 

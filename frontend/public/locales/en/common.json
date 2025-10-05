@@ -70,7 +70,7 @@
         "gameFinished": "The game is over",
         "winner": "Winner: {{winner}}"
     },
-    "Players": {
+    "Participants": {
         "status": {
             "ready": "Ready",
             "notReady": "Not ready",

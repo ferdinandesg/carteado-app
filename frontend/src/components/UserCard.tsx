@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 import styles from "@styles/UserCard.module.scss";
+import { PlayerStatus } from "shared/game";
 import classNames from "classnames";
 import UserPlaceholder from "./UserPlaceholder";
 import RankMeter from "./RankMeter";
@@ -11,14 +12,14 @@ type UserCardProps = {
     email: string;
     name: string;
     image?: string;
-    status?: "READY" | "NOT_READY";
+    status?: PlayerStatus;
     rank?: number;
   };
   size?: "small" | "medium" | "large";
 };
 
 export default function UserCard({ user, size = "large" }: UserCardProps) {
-  const isUserReady = user?.status === "READY";
+  const isUserReady = user?.status === PlayerStatus.READY;
   const userRank = user?.rank || 0;
 
   return (
