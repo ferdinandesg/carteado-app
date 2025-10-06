@@ -62,6 +62,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate Nginx configuration
+        run: |
+          docker run --rm -v ${{ github.workspace }}/deploy/nginx:/etc/nginx/conf.d:ro nginx:stable-alpine nginx -t
+
       - name: Build and Push Backend Image
         uses: docker/build-push-action@v5
         with:
