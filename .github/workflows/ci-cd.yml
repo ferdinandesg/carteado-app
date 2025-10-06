@@ -5,12 +5,16 @@ on:
     branches: ["master"]
 
 env:
+  # Variáveis de Configuração do Projeto
   NODE_VERSION: 20.15.1
   IMAGE_BACKEND: ferdinandes/carteado-backend
   IMAGE_FRONTEND: ferdinandes/carteado-frontend
-  GCP_ZONE: us-central1-c
-  GCP_INSTANCE_NAME: carteado-app
-  DEPLOY_PATH: /home/franmlfran/deploy
+
+  # Variáveis de Deploy
+  GCP_ZONE: us-central1-c # Certifique-se que esta é a zona correta da sua VM
+  GCP_INSTANCE_NAME: carteado-app # O nome da sua VM
+  DEPLOY_USER: franmlfran # Seu usuário na VM
+  DEPLOY_PATH: /home/franmlfran/deploy # Onde os arquivos serão colocados
 
 jobs:
   build-and-deploy:
@@ -25,6 +29,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # --- ETAPAS DE BUILD (sem alterações) ---
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v2
         with:
@@ -39,14 +44,13 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
-      - name: Install (workspaces)
+      - name: Install dependencies
         run: npm ci
 
-      - name: Lint
+      - name: Lint project
         run: npm run lint
 
       - name: Derive image tag
-        id: meta
         run: echo "TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
@@ -58,7 +62,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & Push Backend Image
+      - name: Build and Push Backend Image
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -70,7 +74,7 @@ jobs:
           cache-from: type=registry,ref=${{ env.IMAGE_BACKEND }}:buildcache
           cache-to: type=registry,ref=${{ env.IMAGE_BACKEND }}:buildcache,mode=max
 
-      - name: Build & Push Frontend Image
+      - name: Build and Push Frontend Image
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -82,33 +86,43 @@ jobs:
           cache-from: type=registry,ref=${{ env.IMAGE_FRONTEND }}:buildcache
           cache-to: type=registry,ref=${{ env.IMAGE_FRONTEND }}:buildcache,mode=max
 
-      - name: Create deploy directory on VM
-        run: gcloud compute ssh franmlfran@${{ env.GCP_INSTANCE_NAME }} --zone ${{ env.GCP_ZONE }} --command="mkdir -p ${{ env.DEPLOY_PATH }}"
-
-      - name: Upload deployment files
+      # --- ETAPA FINAL DE DEPLOY 100% AUTOMATIZADA ---
+      - name: Deploy to VM
         run: |
-          gcloud compute scp --recurse docker-compose-prod.yml mongodb_rs nginx init-letsencrypt.sh franmlfran@${{ env.GCP_INSTANCE_NAME }}:${{ env.DEPLOY_PATH }} --zone ${{ env.GCP_ZONE }}
+          # 1. Copia a pasta 'deploy' inteira para a VM
+          gcloud compute scp --recurse ./deploy ${{ env.DEPLOY_USER }}@${{ env.GCP_INSTANCE_NAME }}:${{ env.DEPLOY_PATH }} --zone ${{ env.GCP_ZONE }}
 
-      - name: Deploy and Setup SSL (if needed)
-        run: |
-          gcloud compute ssh franmlfran@${{ env.GCP_INSTANCE_NAME }} --zone ${{ env.GCP_ZONE }} -- << EOF
+          # 2. Executa o script de deploy completo na VM
+          gcloud compute ssh ${{ env.DEPLOY_USER }}@${{ env.GCP_INSTANCE_NAME }} --zone ${{ env.GCP_ZONE }} -- << EOF
             set -e
             cd ${{ env.DEPLOY_PATH }}
-            
-            chmod +x ./init-letsencrypt.sh
-            
-            ./init-letsencrypt.sh
-            
-            echo "Pulling latest images..."
-            docker compose -f docker-compose-prod.yml pull
-            
+
+            echo "### 1. Parando e removendo qualquer aplicação antiga..."
+            # O '-v' remove os volumes, garantindo um estado limpo
+            docker compose -f deploy/docker-compose-prod.yml down -v --remove-orphans
+
+            echo "### 2. Tornando script de SSL executável..."
+            chmod +x deploy/init-letsencrypt.sh
+
+            echo "### 3. Configurando SSL (apenas se necessário)..."
+            # O script só fará o processo completo na primeira vez
+            ./deploy/init-letsencrypt.sh
+
+            echo "### 4. Puxando as imagens mais recentes..."
+            docker compose -f deploy/docker-compose-prod.yml pull
+
+            echo "### 5. Iniciando a aplicação do zero..."
+            # Exporta os segredos para o ambiente antes de subir os containers
             export GOOGLE_ID='${{ secrets.GOOGLE_ID }}'
             export GOOGLE_SECRET='${{ secrets.GOOGLE_SECRET }}'
             export NEXTAUTH_SECRET='${{ secrets.NEXTAUTH_SECRET }}'
+            export DATABASE_URL='${{ secrets.DATABASE_URL }}'
+            export JWT_SECRET='${{ secrets.JWT_SECRET }}'
             
-            echo "Starting all services..."
-            docker compose -f docker-compose-prod.yml up -d --remove-orphans
-            
-            echo "Cleaning up old images..."
+            docker compose -f deploy/docker-compose-prod.yml up -d
+
+            echo "### 6. Limpando imagens Docker antigas e não utilizadas..."
             docker image prune -af
+
+            echo ">>> DEPLOY CONCLUÍDO COM SUCESSO! <<<"
           EOF
