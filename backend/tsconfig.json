@@ -22,7 +22,7 @@
       "@models/*": ["src/models/*"],
       "@socket/*": ["src/socket/*"],
       "@/*": ["src/*"],
-      "shared/*": ["../shared/*"]
+      "@shared/*": ["../shared/*"]
     }
   },
   "include": ["src/**/*.ts"],

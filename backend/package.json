@@ -31,12 +31,14 @@
     "zod": "^4.1.11"
   },
   "_moduleAliases": {
-    "@controller": "dist/src/controller",
-    "@routes": "dist/src/routes",
-    "@services": "dist/src/services",
-    "@models": "dist/src/models",
-    "@socket": "dist/src/socket",
-    "src": "dist/src",
-    "shared": "../shared/dist"
+    "@controller": "./dist/src/controller",
+    "@routes": "./dist/src/routes",
+    "@services": "./dist/src/services",
+    "@models": "./dist/src/models",
+    "@socket": "./dist/src/socket",
+    "@socket/*": "./dist/src/socket/*",
+    "src": "./dist/src",
+    "@": "./dist",
+    "shared": "./dist/shared"
   }
 }
