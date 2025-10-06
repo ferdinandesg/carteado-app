@@ -83,7 +83,7 @@ jobs:
           cache-to: type=registry,ref=${{ env.IMAGE_FRONTEND }}:buildcache,mode=max
 
       - name: Create deploy directory on VM
-        run: gcloud compute ssh ${{ env.GCP_INSTANCE_NAME }} --zone ${{ env.GCP_ZONE }} --command="mkdir -p ${{ env.DEPLOY_PATH }}"
+        run: gcloud compute ssh franmlfran@${{ env.GCP_INSTANCE_NAME }} --zone ${{ env.GCP_ZONE }} --command="mkdir -p ${{ env.DEPLOY_PATH }}"
 
       - name: Upload deployment files
         run: |
@@ -91,14 +91,13 @@ jobs:
 
       - name: Deploy services on VM
         run: |
-          gcloud compute ssh ${{ env.GCP_INSTANCE_NAME }} --zone ${{ env.GCP_ZONE }} -- << EOF
+          gcloud compute ssh franmlfran@${{ env.GCP_INSTANCE_NAME }} --zone ${{ env.GCP_ZONE }} -- << EOF
             set -e
             cd ${{ env.DEPLOY_PATH }}
             
             echo "Updating services..."
             docker compose -f docker-compose-prod.yml pull
             
-            # Exporta as variáveis de ambiente antes de rodar o compose
             export GOOGLE_ID='${{ secrets.GOOGLE_ID }}'
             export GOOGLE_SECRET='${{ secrets.GOOGLE_SECRET }}'
             export NEXTAUTH_SECRET='${{ secrets.NEXTAUTH_SECRET }}'
