@@ -1,18 +1,37 @@
-FROM node:18-alpine
-RUN apk add --no-cache python3 make g++
-
+### Frontend Production Multi-stage Dockerfile
+FROM node:20-alpine AS deps
 WORKDIR /app
 
+RUN apk add --no-cache python3 make g++
+
 COPY tsconfig.base.json ./
-COPY frontend/package.json frontend/package.json
-COPY frontend/package-lock.json frontend/package-lock.json
-COPY shared/ ./shared
+COPY frontend/package.json frontend/package-lock.json ./frontend/
+COPY shared/package.json shared/package-lock.json* ./shared/
 
+# Copy shared sources if needed for type resolution/build
+COPY shared/ ./shared/
 WORKDIR /app/frontend
-RUN npm install
+RUN npm ci
 
+FROM node:20-alpine AS build
+WORKDIR /app/frontend
+ENV NEXT_TELEMETRY_DISABLED=1
+COPY --from=deps /app/frontend/node_modules ./node_modules
+COPY --from=deps /app/shared ../shared
 COPY frontend/ ./
-
 RUN npm run build
 
+FROM node:20-alpine AS runtime
+WORKDIR /app/frontend
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --omit=dev
+
+# Copy build artifacts
+COPY --from=build /app/frontend/.next ./.next
+COPY --from=build /app/frontend/public ./public
+
+EXPOSE 3000
 CMD ["npm", "run", "start"]

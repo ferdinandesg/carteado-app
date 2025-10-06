@@ -1,33 +1,40 @@
-# Etapa 1: Build
-FROM node:18-alpine AS builder
-
+### Backend Production Multi-stage Dockerfile
+# Stage 1: Dependencies (cache layer)
+FROM node:20-alpine AS deps
 WORKDIR /app
 
+# Copy only manifests first for better caching
 COPY tsconfig.base.json ./
-
 COPY backend/package.json backend/package-lock.json ./backend/
-COPY shared/ ./backend/shared/
+COPY shared/package.json shared/package-lock.json* ./shared/
 
+# If backend depends on shared source during build, copy sources now
+COPY shared/ ./shared/
 WORKDIR /app/backend
+RUN npm ci
 
-RUN npm install --production=false
-
+# Stage 2: Build
+FROM node:20-alpine AS build
+WORKDIR /app/backend
+COPY --from=deps /app/backend/node_modules ./node_modules
+COPY --from=deps /app/shared ../shared
 COPY backend/ ./
-
+# Generate Prisma client & build TS
 RUN npx prisma generate
 RUN npm run build
 
-FROM node:18-alpine
-
+# Stage 3: Production runtime
+FROM node:20-alpine AS runtime
 WORKDIR /app/backend
+ENV NODE_ENV=production
 
-COPY --from=builder /app/backend/dist ./dist
-COPY --from=builder /app/backend/package*.json ./
-COPY --from=builder /app/backend/prisma ./prisma
+# Copy only package manifests for production install
+COPY backend/package.json backend/package-lock.json ./
+RUN npm ci --omit=dev
 
-RUN npm install --production && npm install @prisma/client
+# Copy built output and prisma schema
+COPY --from=build /app/backend/dist ./dist
+COPY --from=build /app/backend/prisma ./prisma
 
 EXPOSE 4000
-
-
 CMD ["npm", "run", "start"]

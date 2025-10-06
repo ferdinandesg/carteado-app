@@ -4,63 +4,77 @@ on:
   push:
     branches: ["master"]
 
+env:
+  NODE_VERSION: 20.15.1
+  IMAGE_BACKEND: ferdinandes/carteado-backend
+  IMAGE_FRONTEND: ferdinandes/carteado-frontend
+
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
     environment: production
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Set up Node
-        uses: actions/setup-node@v3
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version: 21.1.0
-          cache: "npm"
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
-      - name: Install Dependencies (Root)
-        run: |
-          npm ci
-          cd frontend && npm ci
-          cd ../backend && npm ci
-          cd ..
+      - name: Install (workspaces)
+        run: npm ci
 
-      - name: Lint Backend
-        run: |
-          npm run lint -w backend
+      - name: Lint
+        run: npm run lint
 
-      - name: Lint + Test Frontend
-        run: |
-          npm run lint -w frontend
+      - name: Test
+        run: npm test
 
-      - name: Build Docker images
-        run: |
-          TAG=$(echo "${GITHUB_SHA::7}" | tr -d '[:space:]')
-          echo "TAG=$TAG" >> $GITHUB_ENV
-          docker build -f backend/Dockerfile.prod -t ferdinandes/carteado-backend:$TAG -t ferdinandes/carteado-backend:latest .
-          docker build -f frontend/Dockerfile.prod -t ferdinandes/carteado-frontend:$TAG -t ferdinandes/carteado-frontend:latest .
+      - name: Derive image tag
+        id: meta
+        run: echo "TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Login to DockerHub
-        run: |
-          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Push images
-        run: |
-          docker push ferdinandes/carteado-backend:${{ env.TAG }}
-          docker push ferdinandes/carteado-backend:latest
-          docker push ferdinandes/carteado-frontend:${{ env.TAG }}
-          docker push ferdinandes/carteado-frontend:latest
+      - name: Build & Push Backend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: backend/Dockerfile.prod
+          push: true
+          tags: |
+            ${{ env.IMAGE_BACKEND }}:${{ env.TAG }}
+            ${{ env.IMAGE_BACKEND }}:latest
+          cache-from: type=registry,ref=${{ env.IMAGE_BACKEND }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_BACKEND }}:buildcache,mode=max
 
-      - name: Set up SSH
+      - name: Build & Push Frontend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: frontend/Dockerfile.prod
+          push: true
+          tags: |
+            ${{ env.IMAGE_FRONTEND }}:${{ env.TAG }}
+            ${{ env.IMAGE_FRONTEND }}:latest
+          cache-from: type=registry,ref=${{ env.IMAGE_FRONTEND }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_FRONTEND }}:buildcache,mode=max
+
+      - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
@@ -68,32 +82,22 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H 34.67.161.188 >> ~/.ssh/known_hosts
 
-      - name: Debug SSH Key
-        run: |
-          ls -la ~/.ssh/
-          cat ~/.ssh/id_rsa | head -n 5
-          ssh -v -i ~/.ssh/id_rsa franmlfran@34.67.161.188 echo "SSH connection successful"
-
-      - name: Test SSH Connection
-        run: |
-          ssh -v -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa franmlfran@34.67.161.188 "echo 'SSH connection successful'"
-
-      - name: Upload project files to VM
+      - name: Upload deployment files
         run: |
           scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose-prod.yml franmlfran@34.67.161.188:/home/franmlfran/deploy/
-          scp -i ~/.ssh/id_rsa -r docker-compose-prod.yml mongodb_rs/ nginx/ franmlfran@34.67.161.188:/home/franmlfran/deploy/
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r mongodb_rs nginx franmlfran@34.67.161.188:/home/franmlfran/deploy/
 
       - name: Deploy
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa franmlfran@34.67.161.188 << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa franmlfran@34.67.161.188 <<'EOF'
+            set -e
             mkdir -p /home/franmlfran/deploy
             cd /home/franmlfran/deploy
-            echo "Atualizando serviços..."
-            docker-compose -f docker-compose-prod.yml down -v
-            docker-compose -f docker-compose-prod.yml pull
-            GOOGLE_ID=${{ secrets.GOOGLE_ID }} \
-            GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }} \
-            NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }} \
-            docker-compose -f docker-compose-prod.yml up -d nginx frontend backend
-            docker system prune -af # Limpa imagens antigas para liberar espaço
+            echo "Updating services..."
+            docker compose -f docker-compose-prod.yml pull
+            GOOGLE_ID='${{ secrets.GOOGLE_ID }}' \
+            GOOGLE_SECRET='${{ secrets.GOOGLE_SECRET }}' \
+            NEXTAUTH_SECRET='${{ secrets.NEXTAUTH_SECRET }}' \
+            docker compose -f docker-compose-prod.yml up -d nginx frontend backend
+            docker image prune -f --filter dangling=true
           EOF
