@@ -11,8 +11,9 @@ COPY frontend/package.json ./frontend/
 COPY backend/package.json ./backend/
 COPY shared/package.json ./shared/
 
-# 2. Instala TODAS as dependências do monorepo a partir da raiz (usando npm ci)
-RUN npm ci
+# 2. Instala TODAS as dependências do monorepo (usando npm ci)
+# Usamos --ignore-scripts para não rodar o husky aqui também, por segurança
+RUN npm ci --ignore-scripts
 
 # 3. Copia o restante do código-fonte
 COPY . .
@@ -37,8 +38,8 @@ COPY --from=builder /app/package-lock.json ./
 COPY --from=builder /app/frontend/package.json ./frontend/
 COPY --from=builder /app/shared/package.json ./shared/
 
-# 6. Instala APENAS as dependências de PRODUÇÃO do workspace 'frontend'
-RUN npm ci --omit=dev --workspace=frontend
+# 6. Instala APENAS as dependências de PRODUÇÃO, IGNORANDO SCRIPTS (COMO O HUSKY)
+RUN npm ci --omit=dev --workspace=frontend --ignore-scripts
 
 # 7. Define o diretório de trabalho para o frontend
 WORKDIR /app/frontend
