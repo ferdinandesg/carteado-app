@@ -66,6 +66,8 @@ jobs:
   build-backend:
     runs-on: ubuntu-latest
     needs: setup # Depende do sucesso do job 'setup'
+    permissions:
+      contents: "read"
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -98,6 +100,8 @@ jobs:
   build-frontend:
     runs-on: ubuntu-latest
     needs: setup # Depende do sucesso do job 'setup'
+    permissions:
+      contents: "read"
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
