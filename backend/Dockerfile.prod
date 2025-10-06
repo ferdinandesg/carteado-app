@@ -1,40 +1,43 @@
-### Backend Production Multi-stage Dockerfile
-# Stage 1: Dependencies (cache layer)
-FROM node:20-alpine AS deps
+# No seu backend/Dockerfile.prod
+
+# --- Estágio 1: Builder ---
+FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy only manifests first for better caching
+# Primeiro, copie os arquivos de configuração da raiz
 COPY tsconfig.base.json ./
-COPY backend/package.json backend/package-lock.json ./backend/
-COPY shared/package.json shared/package-lock.json* ./shared/
+COPY package.json ./
+COPY package-lock.json ./ 
 
-# If backend depends on shared source during build, copy sources now
+# Em seguida, copie o código dos pacotes que você precisa
+COPY backend/ ./backend/
 COPY shared/ ./shared/
+
+# Instale TODAS as dependências a partir da raiz (se usar workspaces)
+RUN npm install
+
+# Agora, entre na pasta do backend para executar os comandos específicos dele
 WORKDIR /app/backend
-RUN npm ci
 
-# Stage 2: Build
-FROM node:20-alpine AS build
-WORKDIR /app/backend
-COPY --from=deps /app/backend/node_modules ./node_modules
-COPY --from=deps /app/shared ../shared
-COPY backend/ ./
-# Generate Prisma client & build TS
-RUN npx prisma generate
-RUN npm run build
+# Gere o Prisma Client e construa o projeto
+# O tsc --build agora encontrará o tsconfig.base.json e o shared
+RUN npm run build 
 
-# Stage 3: Production runtime
-FROM node:20-alpine AS runtime
-WORKDIR /app/backend
-ENV NODE_ENV=production
+# --- Estágio 2: Runner (Produção) ---
+FROM node:20-alpine
 
-# Copy only package manifests for production install
-COPY backend/package.json backend/package-lock.json ./
-RUN npm ci --omit=dev
+WORKDIR /app
 
-# Copy built output and prisma schema
-COPY --from=build /app/backend/dist ./dist
-COPY --from=build /app/backend/prisma ./prisma
+ENV NODE_ENV production
+
+# Copie apenas os artefatos necessários do estágio de build
+COPY --from=builder /app/backend/dist ./dist
+COPY --from=builder /app/backend/node_modules ./node_modules
+COPY --from=builder /app/backend/package.json ./
+
+# Copie o module-alias e suas dependências, se necessário
+COPY --from=builder /app/node_modules/module-alias ./node_modules/module-alias
 
 EXPOSE 4000
-CMD ["npm", "run", "start"]
+# O comando para iniciar a aplicação agora funciona
+CMD [ "npm", "run", "start" ]

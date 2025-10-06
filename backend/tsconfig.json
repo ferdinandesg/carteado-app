@@ -26,7 +26,12 @@
     }
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts", // <-- Adicione esta linha para ignorar arquivos .test.ts
+    "src/tests"
+  ],
   "references": [{ "path": "../shared" }],
   "ts-node": {
     "require": ["tsconfig-paths/register"],
