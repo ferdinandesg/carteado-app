@@ -14,7 +14,7 @@ env:
   GCP_ZONE: us-central1-c # Certifique-se que esta é a zona correta da sua VM
   GCP_INSTANCE_NAME: carteado-app # O nome da sua VM
   DEPLOY_USER: franmlfran # Seu usuário na VM
-  DEPLOY_PATH: /home/franmlfran/deploy # Onde os arquivos serão colocados
+  DEPLOY_PATH: /home/franmlfran # Onde a pasta 'deploy' será colocada
 
 jobs:
   build-and-deploy:
@@ -95,21 +95,21 @@ jobs:
           # 2. Executa o script de deploy completo na VM
           gcloud compute ssh ${{ env.DEPLOY_USER }}@${{ env.GCP_INSTANCE_NAME }} --zone ${{ env.GCP_ZONE }} -- << EOF
             set -e
-            cd ${{ env.DEPLOY_PATH }}
+            cd ${{ env.DEPLOY_PATH }}/deploy
 
             echo "### 1. Parando e removendo qualquer aplicação antiga..."
             # O '-v' remove os volumes, garantindo um estado limpo
-            docker compose -f deploy/docker-compose-prod.yml down -v --remove-orphans
+            docker compose -f docker-compose-prod.yml down -v --remove-orphans
 
             echo "### 2. Tornando script de SSL executável..."
-            chmod +x deploy/init-letsencrypt.sh
+            chmod +x init-letsencrypt.sh
 
             echo "### 3. Configurando SSL (apenas se necessário)..."
             # O script só fará o processo completo na primeira vez
-            ./deploy/init-letsencrypt.sh
+            ./init-letsencrypt.sh
 
             echo "### 4. Puxando as imagens mais recentes..."
-            docker compose -f deploy/docker-compose-prod.yml pull
+            docker compose -f docker-compose-prod.yml pull
 
             echo "### 5. Iniciando a aplicação do zero..."
             # Exporta os segredos para o ambiente antes de subir os containers
@@ -119,7 +119,7 @@ jobs:
             export DATABASE_URL='${{ secrets.DATABASE_URL }}'
             export JWT_SECRET='${{ secrets.JWT_SECRET }}'
             
-            docker compose -f deploy/docker-compose-prod.yml up -d
+            docker compose -f docker-compose-prod.yml up -d
 
             echo "### 6. Limpando imagens Docker antigas e não utilizadas..."
             docker image prune -af
