@@ -36,13 +36,17 @@ jobs:
       - name: Validate Nginx configuration
         run: |
           echo ">>> Creating temporary Nginx config for syntax validation..."
-          # Cria uma configuração temporária com o bloco http para validação
+          # Cria um arquivo de configuração temporário para o teste
           echo "http {" > deploy/nginx/nginx.test.conf
-          # Comenta as linhas de SSL que falhariam no CI e adiciona ao arquivo temporário
+
+          # Comenta as linhas de SSL e substitui os nomes dos serviços por localhost
           sed -e '/ssl_certificate/s/^/#/' \
               -e '/ssl_dhparam/s/^/#/' \
               -e '/include \/etc\/letsencrypt/s/^/#/' \
+              -e 's/http:\/\/frontend:3000/http:\/\/127.0.0.1:3000/' \
+              -e 's/http:\/\/backend:3333/http:\/\/127.0.0.1:3333/' \
               deploy/nginx/nginx.conf >> deploy/nginx/nginx.test.conf
+              
           echo "}" >> deploy/nginx/nginx.test.conf
 
           echo ">>> Validating Nginx syntax..."
