@@ -87,21 +87,26 @@ jobs:
 
       - name: Upload deployment files
         run: |
-          gcloud compute scp --recurse docker-compose-prod.yml mongodb_rs nginx franmlfran@${{ env.GCP_INSTANCE_NAME }}:${{ env.DEPLOY_PATH }} --zone ${{ env.GCP_ZONE }}
+          gcloud compute scp --recurse docker-compose-prod.yml mongodb_rs nginx init-letsencrypt.sh franmlfran@${{ env.GCP_INSTANCE_NAME }}:${{ env.DEPLOY_PATH }} --zone ${{ env.GCP_ZONE }}
 
-      - name: Deploy services on VM
+      - name: Deploy and Setup SSL (if needed)
         run: |
           gcloud compute ssh franmlfran@${{ env.GCP_INSTANCE_NAME }} --zone ${{ env.GCP_ZONE }} -- << EOF
             set -e
             cd ${{ env.DEPLOY_PATH }}
             
-            echo "Updating services..."
+            chmod +x ./init-letsencrypt.sh
+            
+            ./init-letsencrypt.sh
+            
+            echo "Pulling latest images..."
             docker compose -f docker-compose-prod.yml pull
             
             export GOOGLE_ID='${{ secrets.GOOGLE_ID }}'
             export GOOGLE_SECRET='${{ secrets.GOOGLE_SECRET }}'
             export NEXTAUTH_SECRET='${{ secrets.NEXTAUTH_SECRET }}'
             
+            echo "Starting all services..."
             docker compose -f docker-compose-prod.yml up -d --remove-orphans
             
             echo "Cleaning up old images..."
