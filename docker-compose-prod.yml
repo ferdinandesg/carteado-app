@@ -24,6 +24,7 @@ services:
     depends_on:
       - backend
     environment:
+      - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=https://carteado.ferdinandes.com.br
       - NEXTAUTH_URL=https://carteado.ferdinandes.com.br
       - SOCKET_URL=http://carteado.ferdinandes.com.br/socket.io/
@@ -45,6 +46,8 @@ services:
     environment:
       - PORT=4000
       - DATABASE_URL=mongodb://mongodb:27017/carteado
+      - NODE_ENV=production
+      - JWT_SECRET=${NEXTAUTH_SECRET}
       - REDIS_URL=redis://redis:6379
       - FRONTEND_URL=https://carteado.ferdinandes.com.br
     restart: always
