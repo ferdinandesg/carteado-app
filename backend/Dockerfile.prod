@@ -18,7 +18,6 @@ RUN npm install
 COPY . .
 
 # Constrói os pacotes na ordem correta
-# (Você pode usar -w ou --prefix, ambos funcionam)
 RUN npm run build -w shared
 RUN npm run build -w backend
 
@@ -38,10 +37,9 @@ COPY --from=builder /app/backend/package-lock.json ./
 # 2. Instale APENAS as dependências de PRODUÇÃO
 RUN npm install --production
 
-# 3. Copie o código compilado do `shared` e do `backend`
-# O module-alias vai precisar do 'shared' para resolver os caminhos
-COPY --from=builder /app/shared/dist ./shared/dist
+# 3. Copie o código compilado do `backend` e do `shared` para dentro de `dist`
 COPY --from=builder /app/backend/dist ./dist
+COPY --from=builder /app/shared/dist ./dist/shared  # <-- ESTA É A LINHA CORRIGIDA
 
 EXPOSE 4000
 
