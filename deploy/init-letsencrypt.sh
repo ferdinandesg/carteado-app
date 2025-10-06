@@ -1,64 +1,135 @@
 #!/bin/bash
 
-# --- Configurações ---
+# Fail fast on errors and unset vars, and propagate pipe failures
+set -euo pipefail
+
+# =================== CONFIG ===================
 DOMAIN="carteado.ferdinandes.com.br"
 EMAIL="franmlfran@gmail.com"
 COMPOSE_FILE="docker-compose-prod.yml"
-DATA_PATH="./data/certbot"
-# ---------------------
+DATA_PATH="./data/certbot"        # Host path (relative to this script dir)
+DH_BITS=2048                       # DH param size (2048 is OK, 4096 is slower)
+STAGING=0                          # Ajuste para 1 se quiser usar ambiente de testes do Let's Encrypt
+# =================================================
 
-set -e
+echo "[+] Script de inicialização SSL para $DOMAIN"
 
-# Verifica se o docker-compose está disponível
-if ! docker compose -f "$COMPOSE_FILE" &>/dev/null; then
-    echo "Erro: docker-compose-prod.yml não encontrado ou inválido."
-    exit 1
+# Resolve directory of the script to safely use relative paths
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
+
+if [ ! -f "$COMPOSE_FILE" ]; then
+  echo "[ERRO] Arquivo $COMPOSE_FILE não encontrado em $SCRIPT_DIR" >&2
+  exit 1
 fi
 
-# Verifica se o certificado REAL já existe. Se sim, não faz nada.
-if [ -d "$DATA_PATH/conf/live/$DOMAIN" ]; then
-  echo ">>> Certificado SSL para $DOMAIN já existe. Saindo..."
+CERT_LIVE_DIR="$DATA_PATH/conf/live/$DOMAIN"
+LE_BASE="$DATA_PATH/conf"              # Host path that maps to /etc/letsencrypt
+DH_FILE="$LE_BASE/ssl-dhparams.pem"
+OPTIONS_FILE="$LE_BASE/options-ssl-nginx.conf"
+
+ensure_base_dirs() {
+  mkdir -p "$CERT_LIVE_DIR"
+}
+
+generate_fake_cert() {
+  echo "[1/6] Gerando certificado autoassinado TEMPORÁRIO..."
+  docker compose -f "$COMPOSE_FILE" run --rm --entrypoint "sh -c '
+    set -e; \
+    if [ ! -f /etc/letsencrypt/live/$DOMAIN/fullchain.pem ]; then \
+      echo Generating self-signed cert; \
+      mkdir -p /etc/letsencrypt/live/$DOMAIN; \
+      openssl req -x509 -nodes -newkey rsa:4096 -days 1 \
+        -keyout /etc/letsencrypt/live/$DOMAIN/privkey.pem \
+        -out /etc/letsencrypt/live/$DOMAIN/fullchain.pem \
+        -subj /CN=localhost; \
+    else \
+      echo 'Self-signed cert already present - skipping'; \
+    fi; \
+  '" certbot
+}
+
+ensure_options_file() {
+  if [ ! -f "$OPTIONS_FILE" ]; then
+    echo "[2/6] Baixando options-ssl-nginx.conf recomendado..."
+    docker compose -f "$COMPOSE_FILE" run --rm --entrypoint "sh -c '
+      set -e; \
+      if [ ! -f /etc/letsencrypt/options-ssl-nginx.conf ]; then \
+        apk add --no-cache curl >/dev/null 2>&1 || true; \
+        curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot_nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf > /etc/letsencrypt/options-ssl-nginx.conf; \
+      fi; \
+    '" certbot
+  else
+    echo "[2/6] options-ssl-nginx.conf já existe."
+  fi
+}
+
+ensure_dhparams() {
+  if [ -f "$DH_FILE" ]; then
+    echo "[3/6] ssl-dhparams.pem já existe."
+    return 0
+  fi
+  echo "[3/6] Gerando ssl-dhparams.pem ($DH_BITS bits) — isso pode levar alguns minutos..."
+  # Gera usando container temporário para não poluir host; usa a mesma definição de volumes do serviço certbot.
+  docker compose -f "$COMPOSE_FILE" run --rm --entrypoint "sh -c '
+    set -e; \
+    if [ ! -f /etc/letsencrypt/ssl-dhparams.pem ]; then \
+      openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem $DH_BITS; \
+    fi; \
+  '" certbot
+  # Verificação
+  if [ ! -s "$DH_FILE" ]; then
+    echo "[ERRO] Falha ao gerar ssl-dhparams.pem" >&2
+    exit 1
+  fi
+}
+
+request_real_cert() {
+  echo "[5/6] Solicitando certificado real Let's Encrypt..."
+  local staging_flag=""
+  if [ "$STAGING" = "1" ]; then staging_flag="--staging"; fi
+  # Remove somente o live do domínio (mantém dhparams e options)
+  docker compose -f "$COMPOSE_FILE" run --rm --entrypoint "rm -rf /etc/letsencrypt/live/$DOMAIN" certbot || true
+  docker compose -f "$COMPOSE_FILE" run --rm --entrypoint "sh -c '
+    set -e; \
+    certbot certonly --webroot --webroot-path=/var/www/certbot \
+      --email $EMAIL \
+      --domain $DOMAIN \
+      --agree-tos \
+      --no-eff-email \
+      --rsa-key-size 4096 \
+      --force-renewal $staging_flag; \
+  '" certbot
+}
+
+restart_nginx() {
+  echo "[6/6] Reiniciando Nginx para carregar certificado definitivo..."
+  docker compose -f "$COMPOSE_FILE" restart nginx
+  echo "[OK] Processo concluído."
+}
+
+# ================= MAIN FLOW =================
+
+ensure_base_dirs
+
+# Se já houver certificado real, encerramos cedo.
+if [ -f "$CERT_LIVE_DIR/fullchain.pem" ] && grep -q "BEGIN CERTIFICATE" "$CERT_LIVE_DIR/fullchain.pem"; then
+  echo "[INFO] Certificado existente detectado em $CERT_LIVE_DIR. Nada a fazer."
   exit 0
 fi
 
-echo "### 1. Criando arquivos de configuração e certificado falso para $DOMAIN ..."
-mkdir -p "$DATA_PATH/conf/live/$DOMAIN"
-docker compose -f "$COMPOSE_FILE" run --rm --entrypoint "\
-  sh -c ' \
-    echo "### Gerando certificado falso..."; \
-    openssl req -x509 -nodes -newkey rsa:4096 -days 1 \
-      -keyout \"/etc/letsencrypt/live/$DOMAIN/privkey.pem\" \
-      -out \"/etc/letsencrypt/live/$DOMAIN/fullchain.pem\" \
-      -subj \"/CN=localhost\"; \
-    echo "### Baixando configs recomendadas do Certbot..."; \
-    if [ ! -f /etc/letsencrypt/options-ssl-nginx.conf ]; then \
-      curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf > /etc/letsencrypt/options-ssl-nginx.conf; \
-    fi; \
-    echo "### Gerando grupo DH forte..."; \
-    if [ ! -f /etc/letsencrypt/ssl-dhparams.pem ]; then \
-      openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 2048; \
-    fi; \
-  '" certbot
+generate_fake_cert
+ensure_options_file
+ensure_dhparams
 
-echo "### 2. Iniciando Nginx..."
+echo "[4/6] Subindo (ou atualizando) Nginx em modo detach..."
 docker compose -f "$COMPOSE_FILE" up -d nginx
 
-# A PAUSA CRÍTICA
-echo "### 3. Aguardando 10 segundos para o Nginx estabilizar..."
-sleep 10
+# Pequena espera para garantir que o Nginx esteja atendendo no :80 para o desafio HTTP
+echo "[INFO] Aguardando Nginx estabilizar (5s)..."
+sleep 5
 
-echo "### 4. Solicitando certificado real para $DOMAIN ..."
-# Deleta o certificado falso antes de pedir o real
-docker compose -f "$COMPOSE_FILE" run --rm --entrypoint "rm -Rf /etc/letsencrypt/live/$DOMAIN" certbot
-docker compose -f "$COMPOSE_FILE" run --rm --entrypoint "\
-  certbot certonly --webroot --webroot-path=/var/www/certbot \
-    --email $EMAIL \
-    --domain $DOMAIN \
-    --agree-tos \
-    --no-eff-email \
-    --force-renewal" certbot
+request_real_cert
+restart_nginx
 
-echo "### 5. Reiniciando Nginx para carregar certificado real..."
-docker compose -f "$COMPOSE_FILE" restart nginx
-
-echo ">>> Configuração SSL automatizada concluída! <<<"
+echo ">>> Configuração SSL automatizada concluída para $DOMAIN <<<"
