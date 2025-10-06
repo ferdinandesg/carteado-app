@@ -12,6 +12,8 @@ const nextConfig = {
     domains: ["lh3.googleusercontent.com", "developers.google.com"],
   },
   reactStrictMode: false,
+  transpilePackages: ['shared'],
+
   sassOptions: {
     implementation: "sass-embedded",
     includePaths: [path.join(__dirname, "styles")],
