@@ -39,8 +39,11 @@ jobs:
           # Cria um arquivo de configuração temporário para o teste
           echo "http {" > deploy/nginx/nginx.test.conf
 
-          # Comenta as linhas de SSL e substitui os nomes dos serviços por localhost
-          sed -e '/ssl_certificate/s/^/#/' \
+          # Remove o 'ssl' da diretiva 'listen', comenta as outras linhas de SSL
+          # e substitui os nomes dos serviços por localhost
+          sed -e 's/listen 443 ssl;/listen 443;/' \
+              -e '/ssl_certificate/s/^/#/' \
+              -e '/ssl_certificate_key/s/^/#/' \
               -e '/ssl_dhparam/s/^/#/' \
               -e '/include \/etc\/letsencrypt/s/^/#/' \
               -e 's/http:\/\/frontend:3000/http:\/\/127.0.0.1:3000/' \
