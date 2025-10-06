@@ -2,7 +2,8 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "target": "es6",
-    "rootDir": "./",
+    // Allow multiple roots (frontend + shared) for type checking shared package during Next build
+    "rootDirs": ["./", "../shared"],
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
