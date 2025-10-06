@@ -36,25 +36,29 @@ jobs:
       - name: Validate Nginx configuration
         run: |
           echo ">>> Creating temporary Nginx config for syntax validation..."
-          # Cria um arquivo de configuração temporário para o teste
-          echo "http {" > deploy/nginx/nginx.test.conf
-
-          # Remove o 'ssl' da diretiva 'listen', comenta as outras linhas de SSL
-          # e substitui os nomes dos serviços por localhost
-          sed -e 's/listen 443 ssl;/listen 443;/' \
-              -e '/ssl_certificate/s/^/#/' \
-              -e '/ssl_certificate_key/s/^/#/' \
-              -e '/ssl_dhparam/s/^/#/' \
-              -e '/include \/etc\/letsencrypt/s/^/#/' \
-              -e 's/http:\/\/frontend:3000/http:\/\/127.0.0.1:3000/' \
-              -e 's/http:\/\/backend:3333/http:\/\/127.0.0.1:3333/' \
-              deploy/nginx/nginx.conf >> deploy/nginx/nginx.test.conf
-              
-          echo "}" >> deploy/nginx/nginx.test.conf
+          # Cria um arquivo de configuração temporário com os blocos mínimos ('events')
+          # e ajusta a sua configuração para o ambiente de teste.
+          cat <<EOF > deploy/nginx/nginx.test.conf
+          # Bloco obrigatório para o Nginx funcionar
+          events {
+              worker_connections 768;
+          }
+          # Envolve sua configuração em um bloco http
+          http {
+              $(sed -e 's/listen 443 ssl;/listen 443;/' \
+                   -e '/ssl_certificate/s/^/#/' \
+                   -e '/ssl_certificate_key/s/^/#/' \
+                   -e '/ssl_dhparam/s/^/#/' \
+                   -e '/include \/etc\/letsencrypt/s/^/#/' \
+                   -e 's/http:\/\/frontend:3000/http:\/\/127.0.0.1:3000/' \
+                   -e 's/http:\/\/backend:3333/http:\/\/127.0.0.1:3333/' \
+                   deploy/nginx/nginx.conf)
+          }
+          EOF
 
           echo ">>> Validating Nginx syntax..."
-          # Roda o teste de sintaxe do Nginx usando a configuração temporária
-          docker run --rm -v ${{ github.workspace }}/deploy/nginx:/etc/nginx/conf.d:ro nginx:stable-alpine nginx -t -c /etc/nginx/conf.d/nginx.test.conf
+          # Monta o arquivo de teste como a configuração principal do Nginx e valida a sintaxe
+          docker run --rm -v ${{ github.workspace }}/deploy/nginx/nginx.test.conf:/etc/nginx/nginx.conf:ro nginx:stable-alpine nginx -t
 
           echo ">>> Nginx syntax is valid!"
 
