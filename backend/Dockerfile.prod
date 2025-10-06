@@ -1,14 +1,12 @@
 # --- Estágio 1: Builder ---
-# Este estágio tem o código-fonte completo e as dependências de desenvolvimento
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copia os package.json de todos os pacotes para aproveitar o cache do Docker
+# Copia os package.json para aproveitar o cache
 COPY package.json ./
 COPY package-lock.json ./ 
 COPY backend/package.json ./backend/
-COPY frontend/package.json ./frontend/
 COPY shared/package.json ./shared/
 
 # Instala TODAS as dependências do monorepo
@@ -17,32 +15,35 @@ RUN npm install
 # Copia o restante do código-fonte
 COPY . .
 
-# Constrói os pacotes na ordem correta
+# Constrói os pacotes na ordem correta (agora incluindo prisma generate)
 RUN npm run build -w shared
 RUN npm run build -w backend
 
 
 # --- Estágio 2: Runner (Produção) ---
-# Este estágio é uma imagem limpa, apenas com o necessário para rodar
 FROM node:20-alpine
 
 WORKDIR /app
 
 ENV NODE_ENV production
 
-# 1. Copie o package.json e package-lock.json do backend
+# 1. Copie os package.json do backend
 COPY --from=builder /app/backend/package.json ./
 COPY --from=builder /app/backend/package-lock.json ./
 
 # 2. Instale APENAS as dependências de PRODUÇÃO
 RUN npm install --production
 
-# 3. Copie o código compilado do `backend` e do `shared` para dentro de `dist`
+# 3. Copie o schema do Prisma (necessário para o cliente funcionar)
+COPY --from=builder /app/backend/prisma ./prisma
+
+# 4. Copie o código compilado do `backend` e do `shared`
 COPY --from=builder /app/backend/dist ./dist
-# A linha corrigida: o comentário agora está acima
 COPY --from=builder /app/shared/dist ./dist/shared
+
+# 5. Copie o cliente Prisma gerado do builder para o node_modules da produção
+COPY --from=builder /app/node_modules/.prisma/client ./node_modules/.prisma/client
 
 EXPOSE 4000
 
-# O comando para iniciar agora tem tudo que precisa
 CMD ["npm", "run", "start"]

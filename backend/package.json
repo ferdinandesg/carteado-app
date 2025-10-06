@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node -r module-alias/register dist/src/index.js",
     "dev": "npm run prisma:generate && nodemon src/index.ts",
-    "build": "npm run prisma:generate && tsc --build",
+    "build": "npx prisma generate && npx tsc",
     "lint": "npm run build --prefix ../shared && prisma generate && tsc --noEmit && eslint ./src --format=pretty --color",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
