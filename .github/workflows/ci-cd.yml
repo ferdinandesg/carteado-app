@@ -80,7 +80,7 @@ build-backend:
 
     - name: Log docker credentials
       run: |
-        echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+        echo "--- ${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
     # A action de login permanece a mesma, mas agora deve funcionar
     - name: Login to DockerHub
