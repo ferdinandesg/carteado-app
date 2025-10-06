@@ -1,43 +1,49 @@
-# No seu backend/Dockerfile.prod
-
 # --- Estágio 1: Builder ---
+# Este estágio tem o código-fonte completo e as dependências de desenvolvimento
 FROM node:20-alpine AS builder
+
 WORKDIR /app
 
-# Primeiro, copie os arquivos de configuração da raiz
-COPY tsconfig.base.json ./
+# Copia os package.json de todos os pacotes para aproveitar o cache do Docker
 COPY package.json ./
 COPY package-lock.json ./ 
+COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
+COPY shared/package.json ./shared/
 
-# Em seguida, copie o código dos pacotes que você precisa
-COPY backend/ ./backend/
-COPY shared/ ./shared/
-
-# Instale TODAS as dependências a partir da raiz (se usar workspaces)
+# Instala TODAS as dependências do monorepo
 RUN npm install
 
-# Agora, entre na pasta do backend para executar os comandos específicos dele
-WORKDIR /app/backend
+# Copia o restante do código-fonte
+COPY . .
 
-# Gere o Prisma Client e construa o projeto
-# O tsc --build agora encontrará o tsconfig.base.json e o shared
-RUN npm run build 
+# Constrói os pacotes na ordem correta
+# (Você pode usar -w ou --prefix, ambos funcionam)
+RUN npm run build -w shared
+RUN npm run build -w backend
+
 
 # --- Estágio 2: Runner (Produção) ---
+# Este estágio é uma imagem limpa, apenas com o necessário para rodar
 FROM node:20-alpine
 
 WORKDIR /app
 
 ENV NODE_ENV production
 
-# Copie apenas os artefatos necessários do estágio de build
-COPY --from=builder /app/backend/dist ./dist
-COPY --from=builder /app/backend/node_modules ./node_modules
+# 1. Copie o package.json e package-lock.json do backend
 COPY --from=builder /app/backend/package.json ./
+COPY --from=builder /app/backend/package-lock.json ./
 
-# Copie o module-alias e suas dependências, se necessário
-COPY --from=builder /app/node_modules/module-alias ./node_modules/module-alias
+# 2. Instale APENAS as dependências de PRODUÇÃO
+RUN npm install --production
+
+# 3. Copie o código compilado do `shared` e do `backend`
+# O module-alias vai precisar do 'shared' para resolver os caminhos
+COPY --from=builder /app/shared/dist ./shared/dist
+COPY --from=builder /app/backend/dist ./dist
 
 EXPOSE 4000
-# O comando para iniciar a aplicação agora funciona
-CMD [ "npm", "run", "start" ]
+
+# O comando para iniciar agora tem tudo que precisa
+CMD ["npm", "run", "start"]
