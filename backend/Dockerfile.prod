@@ -39,7 +39,8 @@ RUN npm install --production
 
 # 3. Copie o código compilado do `backend` e do `shared` para dentro de `dist`
 COPY --from=builder /app/backend/dist ./dist
-COPY --from=builder /app/shared/dist ./dist/shared  # <-- ESTA É A LINHA CORRIGIDA
+# A linha corrigida: o comentário agora está acima
+COPY --from=builder /app/shared/dist ./dist/shared
 
 EXPOSE 4000
 
