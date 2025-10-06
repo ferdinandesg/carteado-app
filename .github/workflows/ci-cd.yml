@@ -163,6 +163,9 @@ jobs:
             echo "### 3. Configurando SSL (apenas se necessário)..."
             ./init-letsencrypt.sh
 
+            echo "### 4. Autenticando no Docker Hub..."
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
             echo "### 4. Puxando as imagens mais recentes..."
             docker compose -f docker-compose-prod.yml pull
 
