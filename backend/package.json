@@ -6,9 +6,13 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node -r module-alias/register dist/src/index.js",
-    "dev": "nodemon src/index.ts",
-    "build": "tsc --build",
-    "lint": "npm run build --prefix ../shared && tsc --noEmit && eslint ./src --format=pretty --color"
+    "dev": "npm run prisma:generate && nodemon src/index.ts",
+    "build": "npm run prisma:generate && tsc --build",
+    "lint": "npm run build --prefix ../shared && tsc --noEmit && eslint ./src --format=pretty --color",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate deploy",
+    "prisma:studio": "prisma studio",
+    "prisma:db:push": "prisma db push"
   },
   "keywords": [],
   "author": "",
