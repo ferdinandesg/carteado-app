@@ -36,8 +36,6 @@ jobs:
       - name: Validate Nginx configuration
         run: |
           echo ">>> Creating temporary Nginx config for syntax validation..."
-          # Cria um arquivo de configuração temporário com os blocos mínimos ('events')
-          # e ajusta a sua configuração para o ambiente de teste.
           cat <<EOF > deploy/nginx/nginx.test.conf
           # Bloco obrigatório para o Nginx funcionar
           events {
@@ -55,55 +53,14 @@ jobs:
                    deploy/nginx/nginx.conf)
           }
           EOF
-
           echo ">>> Validating Nginx syntax..."
-          # Monta o arquivo de teste como a configuração principal do Nginx e valida a sintaxe
           docker run --rm -v ${{ github.workspace }}/deploy/nginx/nginx.test.conf:/etc/nginx/nginx.conf:ro nginx:stable-alpine nginx -t
-
           echo ">>> Nginx syntax is valid!"
 
   # --- Job 2: Build do Backend (Roda em paralelo com o build do Frontend) ---
-build-backend:
-  runs-on: ubuntu-latest
-  needs: setup # Depende do sucesso do job 'setup'
-  permissions:
-    contents: "read" # Garante que o job pode ler o repo e acessar secrets
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Derive image tag
-      run: echo "TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Log docker credentials
-      run: |
-        echo "--- ${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-
-    # A action de login permanece a mesma, mas agora deve funcionar
-    - name: Login to DockerHub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    - name: Build and Push Backend Image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: backend/Dockerfile.prod
-        push: true
-        tags: |
-          ${{ env.IMAGE_BACKEND }}:${{ env.TAG }}
-          ${{ env.IMAGE_BACKEND }}:latest
-        cache-from: type=registry,ref=${{ env.IMAGE_BACKEND }}:buildcache
-        cache-to: type=registry,ref=${{ env.IMAGE_BACKEND }}:buildcache,mode=max
-  # --- Job 3: Build do Frontend (Roda em paralelo com o build do Backend) ---
-  build-frontend:
+  build-backend:
     runs-on: ubuntu-latest
-    needs: setup # Depende do sucesso do job 'setup'
+    needs: setup
     permissions:
       contents: "read"
     steps:
@@ -116,9 +73,47 @@ build-backend:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log docker credentials
+      - name: Log Docker Credentials
         run: |
-          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          echo "--- ${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Backend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: backend/Dockerfile.prod
+          push: true
+          tags: |
+            ${{ env.IMAGE_BACKEND }}:${{ env.TAG }}
+            ${{ env.IMAGE_BACKEND }}:latest
+          cache-from: type=registry,ref=${{ env.IMAGE_BACKEND }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE_BACKEND }}:buildcache,mode=max
+
+  # --- Job 3: Build do Frontend (Roda em paralelo com o build do Backend) ---
+  build-frontend:
+    runs-on: ubuntu-latest
+    needs: setup
+    permissions:
+      contents: "read"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Derive image tag
+        run: echo "TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log Docker Credentials
+        run: |
+          echo "--- ${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Login to DockerHub
         uses: docker/login-action@v3
@@ -141,7 +136,7 @@ build-backend:
   # --- Job 4: Deploy (Só roda se os dois builds forem bem-sucedidos) ---
   deploy:
     runs-on: ubuntu-latest
-    needs: [build-backend, build-frontend] # Depende dos dois jobs de build
+    needs: [build-backend, build-frontend]
     environment: production
     permissions:
       contents: "read"
@@ -161,7 +156,6 @@ build-backend:
       - name: Deploy to VM
         run: |
           gcloud compute scp --recurse ./deploy/ ${{ env.DEPLOY_USER }}@${{ env.GCP_INSTANCE_NAME }}:${{ env.DEPLOY_PATH }} --zone ${{ env.GCP_ZONE }}
-
           gcloud compute ssh ${{ env.DEPLOY_USER }}@${{ env.GCP_INSTANCE_NAME }} --zone ${{ env.GCP_ZONE }} -- << EOF
             set -e
             cd ${{ env.DEPLOY_PATH }}/deploy
@@ -178,10 +172,10 @@ build-backend:
             echo "### 4. Autenticando no Docker Hub..."
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-            echo "### 4. Puxando as imagens mais recentes..."
+            echo "### 5. Puxando as imagens mais recentes..."
             docker compose -f docker-compose-prod.yml pull
 
-            echo "### 5. Iniciando a aplicação do zero..."
+            echo "### 6. Iniciando a aplicação do zero..."
             export GOOGLE_ID='${{ secrets.GOOGLE_ID }}'
             export GOOGLE_SECRET='${{ secrets.GOOGLE_SECRET }}'
             export NEXTAUTH_SECRET='${{ secrets.NEXTAUTH_SECRET }}'
@@ -190,7 +184,7 @@ build-backend:
             
             docker compose -f docker-compose-prod.yml up -d
 
-            echo "### 6. Limpando imagens Docker antigas e não utilizadas..."
+            echo "### 7. Limpando imagens Docker antigas e não utilizadas..."
             docker image prune -af
 
             echo ">>> DEPLOY CONCLUÍDO COM SUCESSO! <<<"
