@@ -34,15 +34,13 @@ jobs:
           cd ../backend && npm ci
           cd ..
 
-      - name: Lint + Test Backend
+      - name: Lint Backend
         run: |
-          cd backend
-          npm run lint
+          npm run lint -w backend
 
       - name: Lint + Test Frontend
         run: |
-          cd frontend
-          npm run lint
+          npm run lint -w frontend
 
       - name: Build Docker images
         run: |
