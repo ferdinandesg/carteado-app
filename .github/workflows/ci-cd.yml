@@ -8,11 +8,19 @@ env:
   NODE_VERSION: 20.15.1
   IMAGE_BACKEND: ferdinandes/carteado-backend
   IMAGE_FRONTEND: ferdinandes/carteado-frontend
+  GCP_ZONE: us-central1-c
+  GCP_INSTANCE_NAME: carteado-app
+  DEPLOY_PATH: /home/franmlfran/deploy
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     environment: production
+
+    permissions:
+      contents: "read"
+      id-token: "write"
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,6 +29,9 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -33,9 +44,6 @@ jobs:
 
       - name: Lint
         run: npm run lint
-
-      # - name: Test
-      #   run: npm test
 
       - name: Derive image tag
         id: meta
@@ -74,30 +82,29 @@ jobs:
           cache-from: type=registry,ref=${{ env.IMAGE_FRONTEND }}:buildcache
           cache-to: type=registry,ref=${{ env.IMAGE_FRONTEND }}:buildcache,mode=max
 
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          echo "${{ secrets.GCP_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 34.69.64.98 >> ~/.ssh/known_hosts
+      - name: Create deploy directory on VM
+        run: gcloud compute ssh ${{ env.GCP_INSTANCE_NAME }} --zone ${{ env.GCP_ZONE }} --command="mkdir -p ${{ env.DEPLOY_PATH }}"
 
       - name: Upload deployment files
         run: |
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose-prod.yml franmlfran@34.69.64.98:/home/franmlfran/deploy/
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r mongodb_rs nginx franmlfran@34.69.64.98:/home/franmlfran/deploy/
+          gcloud compute scp --recurse docker-compose-prod.yml mongodb_rs nginx franmlfran@${{ env.GCP_INSTANCE_NAME }}:${{ env.DEPLOY_PATH }} --zone ${{ env.GCP_ZONE }}
 
-      - name: Deploy
+      - name: Deploy services on VM
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa franmlfran@34.69.64.98 <<'EOF'
+          gcloud compute ssh ${{ env.GCP_INSTANCE_NAME }} --zone ${{ env.GCP_ZONE }} -- << EOF
             set -e
-            mkdir -p /home/franmlfran/deploy
-            cd /home/franmlfran/deploy
+            cd ${{ env.DEPLOY_PATH }}
+            
             echo "Updating services..."
             docker compose -f docker-compose-prod.yml pull
-            GOOGLE_ID='${{ secrets.GOOGLE_ID }}' \
-            GOOGLE_SECRET='${{ secrets.GOOGLE_SECRET }}' \
-            NEXTAUTH_SECRET='${{ secrets.NEXTAUTH_SECRET }}' \
-            docker compose -f docker-compose-prod.yml up -d nginx frontend backend
-            docker image prune -f --filter dangling=true
+            
+            # Exporta as variáveis de ambiente antes de rodar o compose
+            export GOOGLE_ID='${{ secrets.GOOGLE_ID }}'
+            export GOOGLE_SECRET='${{ secrets.GOOGLE_SECRET }}'
+            export NEXTAUTH_SECRET='${{ secrets.NEXTAUTH_SECRET }}'
+            
+            docker compose -f docker-compose-prod.yml up -d --remove-orphans
+            
+            echo "Cleaning up old images..."
+            docker image prune -af
           EOF
