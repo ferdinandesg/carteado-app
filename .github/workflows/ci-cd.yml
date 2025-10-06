@@ -36,14 +36,17 @@ jobs:
       - name: Validate Nginx configuration
         run: |
           echo ">>> Creating temporary Nginx config for syntax validation..."
-          # Cria uma cópia temporária do nginx.conf e comenta as linhas que buscam arquivos SSL
+          # Cria uma configuração temporária com o bloco http para validação
+          echo "http {" > deploy/nginx/nginx.test.conf
+          # Comenta as linhas de SSL que falhariam no CI e adiciona ao arquivo temporário
           sed -e '/ssl_certificate/s/^/#/' \
               -e '/ssl_dhparam/s/^/#/' \
               -e '/include \/etc\/letsencrypt/s/^/#/' \
-              deploy/nginx/nginx.conf > deploy/nginx/nginx.test.conf
+              deploy/nginx/nginx.conf >> deploy/nginx/nginx.test.conf
+          echo "}" >> deploy/nginx/nginx.test.conf
 
           echo ">>> Validating Nginx syntax..."
-          # Roda o teste do Nginx usando a configuração temporária
+          # Roda o teste de sintaxe do Nginx usando a configuração temporária
           docker run --rm -v ${{ github.workspace }}/deploy/nginx:/etc/nginx/conf.d:ro nginx:stable-alpine nginx -t -c /etc/nginx/conf.d/nginx.test.conf
 
           echo ">>> Nginx syntax is valid!"
