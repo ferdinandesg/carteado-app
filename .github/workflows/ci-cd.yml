@@ -80,16 +80,16 @@ jobs:
           chmod 700 ~/.ssh
           echo "${{ secrets.GCP_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 34.67.161.188 >> ~/.ssh/known_hosts
+          ssh-keyscan -H 34.69.64.98 >> ~/.ssh/known_hosts
 
       - name: Upload deployment files
         run: |
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose-prod.yml franmlfran@34.67.161.188:/home/franmlfran/deploy/
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r mongodb_rs nginx franmlfran@34.67.161.188:/home/franmlfran/deploy/
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose-prod.yml franmlfran@34.69.64.98:/home/franmlfran/deploy/
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r mongodb_rs nginx franmlfran@34.69.64.98:/home/franmlfran/deploy/
 
       - name: Deploy
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa franmlfran@34.67.161.188 <<'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa franmlfran@34.69.64.98 <<'EOF'
             set -e
             mkdir -p /home/franmlfran/deploy
             cd /home/franmlfran/deploy
