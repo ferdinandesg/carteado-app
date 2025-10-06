@@ -13,7 +13,7 @@ export async function getGuest(id: string): Promise<GuestType> {
   const redis = await RedisClass.getDataClient();
   const serializedGuest = await redis.get(`guest:${id}`);
   if (serializedGuest) {
-    return JSON.parse(serializedGuest);
+    return JSON.parse(String(serializedGuest));
   }
   throw "Guest não encontrado";
 }

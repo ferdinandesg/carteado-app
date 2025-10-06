@@ -19,7 +19,7 @@ export async function retrieveSession(userId: string) {
   const redis = await RedisClass.getDataClient();
   const sessionData = await redis.get(`session:${userId}`);
   if (!sessionData) return null;
-  return JSON.parse(sessionData);
+  return JSON.parse(String(sessionData));
 }
 
 export async function expireSession(userId: string) {

@@ -9,7 +9,7 @@ export async function getRoomState(
 ): Promise<RoomWithParticipants | null> {
   const redis = await RedisClass.getDataClient();
   const data = await redis.get(`room:${roomHash}`);
-  return data ? JSON.parse(data) : null;
+  return data ? JSON.parse(String(data)) : null;
 }
 
 export async function saveRoomState(roomHash: string, roomState: object) {

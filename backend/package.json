@@ -7,7 +7,7 @@
     "start": "node -r module-alias/register dist/src/index.js",
     "dev": "nodemon src/index.ts",
     "build": "tsc --build",
-    "lint": "tsc --build --dry && tsc --noEmit && eslint ./src --format=pretty --color"
+    "lint": "npm run build --prefix ../shared && tsc --noEmit && eslint ./src --format=pretty --color"
   },
   "keywords": [],
   "author": "",

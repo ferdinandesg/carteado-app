@@ -4,7 +4,7 @@ import RedisClass from "../client";
 export async function getMessages(roomHash: string) {
   const redis = await RedisClass.getDataClient();
   const data = await redis.get(`chat:${roomHash}`);
-  return data ? JSON.parse(data) : [];
+  return data ? JSON.parse(String(data)) : [];
 }
 
 export async function saveMessages(roomHash: string, messages: Message[]) {

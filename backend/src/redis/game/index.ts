@@ -20,7 +20,7 @@ export async function getGameState(
   const redis = await RedisClass.getDataClient();
   const serializedGame = await redis.get(`game:${roomHash}`);
   if (serializedGame) {
-    const game = GameFactory.deserialize(serializedGame);
+    const game = GameFactory.deserialize(String(serializedGame));
     return game;
   }
   throw "GAME_NOT_FOUND";
