@@ -53,22 +53,25 @@ jobs:
         run: |
           echo ">>> Creating temporary Nginx config for syntax validation..."
 
-          # Cria um arquivo de teste com a estrutura mínima (events e http)
-          # e insere o conteúdo processado do nginx.conf dentro do bloco http.
-          {
-            echo "events { worker_connections 768; }"
-            echo "http {"
-            sed \
-              -e 's/listen 443 ssl;/listen 443;/' \
-              -e '/^\s*ssl_certificate/s/^/#/' \
-              -e '/^\s*ssl_certificate_key/s/^/#/' \
-              -e '/^\s*ssl_dhparam/s/^/#/' \
-              -e '/^\s*include.*letsencrypt/s/^/#/' \
-              -e 's|http://frontend:3000|http://127.0.0.1:3000|g' \
-              -e 's|http://backend:3333|http://127.0.0.1:3333|g' \
-              deploy/nginx/nginx.conf
-            echo "}"
-          } > deploy/nginx/nginx.test.conf
+          # Passo 1: Cria o arquivo de teste com o bloco 'events'
+          echo "events { worker_connections 768; }" > deploy/nginx/nginx.test.conf
+
+          # Passo 2: Adiciona a abertura do bloco 'http'
+          echo "http {" >> deploy/nginx/nginx.test.conf
+
+          # Passo 3: Processa o nginx.conf e anexa seu conteúdo dentro do bloco http
+          sed \
+            -e 's/listen 443 ssl;/listen 443;/' \
+            -e '/^\s*ssl_certificate/s/^/#/' \
+            -e '/^\s*ssl_certificate_key/s/^/#/' \
+            -e '/^\s*ssl_dhparam/s/^/#/' \
+            -e '/^\s*include.*letsencrypt/s/^/#/' \
+            -e 's|http://frontend:3000|http://127.0.0.1:3000|g' \
+            -e 's|http://backend:3333|http://127.0.0.1:3333|g' \
+            deploy/nginx/nginx.conf >> deploy/nginx/nginx.test.conf
+
+          # Passo 4: Adiciona o fechamento do bloco 'http'
+          echo "}" >> deploy/nginx/nginx.test.conf
 
           echo ">>> Validating Nginx syntax..."
           docker run --rm -v ${{ github.workspace }}/deploy/nginx/nginx.test.conf:/etc/nginx/nginx.conf:ro nginx:stable-alpine nginx -t
