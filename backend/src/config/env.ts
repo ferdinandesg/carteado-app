@@ -18,6 +18,10 @@ let cached: Env | null = null;
 export function loadEnv(): Env {
   if (cached) return cached;
   const parsed = EnvSchema.safeParse(process.env);
+  console.log({
+    parsed,
+    env: process.env,
+  });
   if (!parsed.success) {
     if (process.env.NODE_ENV !== "production") {
       // eslint-disable-next-line no-console

@@ -57,12 +57,12 @@ services:
       - mongodb
       - redis
     environment:
-      - PORT=4000
-      - DATABASE_URL=mongodb://mongodb:27017/carteado
       - NODE_ENV=production
+      - PORT=4000
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=mongodb://mongodb:27017/carteado
       # Use same JWT secret key (or could be its own). Ensure set in .env.
       - JWT_SECRET=${JWT_SECRET_KEY}
-      - REDIS_URL=redis://redis:6379
       - FRONTEND_URL=https://carteado.ferdinandes.com.br
     restart: always
     logging:
