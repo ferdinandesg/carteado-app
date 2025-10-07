@@ -9,15 +9,25 @@ type JwtPayload = {
   id: string;
 };
 
+const promisifyVerifyToken = (token: string) => {
+  return new Promise<JwtPayload>((resolve, reject) => {
+    jwt.verify(
+      token,
+      process.env.JWT_SECRET_KEY || "secret",
+      (err, decoded) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(decoded as JwtPayload);
+        }
+      }
+    );
+  });
+};
+
 export const verifyJWTToken = async (token: string) => {
-  // const decoded = await promisifyVerifyToken(token);
-  // if (decoded.role === "guest") {
-  //   return await getGuest(decoded.id);
-  // }
-  // return (await prisma.user.findUnique({
-  //   where: { id: decoded.id },
-  // })) as SocketUser;
-  const decoded = jwt.decode(token) as JwtPayload;
+  const decoded = await promisifyVerifyToken(token);
+
   let user;
   if (decoded.role === "guest") {
     user = await getGuest(decoded.id);

@@ -34,7 +34,12 @@ services:
       - SOCKET_URL=http://carteado.ferdinandes.com.br/socket.io/
       - GOOGLE_ID=${GOOGLE_ID}
       - GOOGLE_SECRET=${GOOGLE_SECRET}
+      # Secret used by NextAuth (set in .env file, do NOT hardcode). Must be long & random.
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      # Trust proxy headers since we are behind nginx
+      - AUTH_TRUST_HOST=true
+      # JWT secret used by your custom generateJWT (keep separate for rotation if desired)
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     restart: always
     logging:
       driver: "gcplogs"
@@ -55,7 +60,8 @@ services:
       - PORT=4000
       - DATABASE_URL=mongodb://mongodb:27017/carteado
       - NODE_ENV=production
-      - JWT_SECRET=${NEXTAUTH_SECRET}
+      # Use same JWT secret key (or could be its own). Ensure set in .env.
+      - JWT_SECRET=${JWT_SECRET_KEY}
       - REDIS_URL=redis://redis:6379
       - FRONTEND_URL=https://carteado.ferdinandes.com.br
     restart: always
