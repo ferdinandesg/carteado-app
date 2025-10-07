@@ -144,6 +144,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [changes, build-backend, build-frontend]
     environment: production
+    if: needs.changes.outputs.deploy == 'true'
     permissions:
       contents: "read"
       id-token: "write"
