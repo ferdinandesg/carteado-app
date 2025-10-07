@@ -17,7 +17,7 @@ const validateGuestUser = async (name: string) => {
 };
 
 const generateJWT = ({ id, role }: { id: string; role: UserRole }) => {
-  const secretKey = process.env.JWT_SECRET_KEY || "secret";
+  const secretKey = process.env.NEXTAUTH_SECRET || "secret";
   return jwt.sign({ id: id, role: role }, secretKey);
 };
 
