@@ -152,7 +152,7 @@ jobs:
             export GOOGLE_SECRET='${{ secrets.GOOGLE_SECRET }}'
             export NEXTAUTH_SECRET='${{ secrets.NEXTAUTH_SECRET }}'
             export DATABASE_URL='${{ secrets.DATABASE_URL }}'
-            export JWT_SECRET='${{ secrets.JWT_SECRET }}'
+            export JWT_SECRET_KEY='${{ secrets.JWT_SECRET_KEY }}'
             docker compose -f docker-compose-prod.yml up -d
             echo "### 7. Limpando imagens Docker antigas e não utilizadas..."
             docker image prune -af
