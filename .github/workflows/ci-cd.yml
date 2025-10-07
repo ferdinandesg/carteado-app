@@ -52,21 +52,37 @@ jobs:
       - name: Validate Nginx configuration
         run: |
           echo ">>> Creating temporary Nginx config for syntax validation..."
+
+          # Cria o arquivo de teste com a estrutura mínima obrigatória (events e http)
           cat <<EOF > deploy/nginx/nginx.test.conf
           events { worker_connections 768; }
           http {
-              $(sed -e 's/listen 443 ssl;/listen 443;/' \
-                   -e '/ssl_certificate/s/^/#/' \
-                   -e '/ssl_certificate_key/s/^/#/' \
-                   -e '/ssl_dhparam/s/^/#/' \
-                   -e '/include \/etc\/letsencrypt/s/^/#/' \
-                   -e 's/http:\/\/frontend:3000/http:\/\/127.0.0.1:3000/' \
-                   -e 's/http:\/\/backend:3333/http:\/\/127.0.0.1:3333/' \
-                   deploy/nginx/nginx.conf)
+              # Este é um marcador que será substituído
+              ##NGINX_CONFIG_CONTENT##
           }
           EOF
+
+          # Processa o nginx.conf original e salva em uma variável
+          PROCESSED_CONFIG=$(sed \
+              -e 's/listen 443 ssl;/listen 443;/' \
+              -e '/ssl_certificate/s/^#/' \
+              -e '/ssl_certificate_key/s/^#/' \
+              -e '/ssl_dhparam/s/^#/' \
+              -e '/include \/etc\/letsencrypt/s/^#/' \
+              -e 's|http://frontend:3000|http://127.0.0.1:3000|g' \
+              -e 's|http://backend:3333|http://127.0.0.1:3333|g' \
+              deploy/nginx/nginx.conf)
+
+          # Substitui o marcador no arquivo de teste pelo conteúdo processado
+          # Usamos um comando `awk` para fazer a substituição de forma segura
+          awk -v replacement="$PROCESSED_CONFIG" '{
+            gsub("##NGINX_CONFIG_CONTENT##", replacement);
+            print;
+          }' deploy/nginx/nginx.test.conf > deploy/nginx/nginx.test.conf.tmp && mv deploy/nginx/nginx.test.conf.tmp deploy/nginx/nginx.test.conf
+
           echo ">>> Validating Nginx syntax..."
           docker run --rm -v ${{ github.workspace }}/deploy/nginx/nginx.test.conf:/etc/nginx/nginx.conf:ro nginx:stable-alpine nginx -t
+
           echo ">>> Nginx syntax is valid!"
 
   # --- Job 2: Build do Backend (Roda apenas se houver alterações) ---
