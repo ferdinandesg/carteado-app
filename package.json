@@ -32,8 +32,8 @@
     "dev": "npm run dev --workspace=backend & npm run dev --workspace=frontend",
     "deploy:dev": "docker-compose -f docker-compose-dev.yml up --build",
     "deploy:prod": "docker-compose -f docker-compose-prod.yml up --build",
-    "ssh": "ssh -i ~/.ssh/id_ed25519 franmlfran@34.69.64.98",
-    "ssh:tunnel": "ssh -i ~/.ssh/id_ed25519 -L 27017:localhost:27017 franmlfran@34.69.64.98"
+    "ssh": "ssh -i ~/.ssh/id_ed25519 franmlfran@34.45.46.196",
+    "ssh:tunnel": "ssh -i ~/.ssh/id_ed25519 -L 27017:localhost:27017 franmlfran@34.45.46.196"
   },
   "devDependencies": {
     "@babel/core": "^7.28.4",
