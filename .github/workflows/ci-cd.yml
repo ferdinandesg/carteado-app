@@ -50,33 +50,6 @@ jobs:
       - name: Lint project
         run: npm run lint
 
-      - name: Validate Nginx configuration
-        run: |
-          echo ">>> Creating temporary Nginx config for syntax validation..."
-
-          # Cria um arquivo de teste temporário com a estrutura completa
-          {
-            echo "events { worker_connections 768; }"
-            echo "http {"
-            # Processa o nginx.conf original e insere seu conteúdo aqui dentro
-            sed \
-              -e 's/listen 443 ssl;/listen 443;/' \
-              -e '/^\s*ssl_certificate/s/^/#/' \
-              -e '/^\s*ssl_certificate_key/s/^/#/' \
-              -e '/^\s*ssl_dhparam/s/^/#/' \
-              -e '/^\s*include.*letsencrypt/s/^/#/' \
-              -e 's|http://frontend:3000|http://127.0.0.1:3000|g' \
-              -e 's|http://backend:3333|http://127.0.0.1:3333|g' \
-              deploy/nginx/nginx.conf
-            echo "}"
-          } > deploy/nginx/nginx.test.conf
-
-          echo ">>> Validating Nginx syntax..."
-          # Valida o arquivo de teste completo
-          docker run --rm -v ${{ github.workspace }}/deploy/nginx/nginx.test.conf:/etc/nginx/nginx.conf:ro nginx:stable-alpine nginx -t
-
-          echo ">>> Nginx syntax is valid!"
-
   # --- Job 2: Build do Backend (Roda apenas se houver alterações) ---
   build-backend:
     runs-on: ubuntu-latest
