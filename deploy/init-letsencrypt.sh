@@ -78,7 +78,7 @@ echo "[INFO] Aguardando Nginx estabilizar (5s)..."
 sleep 5
 
 echo "[6/7] Solicitando certificado real Let's Encrypt..."
-local staging_flag=""
+staging_flag=""
 if [ "$STAGING" = "1" ]; then staging_flag="--staging"; fi
 
 # Usa o serviço 'certbot' do compose para obter o certificado real
