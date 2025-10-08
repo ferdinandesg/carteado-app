@@ -61,7 +61,6 @@ services:
       - PORT=4000
       - REDIS_URL=redis://redis:6379
       - DATABASE_URL=mongodb://mongodb:27017/carteado
-      # Use same JWT secret key (or could be its own). Ensure set in .env.
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - FRONTEND_URL=https://carteado.ferdinandes.com.br
     restart: always

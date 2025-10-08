@@ -6,7 +6,7 @@ const EnvSchema = z.object({
     .enum(["development", "test", "production"])
     .default("development"),
   PORT: z.coerce.number().int().positive().default(3001),
-  REDIS_URL: z.string().url().optional(),
+  REDIS_URL: z.string().optional(),
   JWT_SECRET_KEY: z.string().min(4, "JWT_SECRET_KEY must be at least 4 chars"),
   DATABASE_URL: z.string().optional(),
 });
@@ -18,7 +18,10 @@ let cached: Env | null = null;
 export function loadEnv(): Env {
   if (cached) return cached;
   const parsed = EnvSchema.safeParse(process.env);
-
+  console.log({
+    parsed,
+    env: process.env,
+  });
   if (!parsed.success) {
     if (process.env.NODE_ENV !== "production") {
       // eslint-disable-next-line no-console
