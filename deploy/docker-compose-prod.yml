@@ -30,7 +30,7 @@ services:
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=https://carteado.ferdinandes.com.br
-      - NEXTAUTH_URL=https://carteado.ferdinandes.com.br
+      - NEXTAUTH_URL=http://backend:4000
       - SOCKET_URL=http://carteado.ferdinandes.com.br/socket.io/
       - GOOGLE_ID=${GOOGLE_ID}
       - GOOGLE_SECRET=${GOOGLE_SECRET}

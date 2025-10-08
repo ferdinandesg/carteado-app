@@ -11,17 +11,13 @@ type JwtPayload = {
 
 const promisifyVerifyToken = (token: string) => {
   return new Promise<JwtPayload>((resolve, reject) => {
-    jwt.verify(
-      token,
-      process.env.JWT_SECRET_KEY || "secret",
-      (err, decoded) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(decoded as JwtPayload);
-        }
+    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(decoded as JwtPayload);
       }
-    );
+    });
   });
 };
 
@@ -49,7 +45,7 @@ export default async function authorize(
   try {
     const token = req.headers["authorization"]?.split(" ")[1];
     if (!token) {
-      res.status(401).json({ message: "NOT_AUTHORIZED" });
+      res.status(401).json({ message: "NO_TOKEN_PROVIDED" });
       return;
     }
     const user = await verifyJWTToken(token);

@@ -150,7 +150,8 @@ jobs:
             echo "### 6. Iniciando a aplicação do zero..."
             export GOOGLE_ID='${{ secrets.GOOGLE_ID }}'
             export GOOGLE_SECRET='${{ secrets.GOOGLE_SECRET }}'
-            export NEXTAUTH_SECRET='${{ secrets.NEXTAUTH_SECRET }}'
+            export NEXTAUTH_SECRET='${{ secrets.JWT_SECRET_KEY }}'
+            export NEXTAUTH_URL='${{ secrets.NEXTAUTH_URL }}'
             export DATABASE_URL='${{ secrets.DATABASE_URL }}'
             export JWT_SECRET_KEY='${{ secrets.JWT_SECRET_KEY }}'
             docker compose -f docker-compose-prod.yml up -d

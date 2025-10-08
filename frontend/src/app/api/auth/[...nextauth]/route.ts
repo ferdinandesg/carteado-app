@@ -1,10 +1,14 @@
-import axiosInstance from "@/hooks/axios";
 import { UserSession } from "@/models/Users";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import jwt from "jsonwebtoken";
 import Credentials from "next-auth/providers/credentials";
 import { UserRole } from "shared/types";
+import axios from "axios";
+
+const axiosInstance = axios.create({
+  baseURL: process.env.NEXTAUTH_URL,
+});
 
 const validateUser = async (payload: UserSession) => {
   const response = await axiosInstance.post("/auth", payload);
@@ -17,12 +21,12 @@ const validateGuestUser = async (name: string) => {
 };
 
 const generateJWT = ({ id, role }: { id: string; role: UserRole }) => {
-  const secretKey = process.env.NEXTAUTH_SECRET || "secret";
+  const secretKey = process.env.NEXTAUTH_SECRET!;
   return jwt.sign({ id: id, role: role }, secretKey);
 };
 
 const handler = NextAuth({
-  secret: process.env.NEXTAUTH_SECRET || "secret",
+  secret: process.env.NEXTAUTH_SECRET!,
   providers: [
     Credentials({
       name: "Credentials",
