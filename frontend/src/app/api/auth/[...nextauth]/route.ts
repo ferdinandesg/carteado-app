@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import Credentials from "next-auth/providers/credentials";
 import { UserRole } from "shared/types";
 import axios from "axios";
+import logger from "@/tests/utils/logger";
 
 const axiosInstance = axios.create({
   baseURL: `${process.env.NEXTAUTH_URL}/api/v1`,
@@ -22,11 +23,7 @@ const validateGuestUser = async (name: string) => {
 
 const generateJWT = ({ id, role }: { id: string; role: UserRole }) => {
   const secretKey = process.env.NEXTAUTH_SECRET!;
-  console.log("Generating JWT with secret key:", {
-    id,
-    role,
-    env: process.env,
-  });
+  logger.info("Generating JWT");
   return jwt.sign({ id: id, role: role }, secretKey);
 };
 
@@ -70,7 +67,7 @@ const handler = NextAuth({
 
     async session({ session, token }) {
       try {
-        console.log("Criando sessão para o token:", token);
+        logger.info(token, "Criando sessão para o token:");
         const accessToken = generateJWT({
           id: String(token.id),
           role: String(token.role) as UserRole,

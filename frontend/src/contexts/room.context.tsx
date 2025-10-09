@@ -26,10 +26,7 @@ export function RoomProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!id) return;
-    console.log({
-      room,
-      id
-    })
+
     socket.on("room_update", (updatedRoom: RoomsInterface) => {
       updateRoom(updatedRoom);
     });

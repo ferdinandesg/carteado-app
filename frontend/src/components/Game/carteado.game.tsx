@@ -10,17 +10,11 @@ import { selectCurrentPlayer, useGameStore } from "@/contexts/game.store";
 export default function CarteadoGame() {
     const { playCard, game } = useGameStore();
     const player = useGameStore(selectCurrentPlayer);
-    console.log({
-        player
-    })
     const handCards = player?.hand || [];
     const tableCards = player?.table.sort((a) => (a.hidden ? 1 : -1)) || [];
 
     const isPlayerChoosing = player?.status === "choosing";
     const isFinished = game?.status === "finished";
-    console.log({
-        game,
-    })
     return (
         <>
             <ModalChoseCards isOpen={isPlayerChoosing} />
