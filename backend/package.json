@@ -39,6 +39,7 @@
     "@models": "./dist/src/models",
     "@socket": "./dist/src/socket",
     "@socket/*": "./dist/src/socket/*",
+    "@utils": "./dist/src/utils",
     "src": "./dist/src",
     "@": "./dist",
     "shared": "./dist/shared"
