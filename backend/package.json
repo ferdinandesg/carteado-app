@@ -42,5 +42,8 @@
     "src": "./dist/src",
     "@": "./dist",
     "shared": "./dist/shared"
+  },
+  "devDependencies": {
+    "pino-pretty": "^13.1.1"
   }
 }

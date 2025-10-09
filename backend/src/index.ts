@@ -15,18 +15,24 @@ app.use(express.json());
 app.use(cors());
 routes(app);
 
-const logger = pino({
-  level: process.env.LOG_LEVEL || "info", // Define o nível do log
-  transport: {
-    target: "pino-pretty", // Opcional: formata o log para ficar legível no console de desenvolvimento
+const pinoConfig = {
+  level: process.env.LOG_LEVEL || "info",
+  transport: undefined as pino.TransportSingleOptions | undefined,
+};
+
+// Habilita o pino-pretty APENAS em ambiente de desenvolvimento
+if (process.env.NODE_ENV !== "production") {
+  pinoConfig.transport = {
+    target: "pino-pretty",
     options: {
       colorize: true,
     },
-  },
-});
-const httpLogger = PinoHttp({ logger });
-app.use(httpLogger);
+  };
+}
 
+// Cria o logger com a configuração condicional
+const logger = pino(pinoConfig);
+app.use(PinoHttp({ logger }));
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
