@@ -156,16 +156,12 @@ jobs:
             echo "### 5. Puxando as imagens mais recentes..."
             docker compose -f docker-compose-prod.yml pull
             
-            echo "### 6. Parando e subindo a aplicação (com o novo driver de log)..."
+            echo "### 6. Parando e subindo a aplicação..."
             # O .env no servidor fornecerá as variáveis
             docker compose -f docker-compose-prod.yml down -v --remove-orphans
             docker compose -f docker-compose-prod.yml up -d
             
-            echo "### 7. Tentando renovar o certificado SSL (se necessário)..."
-            # Esta é a forma correta de renovar, em vez de rodar o init-script
-            docker compose -f docker-compose-prod.yml exec certbot renew
-
-            echo "### 8. Limpando imagens Docker antigas e não utilizadas..."
+            echo "### 7. Limpando imagens Docker antigas e não utilizadas..."
             docker image prune -af
             
             echo ">>> DEPLOY CONCLUÍDO COM SUCESSO! <<<"
