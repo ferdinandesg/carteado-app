@@ -16,7 +16,7 @@ import { RejectTrucoEventHandler } from "./cards/RejectTrucoEventHandler";
 import { AcceptTrucoEventHandler } from "./cards/AcceptTrucoEventHandler";
 import { LeaveRoomEventHandler } from "./rooms/LeaveRoomEventHandler";
 import { retrieveSession } from "src/redis/userSession";
-import { logger } from "@/utils/logger";
+import { logger } from "@utils/logger";
 
 const retrieveUserData = async (socket: Socket) => {
   const session = await retrieveSession(socket.user.id);

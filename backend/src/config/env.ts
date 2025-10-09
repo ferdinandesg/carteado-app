@@ -1,4 +1,4 @@
-import { logger } from "@/utils/logger";
+import { logger } from "@utils/logger";
 import { z } from "zod";
 
 // Define schema for environment variables

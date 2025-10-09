@@ -1,6 +1,6 @@
 import { createClient, RedisClientType } from "redis";
 import { expireRoomByHash } from "@services/room.service"; // Sua função para expirar a sala no banco
-import { logger } from "@/utils/logger";
+import { logger } from "@utils/logger";
 
 class RedisClass {
   private static dataClient: RedisClientType | null = null;

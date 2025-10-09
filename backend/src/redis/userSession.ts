@@ -1,6 +1,6 @@
 import { Socket } from "socket.io/dist/socket";
 import RedisClass from "./client";
-import { logger } from "@/utils/logger";
+import { logger } from "@utils/logger";
 
 export async function storeSession(socket: Socket, roomHash: string) {
   const redis = await RedisClass.getDataClient();

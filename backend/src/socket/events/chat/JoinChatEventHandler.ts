@@ -2,7 +2,7 @@ import emitToUser from "src/socket/utils/emitToUser";
 import { SocketContext } from "src/@types/socket";
 import { getMessages } from "src/redis/chat";
 import emitToRoom from "@socket/utils/emitToRoom";
-import { logger } from "@/utils/logger";
+import { logger } from "@utils/logger";
 
 export async function JoinChatEventHandler(
   context: SocketContext

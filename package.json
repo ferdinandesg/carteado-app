@@ -18,7 +18,7 @@
     "@services": "./backend/dist/src/services",
     "@models": "./backend/dist/src/models",
     "@socket": "./backend/dist/src/socket",
-    "@/utils": "./backend/dist/src/utils",
+    "@utils": "./backend/dist/src/utils",
     "@socket/*": "./backend/dist/src/socket/*",
     "src": "./backend/dist/src",
     "@": "./backend/dist",

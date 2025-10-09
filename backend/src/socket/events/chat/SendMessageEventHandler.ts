@@ -1,7 +1,7 @@
 import { SocketContext } from "../../../@types/socket";
 import emitToRoom from "@socket/utils/emitToRoom";
 import { addMessage } from "./addMessage";
-import { logger } from "@/utils/logger";
+import { logger } from "@utils/logger";
 
 export async function SendMessageEventHandler(
   context: SocketContext

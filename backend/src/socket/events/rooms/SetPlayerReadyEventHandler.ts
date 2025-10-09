@@ -2,7 +2,7 @@ import { getRoomState, saveRoomState } from "src/redis/room";
 import { SocketContext } from "../../../@types/socket";
 import emitToRoom from "@socket/utils/emitToRoom";
 import ErrorHandler from "src/utils/error.handler";
-import { logger } from "@/utils/logger";
+import { logger } from "@utils/logger";
 
 export async function SetPlayerStatusEventHandler(
   context: SocketContext
