@@ -133,30 +133,40 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
       - name: Deploy to VM
         run: |
+          # Copia a pasta de deploy para a VM
           gcloud compute scp --recurse ./deploy/ ${{ env.DEPLOY_USER }}@${{ env.GCP_INSTANCE_NAME }}:${{ env.DEPLOY_PATH }} --zone ${{ env.GCP_ZONE }}
-          gcloud compute scp ${{ env.DEPLOY_PATH }}/deploy/ops-agent.yaml ${{ env.DEPLOY_USER }}@${{ env.GCP_INSTANCE_NAME }}:/tmp/ops-agent.yaml --zone ${{ env.GCP_ZONE }}
+
+          # Executa os comandos de deploy na VM via SSH
           gcloud compute ssh ${{ env.DEPLOY_USER }}@${{ env.GCP_INSTANCE_NAME }} --zone ${{ env.GCP_ZONE }} -- << EOF
             set -e
+
+            echo "### 1. Instalando/Atualizando o Google Cloud Ops Agent..."
+            curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh && sudo bash add-google-cloud-ops-agent-repo.sh --also-install
+
+            echo "### 2. Aplicando a configuração do Ops Agent..."
+            sudo cp ${{ env.DEPLOY_PATH }}/deploy/ops-agent.yaml /etc/google-cloud-ops-agent/config.yaml
+            sudo systemctl restart google-cloud-ops-agent
+            
+            echo "### 3. Navegando para a pasta de deploy..."
             cd ${{ env.DEPLOY_PATH }}/deploy
-            echo "### 1. Parando e removendo qualquer aplicação antiga..."
-            docker compose -f docker-compose-prod.yml down -v --remove-orphans
-            echo "### 2. Tornando script de SSL executável..."
-            chmod +x init-letsencrypt.sh
-            echo "### 3. Configurando SSL (apenas se necessário)..."
-            ./init-letsencrypt.sh
+            
             echo "### 4. Autenticando no Docker Hub..."
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+            
             echo "### 5. Puxando as imagens mais recentes..."
             docker compose -f docker-compose-prod.yml pull
-            echo "### 6. Iniciando a aplicação do zero..."
-            export GOOGLE_ID='${{ secrets.GOOGLE_ID }}'
-            export GOOGLE_SECRET='${{ secrets.GOOGLE_SECRET }}'
-            export NEXTAUTH_SECRET='${{ secrets.JWT_SECRET_KEY }}'
-            export NEXTAUTH_URL='${{ secrets.NEXTAUTH_URL }}'
-            export DATABASE_URL='${{ secrets.DATABASE_URL }}'
-            export JWT_SECRET_KEY='${{ secrets.JWT_SECRET_KEY }}'
+            
+            echo "### 6. Parando e subindo a aplicação (com o novo driver de log)..."
+            # O .env no servidor fornecerá as variáveis
+            docker compose -f docker-compose-prod.yml down -v --remove-orphans
             docker compose -f docker-compose-prod.yml up -d
-            echo "### 7. Limpando imagens Docker antigas e não utilizadas..."
+            
+            echo "### 7. Tentando renovar o certificado SSL (se necessário)..."
+            # Esta é a forma correta de renovar, em vez de rodar o init-script
+            docker compose -f docker-compose-prod.yml exec certbot renew
+
+            echo "### 8. Limpando imagens Docker antigas e não utilizadas..."
             docker image prune -af
+            
             echo ">>> DEPLOY CONCLUÍDO COM SUCESSO! <<<"
           EOF
