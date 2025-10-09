@@ -134,6 +134,7 @@ jobs:
       - name: Deploy to VM
         run: |
           gcloud compute scp --recurse ./deploy/ ${{ env.DEPLOY_USER }}@${{ env.GCP_INSTANCE_NAME }}:${{ env.DEPLOY_PATH }} --zone ${{ env.GCP_ZONE }}
+          gcloud compute scp ${{ env.DEPLOY_PATH }}/deploy/ops-agent.yaml ${{ env.DEPLOY_USER }}@${{ env.GCP_INSTANCE_NAME }}:/tmp/ops-agent.yaml --zone ${{ env.GCP_ZONE }}
           gcloud compute ssh ${{ env.DEPLOY_USER }}@${{ env.GCP_INSTANCE_NAME }} --zone ${{ env.GCP_ZONE }} -- << EOF
             set -e
             cd ${{ env.DEPLOY_PATH }}/deploy

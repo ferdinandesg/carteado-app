@@ -7,7 +7,7 @@ import { UserRole } from "shared/types";
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXTAUTH_URL,
+  baseURL: `${process.env.NEXTAUTH_URL}/api/v1`,
 });
 
 const validateUser = async (payload: UserSession) => {

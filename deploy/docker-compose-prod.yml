@@ -11,9 +11,10 @@ services:
       - ./data/certbot/www:/var/www/certbot
     command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
     logging:
-      driver: "gcplogs"
+      driver: "json-file"
       options:
-        gcp-project: "empyrean-engine-448903-c0"
+        max-size: "10m" # Rotação de logs: máximo de 10 megabytes por arquivo
+        max-file: "3" # Rotação de logs: manter no máximo 3 arquivos de log
     depends_on:
       - frontend
       - backend
@@ -42,9 +43,10 @@ services:
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     restart: always
     logging:
-      driver: "gcplogs"
+      driver: "json-file"
       options:
-        gcp-project: "empyrean-engine-448903-c0"
+        max-size: "10m" # Rotação de logs: máximo de 10 megabytes por arquivo
+        max-file: "3" # Rotação de logs: manter no máximo 3 arquivos de log
     networks:
       - app_network
 
@@ -65,9 +67,10 @@ services:
       - FRONTEND_URL=https://carteado.ferdinandes.com.br
     restart: always
     logging:
-      driver: "gcplogs"
+      driver: "json-file"
       options:
-        gcp-project: "empyrean-engine-448903-c0"
+        max-size: "10m" # Rotação de logs: máximo de 10 megabytes por arquivo
+        max-file: "3" # Rotação de logs: manter no máximo 3 arquivos de log
     networks:
       - app_network
 
