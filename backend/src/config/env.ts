@@ -1,3 +1,4 @@
+import { logger } from "@/utils/logger";
 import { z } from "zod";
 
 // Define schema for environment variables
@@ -18,16 +19,11 @@ let cached: Env | null = null;
 export function loadEnv(): Env {
   if (cached) return cached;
   const parsed = EnvSchema.safeParse(process.env);
-  console.log({
-    parsed,
-    env: process.env,
-  });
   if (!parsed.success) {
     if (process.env.NODE_ENV !== "production") {
-      // eslint-disable-next-line no-console
-      console.error(
-        "❌ Invalid environment variables:",
-        parsed.error.flatten().fieldErrors
+      logger.error(
+        parsed.error.flatten().fieldErrors,
+        "❌ Invalid environment variables:"
       );
     }
     throw new Error("Environment validation failed");

@@ -1,5 +1,6 @@
 import { Socket } from "socket.io/dist/socket";
 import RedisClass from "./client";
+import { logger } from "@/utils/logger";
 
 export async function storeSession(socket: Socket, roomHash: string) {
   const redis = await RedisClass.getDataClient();
@@ -24,6 +25,6 @@ export async function retrieveSession(userId: string) {
 
 export async function expireSession(userId: string) {
   const redis = await RedisClass.getDataClient();
-  console.log(`User ${userId} disconnected. Setting session TTL.`);
+  logger.info(`User ${userId} disconnected. Setting session TTL.`);
   redis.expire(`session:${userId}`, 300);
 }

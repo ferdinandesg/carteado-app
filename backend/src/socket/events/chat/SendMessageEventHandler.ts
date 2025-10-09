@@ -1,6 +1,7 @@
 import { SocketContext } from "../../../@types/socket";
 import emitToRoom from "@socket/utils/emitToRoom";
 import { addMessage } from "./addMessage";
+import { logger } from "@/utils/logger";
 
 export async function SendMessageEventHandler(
   context: SocketContext
@@ -15,8 +16,8 @@ export async function SendMessageEventHandler(
     };
     await addMessage(roomHash, messageDoc);
     emitToRoom(channel, roomHash, "receive_message", messageDoc);
-    console.log(`Emitted to: ${roomHash} - ${messageDoc.message}`);
+    logger.info(`Emitted to: ${roomHash} - ${messageDoc.message}`);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
   }
 }

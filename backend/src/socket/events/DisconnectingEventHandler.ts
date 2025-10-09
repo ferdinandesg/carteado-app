@@ -2,6 +2,7 @@ import { getRoomState, saveRoomState } from "src/redis/room";
 import { SocketContext } from "../../@types/socket";
 import emitToRoom from "@socket/utils/emitToRoom";
 import { expireSession } from "src/redis/userSession";
+import { logger } from "@/utils/logger";
 
 export async function DisconnectingEventHandler(
   context: Omit<SocketContext, "payload">
@@ -21,5 +22,5 @@ export async function DisconnectingEventHandler(
   }
   // Quando o usuário desconecta, damos um tempo para ele voltar
   await expireSession(socket.user.id);
-  console.log(`Disconnected: ${socket.user.id}`);
+  logger.info(`Disconnected: ${socket.user.id}`);
 }

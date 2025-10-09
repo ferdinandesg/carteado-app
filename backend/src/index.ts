@@ -7,31 +7,16 @@ import SocketClass from "./socket/socket";
 import routes from "./routes";
 import RedisClass from "./redis/client";
 import rateLimit from "express-rate-limit";
-import PinoHttp from "pino-http";
+
 import { env } from "./config/env";
-import pino from "pino";
+import { logger } from "./utils/logger";
+import PinoHttp from "pino-http";
+
 const app = express();
 app.use(express.json());
 app.use(cors());
 routes(app);
 
-const pinoConfig = {
-  level: process.env.LOG_LEVEL || "info",
-  transport: undefined as pino.TransportSingleOptions | undefined,
-};
-
-// Habilita o pino-pretty APENAS em ambiente de desenvolvimento
-if (process.env.NODE_ENV !== "production") {
-  pinoConfig.transport = {
-    target: "pino-pretty",
-    options: {
-      colorize: true,
-    },
-  };
-}
-
-// Cria o logger com a configuração condicional
-const logger = pino(pinoConfig);
 app.use(PinoHttp({ logger }));
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -47,17 +32,17 @@ RedisClass.getDataClient();
 SocketClass.init(httpServer);
 process.on("uncaughtException", (err) => {
   if (process.env.NODE_ENV !== "production") {
-    console.error("Exceção não capturada detectada:", err);
+    logger.error(err, "Exceção não capturada detectada:");
   }
 });
 
 process.on("unhandledRejection", (reason) => {
   if (process.env.NODE_ENV !== "production") {
-    console.error("Promise rejeitada sem tratamento:", reason);
+    logger.error(reason, "Promise rejeitada sem tratamento:");
   }
 });
 httpServer.listen(env.PORT, () => {
-  console.log(`Running on: ${env.PORT}`);
+  logger.info(`Running on: ${env.PORT}`);
 });
 
 export default httpServer;

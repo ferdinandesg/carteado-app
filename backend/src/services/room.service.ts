@@ -65,9 +65,6 @@ export async function listRooms() {
 
 export async function getRoom(hash: string): Promise<RoomWithParticipants> {
   const roomCache = await getRoomState(hash);
-  console.log({
-    roomCache,
-  });
   if (roomCache) {
     return roomCache;
   }

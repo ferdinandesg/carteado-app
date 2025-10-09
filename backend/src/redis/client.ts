@@ -1,5 +1,6 @@
 import { createClient, RedisClientType } from "redis";
 import { expireRoomByHash } from "@services/room.service"; // Sua função para expirar a sala no banco
+import { logger } from "@/utils/logger";
 
 class RedisClass {
   private static dataClient: RedisClientType | null = null;
@@ -14,11 +15,11 @@ class RedisClass {
       });
 
       RedisClass.dataClient.on("error", (err) => {
-        console.error("Redis error:", err);
+        logger.error(err, "Redis error:");
       });
 
       await RedisClass.dataClient.connect();
-      console.log("Connected to Redis for data operations");
+      logger.info("Connected to Redis for data operations");
 
       await RedisClass.getSubscribeClient();
     }
@@ -33,11 +34,11 @@ class RedisClass {
       });
 
       RedisClass.subscribeClient.on("error", (err) => {
-        console.error("Redis error:", err);
+        logger.error(err, "Redis error");
       });
 
       await RedisClass.subscribeClient.connect();
-      console.log("Connected to Redis for subscribing to events");
+      logger.info("Connected to Redis for subscribing to events");
 
       RedisClass.subscribeClient.pSubscribe(
         "__keyevent@0__:expired",
@@ -57,13 +58,13 @@ class RedisClass {
     if (RedisClass.dataClient) {
       await RedisClass.dataClient.disconnect();
       RedisClass.dataClient = null;
-      console.log("Disconnected from Redis for data operations");
+      logger.info("Disconnected from Redis for data operations");
     }
 
     if (RedisClass.subscribeClient) {
       await RedisClass.subscribeClient.disconnect();
       RedisClass.subscribeClient = null;
-      console.log("Disconnected from Redis for subscribing to events");
+      logger.info("Disconnected from Redis for subscribing to events");
     }
   }
 }

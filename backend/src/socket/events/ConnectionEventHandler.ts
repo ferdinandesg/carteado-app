@@ -16,18 +16,19 @@ import { RejectTrucoEventHandler } from "./cards/RejectTrucoEventHandler";
 import { AcceptTrucoEventHandler } from "./cards/AcceptTrucoEventHandler";
 import { LeaveRoomEventHandler } from "./rooms/LeaveRoomEventHandler";
 import { retrieveSession } from "src/redis/userSession";
+import { logger } from "@/utils/logger";
 
 const retrieveUserData = async (socket: Socket) => {
   const session = await retrieveSession(socket.user.id);
   if (session) {
-    console.log(`User Id: ${socket.user.id} reconnected`);
+    logger.info(`User Id: ${socket.user.id} reconnected`);
     socket.user.room = session.roomHash;
     socket.user.status = session.status;
     socket.emit("reconnected", {
       message: "WELCOME_BACK",
     });
   }
-  console.log(`User Id: ${socket.user.id} connected`);
+  logger.info(`User Id: ${socket.user.id} connected`);
 };
 
 export async function ConnectionEventHandler(

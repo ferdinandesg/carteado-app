@@ -3,6 +3,7 @@ import prisma from "../prisma";
 import { randomUUID } from "node:crypto";
 import { saveGuest } from "src/redis/guests";
 import { EmptyGuestType } from "shared/types";
+import { logger } from "@/utils/logger";
 
 type UserLogin = Omit<User, "id" | "role">;
 
@@ -37,7 +38,7 @@ export async function validateGuestUser(
     rank: 0,
     isRegistered: false,
   };
-  console.log("Criando usuário convidado:", guestUser);
+  logger.info({ guestUser }, "Criando usuário convidado:");
   await saveGuest(guestUser);
   return guestUser;
 }

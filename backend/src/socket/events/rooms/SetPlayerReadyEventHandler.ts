@@ -2,6 +2,7 @@ import { getRoomState, saveRoomState } from "src/redis/room";
 import { SocketContext } from "../../../@types/socket";
 import emitToRoom from "@socket/utils/emitToRoom";
 import ErrorHandler from "src/utils/error.handler";
+import { logger } from "@/utils/logger";
 
 export async function SetPlayerStatusEventHandler(
   context: SocketContext
@@ -22,7 +23,7 @@ export async function SetPlayerStatusEventHandler(
     await saveRoomState(roomHash, room); // Salvamos o estado atualizado da sala
     if (!room) throw "ROOM_NOT_FOUND";
     emitToRoom(channel, roomHash, "room_update", room);
-    console.log(`User ${socket.user.name} is ${participant.status}`);
+    logger.info(`User ${socket.user.name} is ${participant.status}`);
   } catch (error) {
     ErrorHandler(error, socket);
   }
