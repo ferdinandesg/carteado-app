@@ -7,8 +7,8 @@ const EnvSchema = z.object({
     .default("development"),
   PORT: z.coerce.number().int().positive().default(3001),
   REDIS_URL: z.string().optional(),
-  JWT_SECRET_KEY: z.string().min(4, "JWT_SECRET_KEY must be at least 4 chars"),
   DATABASE_URL: z.string().optional(),
+  JWT_SECRET_KEY: z.string().min(4, "JWT_SECRET_KEY must be at least 4 chars"),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
