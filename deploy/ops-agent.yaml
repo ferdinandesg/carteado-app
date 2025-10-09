@@ -5,10 +5,15 @@ logging:
       include_paths:
         - /var/lib/docker/containers/*/*.log
   processors:
-    docker_json:
+    parse_docker_json:
       type: parse_json
+
+    parse_app_json:
+      type: parse_json
+      field: log
+
   service:
     pipelines:
       docker:
         receivers: [docker_json]
-        processors: [docker_json]
+        processors: [parse_docker_json, parse_app_json]
