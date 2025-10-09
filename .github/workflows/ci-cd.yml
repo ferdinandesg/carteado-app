@@ -157,6 +157,11 @@ jobs:
             docker compose -f docker-compose-prod.yml pull
             
             echo "### 6. Parando e subindo a aplicação..."
+            export GOOGLE_ID='${{ secrets.GOOGLE_ID }}'
+            export GOOGLE_SECRET='${{ secrets.GOOGLE_SECRET }}'
+            export NEXTAUTH_SECRET='${{ secrets.NEXTAUTH_SECRET }}'
+            export DATABASE_URL='${{ secrets.DATABASE_URL }}'
+            export JWT_SECRET_KEY='${{ secrets.JWT_SECRET_KEY }}'
             # O .env no servidor fornecerá as variáveis
             docker compose -f docker-compose-prod.yml down -v --remove-orphans
             docker compose -f docker-compose-prod.yml up -d
