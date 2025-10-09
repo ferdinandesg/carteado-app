@@ -22,6 +22,11 @@ const validateGuestUser = async (name: string) => {
 
 const generateJWT = ({ id, role }: { id: string; role: UserRole }) => {
   const secretKey = process.env.NEXTAUTH_SECRET!;
+  console.log("Generating JWT with secret key:", {
+    id,
+    role,
+    env: process.env,
+  });
   return jwt.sign({ id: id, role: role }, secretKey);
 };
 
@@ -65,6 +70,7 @@ const handler = NextAuth({
 
     async session({ session, token }) {
       try {
+        console.log("Criando sessão para o token:", token);
         const accessToken = generateJWT({
           id: String(token.id),
           role: String(token.role) as UserRole,
