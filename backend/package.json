@@ -25,6 +25,8 @@
     "express-rate-limit": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "module-alias": "^2.2.3",
+    "pino": "^10.0.0",
+    "pino-http": "^11.0.0",
     "redis": "^5.8.3",
     "shared": "file:../shared",
     "socket.io": "^4.8.1",

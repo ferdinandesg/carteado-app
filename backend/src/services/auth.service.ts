@@ -37,6 +37,7 @@ export async function validateGuestUser(
     rank: 0,
     isRegistered: false,
   };
+  console.log("Criando usuário convidado:", guestUser);
   await saveGuest(guestUser);
   return guestUser;
 }
