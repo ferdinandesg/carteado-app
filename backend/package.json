@@ -6,7 +6,8 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node -r module-alias/register dist/src/index.js",
-    "dev": "npm run prisma:generate && nodemon src/index.ts",
+    "test": "jest",
+    "dev": "nodemon src/index.ts",
     "build": "npx prisma generate && npx tsc",
     "lint": "npm run build --prefix ../shared && prisma generate && tsc --noEmit && eslint ./src --format=pretty --color",
     "prisma:generate": "prisma generate",
@@ -45,6 +46,8 @@
     "shared": "./dist/shared"
   },
   "devDependencies": {
-    "pino-pretty": "^13.1.1"
+    "@types/supertest": "^6.0.3",
+    "pino-pretty": "^13.1.1",
+    "supertest": "^7.1.4"
   }
 }

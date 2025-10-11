@@ -1,44 +1,36 @@
-.ModalRoot {
-  width: 40%;
-  height: 45%;
+.CreateRoom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: $spacing-l;
+  height: 100%;
+  width: 100%;
+  margin: 0 auto;
 
-  .ModalContent {
+  .menuContent {
+    width: 70%;
+    height: 100%;
+    position: relative;
+    background-color: rgba(black, 0.2);
     display: flex;
     flex-direction: column;
-    padding: $spacing-s;
+    justify-content: center;
+    align-items: center;
     gap: $spacing-m;
-    border-radius: 25px;
-
-    .inputForm {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      .input {
-        width: 70%;
-        height: 50%;
-        margin-top: 10px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        padding: $spacing-m;
-        font-weight: 300;
-      }
-
-      .button {
-        width: 50%;
-        height: 30px;
-        margin-top: 10px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        background-color: #f0f0f0;
-        cursor: pointer;
-      }
+    .input {
+      border-radius: $border-radius;
+      border: 1px solid #ccc;
+      padding: $spacing-m;
+      font-size: 20px;
+      font-weight: 300;
     }
+
     .playersForm {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: $spacing-l;
+      color: white;
+      gap: $spacing-m;
       button {
         padding: $spacing-xs $spacing-m;
         font-size: 36px;
@@ -56,15 +48,15 @@
       }
     }
     .createButton {
-      margin: 0 auto;
-      width: 70%;
-      margin: auto;
+      width: 30%;
       display: flex;
+      margin-top: $spacing-l;
       justify-content: center;
+      border-radius: $border-radius;
       align-items: center;
-      color: black;
+      color: white;
       background-color: $primary-color;
-      gap: $spacing-m;
+      gap: $spacing-s;
       padding: $spacing-m;
       font-size: 1.25rem;
       cursor: pointer;

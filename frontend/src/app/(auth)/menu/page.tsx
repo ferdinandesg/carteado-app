@@ -2,8 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import useModalContext from "@/components/Modal/ModalContext";
-import ModalCreateRoom from "@/components/Modal/ModalCreateRoom/ModalCreateRoom";
 
 import styles from "@styles/Menu.module.scss";
 import UserCard from "@/components/UserCard";
@@ -19,19 +17,8 @@ export default function Menu() {
 
   const router = useRouter();
   const { data } = useSession();
-  const { show, setShowModal } = useModalContext();
-
-  const onCreateRoom = function (hash: string) {
-    router.push(`/room/${hash}`);
-  };
-
   return (
     <>
-      <ModalCreateRoom
-        isOpen={show}
-        onClose={() => setShowModal(false)}
-        onConfirm={onCreateRoom}
-      />
       <div className={classNames(styles.Menu, "square-bg")}>
         <div className={styles.menuContent}>
           <UserCard user={data?.user} />
@@ -45,7 +32,7 @@ export default function Menu() {
             <MenuButton
               label={t("Menu.createRoom")}
               icon={<ListPlus size={42} />}
-              onClick={() => setShowModal(true)}
+              onClick={() => router.push(`/room/create`)}
             />
             <MenuButton
               label={t("Menu.createdRooms")}

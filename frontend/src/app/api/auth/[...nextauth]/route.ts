@@ -8,7 +8,7 @@ import axios from "axios";
 import logger from "@/tests/utils/logger";
 
 const axiosInstance = axios.create({
-  baseURL: `${process.env.NEXTAUTH_URL}/api/v1`,
+  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1`,
 });
 
 const validateUser = async (payload: UserSession) => {
@@ -48,6 +48,10 @@ const handler = NextAuth({
 
   callbacks: {
     async jwt({ token, user, account }) {
+      console.log({
+        user,
+        token,
+      });
       if (account && user) {
         try {
           const userData =
