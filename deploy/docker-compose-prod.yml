@@ -24,8 +24,6 @@ services:
   frontend:
     image: ferdinandes/carteado-frontend:latest
     container_name: carteado_frontend
-    args:
-      - APP_VERSION=${APP_VERSION}
     ports:
       - "3000:3000"
     depends_on:
@@ -39,6 +37,7 @@ services:
       - GOOGLE_SECRET=${GOOGLE_SECRET}
       # Secret used by NextAuth (set in .env file, do NOT hardcode). Must be long & random.
       - NEXTAUTH_SECRET=${JWT_SECRET_KEY}
+      - APP_VERSION=${APP_VERSION}
       # Trust proxy headers since we are behind nginx
       - AUTH_TRUST_HOST=true
       # JWT secret used by your custom generateJWT (keep separate for rotation if desired)
