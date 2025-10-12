@@ -5,6 +5,7 @@ import Message from "./message";
 
 import styles from "@styles/Chat.module.scss";
 import { useTranslation } from "react-i18next";
+import { PanelLeftClose, PanelRight, } from "lucide-react";
 
 type MessageType = {
   message: string;
@@ -12,9 +13,10 @@ type MessageType = {
 };
 interface ChatProps {
   roomHash: string;
-  isOpen?: boolean;
+  isCollapsed?: boolean;
+  toggleCollapse?: () => void;
 }
-export default function Chat({ roomHash }: ChatProps) {
+export default function Chat({ roomHash, isCollapsed, toggleCollapse }: ChatProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { t } = useTranslation()
   const divRef = useRef<HTMLDivElement | null>(null);
@@ -87,35 +89,43 @@ export default function Chat({ roomHash }: ChatProps) {
   };
 
   return (
-    <div
+    <aside
       className={styles.Chat}
       ref={chatRef}
       onFocus={setReadMessages}>
-      <div
-        ref={divRef}
-        className={styles.messagesContainer}>
-        {isLoading && <span className="text-white">Loading...</span>}
-        {!isLoading &&
-          localMessages?.map((m, i) => (
-            <Message
-              key={`message-${i}`}
-              {...m}
-            />
-          ))}
+      <div className={styles.header} onClick={toggleCollapse}>
+        {isCollapsed ? <PanelRight /> : <PanelLeftClose />}
       </div>
-      <form className={styles.messageForm}>
-        <div className={styles.messageBox}>
-          <input
-            ref={inputRef}
-            placeholder={t("chatPlaceholder")}
-            type="text"
-          />
-        </div>
-        <button
-          onClick={(e) => sendMessage(e)}>
-          {t("send")}
-        </button>
-      </form>
-    </div >
+      {!isCollapsed && (
+        <>
+          <div
+            ref={divRef}
+            className={styles.messagesContainer}>
+            {isLoading && <span className="text-white">Loading...</span>}
+            {!isLoading &&
+              localMessages?.map((m, i) => (
+                <Message
+                  key={`message-${i}`}
+                  {...m}
+                />
+              ))}
+          </div>
+          <form className={styles.messageForm}>
+            <div className={styles.messageBox}>
+              <input
+                ref={inputRef}
+                placeholder={t("chatPlaceholder")}
+                type="text"
+              />
+            </div>
+            <button
+              onClick={(e) => sendMessage(e)}>
+              {t("send")}
+            </button>
+          </form>
+        </>
+      )}
+
+    </aside >
   );
 }

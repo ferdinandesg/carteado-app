@@ -23,7 +23,6 @@ const validateGuestUser = async (name: string) => {
 
 const generateJWT = ({ id, role }: { id: string; role: UserRole }) => {
   const secretKey = process.env.NEXTAUTH_SECRET!;
-  logger.info("Generating JWT");
   return jwt.sign({ id: id, role: role }, secretKey);
 };
 
@@ -48,41 +47,38 @@ const handler = NextAuth({
 
   callbacks: {
     async jwt({ token, user, account }) {
-      console.log({
-        user,
-        token,
-      });
       if (account && user) {
         try {
-          const userData =
-            user.role === "guest"
-              ? user
-              : await validateUser(user as UserSession);
+          let userData;
+          if (account.provider === "credentials") {
+            userData = user;
+          } else {
+            userData = await validateUser(user as UserSession);
+          }
           token.id = userData.id;
           token.name = userData.name;
           token.email = userData.email;
           token.role = userData.role;
         } catch (error) {
-          console.error("Erro na validação do usuário:", error);
+          logger.error(error, "Erro na validação do usuário");
+          return { ...token, error: "UserValidationError" };
         }
       }
       return token;
     },
 
     async session({ session, token }) {
-      try {
-        logger.info(token, "Criando sessão para o token:");
-        const accessToken = generateJWT({
-          id: String(token.id),
-          role: String(token.role) as UserRole,
-        });
-        session.user.id = token.id;
-        session.user.accessToken = accessToken;
-        return session;
-      } catch (error) {
-        console.error("Erro na criação da sessão:", error);
-        return session;
-      }
+      session.user.id = token.id as string;
+      session.user.name = token.name;
+      session.user.email = token.email;
+      session.user.role = token.role as UserRole;
+
+      session.user.accessToken = generateJWT({
+        id: token.id as string,
+        role: token.role as UserRole,
+      });
+
+      return session;
     },
 
     redirect() {

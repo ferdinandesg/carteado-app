@@ -6,11 +6,11 @@ export type Player = {
   id: string;
   hand: Card[];
   name?: string;
-  table: Card[];
   isOnline?: boolean;
   status?: PlayerStatus;
   image?: string;
   userId: string;
+  table: Card[];
 };
 
 export type PlayerWithUser = Player & {

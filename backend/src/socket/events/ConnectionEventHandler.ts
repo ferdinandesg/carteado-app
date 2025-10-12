@@ -27,6 +27,7 @@ const retrieveUserData = async (socket: Socket) => {
     socket.emit("reconnected", {
       message: "WELCOME_BACK",
     });
+    return;
   }
   logger.info(`User Id: ${socket.user.id} connected`);
 };

@@ -2,13 +2,21 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
+  height: 80vh;
+  border-radius: $border-radius;
+  margin: auto 0;
+  .header {
+    width: 100%;
+    display: flex;
+    padding-bottom: $spacing-m;
+    justify-content: end;
+    color: white;
+  }
   .messagesContainer {
     display: flex;
     flex-direction: column;
     padding: $spacing-s;
     overflow-y: auto;
-    height: 100%;
     gap: $spacing-m;
 
     scrollbar-width: thin;

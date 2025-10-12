@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import styles from "@styles/Lobby.module.scss";
 import { useTranslation } from "react-i18next";
 import { PlayerStatus } from "shared/game";
+import Participants from "../Players/participants";
 
 export default function Lobby() {
   const { t } = useTranslation();
@@ -29,6 +30,7 @@ export default function Lobby() {
 
   return (
     <div className={classNames(styles.LobbyContainer)}>
+      <Participants roomHash={roomId} />
       <span className={classNames("animate-bounce", styles.waiting)}>
         {t("Lobby.waitingPlayers")}
       </span>

@@ -2,7 +2,6 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "target": "es6",
-    // Allow multiple roots (frontend + shared) for type checking shared package during Next build
     "rootDirs": ["./", "../shared"],
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -36,7 +35,6 @@
     },
     "types": ["@testing-library/jest-dom"]
   },
-
   "include": [
     "next-env.d.ts",
     "**/*.ts",

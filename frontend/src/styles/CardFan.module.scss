@@ -1,38 +1,23 @@
-$card-border: 1px solid black;
-$card-border-radius: 5px;
-$hover-scale: 1.2;
-$hover-offset-y: -20px;
-
-$card-positions: (
-  (0px, 0px, -10deg),
-  (0px, 0px, -10deg),
-  (0px, 0px, -10deg),
-  (0px, 0px, -10deg),
-  (0px, 0px, -10deg),
-  (0px, 0px, -10deg),
-  (0px, 0px, -10deg)
-);
-
-.wrap {
-  padding: $spacing-m;
-  margin: $spacing-m 0;
-  position: relative;
-  justify-content: center;
-  gap: $spacing-l;
+.cardFanContainer {
   display: flex;
+  justify-content: center;
   align-items: center;
-  z-index: 5;
-  flex-wrap: wrap;
-  overflow: auto;
+  position: relative;
+  min-height: 200px;
+  padding-top: 50px;
 }
 
-.card {
-  border-radius: $card-border-radius;
-  position: relative;
-  transition: transform 0.2s ease-in-out;
+.cardWrapper {
+  position: absolute;
+  bottom: 0;
+
+  transform: translateX(var(--translate-x));
+
+  transition: transform 0.25s ease-out;
+  cursor: pointer;
 
   &:hover {
-    z-index: 2;
-    transform: translate(0px, $hover-offset-y) rotate(0deg) scale($hover-scale);
+    transform: translateX(var(--translate-x)) translateY(-40px);
+    z-index: 10;
   }
 }

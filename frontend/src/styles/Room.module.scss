@@ -1,6 +1,17 @@
 .roomContainer {
-  display: flex;
-  height: 100vh;
+  display: grid;
+  height: 100%;
+  gap: $spacing-m;
+  --chat-column-width: 25%;
+  --main-column-width: 1fr;
+  --info-column-width: 25%;
+
+  grid-template-columns: var(--chat-column-width) var(--main-column-width) var(
+      --info-column-width
+    );
+
+  transition: grid-template-columns 0.1s ease-in-out;
+  padding: 0 $spacing-m;
 }
 .playersHud {
   display: flex;
@@ -11,60 +22,6 @@
   scrollbar-width: none;
   gap: $spacing-l;
   width: 30%;
-
-  .Player {
-    padding: $spacing-s $spacing-m;
-    background-color: rgba(white, 0.1);
-    border-radius: 0 25px 25px 0;
-    display: flex;
-    gap: $spacing-m;
-    .avatar {
-      height: 100px;
-      border: 4px solid lightgray;
-      position: relative;
-      width: 100px;
-      border-radius: 25px;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: transparent;
-      transition: all 0.3s ease;
-      overflow: hidden;
-    }
-
-    .metadata {
-      display: flex;
-      flex-direction: column;
-      .username {
-        color: $primary-color;
-        font-size: 1.05rem;
-      }
-
-      .playerStatus {
-        font-size: 2rem;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: end;
-
-        &.ready {
-          color: $success-color;
-        }
-        &.notReady {
-          color: $primary-color;
-        }
-      }
-
-      .teamInfo {
-        color: white;
-      }
-    }
-    .history {
-      display: flex;
-      gap: $spacing-l;
-    }
-  }
 
   .roomActions {
     display: flex;

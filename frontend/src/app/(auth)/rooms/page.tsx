@@ -17,7 +17,9 @@ type RoomListType = {
 
 const RoomList = ({ rooms, onClick }: RoomListType) => {
   return (
-    <div className={styles.RoomList}>
+    <div
+      data-testid="room-list"
+      className={styles.RoomList}>
       {rooms.map((room) => (
         <RoomItem
           key={`room-${room.hash}`}
@@ -55,6 +57,7 @@ export default function Rooms() {
   return (
     <div className={classNames(styles.Rooms)}>
       <BackButton
+        data-testid="back-button"
         onClick={goToMenu}
         size={24}
       />

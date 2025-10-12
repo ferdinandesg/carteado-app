@@ -1,0 +1,54 @@
+.participant {
+  padding: $spacing-s $spacing-m;
+  background-color: rgba(white, 0.1);
+  border-radius: 0 25px 25px 0;
+  display: flex;
+  width: 100%;
+  gap: $spacing-m;
+  .avatar {
+    height: 80px;
+    width: 80px;
+    border: 4px solid lightgray;
+    position: relative;
+    border-radius: 25px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+
+  .metadata {
+    display: flex;
+    flex-direction: column;
+    .username {
+      color: $primary-color;
+      font-size: 1.05rem;
+    }
+
+    .playerStatus {
+      font-size: 2rem;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+
+      &.ready {
+        color: $success-color;
+      }
+      &.notReady {
+        color: $primary-color;
+      }
+    }
+
+    .teamInfo {
+      color: white;
+    }
+  }
+  .history {
+    display: flex;
+    gap: $spacing-l;
+  }
+}

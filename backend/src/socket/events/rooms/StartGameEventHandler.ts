@@ -75,8 +75,6 @@ export async function StartGameEventHandler(
       saveGameRedisPromise,
     ]);
 
-    // --- 5. NOTIFICAR CLIENTES ---
-
     emitToRoom(channel, roomHash, "info", "MATCH_STARTED");
     // Enviamos o estado inicial completo do jogo e da sala
     emitToRoom(channel, roomHash, "game_updated", game);

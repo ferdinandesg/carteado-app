@@ -31,7 +31,9 @@ const RoomStatus = ({ status }: { status: "open" | "playing" }) => {
     );
   }
   return (
-    <span className={classNames(styles.roomStatus, styles[status])}>
+    <span
+      data-testid={`room-status-${status}`}
+      className={classNames(styles.roomStatus, styles[status])}>
       {icon}
       <span className={styles.label}>{t(`RoomItem.${status}`)}</span>
     </span>
@@ -45,6 +47,7 @@ const RoomItem = ({ room, onClick = () => { } }: RoomItemProps) => {
 
   return (
     <div
+      data-testid={`room-item-${room.id}`}
       onClick={() => onClick(room)}
       className={styles.RoomItem}
       key={room.id}>

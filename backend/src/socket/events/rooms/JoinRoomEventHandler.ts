@@ -44,7 +44,7 @@ export async function JoinRoomEventHandler(
     }
     await storeSession(socket, roomHash);
     await saveRoomState(roomHash, room);
-    emitToRoom(channel, roomHash, "room_update", room);
+    emitToRoom(channel, roomHash, "room_updated", room);
     emitToRoom(socket, roomHash, "user_joined", {
       message: `O usuário ${socket.user.name} entrou na sala.`,
       players: { user: socket.user, isOnline: true },

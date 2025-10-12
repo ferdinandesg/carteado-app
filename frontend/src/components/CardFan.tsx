@@ -1,30 +1,41 @@
-import { Card } from "shared/cards";
+import React from 'react';
+import { Card } from 'shared/cards';
+import CardComponent from './Card';
+import styles from '@styles/CardFan.module.scss';
 
-import styles from "@styles/CardFan.module.scss";
-import CardComponent from "./Card";
 interface CardFanProps {
   cards: Card[];
-  onClick?: (card: Card) => void;
+  onClick: (card: Card) => void;
+  spacing?: number;
 }
 
-const CardFan: React.FC<CardFanProps> = ({ cards, onClick = () => { } }) => {
+export default function CardFan({ cards, onClick, spacing = 60 }: CardFanProps) {
+  const numCards = cards.length;
+  const fanWidth = (numCards - 1) * spacing;
+  const initialOffset = -fanWidth / 2;
+
   return (
-    <div className={styles.wrap}>
+    <div
+      className={styles.cardFanContainer}
+    >
       {cards.map((card, index) => {
+        const translateX = initialOffset + index * spacing;
+
+        const cardStyle = {
+          '--translate-x': `${translateX}px`,
+        } as React.CSSProperties;
+
         return (
           <div
-            key={index}
-            className={styles.card}>
-            <CardComponent
-              height={150}
-              card={card}
-              onClick={() => onClick(card)}
-            />
+            key={card.toString}
+            className={styles.cardWrapper}
+            style={cardStyle}
+            onClick={() => onClick(card)}
+          >
+            <CardComponent card={card} height={180} />
           </div>
         );
       })}
     </div>
   );
-};
-
-export default CardFan;
+}

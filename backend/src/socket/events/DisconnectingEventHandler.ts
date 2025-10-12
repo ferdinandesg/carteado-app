@@ -18,7 +18,7 @@ export async function DisconnectingEventHandler(
       (participant) => participant.userId !== socket.user.id
     );
     await saveRoomState(roomHash, room);
-    emitToRoom(channel, roomHash, "room_update", room);
+    emitToRoom(channel, roomHash, "room_updated", room);
   }
   // Quando o usuário desconecta, damos um tempo para ele voltar
   await expireSession(socket.user.id);

@@ -7,6 +7,7 @@ export type RoomsInterface = {
   id: string;
   hash: string;
   name: string;
+  size: number;
   status: RoomStatus;
   createdAt: string;
   participants: Participant[];

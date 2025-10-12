@@ -6,6 +6,7 @@
     "loading": "Carregando...",
     "send": "Enviar",
     "chatPlaceholder": "Digite sua mensagem...",
+    "open": "Aberta",
     "back": "Voltar",
     "confirm": "Confirmar",
     "pageTitles": {
@@ -71,7 +72,14 @@
         "gameFinished": "O jogo acabou",
         "winner": "Vencedor: {{winner}}"
     },
-    "Players": {
+    "RoomInfo": {
+        "title": "Informações da sala",
+        "owner": "Dono",
+        "participants": "Participantes",
+        "hash": "Código",
+        "status": "Status: {{status}}"
+    },
+    "Participants": {
         "status": {
             "ready": "Pronto",
             "notReady": "Não pronto",
@@ -81,7 +89,7 @@
         }
     },
     "RoomItem": {
-        "players": "Jogadores",
+        "participants": "Jogadores",
         "status": "Status",
         "join": "Entrar",
         "leave": "Sair",

@@ -13,6 +13,6 @@ export async function LeaveRoomEventHandler(
     (player) => player.userId !== socket.user.id
   );
   await saveRoomState(room.hash, room);
-  emitToRoom(channel, room.hash, "room_update", room);
+  emitToRoom(channel, room.hash, "room_updated", room);
   channel.to(socket.user.room).emit("quit", JSON.stringify(socket.user));
 }

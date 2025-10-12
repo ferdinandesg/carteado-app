@@ -26,6 +26,8 @@ const CreateRoomButton = withSound(
     ({ onClick, disabled, text }: { onClick: () => void; disabled: boolean, text: string }) => {
         return (
             <button
+                type="button"
+                data-testid="create-room-button"
                 className={styles.createButton}
                 onClick={onClick}
                 disabled={disabled}>
@@ -79,12 +81,14 @@ export default function CreateRoom() {
         <div className={styles.menuContent}>
             <UserCard user={data?.user} />
             <BackButton
+                data-testid="back-button"
                 color="dark"
                 onClick={() => window.history.back()}
                 size={24}
             />
             <input
                 type="text"
+                data-testid="room-name-input"
                 id="username"
                 placeholder={t("CreateRoom.roomName")}
                 className={styles.input}
@@ -93,6 +97,7 @@ export default function CreateRoom() {
             <div className={styles.playersForm}>
                 {roomSize.map((player) => (
                     <button
+                        data-testid={`room-size-button-${player}`}
                         onClick={(e) =>
                             handleUpdateRoomPayload("size")(+e.currentTarget.value)
                         }
@@ -107,6 +112,7 @@ export default function CreateRoom() {
             </div>
             <div className={styles.playersForm}>
                 <button
+                    data-testid="room-rule-button-CarteadoGameRules"
                     onClick={(e) =>
                         handleUpdateRoomPayload("rule")(e.currentTarget.value)
                     }
@@ -118,6 +124,7 @@ export default function CreateRoom() {
                     Carteado
                 </button>
                 <button
+                    data-testid="room-rule-button-TrucoGameRules"
                     onClick={(e) =>
                         handleUpdateRoomPayload("rule")(e.currentTarget.value)
                     }

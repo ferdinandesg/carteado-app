@@ -2,6 +2,7 @@ import logger from "@/tests/utils/logger";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import jwt from "jsonwebtoken";
+import { signOut } from "next-auth/react";
 
 const axiosInstance = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1`,
@@ -36,15 +37,13 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
   (response) => response,
-  async (error) => {
+  (error) => {
     if (
       error.response &&
       (error.response.status === 401 || error.response.status === 403)
     ) {
       logger.warn("Sessão expirada. Faça login novamente.");
-      if (typeof window !== "undefined") {
-        window.location.href = "/";
-      }
+      signOut({ callbackUrl: "/" });
     }
     return Promise.reject(error);
   }

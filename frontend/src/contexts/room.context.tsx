@@ -27,13 +27,14 @@ export function RoomProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!id) return;
 
-    socket.on("room_update", (updatedRoom: RoomsInterface) => {
+    socket.on("room_updated", (updatedRoom: RoomsInterface) => {
+
       updateRoom(updatedRoom);
     });
 
     return () => {
       socket.emit("quit");
-      socket.off("room_update");
+      socket.off("room_updated");
     };
   }, [id, socket]);
   return (

@@ -11,6 +11,7 @@ const createJestConfig = nextJest({
 const config: Config = {
   clearMocks: true,
   collectCoverage: true,
+  verbose: false,
   coverageDirectory: "coverage",
   rootDir: "./",
   coverageProvider: "v8",
@@ -24,7 +25,7 @@ const config: Config = {
 
   testEnvironment: "jsdom",
   testPathIgnorePatterns: ["/node_modules/", "/.next/"],
-
+  reporters: ["default", "summary"],
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest",
   },

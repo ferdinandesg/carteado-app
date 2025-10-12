@@ -1,3 +1,5 @@
+import "@testing-library/jest-dom";
+
 jest.mock("i18next", () => ({
   use: jest.fn().mockReturnThis(),
   init: jest.fn(),
@@ -44,20 +46,6 @@ jest.mock("react-toastify", () => ({
   toast: jest.fn(),
 }));
 
-// Mock global do RedisClass
-jest.mock("./redis/client", () => {
-  return {
-    getDataClient: jest.fn().mockResolvedValue("mocked-redis-client"), // Mocka o comportamento do Redis
-  };
-});
-
-// Mock global do SocketClass
-jest.mock("./socket/socket", () => {
-  return {
-    init: jest.fn(), // Mocka o método de inicialização do Socket
-  };
-});
-
 // Mock global do express-rate-limit
 jest.mock("express-rate-limit", () => {
   return jest.fn().mockImplementation(() => {
@@ -65,7 +53,11 @@ jest.mock("express-rate-limit", () => {
   });
 });
 
-// Mocka a função routes (caso precise verificar chamadas a ela)
-jest.mock("./routes", () => {
-  return jest.fn(); // Mocka a função de rotas
-});
+jest.mock("./src/hooks/axios", () => ({
+  axiosInstance: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+  },
+}));

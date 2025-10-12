@@ -22,7 +22,7 @@ export async function SetPlayerStatusEventHandler(
     if (!room) throw "ROOM_NOT_FOUND";
     await saveRoomState(roomHash, room); // Salvamos o estado atualizado da sala
     if (!room) throw "ROOM_NOT_FOUND";
-    emitToRoom(channel, roomHash, "room_update", room);
+    emitToRoom(channel, roomHash, "room_updated", room);
     logger.info(`User ${socket.user.name} is ${participant.status}`);
   } catch (error) {
     ErrorHandler(error, socket);
