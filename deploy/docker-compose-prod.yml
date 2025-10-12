@@ -100,8 +100,8 @@ services:
   mongodb:
     build:
       context: ./mongodb_rs
-      args:
-        MONGO_VERSION: "6.0"
+    args:
+      MONGO_VERSION: "6.0"
     container_name: mongodb
     ports:
       - "27017:27017"
