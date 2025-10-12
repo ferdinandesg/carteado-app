@@ -4,6 +4,7 @@ const pinoConfig: pino.LoggerOptions = {
   level: process.env.LOG_LEVEL || "info",
   base: {
     service: "frontend",
+    version: process.env.APP_VERSION || "dev",
   },
 };
 

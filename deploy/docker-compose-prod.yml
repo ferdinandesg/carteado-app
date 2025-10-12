@@ -24,6 +24,8 @@ services:
   frontend:
     image: ferdinandes/carteado-frontend:latest
     container_name: carteado_frontend
+    args:
+      - APP_VERSION=${APP_VERSION}
     ports:
       - "3000:3000"
     depends_on:
