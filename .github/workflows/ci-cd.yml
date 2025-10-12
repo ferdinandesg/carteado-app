@@ -3,6 +3,7 @@ name: CI-CD
 on:
   push:
     branches: ["master"]
+  workflow_dispatch:
 
 env:
   NODE_VERSION: 20.15.1
@@ -30,8 +31,11 @@ jobs:
             frontend:
               - 'frontend/**'
 
+  # --- Job 1: Instalação e Testes Iniciais (sempre roda) ---
   setup:
     runs-on: ubuntu-latest
+    # Adicionado para que o setup não rode desnecessariamente em deploys manuais
+    if: github.event_name == 'push'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -45,11 +49,12 @@ jobs:
       - name: Lint project
         run: npm run lint
 
-  # --- Job de Build do Backend ---
+  # --- Job 2: Build do Backend ---
   build-backend:
     runs-on: ubuntu-latest
     needs: [setup, changes]
-    if: needs.changes.outputs.backend == 'true'
+    # Condição atualizada: Roda se houver alterações no backend OU se o deploy for manual
+    if: needs.changes.outputs.backend == 'true' || github.event_name == 'workflow_dispatch'
     environment: production
     permissions:
       contents: "read"
@@ -77,11 +82,12 @@ jobs:
           cache-from: type=registry,ref=${{ env.IMAGE_BACKEND }}:buildcache
           cache-to: type=registry,ref=${{ env.IMAGE_BACKEND }}:buildcache,mode=max
 
-  # --- Job de Build do Frontend ---
+  # --- Job 3: Build do Frontend ---
   build-frontend:
     runs-on: ubuntu-latest
     needs: [setup, changes]
-    if: needs.changes.outputs.frontend == 'true'
+    # Condição atualizada: Roda se houver alterações no frontend OU se o deploy for manual
+    if: needs.changes.outputs.frontend == 'true' || github.event_name == 'workflow_dispatch'
     environment: production
     permissions:
       contents: "read"
@@ -108,18 +114,16 @@ jobs:
             ${{ env.IMAGE_FRONTEND }}:latest
           build-args: |
             APP_VERSION=${{ env.TAG }}
-          # =============================================================== #
           cache-from: type=registry,ref=${{ env.IMAGE_FRONTEND }}:buildcache
           cache-to: type=registry,ref=${{ env.IMAGE_FRONTEND }}:buildcache,mode=max
 
-  # --- Job de Deploy ---
+  # --- Job 4: Deploy ---
   deploy:
     runs-on: ubuntu-latest
     needs: [changes, build-backend, build-frontend]
     environment: production
-    # Condição para rodar o deploy:
-    # Sempre tenta rodar, mas só prossegue se nenhum build falhou e se houve alguma alteração (backend ou frontend).
-    if: always() && (needs.changes.outputs.backend == 'true' || needs.changes.outputs.frontend == 'true') && needs.build-backend.result != 'failure' && needs.build-frontend.result != 'failure'
+    # Condição atualizada: Roda se algum build foi acionado OU se o deploy for manual
+    if: always() && (needs.changes.outputs.backend == 'true' || needs.changes.outputs.frontend == 'true' || github.event_name == 'workflow_dispatch') && needs.build-backend.result != 'failure' && needs.build-frontend.result != 'failure'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -136,13 +140,10 @@ jobs:
             set -e
             echo "### Navegando para a pasta de deploy..."
             cd ${{ env.DEPLOY_PATH }}/deploy
-            
             echo "### Autenticando no Docker Hub..."
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-            
             echo "### Puxando as imagens mais recentes..."
             docker compose -f docker-compose-prod.yml pull
-            
             echo "### Parando e subindo a aplicação..."
             export GOOGLE_ID='${{ secrets.GOOGLE_ID }}'
             export GOOGLE_SECRET='${{ secrets.GOOGLE_SECRET }}'
@@ -150,12 +151,9 @@ jobs:
             export NEXTAUTH_SECRET='${{ secrets.NEXTAUTH_SECRET }}'
             export DATABASE_URL='${{ secrets.DATABASE_URL }}'
             export JWT_SECRET_KEY='${{ secrets.JWT_SECRET_KEY }}'
-            
             docker compose -f docker-compose-prod.yml down -v --remove-orphans
             docker compose -f docker-compose-prod.yml up -d
-            
             echo "### Limpando imagens Docker não utilizadas..."
             docker image prune -af
-            
             echo ">>> DEPLOY CONCLUÍDO <<<"
           EOF
