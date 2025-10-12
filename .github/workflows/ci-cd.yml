@@ -3,6 +3,7 @@ name: CI-CD
 on:
   push:
     branches: ["master"]
+  # ADICIONE ESTAS DUAS LINHAS PARA PERMITIR O ACIONAMENTO MANUAL
   workflow_dispatch:
 
 env:
@@ -15,6 +16,7 @@ env:
   DEPLOY_PATH: /home/franmlfran
 
 jobs:
+  # --- Job: Detecta alterações nos diretórios ---
   changes:
     runs-on: ubuntu-latest
     outputs:
@@ -31,7 +33,7 @@ jobs:
             frontend:
               - 'frontend/**'
 
-  # --- Job 1: Instalação e Testes Iniciais (sempre roda) ---
+  # --- Job 1: Instalação e Testes Iniciais ---
   setup:
     runs-on: ubuntu-latest
     # Adicionado para que o setup não rode desnecessariamente em deploys manuais
@@ -147,7 +149,7 @@ jobs:
             echo "### Parando e subindo a aplicação..."
             export GOOGLE_ID='${{ secrets.GOOGLE_ID }}'
             export GOOGLE_SECRET='${{ secrets.GOOGLE_SECRET }}'
-            export NEXTAUTH_URL='${{ secrets.NEXTAUTH_URL }}'
+            export NEXTAUTH_URL='${{ env.NEXTAUTH_URL }}'
             export NEXTAUTH_SECRET='${{ secrets.NEXTAUTH_SECRET }}'
             export DATABASE_URL='${{ secrets.DATABASE_URL }}'
             export JWT_SECRET_KEY='${{ secrets.JWT_SECRET_KEY }}'
