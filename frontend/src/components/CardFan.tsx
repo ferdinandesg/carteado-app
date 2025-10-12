@@ -5,11 +5,11 @@ import styles from '@styles/CardFan.module.scss';
 
 interface CardFanProps {
   cards: Card[];
-  onClick: (card: Card) => void;
+  onClick?: (card: Card) => void;
   spacing?: number;
 }
 
-export default function CardFan({ cards, onClick, spacing = 60 }: CardFanProps) {
+export default function CardFan({ cards, onClick = () => { }, spacing = 60 }: CardFanProps) {
   const numCards = cards.length;
   const fanWidth = (numCards - 1) * spacing;
   const initialOffset = -fanWidth / 2;
