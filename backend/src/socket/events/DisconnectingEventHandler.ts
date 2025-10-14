@@ -1,4 +1,4 @@
-import { getRoomState, saveRoomState } from "src/redis/room";
+import { atomicallyUpdateRoomState } from "src/redis/room";
 import { SocketContext } from "../../@types/socket";
 import emitToRoom from "@socket/utils/emitToRoom";
 import { expireSession } from "src/redis/userSession";
@@ -9,18 +9,29 @@ export async function DisconnectingEventHandler(
 ): Promise<void> {
   const { socket, channel } = context;
   const roomHash = socket.user.room;
+  const userId = socket.user.id;
 
   if (!roomHash) return;
-  const room = await getRoomState(roomHash);
-  if (!room) return;
-  if (room.status === "open") {
-    room.participants = room.participants.filter(
-      (participant) => participant.userId !== socket.user.id
-    );
-    await saveRoomState(roomHash, room);
-    emitToRoom(channel, roomHash, "room_updated", room);
+
+  logger.info({ userId, roomHash }, "User disconnecting.");
+
+  const updatedRoom = await atomicallyUpdateRoomState(roomHash, (room) => {
+    const participant = room.participants.find((p) => p.userId === userId);
+    if (participant) {
+      participant.isOnline = false;
+    }
+    // If the room is open, we can also filter out the disconnected player
+    if (room.status === "open") {
+      room.participants = room.participants.filter((p) => p.userId !== userId);
+    }
+    return room;
+  });
+
+  if (updatedRoom) {
+    emitToRoom(channel, roomHash, "room_updated", updatedRoom);
+    logger.info({ userId, roomHash }, "User marked as offline.");
   }
-  // Quando o usuário desconecta, damos um tempo para ele voltar
+
+  // Set a TTL on the user's session to allow for reconnection
   await expireSession(socket.user.id);
-  logger.info(`Disconnected: ${socket.user.id}`);
 }

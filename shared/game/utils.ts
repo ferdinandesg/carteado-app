@@ -11,5 +11,6 @@ export const createParticipantObject = (
     image: user.image,
     socketId: user.id,
     isRegistered: user.role === "user",
+    isOnline: true,
   };
 };

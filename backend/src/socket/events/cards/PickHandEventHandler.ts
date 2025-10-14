@@ -2,9 +2,10 @@ import emitToRoom from "@socket/utils/emitToRoom";
 import { SocketContext } from "../../../@types/socket";
 import { getGameState, saveGameState } from "../../../redis/game";
 import { CarteadoGame } from "src/game/CarteadoGameRules";
+import { PickHandPayload } from "../payloads";
 
 export async function PickHandEventHandler(
-  context: SocketContext
+  context: SocketContext<PickHandPayload>
 ): Promise<void> {
   const { payload, socket, channel } = context;
   const { cards } = payload;

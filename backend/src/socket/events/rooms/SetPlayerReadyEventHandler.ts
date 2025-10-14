@@ -3,9 +3,10 @@ import { SocketContext } from "../../../@types/socket";
 import emitToRoom from "@socket/utils/emitToRoom";
 import ErrorHandler from "src/utils/error.handler";
 import { logger } from "@utils/logger";
+import { SetPlayerStatusPayload } from "../payloads";
 
 export async function SetPlayerStatusEventHandler(
-  context: SocketContext
+  context: SocketContext<SetPlayerStatusPayload>
 ): Promise<void> {
   const { socket, payload, channel } = context;
   try {

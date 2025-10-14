@@ -3,9 +3,10 @@ import { SocketContext } from "../../../@types/socket";
 import { getGameState } from "src/redis/game";
 import ErrorHandler from "src/utils/error.handler";
 import emitToUser from "@socket/utils/emitToUser";
+import { PlayerReconnectedPayload } from "../payloads";
 
 export async function PlayerReconnectedEventHandler(
-  context: SocketContext
+  context: SocketContext<PlayerReconnectedPayload>
 ): Promise<void> {
   const { payload, socket } = context;
   try {

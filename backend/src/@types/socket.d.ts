@@ -1,5 +1,3 @@
-import { Card } from "shared/cards";
-import { PlayerStatus } from "shared/game";
 import { GuestType, SocketUser } from "shared/types";
 import { Socket, Namespace } from "socket.io";
 
@@ -9,15 +7,8 @@ declare module "socket.io" {
   }
 }
 
-export interface SocketContext {
+export interface SocketContext<T = unknown> {
   socket: Socket;
-  payload: {
-    error: string;
-    roomHash: string;
-    status: PlayerStatus;
-    message: string;
-    card: Card;
-    cards: Card[];
-  };
+  payload: T;
   channel: Namespace;
 }

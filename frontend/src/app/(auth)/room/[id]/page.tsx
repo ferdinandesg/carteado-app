@@ -42,8 +42,8 @@ export default function Room() {
   const toggleChatCollapse = () => setChatCollapsed((c) => !c);
 
   useEffect(() => {
-    if (isLoading) return;
 
+    if (isLoading) return;
     socket.emit("join_room", { roomHash: id });
     return () => {
       socket.emit("leave_room", { roomHash: id });

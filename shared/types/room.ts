@@ -8,4 +8,5 @@ export interface Participant {
   image?: string; // Denormalizado para conveniência
   status: PlayerStatus; // Estado em tempo real
   isRegistered: boolean; // Indica se é um usuário registrado ou um convidado
+  isOnline: boolean; // Indica se o jogador está online
 }

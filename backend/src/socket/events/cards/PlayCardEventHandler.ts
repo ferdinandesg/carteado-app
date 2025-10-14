@@ -2,9 +2,10 @@ import emitToRoom from "@socket/utils/emitToRoom";
 import { SocketContext } from "../../../@types/socket";
 import { getGameState, saveGameState } from "../../../redis/game";
 import ErrorHandler from "src/utils/error.handler";
+import { PlayCardPayload } from "../payloads";
 
 export async function PlayCardEventHandler(
-  context: SocketContext
+  context: SocketContext<PlayCardPayload>
 ): Promise<void> {
   const { payload, socket, channel } = context;
   try {
