@@ -15,8 +15,9 @@ export async function handleValidateUser(req: Request, res: Response) {
 
 export async function handleValidateGuest(req: Request, res: Response) {
   try {
-    const { username } = req.body;
-    const response = await validateGuestUser(username);
+    const { username, skin, avatar } = req.body;
+    const response = await validateGuestUser(username, skin, avatar);
+
     res.status(200).json(response);
   } catch (error) {
     res.status(400).json(error);

@@ -5,9 +5,7 @@ import PlayingPhase from "./PlayingPhase";
 
 const GamePhaseManager = () => {
     const player = useGameStore(selectCurrentPlayer);
-    console.log({
-        player
-    })
+
     if (player?.status === "choosing") {
         return <ChoosingPhase />;
     }

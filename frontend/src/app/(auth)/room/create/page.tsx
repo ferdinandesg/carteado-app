@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import classNames from "classnames";
 import UserCard from "@/components/UserCard";
 import { useSession } from "next-auth/react";
+import logger from "@/tests/utils/logger";
 
 type RoomForm = {
     name: string;
@@ -72,7 +73,7 @@ export default function CreateRoom() {
             const room = await createRoom(roomPayload);
             router.push(`/room/${room.hash}`);
         } catch (error) {
-            console.error(error);
+            logger.error(error);
         }
     };
 

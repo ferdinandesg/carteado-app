@@ -16,8 +16,20 @@ const validateUser = async (payload: UserSession) => {
   return response.data;
 };
 
-const validateGuestUser = async (name: string) => {
-  const response = await axiosInstance.post("/auth/guest", { username: name });
+const validateGuestUser = async ({
+  username,
+  skin,
+  avatar,
+}: {
+  username: string;
+  skin?: string;
+  avatar?: string;
+}) => {
+  const response = await axiosInstance.post("/auth/guest", {
+    username,
+    skin,
+    avatar,
+  });
   return response.data;
 };
 
@@ -33,10 +45,12 @@ const handler = NextAuth({
       name: "Credentials",
       credentials: {
         username: { label: "Username", type: "text" },
+        avatar: { label: "Avatar", type: "text", optional: true },
+        skin: { label: "Skin", type: "text", optional: true },
       },
       async authorize(credentials) {
         if (!credentials?.username) return null;
-        return validateGuestUser(credentials.username);
+        return validateGuestUser(credentials);
       },
     }),
     GoogleProvider({
@@ -59,6 +73,8 @@ const handler = NextAuth({
           token.name = userData.name;
           token.email = userData.email;
           token.role = userData.role;
+          token.skin = userData.skin;
+          token.image = userData.image;
         } catch (error) {
           logger.error(error, "Erro na validação do usuário");
           return { ...token, error: "UserValidationError" };
@@ -72,7 +88,7 @@ const handler = NextAuth({
       session.user.name = token.name;
       session.user.email = token.email;
       session.user.role = token.role as UserRole;
-
+      session.user.skin = token.skin;
       session.user.accessToken = generateJWT({
         id: token.id as string,
         role: token.role as UserRole,

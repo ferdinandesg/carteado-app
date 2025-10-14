@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import logger from "@/tests/utils/logger";
 
 type SocketContextProps = {
   socket: Socket;
@@ -62,7 +63,14 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       socketInstance.on("connect_error", onConnectError);
       socketInstance.on("error", onError);
       socketInstance.on("info", onInfo);
-
+      socketInstance.on("connect", () => {
+        if (socketInstance.recovered) {
+          if (socketInstance.recovered) {
+            logger.info("Reconexão bem-sucedida. A sincronizar estado...");
+            socketInstance.emit("player_reconnected");
+          }
+        }
+      })
       setSocket(socketInstance);
 
       // A função de limpeza é crucial.
@@ -73,7 +81,6 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         socketInstance.disconnect();
       };
     } else {
-      // Se não estiver autenticado, garantimos que o socket esteja desconectado.
       socketInstance.disconnect();
       router.push("/");
     }

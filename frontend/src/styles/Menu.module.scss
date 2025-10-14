@@ -34,6 +34,21 @@
   }
 }
 
+.logout {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: $spacing-s;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
 
 @media (max-width: 768px) {
   .Menu {

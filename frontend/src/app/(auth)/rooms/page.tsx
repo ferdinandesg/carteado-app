@@ -9,6 +9,7 @@ import classNames from "classnames";
 import BackButton from "@/components/buttons/BackButton";
 import { useTranslation } from "react-i18next";
 import useTitle from "@/hooks/useTitle";
+import logger from "@/tests/utils/logger";
 
 type RoomListType = {
   rooms: RoomInterface[];
@@ -42,7 +43,7 @@ export default function Rooms() {
     try {
       router.push(`/room/${hash}`);
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     }
   };
 
@@ -50,7 +51,7 @@ export default function Rooms() {
     try {
       router.push("/menu");
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     }
   };
 

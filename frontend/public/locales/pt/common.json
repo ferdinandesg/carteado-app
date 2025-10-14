@@ -7,6 +7,7 @@
     "send": "Enviar",
     "chatPlaceholder": "Digite sua mensagem...",
     "open": "Aberta",
+    "logout": "Sair",
     "back": "Voltar",
     "confirm": "Confirmar",
     "pageTitles": {
@@ -18,7 +19,9 @@
     },
     "Home": {
         "joinAsGuest": "Entrar como convidado",
-        "guestNickname": "Apelido do convidado"
+        "guestNickname": "Apelido do convidado",
+        "customizeGuest": "Personalizar convidado",
+        "ChooseAvatar": "Escolha um avatar"
     },
     "inviteUser": {
         "placeholder": "Nome de usuário"

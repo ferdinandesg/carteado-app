@@ -43,9 +43,7 @@ export default function Room() {
 
   useEffect(() => {
     if (isLoading) return;
-    console.log({
-      socket
-    })
+
     socket.emit("join_room", { roomHash: id });
     return () => {
       socket.emit("leave_room", { roomHash: id });

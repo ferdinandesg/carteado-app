@@ -17,6 +17,7 @@ model User {
   name   String
   image  String
   email  String
+  skin   String?  @default("8bit")
   Player Player[]
   rank   Int
   role   String?  @default("user")

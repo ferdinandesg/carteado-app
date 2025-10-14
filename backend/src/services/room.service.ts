@@ -33,6 +33,7 @@ export async function createRoom(
   });
   const room = {
     ...createdRoom,
+    ownerId: user.id,
     participants: [],
   };
   await saveRoomState(hash, room);

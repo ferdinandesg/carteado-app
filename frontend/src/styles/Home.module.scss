@@ -4,22 +4,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
+  gap: $spacing-l;
   .container {
-    width: 50%;
-    height: 50%;
+    width: 30%;
+    position: relative;
+    height: 100%;
     display: flex;
     flex-direction: column;
     padding: $spacing-s;
-    border-radius: 5px;
     justify-content: space-around;
-    background-color: $primary-color;
+    background-color: rgba(black, 0.2);
     align-items: center;
   }
-
+  .banner {
+    height: 100%;
+    position: relative;
+    width: 30%;
+  }
   .authMethods {
     display: flex;
-    width: 50%;
     flex-direction: column;
     justify-content: center;
     gap: $spacing-m;
@@ -42,7 +45,7 @@
   }
 
   .title {
-    color: $secondary-color;
+    color: $primary-color;
     font-size: 4rem;
     font-weight: bold;
     text-align: center;

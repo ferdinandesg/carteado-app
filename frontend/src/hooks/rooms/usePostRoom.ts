@@ -1,3 +1,4 @@
+import logger from "@/tests/utils/logger";
 import axiosInstance from "../axios";
 
 type CreateRoomPayload = {
@@ -17,7 +18,7 @@ export default function usePostRoom() {
       const data = await rawPostRoom(room);
       return data;
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     }
   };
   return {

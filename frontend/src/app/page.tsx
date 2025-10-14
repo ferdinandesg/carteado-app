@@ -7,16 +7,17 @@ import classNames from "classnames";
 import Image from "next/image";
 import { Pixelify_Sans } from "next/font/google";
 import { useRouter } from "next/navigation";
-import ModalJoinAsGuest from "@/components/Modal/ModalJoinAsGuest/ModalJoinAsGuest";
 import { useState } from "react";
+import GuestCustomizer from "@/components/GuestCustomizer";
 
 const pixelify = Pixelify_Sans({
   weight: ["400"],
   subsets: ["latin"],
 });
+
 function Home() {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState<boolean>(false);
+  const [view, setView] = useState<"initial" | "guestSetup">("initial");
   const { t } = useTranslation()
   const router = useRouter();
   const goToRules = () => router.push("/rules");
@@ -32,9 +33,11 @@ function Home() {
     }
   };
 
+  if (view === "guestSetup") {
+    return <GuestCustomizer onBack={() => setView("initial")} />;
+  }
   return (
     <div className={classNames(styles.Home, "square-bg", pixelify.className)}>
-      <ModalJoinAsGuest isOpen={isOpen} onClose={() => setIsOpen(false)} />
       <div className={styles.container}>
         <h1 className={styles.title}>Carteado</h1>
         <div className={styles.authMethods}>
@@ -53,8 +56,7 @@ function Home() {
             {t("googleAuth")}
           </button>
           <button
-            onClick={() => setIsOpen(true)}
-            className="bg-gray-500 text-white hover:bg-gray-500 transition p-2 rounded">
+            onClick={() => setView("guestSetup")} className="text-white hover:bg-gray-500 transition p-2 rounded">
             {t("joinAsGuest")}
           </button>
         </div>
@@ -64,6 +66,15 @@ function Home() {
           {t("seeRules")}
         </span>
       </div>
+      <div className={styles.banner}>
+        <Image
+          src="/assets/banner.png"
+          alt="Banner"
+          layout="fill"
+          objectFit="cover"
+        />
+      </div>
+
     </div>
   );
 }

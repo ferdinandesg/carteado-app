@@ -1,0 +1,99 @@
+.customizerContainer {
+  display: flex;
+  justify-content: center;
+
+  min-height: 100vh;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-top: $spacing-s;
+  color: $primary-color;
+}
+
+.customizerBox {
+  width: 70%;
+  height: 100vh;
+  position: relative;
+  background-color: rgba(black, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  gap: $spacing-l;
+  .input {
+    border-radius: $border-radius;
+    border: 1px solid #ccc;
+    padding: $spacing-m;
+    color: black;
+    font-size: 20px;
+    font-weight: 300;
+  }
+
+  .optionsGrid {
+    display: flex;
+    gap: $spacing-m;
+  }
+
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-m;
+    label {
+      font-size: 1.25rem;
+    }
+  }
+
+  .optionItem {
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+
+    &.selected {
+      border-color: #4caf50; // Cor de destaque
+      box-shadow: 0 0 10px #4caf50;
+    }
+  }
+
+  .createButton {
+    width: 30%;
+    display: flex;
+    margin-top: $spacing-l;
+    justify-content: center;
+    border-radius: $border-radius;
+    align-items: center;
+    color: white;
+    background-color: $primary-color;
+    gap: $spacing-s;
+    margin: auto 0;
+    padding: $spacing-m;
+    font-size: 1.25rem;
+    cursor: pointer;
+
+    &:enabled {
+      &:hover {
+        background-color: lighten($color: $primary-color, $amount: 20);
+      }
+      &:active {
+        background-color: darken($color: $primary-color, $amount: 5);
+      }
+    }
+    &:disabled {
+      cursor: pointer;
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  }
+
+  .errorFeedback {
+    color: red;
+    font-size: 12px;
+    margin-top: $spacing-s;
+  }
+}

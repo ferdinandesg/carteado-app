@@ -17,6 +17,7 @@ import { AcceptTrucoEventHandler } from "./cards/AcceptTrucoEventHandler";
 import { LeaveRoomEventHandler } from "./rooms/LeaveRoomEventHandler";
 import { retrieveSession } from "src/redis/userSession";
 import { logger } from "@utils/logger";
+import { PlayerReconnectedEventHandler } from "./rooms/PlayerReconnectedEventHandler";
 
 const retrieveUserData = async (socket: Socket) => {
   const session = await retrieveSession(socket.user.id);
@@ -39,6 +40,11 @@ export async function ConnectionEventHandler(
   const context = { socket, channel };
 
   await retrieveUserData(socket);
+
+  // Reconnection handler
+  socket.on("player_reconnected", (payload) =>
+    PlayerReconnectedEventHandler({ ...context, payload })
+  );
 
   //CHAT EVENTS
   socket.on(CHANNEL.CLIENT.JOIN_CHAT, (payload) =>

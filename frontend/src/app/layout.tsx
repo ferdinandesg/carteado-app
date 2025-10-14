@@ -1,5 +1,4 @@
 "use client";
-import { SocketProvider } from "@/contexts/socket.context";
 import "../styles/globals.scss";
 import { SessionProvider } from "next-auth/react";
 import { Inter } from "next/font/google";
@@ -33,9 +32,7 @@ export default function RootLayout({
           </header>
           <SessionProvider>
             <QueryClientProvider client={queryClient}>
-              <SocketProvider>
-                <ModalProvider>{children}</ModalProvider>
-              </SocketProvider>
+              <ModalProvider>{children}</ModalProvider>
               <ToastContainer
                 position="top-right"
                 autoClose={2000}

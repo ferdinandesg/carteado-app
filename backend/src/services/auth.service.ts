@@ -5,7 +5,7 @@ import { saveGuest } from "src/redis/guests";
 import { EmptyGuestType } from "shared/types";
 import { logger } from "@utils/logger";
 
-type UserLogin = Omit<User, "id" | "role">;
+type UserLogin = Omit<User, "id" | "role" | "skin">;
 
 export async function validateUser(user: UserLogin): Promise<User> {
   const foundUser = await prisma.user.findFirst({
@@ -26,7 +26,9 @@ export async function validateUser(user: UserLogin): Promise<User> {
 }
 
 export async function validateGuestUser(
-  username: string
+  username: string,
+  skin?: string,
+  avatar?: string
 ): Promise<EmptyGuestType> {
   const uuid = randomUUID();
   const hash = uuid.substring(uuid.length - 4);
@@ -36,6 +38,8 @@ export async function validateGuestUser(
     name: username,
     role: "guest",
     rank: 0,
+    skin,
+    image: avatar,
     isRegistered: false,
   };
   logger.info({ guestUser }, "Criando usuário convidado:");

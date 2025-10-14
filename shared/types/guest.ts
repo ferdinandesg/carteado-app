@@ -17,6 +17,7 @@ type UserMeta = {
   status: string;
   isRegistered: boolean;
   image?: string;
+  skin?: string;
 };
 
 export type EmptyGuestType = Omit<GuestType, "room" | "status">;

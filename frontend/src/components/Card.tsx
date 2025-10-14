@@ -4,6 +4,7 @@ import styles from "@styles/Card.module.scss";
 import classNames from "classnames";
 import { Card } from "shared/cards";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 interface CardComponentProps extends HtmlHTMLAttributes<HTMLDivElement> {
   card: Card;
   height?: number;
@@ -30,7 +31,10 @@ export default function CardComponent({
   height = 70,
   ...rest
 }: CardComponentProps) {
-  const cardURL = handleSkinPath("8bit", card);
+  const { data } = useSession();
+  const userSkin = (data?.user?.skin as AvailableSkins) || "8bit";
+  const cardURL = handleSkinPath(userSkin, card);
+
   const width = height * CARD_RATIO;
   return (
     <div
