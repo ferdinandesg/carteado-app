@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import axiosInstance from "../axios";
 import { Participant } from "shared/types";
 import { UserSession } from "@/models/Users";
+import useAxiosAuth from "../useAuthAxios";
 
 export type RoomInterface = {
   id: string;
@@ -16,15 +16,11 @@ export type RoomInterface = {
   participants: Participant[];
 };
 
-const rawFetchRooms = async () => {
-  const response = await axiosInstance.get("/rooms");
-  return response.data;
-};
-
 export default function useFetchRooms() {
+  const axiosAuth = useAxiosAuth();
   const { data, isLoading, isError } = useQuery<RoomInterface[]>({
     queryKey: ["rooms"],
-    queryFn: rawFetchRooms,
+    queryFn: () => axiosAuth.get("/rooms").then((res) => res.data),
   });
   return {
     data: data || [],

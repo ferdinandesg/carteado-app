@@ -18,7 +18,7 @@ const Star: React.FC<StarProps> = ({
 }) => {
   const fillHeight = (fillPercentage / 100) * 24;
   const clipPathId = `clip-star-${Math.random()}`;
-
+  return null
   return (
     <svg
       width={size}

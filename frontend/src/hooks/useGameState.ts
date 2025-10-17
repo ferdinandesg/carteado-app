@@ -1,18 +1,13 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import axiosInstance from "./axios";
 import { GameState } from "shared/types";
-
-async function fetchGameState(hash: string) {
-  const response = await axiosInstance.get<GameState>(`/game/${hash}`);
-  return response.data;
-}
+import useAxiosAuth from "./useAuthAxios";
 
 export default function useGameState(hash: string) {
   const queryClient = useQueryClient();
-
+  const axiosAuth = useAxiosAuth();
   const { data, isLoading } = useQuery({
     queryKey: ["game", hash],
-    queryFn: async () => fetchGameState(hash),
+    queryFn: () => axiosAuth.get(`/game/${hash}`).then((res) => res.data),
     enabled: !!hash,
     retry: 1,
     staleTime: 1000 * 60 * 5,

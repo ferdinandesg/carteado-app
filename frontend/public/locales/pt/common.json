@@ -73,7 +73,12 @@
     "Game": {
         "choseYourHand": "Selecione sua mão",
         "gameFinished": "O jogo acabou",
-        "winner": "Vencedor: {{winner}}"
+        "winner": "Vencedor: {{winner}}",
+        "askTruco": "Pedir Truco",
+        "acceptTruco": "Aceitar Truco",
+        "rejectTruco": "Rejeitar Truco",
+        "truco": "Truco",
+        "vira": "Vira"
     },
     "RoomInfo": {
         "title": "Informações da sala",

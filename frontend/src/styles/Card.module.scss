@@ -1,9 +1,3 @@
 .Card {
   padding: $spacing-s;
-  position: relative;
-  z-index: 1;
-  cursor: pointer;
-  &.hidden {
-    opacity: 0.5;
-  }
 }

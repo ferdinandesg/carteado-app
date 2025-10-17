@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 interface CardComponentProps extends HtmlHTMLAttributes<HTMLDivElement> {
   card: Card;
   height?: number;
+  canHover?: boolean;
 }
 
 type AvailableSkins = "basics/white" | "basics/black" | "poker" | "8bit";
@@ -29,6 +30,7 @@ const CARD_RATIO = 63 / 88; // ~0.72
 export default function CardComponent({
   card,
   height = 70,
+  canHover = false,
   ...rest
 }: CardComponentProps) {
   const { data } = useSession();
@@ -36,10 +38,16 @@ export default function CardComponent({
   const cardURL = handleSkinPath(userSkin, card);
 
   const width = height * CARD_RATIO;
+
+  if (!height || !width) return null;
   return (
     <div
       {...rest}
-      className={classNames(styles.Card)}
+      className={classNames(styles.Card,
+        {
+          [styles.canHover]: canHover,
+        }
+      )}
       style={{
         width: `${width}px`,
         height: `${height}px`,
@@ -47,7 +55,6 @@ export default function CardComponent({
       <Image
         src={cardURL}
         alt="Carta"
-        objectFit="contain"
         width={100}
         height={100}
         priority

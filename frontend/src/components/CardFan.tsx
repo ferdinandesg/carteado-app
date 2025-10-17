@@ -19,7 +19,7 @@ export default function CardFan({ cards, onClick = () => { }, spacing = 60 }: Ca
       className={styles.cardFanContainer}
     >
       {cards.map((card, index) => {
-        const translateX = initialOffset + index * spacing;
+        const translateX = (initialOffset + index * spacing) / 5;
 
         const cardStyle = {
           '--translate-x': `${translateX}px`,

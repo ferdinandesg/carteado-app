@@ -18,6 +18,7 @@ export function GameController() {
 
     // 2. Ouve o evento de atualização do jogo
     const handleGameUpdate = (updatedGame: GameState) => {
+      console.log({ updatedGame });
       setGame(updatedGame);
     };
 

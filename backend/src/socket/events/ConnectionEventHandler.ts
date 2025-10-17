@@ -7,6 +7,8 @@ import { registerCardEvents } from "./cards";
 import { registerChatEvents } from "./chat";
 import emitToRoom from "../utils/emitToRoom";
 import { atomicallyUpdateRoomState } from "@/redis/room";
+import { createParticipantObject } from "@shared/game";
+import { getGameState } from "@/redis/game";
 
 const handleReconnection = async (socket: Socket, channel: Namespace) => {
   const session = await retrieveSession(socket.user.id);
@@ -24,6 +26,9 @@ const handleReconnection = async (socket: Socket, channel: Namespace) => {
         );
         if (participant) {
           participant.isOnline = true;
+        } else {
+          const created = createParticipantObject(socket.user);
+          room.participants.push(created);
         }
         return room;
       }
@@ -33,6 +38,8 @@ const handleReconnection = async (socket: Socket, channel: Namespace) => {
       socket.join(session.roomHash);
       socket.user.room = session.roomHash;
       socket.user.status = session.status;
+      const game = await getGameState(session.roomHash);
+      emitToRoom(channel, session.roomHash, "game_updated", game);
 
       emitToRoom(channel, session.roomHash, "room_updated", updatedRoom);
       socket.emit("reconnected", {

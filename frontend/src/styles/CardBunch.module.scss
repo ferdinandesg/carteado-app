@@ -12,12 +12,10 @@ $card-positions: ();
 }
 
 .centerDeck {
-  position: absolute;
   top: 35%;
   left: 50%;
   display: flex;
   gap: 15px;
-  transform: translate(-50%, -50%);
 }
 
 .wrap {
@@ -26,27 +24,41 @@ $card-positions: ();
   margin: auto 0;
   position: absolute;
   justify-content: center;
-}
+  .card {
+    width: $card-width;
+    position: relative;
+    transition: transform 0.2s ease-in-out;
 
-.card {
-  width: $card-width;
-  position: relative;
-  transition: transform 0.2s ease-in-out;
+    @for $i from 1 through $card-count {
+      $left: -($card-width - 20px) * $i;
+      $top: 0px;
 
-  @for $i from 1 through $card-count {
-    $left: -($card-width - 20px) * $i;
-    $top: 0px;
-    $rotate: nth(nth($card-positions, $i), 3);
+      // ✅ Lógica Condicional para a Rotação
+      $rotate: 0; // Inicializa a variável
 
-    &:nth-child(#{$i}) {
-      left: $left;
-      top: $top;
-      transform: translateY(0px) rotate($rotate);
-    }
+      // O seletor '&' refere-se ao .card atual no loop.
+      // @at-root seleciona a partir da raiz do documento para encontrar o pai.
+      @at-root .left & {
+        $rotate: nth(nth($card-positions, $i), 3) + 16;
+      }
 
-    &:hover {
-      z-index: 2;
-      transform: translate(1px, $hover-offset-y) rotate($rotate) scale(1.1);
+      @at-root .right & {
+        // Se o pai tiver a classe .fan-right...
+        $rotate: nth(nth($card-positions, $i), 3);
+      }
+
+      // Aplica os estilos para a carta atual
+      &:nth-child(#{$i}) {
+        left: $left;
+        top: $top;
+        transform: translateY(0px) rotate($rotate);
+      }
+
+      // O hover continua funcionando com a rotação correta
+      &.canHover:hover {
+        z-index: 2;
+        transform: translate(1px, $hover-offset-y) rotate($rotate) scale(1.1);
+      }
     }
   }
 }

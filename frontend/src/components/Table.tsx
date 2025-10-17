@@ -1,107 +1,68 @@
-import CardBunch from "./CardBunch";
-import styles from "@styles/Table.module.scss";
-import { useRef } from "react";
-import classNames from "classnames";
-import { Player } from "shared/types";
-import CardComponent from "./Card";
-import Shaky from "./Shaky";
-import { selectPlayers, useGameStore } from "@/contexts/game.store";
+import React from "react";
+import { useSession } from "next-auth/react";
+import { useGameStore } from "@/contexts/game.store";
+import Opponent from "@/components/Opponent/Opponent";
+import styles from "@/styles/Table.module.scss"; // Estilos específicos da mesa
+import { PlayerWithUser } from "shared/types";
+import GameBoard from "./game.board";
 
-const PositionedPlayer = ({
-  player,
-  centerX,
-  centerY,
-  angleOffset,
-  radius,
-  numPlayers,
-  i,
-  OpponentComponent
-}: {
-  player: Player;
-  centerX: number;
-  centerY: number;
-  angleOffset: number;
-  radius: number;
-  numPlayers: number;
-  i: number;
-  OpponentComponent: React.ComponentType<{ player: Player }>;
+type TableProps = {
+  // Props para injetar conteúdo agnóstico
+  deckArea: React.ReactNode;
+  playedCardsArea: React.ReactNode;
+  actionsAreaLeft?: React.ReactNode;
+  actionsAreaRight?: React.ReactNode;
+};
+
+const Table: React.FC<TableProps> = ({
+  deckArea,
+  playedCardsArea,
+  actionsAreaLeft,
+  actionsAreaRight,
 }) => {
-  const angle = angleOffset - (2 * Math.PI * i) / numPlayers;
-  const x = centerX + radius * Math.cos(angle);
-  const y = centerY + radius * Math.sin(angle);
+  const { data: session } = useSession();
+  const { game } = useGameStore();
 
-  const playerStyle = {
-    left: `${x}px`,
-    top: `${y}px`,
-    transform: "translate(-50%, -50%)",
-  };
+  const { mainPlayer, orderedOpponents } = React.useMemo(() => {
+    // ... sua lógica useMemo para encontrar jogadores permanece a mesma
+    if (!game || !session?.user) return { mainPlayer: null, orderedOpponents: [] };
+    const player = game.players.find((p) => p.userId === session.user.id);
+    const mainPlayerIndex = game.players.findIndex(p => p.userId === session.user.id);
+    const opponents: PlayerWithUser[] = [];
+    if (mainPlayerIndex !== -1) {
+      for (let i = 1; i < game.players.length; i++) {
+        const opponentIndex = (mainPlayerIndex + i) % game.players.length;
+        opponents.push(game.players[opponentIndex]);
+      }
+    }
+    return { mainPlayer: player, orderedOpponents: opponents };
+  }, [game, session?.user]);
+
+  if (!game || !mainPlayer) {
+    return <div className={styles.loadingTable}>Aguardando o jogo...</div>;
+  }
+
+  const topOpponent = game.players.length === 2 ? orderedOpponents[0] : orderedOpponents[1];
+  const leftOpponent = game.players.length > 2 ? orderedOpponents[0] : null;
+  const rightOpponent = game.players.length > 2 ? orderedOpponents[2] : null;
 
   return (
-    <div
-      key={player.userId}
-      className={classNames(styles.player)}
-      style={playerStyle}>
-      <OpponentComponent player={player} />
-    </div>
+    <GameBoard
+      // Preenche os slots do GameBoard com os componentes
+      slot1={deckArea}
+      slot2={topOpponent && <Opponent player={topOpponent} />}
+      slot4={leftOpponent && <Opponent player={leftOpponent} />}
+      slot5={playedCardsArea}
+      slot6={rightOpponent && <Opponent player={rightOpponent} />}
+      slot7={actionsAreaLeft}
+      slot8={
+        <div className={`${styles.playerName} ${game.playerTurn === mainPlayer.userId ? styles.isTurn : ''}`}>
+          <Opponent player={mainPlayer} />
+        </div>
+      }
+      slot9={actionsAreaRight}
+    />
   );
 };
 
-type TableProps = {
-  tableActions: React.ReactNode;
-  OpponentComponent: React.ComponentType<{ player: Player }>;
-}
-
-export default function Table({ tableActions, OpponentComponent }: TableProps) {
-  const { game, undoPlay } = useGameStore();
-  const players = useGameStore(selectPlayers);
-
-  const isTruco = game?.rulesName === "TrucoGameRules"
-  const vira = game?.vira
-  const tableRef = useRef<HTMLDivElement>(null);
-
-  const tableWidth = tableRef.current?.clientWidth || 0;
-  const tableHeight = tableRef.current?.clientHeight || 0;
-  const centerX = tableWidth / 2;
-  const centerY = tableHeight / 2;
-  const angleOffset = Math.PI / 2;
-
-  const radius = (tableHeight / 2) - 50;
-  const cardHeight = tableHeight > 300
-    ? tableHeight / 3
-    : tableHeight / 2;
-  return (
-    <div
-      ref={tableRef}
-      className={styles.Table}>
-      {players.map((player, i) => (
-        <PositionedPlayer
-          player={player}
-          numPlayers={players.length}
-          key={player.userId}
-          centerX={centerX}
-          centerY={centerY}
-          angleOffset={angleOffset}
-          radius={radius}
-          i={i}
-          OpponentComponent={OpponentComponent}
-        />
-      ))}
-      <div className={styles.vira}>
-        {vira &&
-          <Shaky value={vira.rank}>
-            <CardComponent height={cardHeight / 1.25} card={vira} />
-          </Shaky>
-        }
-      </div>
-      <CardBunch
-        cardHeight={cardHeight}
-        cards={game?.bunch || []}
-        onClick={undoPlay}
-      />
-      {!isTruco && <div className={styles.remaining}>
-        {game?.bunch.length}
-      </div>}
-      {tableActions}
-    </div>
-  );
-}
+export default Table;

@@ -27,7 +27,7 @@ export const verifyJWTToken = async (token: string) => {
   let user;
   if (decoded.role === "guest") {
     user = await getGuest(decoded.id);
-  } else {
+  } else if (decoded.role === "user") {
     user = (await prisma.user.findUnique({
       where: { id: decoded.id },
     })) as SocketUser;

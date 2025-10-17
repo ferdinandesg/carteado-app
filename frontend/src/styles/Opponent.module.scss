@@ -3,18 +3,12 @@
   position: relative;
   flex-direction: column;
   align-items: center;
-  border: 3px solid transparent;
-  &.isCurrentPlayerTurn {
-    border-color: green;
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  .avatar {
+    border-radius: 50%;
+    &.isTurn {
+      box-shadow: 0 0 10px 3px $primary-color;
+    }
   }
-  &.TEAM_A {
-    border-color: red;
-  }
-  &.TEAM_B {
-    border-color: blue;
-  }
-
   .trucoAskedBy {
     height: 30px;
     width: 30px;
@@ -23,15 +17,6 @@
     position: absolute;
     top: -20px;
     left: -10px;
-  }
-  .avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 3px solid #fff;
-    &:hover {
-      transform: scale(1.1);
-    }
   }
 
   .name {

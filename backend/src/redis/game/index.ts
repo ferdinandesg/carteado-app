@@ -2,6 +2,7 @@ import { GameFactory } from "src/game/GameFactory";
 import RedisClass from "../client";
 import { TrucoGame } from "src/game/TrucoGameRules";
 import { CarteadoGame } from "src/game/CarteadoGameRules";
+import { logger } from "@utils/logger";
 
 export async function saveGameState(
   roomHash: string,
@@ -23,5 +24,5 @@ export async function getGameState(
     const game = GameFactory.deserialize(String(serializedGame));
     return game;
   }
-  throw "GAME_NOT_FOUND";
+  logger.error("GAME_NOT_FOUND");
 }

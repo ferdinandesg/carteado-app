@@ -5,10 +5,10 @@ import { User } from "./guest";
 export type Player = {
   id: string;
   hand: Card[];
-  name?: string;
-  isOnline?: boolean;
-  status?: PlayerStatus;
-  image?: string;
+  name: string;
+  isOnline: boolean;
+  status: PlayerStatus;
+  image: string;
   userId: string;
   table: Card[];
 };

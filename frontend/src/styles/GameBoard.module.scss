@@ -1,0 +1,32 @@
+.gameBoard {
+  flex-grow: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  height: 70%;
+  margin: 0 auto;
+
+  border-radius: 10px;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+// Player Top
+.gameBoard > .gridCell:nth-child(2) {
+  margin-bottom: auto;
+}
+
+// Player Left
+.gameBoard > .gridCell:nth-child(4) {
+  margin-right: auto;
+}
+
+// Player Right
+.gameBoard > .gridCell:nth-child(6) {
+  margin-left: auto;
+}
+
+// Player Bottom
+.gameBoard > .gridCell:nth-child(8) {
+  margin-top: auto;
+}

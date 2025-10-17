@@ -1,10 +1,11 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import axiosInstance from "../axios";
 import { RoomStatus } from "@/models/room";
 import { Participant } from "shared/types";
+import useAxiosAuth from "../useAuthAxios";
 
 export type RoomsInterface = {
   id: string;
+  ownerId: string;
   hash: string;
   name: string;
   size: number;
@@ -13,16 +14,14 @@ export type RoomsInterface = {
   participants: Participant[];
   rule: "CarteadoGameRules" | "TrucoGameRules";
 };
-const fetchRoomByHash = async (hash: string) => {
-  const response = await axiosInstance.get(`/rooms/${hash}`);
-  return response.data;
-};
+
 export default function useRoomByHash(hash: string) {
+  const axiosAuth = useAxiosAuth();
   const queryClient = useQueryClient();
   const { data, isLoading, isError, error, refetch } = useQuery<RoomsInterface>(
     {
       queryKey: ["room", hash],
-      queryFn: () => fetchRoomByHash(hash),
+      queryFn: () => axiosAuth.get(`/rooms/${hash}`).then((res) => res.data),
       enabled: !!hash,
       retry: 1,
       staleTime: 1000 * 60 * 5,

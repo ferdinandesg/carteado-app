@@ -31,12 +31,12 @@ model Player {
   name        String
   hand        Card[] // Mão do jogador (privado)
   playedCards Card[] // Cartas que o jogador já baixou na sua área pessoal (visível para todos)
-
-  Room   Room?   @relation(fields: [roomId], references: [id])
-  roomId String? @db.ObjectId
-  status String?
-  game   Game?   @relation(fields: [gameId], references: [id])
-  gameId String? @db.ObjectId
+  image       String
+  Room        Room?   @relation(fields: [roomId], references: [id])
+  roomId      String? @db.ObjectId
+  status      String?
+  game        Game?   @relation(fields: [gameId], references: [id])
+  gameId      String? @db.ObjectId
 }
 
 model Game {

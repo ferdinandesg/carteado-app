@@ -1,8 +1,6 @@
 import { atomicallyUpdateRoomState } from "src/redis/room";
 import { SocketContext } from "../../../@types/socket";
 import emitToRoom from "@socket/utils/emitToRoom";
-import emitToUser from "src/socket/utils/emitToUser";
-import { getGameState } from "src/redis/game";
 import ErrorHandler from "src/utils/error.handler";
 import { createParticipantObject } from "shared/game";
 import { storeSession } from "src/redis/userSession";
@@ -47,9 +45,6 @@ export async function JoinRoomEventHandler(
     });
 
     if (!updatedRoom) {
-      const game = await getGameState(roomHash);
-      emitToUser(socket, "info", "WELCOME_BACK");
-      emitToRoom(channel, roomHash, "game_updated", game);
       return;
     }
     socket.join(roomHash);

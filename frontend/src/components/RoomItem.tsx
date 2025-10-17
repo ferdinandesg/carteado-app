@@ -43,7 +43,7 @@ const RoomStatus = ({ status }: { status: "open" | "playing" }) => {
 const RoomItem = ({ room, onClick = () => { } }: RoomItemProps) => {
   const { t } = useTranslation();
 
-  const ownerPic = room.owner?.image || "/images/default-avatar.png";
+  const ownerPic = room.owner?.image || "/assets/avatars/default.jpg";
 
   return (
     <div

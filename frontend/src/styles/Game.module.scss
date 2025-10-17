@@ -1,10 +1,65 @@
 .Game {
   display: flex;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  position: relative;
   flex-direction: column;
+  height: 100%; /* Ocupa 100% da altura da célula do grid pai */
+  width: 100%;
+  overflow: hidden; /* Garante que nada vaze */
+  gap: 1rem; /* Espaçamento opcional entre HUD, Mesa e Mão */
+  padding: 1rem 0; /* Adiciona um respiro vertical */
+
+  .playedCards {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .deckItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .deckLabel {
+    color: white;
+    font-weight: bold;
+    font-size: 1.5rem;
+    text-shadow: 1px 1px 2px black;
+  }
+  .actionsArea {
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    flex-direction: column;
+    margin: auto;
+    gap: $spacing-m;
+    button {
+      font-size: 1.25rem;
+      padding: $spacing-s $spacing-s;
+      border-radius: $border-radius;
+      transition: background-color 0.3s;
+      color: white;
+      &:disabled {
+        background-color: gray;
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      &:enabled {
+        background-color: $primary-color;
+        &:hover {
+          background-color: lighten($primary-color, 10);
+        }
+        &:active {
+          background-color: darken($primary-color, 10);
+        }
+      }
+    }
+  }
+
+  .deckAreaContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
   .TrucoHud {
     display: flex;
@@ -12,7 +67,7 @@
     align-items: center;
     font-size: 1.5rem;
     color: white;
-    width: 45%;
+    width: 100%;
     .currentBet {
       display: flex;
       align-items: center;
@@ -49,47 +104,6 @@
     width: 100%;
     z-index: 10;
     max-width: 50vw;
-  }
-  button {
-    font-size: 1.75rem;
-    border-radius: $border-radius;
-    transition: background-color 0.3s;
-    word-break: break-all;
-    max-width: 250px;
-    padding: $spacing-s;
-    color: white;
-    &:disabled {
-      background-color: gray;
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    &:enabled {
-      background-color: $primary-color;
-      &:hover {
-        background-color: lighten($primary-color, 10);
-      }
-      &:active {
-        background-color: darken($primary-color, 10);
-      }
-    }
-  }
-
-  .gameTable {
-    display: flex;
-    justify-content: center;
-    height: 600px;
-    width: 600px;
-  }
-
-  .cardTable {
-    height: 125px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: $spacing-s;
-
-    div {
-      width: 32%;
-    }
   }
 }
 

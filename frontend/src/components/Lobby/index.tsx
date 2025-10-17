@@ -8,14 +8,17 @@ import styles from "@styles/Lobby.module.scss";
 import { useTranslation } from "react-i18next";
 import { PlayerStatus } from "shared/game";
 import Participants from "../Players/participants";
+import { useSession } from "next-auth/react";
 
 export default function Lobby() {
   const { t } = useTranslation();
   const { socket } = useSocket();
   const [isPlayerReady, setIsPlayerReady] = useState<boolean>(false);
   const { id } = useParams();
+  const { data } = useSession();
   const roomId = String(id);
   const { room } = useRoomByHash(String(id));
+  const isOwner = room?.ownerId === data?.user.id;
 
   const handleReadyClick = () => {
     if (!room) return;
@@ -42,11 +45,11 @@ export default function Lobby() {
         onClick={handleReadyClick}>
         {t("Lobby.imReady")}
       </button>
-      <button
+      {isOwner && <button
         className={styles.startGame}
         onClick={handleStartGame}>
         {t("Lobby.startGame")}
-      </button>
+      </button>}
     </div>
   );
 }

@@ -33,11 +33,6 @@ const validateGuestUser = async ({
   return response.data;
 };
 
-const generateJWT = ({ id, role }: { id: string; role: UserRole }) => {
-  const secretKey = process.env.NEXTAUTH_SECRET!;
-  return jwt.sign({ id: id, role: role }, secretKey);
-};
-
 const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET!,
   providers: [
@@ -63,23 +58,29 @@ const handler = NextAuth({
     async jwt({ token, user, account }) {
       if (account && user) {
         try {
-          let userData;
-          if (account.provider === "credentials") {
-            userData = user;
-          } else {
-            userData = await validateUser(user as UserSession);
-          }
-          token.id = userData.id;
-          token.name = userData.name;
-          token.email = userData.email;
-          token.role = userData.role;
-          token.skin = userData.skin;
-          token.image = userData.image;
+          const userData =
+            account.provider === "google"
+              ? await validateUser(user as UserSession)
+              : user;
+
+          return {
+            ...token,
+            id: userData.id,
+            role: userData.role,
+            skin: userData.skin,
+            name: userData.name ?? token.name,
+            email: userData.email ?? token.email,
+            image: userData.image ?? token.image,
+          };
         } catch (error) {
-          logger.error(error, "Erro na validação do usuário");
+          logger.error(
+            error,
+            "Erro ao validar/processar usuário no callback JWT"
+          );
           return { ...token, error: "UserValidationError" };
         }
       }
+
       return token;
     },
 
@@ -89,10 +90,7 @@ const handler = NextAuth({
       session.user.email = token.email;
       session.user.role = token.role as UserRole;
       session.user.skin = token.skin;
-      session.user.accessToken = generateJWT({
-        id: token.id as string,
-        role: token.role as UserRole,
-      });
+      session.user.accessToken = jwt.sign(token, process.env.NEXTAUTH_SECRET!);
 
       return session;
     },

@@ -8,6 +8,7 @@ import Image from "next/image";
 import RankMeter from "../RankMeter";
 import { useTranslation } from "react-i18next";
 import { PlayerStatus } from "shared/game";
+import { Crown } from "lucide-react";
 
 
 export default function Participants({ roomHash }: { roomHash: string }) {
@@ -16,6 +17,7 @@ export default function Participants({ roomHash }: { roomHash: string }) {
 
   return room?.participants.map((participant, i) => {
     const isReady = participant.status === PlayerStatus.READY;
+    const isOwner = room.ownerId === participant.userId;
 
     return (
       <div
@@ -38,7 +40,9 @@ export default function Participants({ roomHash }: { roomHash: string }) {
           )}
         </div>
         <div className={styles.metadata}>
-          <span className={styles.username}>{participant.name}</span>
+          <span className={styles.username}>{participant.name}
+            {isOwner && <Crown />}
+          </span>
           <RankMeter
             currentValue={0}
             size={25}

@@ -1,22 +1,18 @@
 import logger from "@/tests/utils/logger";
-import axiosInstance from "../axios";
+import useAxiosAuth from "../useAuthAxios";
 
 type CreateRoomPayload = {
   name: string;
   size: number;
 };
 
-async function rawPostRoom(room: CreateRoomPayload) {
-  const response = await axiosInstance.post("/rooms", room);
-  const data = response.data;
-  return data;
-}
-
 export default function usePostRoom() {
+  const axiosAuth = useAxiosAuth();
   const createRoom = async (room: CreateRoomPayload) => {
     try {
-      const data = await rawPostRoom(room);
-      return data;
+      const response = await axiosAuth.post("/rooms", room);
+
+      return response.data;
     } catch (error) {
       logger.error(error);
     }
