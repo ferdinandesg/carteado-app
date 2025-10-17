@@ -1,8 +1,8 @@
-import { GameFactory } from "src/game/GameFactory";
+import { GameFactory } from "game/GameFactory";
 import RedisClass from "../client";
-import { TrucoGame } from "src/game/TrucoGameRules";
-import { CarteadoGame } from "src/game/CarteadoGameRules";
-import { logger } from "@utils/logger";
+import { TrucoGame } from "game/TrucoGameRules";
+import { CarteadoGame } from "game/CarteadoGameRules";
+import { logger } from "@/utils/logger";
 
 export async function saveGameState(
   roomHash: string,

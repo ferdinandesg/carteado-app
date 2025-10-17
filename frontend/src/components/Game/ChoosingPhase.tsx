@@ -1,10 +1,10 @@
-import CardComponent from "@/components/Card";
-import Separator from "@/components/Separator";
-import { withSound } from "@/components/buttons/withSound";
-import { selectCurrentPlayer, useGameStore } from "@/contexts/game.store";
+import CardComponent from "@//components/Card";
+import Separator from "@//components/Separator";
+import { withSound } from "@//components/buttons/withSound";
+import { selectCurrentPlayer, useGameStore } from "@//contexts/game.store";
 import { useTranslation } from "react-i18next";
-import styles from "@styles/ChoosingPhase.module.scss";
-import { useCardSelection } from "@/hooks/useCardSelection";
+import styles from "@/styles/ChoosingPhase.module.scss";
+import { useCardSelection } from "@//hooks/useCardSelection";
 
 const ConfirmButton = withSound(
     ({ onClick, disabled, text }: { onClick: () => void; disabled: boolean, text: string }) => {

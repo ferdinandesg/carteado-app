@@ -1,7 +1,7 @@
-import styles from "@styles/Game.module.scss";
+import styles from "@/styles/Game.module.scss";
 import { withSound } from "./buttons/withSound";
 import { useTranslation } from "react-i18next";
-import { useGameStore } from "@/contexts/game.store";
+import { useGameStore } from "@//contexts/game.store";
 
 type ButtonProps = {
   onClick: () => void;

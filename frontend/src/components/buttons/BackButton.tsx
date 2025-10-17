@@ -1,7 +1,7 @@
 import { ArrowLeftCircle } from "lucide-react";
 import { withSound } from "./withSound";
 
-import styles from "@styles/Buttons.module.scss";
+import styles from "@/styles/Buttons.module.scss";
 import { ButtonHTMLAttributes } from "react";
 import classNames from "classnames";
 import { useTranslation } from "react-i18next";

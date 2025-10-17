@@ -1,7 +1,7 @@
-import emitToRoom from "@socket/utils/emitToRoom";
+import emitToRoom from "@/socket/utils/emitToRoom";
 import { SocketContext } from "../../../@types/socket";
-import { getGameState, saveGameState } from "../../../redis/game";
-import ErrorHandler from "src/utils/error.handler";
+import { getGameState, saveGameState } from "@/lib/redis/game";
+import ErrorHandler from "utils/error.handler";
 import { PlayCardPayload } from "../payloads";
 
 export async function PlayCardEventHandler(

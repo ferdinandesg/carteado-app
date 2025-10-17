@@ -1,15 +1,15 @@
 "use client";
-import SearchComponent from "@/components/Search";
+import SearchComponent from "@//components/Search";
 import { useRouter } from "next/navigation";
-import useFetchRooms, { RoomInterface } from "@/hooks/rooms/useFetchRooms";
-import RoomItem from "@/components/RoomItem";
+import useFetchRooms, { RoomInterface } from "@//hooks/rooms/useFetchRooms";
+import RoomItem from "@//components/RoomItem";
 
-import styles from "@styles/Rooms.module.scss";
+import styles from "@/styles/Rooms.module.scss";
 import classNames from "classnames";
-import BackButton from "@/components/buttons/BackButton";
+import BackButton from "@//components/buttons/BackButton";
 import { useTranslation } from "react-i18next";
-import useTitle from "@/hooks/useTitle";
-import logger from "@/tests/utils/logger";
+import useTitle from "@//hooks/useTitle";
+import logger from "@//tests/utils/logger";
 
 type RoomListType = {
   rooms: RoomInterface[];

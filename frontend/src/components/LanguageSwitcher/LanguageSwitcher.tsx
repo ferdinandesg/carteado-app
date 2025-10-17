@@ -6,7 +6,7 @@ import Image from 'next/image';
 import ptFlag from 'public/flags/brasil.png';
 import enFlag from 'public/flags/eua.png';
 
-import styles from "@styles/LanguageSwitcher.module.scss"
+import styles from "@/styles/LanguageSwitcher.module.scss"
 
 const LanguageSwitcher: React.FC = () => {
     const { i18n } = useTranslation();

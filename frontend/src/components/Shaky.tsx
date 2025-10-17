@@ -1,7 +1,7 @@
 import React from "react";
 import classNames from "classnames";
-import styles from "@/styles/Shaky.module.scss";
-import { useShake } from "@hooks/useShaky";
+import styles from "@//styles/Shaky.module.scss";
+import { useShake } from "@/hooks/useShaky";
 
 type ShakyProps = {
     value: any;

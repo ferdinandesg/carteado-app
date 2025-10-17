@@ -1,9 +1,9 @@
 "use client";
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { useSocket } from "@/contexts/socket.context";
+import { useSocket } from "@//contexts/socket.context";
 import Message from "./message";
 
-import styles from "@styles/Chat.module.scss";
+import styles from "@/styles/Chat.module.scss";
 import { useTranslation } from "react-i18next";
 import { PanelLeftClose, PanelRight, } from "lucide-react";
 

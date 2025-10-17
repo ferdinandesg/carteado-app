@@ -1,11 +1,11 @@
 import { Namespace, Socket } from "socket.io";
-import { CHANNEL } from "@socket/channels";
-import { SocketContext } from "src/@types/socket";
+import { CHANNEL } from "@/socket/channels";
 import { JoinRoomEventHandler } from "./JoinRoomEventHandler";
 import { LeaveRoomEventHandler } from "./LeaveRoomEventHandler";
 import { PlayerReconnectedEventHandler } from "./PlayerReconnectedEventHandler";
 import { SetPlayerStatusEventHandler } from "./SetPlayerReadyEventHandler";
 import { StartGameEventHandler } from "./StartGameEventHandler";
+import { SocketContext } from "@/@types/socket";
 
 export function registerRoomEvents(socket: Socket, channel: Namespace): void {
   const context: Omit<SocketContext, "payload"> = { socket, channel };

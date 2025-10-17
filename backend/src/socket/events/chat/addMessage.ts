@@ -1,6 +1,6 @@
 import { Chat, Message } from "@prisma/client";
-import prisma from "src/prisma";
-import { saveMessages } from "src/redis/chat";
+import prisma from "prisma";
+import { saveMessages } from "@/lib/redis/chat";
 
 export const addMessage = async (
   roomHash: string,

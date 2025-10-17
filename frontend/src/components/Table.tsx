@@ -1,8 +1,8 @@
 import React from "react";
 import { useSession } from "next-auth/react";
-import { useGameStore } from "@/contexts/game.store";
-import Opponent from "@/components/Opponent/Opponent";
-import styles from "@/styles/Table.module.scss"; // Estilos específicos da mesa
+import { useGameStore } from "@//contexts/game.store";
+import Opponent from "@//components/Opponent/Opponent";
+import styles from "@//styles/Table.module.scss"; // Estilos específicos da mesa
 import { PlayerWithUser } from "shared/types";
 import GameBoard from "./game.board";
 

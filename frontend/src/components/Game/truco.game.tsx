@@ -1,6 +1,6 @@
-import styles from "@styles/Game.module.scss";
+import styles from "@/styles/Game.module.scss";
 import Table from "../Table";
-import { useGameStore } from "@/contexts/game.store";
+import { useGameStore } from "@//contexts/game.store";
 import TrucoHud from "./TrucoHud";
 import CardFan from "../CardFan";
 import Card from "../Card";

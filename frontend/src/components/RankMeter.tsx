@@ -1,6 +1,6 @@
 import React, { useId } from "react";
 
-import styles from "@styles/RankMeter.module.scss";
+import styles from "@/styles/RankMeter.module.scss";
 
 interface StarProps {
   size?: number;

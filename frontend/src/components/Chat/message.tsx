@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 
-import styles from "@styles/Message.module.scss";
+import styles from "@/styles/Message.module.scss";
 import classNames from "classnames";
 
 type MessageType = {

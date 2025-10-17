@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { verifyJWTToken } from "@routes/middlewares/auth";
+import { verifyJWTToken } from "@/routes/middlewares/auth";
 
 export async function Authentication(
   socket: Socket,

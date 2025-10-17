@@ -1,8 +1,8 @@
-import { getRoomState } from "src/redis/room";
+import { getRoomState } from "@/lib/redis/room";
 import { SocketContext } from "../../../@types/socket";
-import { getGameState } from "src/redis/game";
-import ErrorHandler from "src/utils/error.handler";
-import emitToUser from "@socket/utils/emitToUser";
+import { getGameState } from "@/lib/redis/game";
+import ErrorHandler from "utils/error.handler";
+import emitToUser from "@/socket/utils/emitToUser";
 import { PlayerReconnectedPayload } from "../payloads";
 
 export async function PlayerReconnectedEventHandler(

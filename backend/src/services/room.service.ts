@@ -3,7 +3,7 @@ import {
   getRoomState,
   RoomWithParticipants,
   saveRoomState,
-} from "../redis/room";
+} from "@/lib/redis/room";
 import { randomUUID } from "node:crypto";
 import { GuestType, SocketUser } from "shared/types";
 export async function createRoom(

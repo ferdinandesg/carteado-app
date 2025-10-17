@@ -1,5 +1,5 @@
-import { useGameStore } from "@/contexts/game.store";
-import styles from "@styles/Game.module.scss";
+import { useGameStore } from "@//contexts/game.store";
+import styles from "@/styles/Game.module.scss";
 import Shaky from "../Shaky";
 import CurrentBet from "./CurrentBet";
 import { useTranslation } from "react-i18next";

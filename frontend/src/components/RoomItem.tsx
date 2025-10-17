@@ -1,7 +1,7 @@
-import { RoomInterface } from "@/hooks/rooms/useFetchRooms";
+import { RoomInterface } from "@//hooks/rooms/useFetchRooms";
 import classNames from "classnames";
 
-import styles from "@styles/Rooms.module.scss";
+import styles from "@/styles/Rooms.module.scss";
 import Image from "next/image";
 import { Circle, Loader } from "lucide-react";
 import { useTranslation } from "react-i18next";

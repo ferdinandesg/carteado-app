@@ -1,9 +1,9 @@
 import { User } from "@prisma/client";
 import prisma from "../prisma";
 import { randomUUID } from "node:crypto";
-import { saveGuest } from "src/redis/guests";
+import { saveGuest } from "@/lib/redis/guests";
 import { EmptyGuestType } from "shared/types";
-import { logger } from "@utils/logger";
+import { logger } from "@/utils/logger";
 
 type UserLogin = Omit<User, "id" | "role" | "skin">;
 

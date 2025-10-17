@@ -1,6 +1,6 @@
 import { HtmlHTMLAttributes } from "react";
 
-import styles from "@styles/Card.module.scss";
+import styles from "@/styles/Card.module.scss";
 import classNames from "classnames";
 import { Card } from "shared/cards";
 import Image from "next/image";

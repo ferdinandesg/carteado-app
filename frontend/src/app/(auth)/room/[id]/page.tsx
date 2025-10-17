@@ -1,17 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
-import Game from "@/components/Game/game";
-import { useSocket } from "@/contexts/socket.context";
-import Lobby from "@/components/Lobby";
-import { RoomStatus } from "@/models/room";
+import Game from "@//components/Game/game";
+import { useSocket } from "@//contexts/socket.context";
+import Lobby from "@//components/Lobby";
+import { RoomStatus } from "@//models/room";
 import { useParams } from "next/navigation";
-import useRoomByHash from "@/hooks/rooms/useRoomByHash";
+import useRoomByHash from "@//hooks/rooms/useRoomByHash";
 
-import styles from "@styles/Room.module.scss";
-import Chat from "@/components/Chat";
+import styles from "@/styles/Room.module.scss";
+import Chat from "@//components/Chat";
 import { useTranslation } from "react-i18next";
-import useTitle from "@/hooks/useTitle";
-import RoomInfo from "@/components/Players/roomInfo";
+import useTitle from "@//hooks/useTitle";
+import RoomInfo from "@//components/Players/roomInfo";
 
 const RenderScreen = ({ status, roomHash }: { status?: RoomStatus, roomHash: string }) => {
   const { t } = useTranslation();

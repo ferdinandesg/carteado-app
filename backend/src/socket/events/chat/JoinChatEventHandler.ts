@@ -1,9 +1,9 @@
-import emitToUser from "src/socket/utils/emitToUser";
-import { SocketContext } from "src/@types/socket";
-import { getMessages } from "src/redis/chat";
-import emitToRoom from "@socket/utils/emitToRoom";
-import { logger } from "@utils/logger";
+import emitToUser from "socket/utils/emitToUser";
+import { getMessages } from "@/lib/redis/chat";
+import emitToRoom from "@/socket/utils/emitToRoom";
+import { logger } from "@/utils/logger";
 import { JoinChatPayload } from "../payloads";
+import { SocketContext } from "@/@types/socket";
 
 export async function JoinChatEventHandler(
   context: SocketContext<JoinChatPayload>

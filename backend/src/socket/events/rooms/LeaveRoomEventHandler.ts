@@ -1,7 +1,7 @@
-import { getRoom } from "@services/room.service";
+import { getRoom } from "@/services/room.service";
 import { SocketContext } from "../../../@types/socket";
-import { saveRoomState } from "src/redis/room";
-import emitToRoom from "@socket/utils/emitToRoom";
+import { saveRoomState } from "@/lib/redis/room";
+import emitToRoom from "@/socket/utils/emitToRoom";
 
 export async function LeaveRoomEventHandler(
   context: SocketContext

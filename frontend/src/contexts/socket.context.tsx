@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
-import logger from "@/tests/utils/logger";
+import logger from "@//tests/utils/logger";
 
 type SocketContextProps = {
   socket: Socket;

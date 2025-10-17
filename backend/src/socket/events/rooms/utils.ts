@@ -1,6 +1,6 @@
 import { GamePlayer } from "shared/game";
 import { Participant } from "shared/types";
-import prisma from "src/prisma";
+import prisma from "prisma";
 
 export async function createPlayers(
   participants: Participant[],

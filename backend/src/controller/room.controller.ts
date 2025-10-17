@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createRoom, getRoom, listRooms } from "@services/room.service";
+import { createRoom, getRoom, listRooms } from "@/services/room.service";
 
 export async function handleCreateRoom(req: Request, res: Response) {
   try {

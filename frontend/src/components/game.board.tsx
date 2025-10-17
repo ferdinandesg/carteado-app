@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "@/styles/GameBoard.module.scss";
+import styles from "@//styles/GameBoard.module.scss";
 
 type GameBoardProps = {
   slot1?: React.ReactNode;

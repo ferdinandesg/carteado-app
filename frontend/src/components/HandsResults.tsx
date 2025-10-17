@@ -1,7 +1,7 @@
 import { Card } from "shared/cards";
 import CardComponent from "./Card";
 
-import styles from "@styles/HandsResults.module.scss";
+import styles from "@/styles/HandsResults.module.scss";
 
 type HandsResultsProps = {
     cards: Card[];

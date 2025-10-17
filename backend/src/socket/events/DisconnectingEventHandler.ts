@@ -1,8 +1,8 @@
-import { atomicallyUpdateRoomState } from "src/redis/room";
+import { atomicallyUpdateRoomState } from "@/lib/redis/room";
 import { SocketContext } from "../../@types/socket";
-import emitToRoom from "@socket/utils/emitToRoom";
-import { expireSession } from "src/redis/userSession";
-import { logger } from "@utils/logger";
+import emitToRoom from "@/socket/utils/emitToRoom";
+import { expireSession } from "@/lib/redis/userSession";
+import { logger } from "@/utils/logger";
 
 export async function DisconnectingEventHandler(
   context: Omit<SocketContext, "payload">

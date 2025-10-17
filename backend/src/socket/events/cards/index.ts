@@ -1,6 +1,6 @@
 import { Namespace, Socket } from "socket.io";
-import { CHANNEL } from "@socket/channels";
-import { SocketContext } from "src/@types/socket";
+import { CHANNEL } from "@/socket/channels";
+import { SocketContext } from "@/@types/socket";
 import { AcceptTrucoEventHandler } from "./AcceptTrucoEventHandler";
 import { AskTrucoEventHandler } from "./AskTrucoEventHandler";
 import { DrawTableEventHandler } from "./DrawTableEventHandler";

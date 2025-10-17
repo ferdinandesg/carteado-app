@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useSocket } from "@/contexts/socket.context";
+import { useSocket } from "@//contexts/socket.context";
 import classNames from "classnames";
-import useRoomByHash from "@/hooks/rooms/useRoomByHash";
+import useRoomByHash from "@//hooks/rooms/useRoomByHash";
 import { useParams } from "next/navigation";
 
-import styles from "@styles/Lobby.module.scss";
+import styles from "@/styles/Lobby.module.scss";
 import { useTranslation } from "react-i18next";
 import { PlayerStatus } from "shared/game";
 import Participants from "../Players/participants";

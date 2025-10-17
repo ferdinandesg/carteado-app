@@ -1,14 +1,14 @@
 import { Namespace, Socket } from "socket.io";
 import { DisconnectingEventHandler } from "./DisconnectingEventHandler";
-import { retrieveSession } from "src/redis/userSession";
-import { logger } from "@utils/logger";
+import { retrieveSession } from "@/lib/redis/userSession";
+import { logger } from "@/utils/logger";
 import { registerRoomEvents } from "./rooms";
 import { registerCardEvents } from "./cards";
 import { registerChatEvents } from "./chat";
 import emitToRoom from "../utils/emitToRoom";
-import { atomicallyUpdateRoomState } from "@/redis/room";
-import { createParticipantObject } from "@shared/game";
-import { getGameState } from "@/redis/game";
+import { atomicallyUpdateRoomState } from "@/lib/redis/room";
+import { getGameState } from "@/lib/redis/game";
+import { createParticipantObject } from "shared/game";
 
 const handleReconnection = async (socket: Socket, channel: Namespace) => {
   const session = await retrieveSession(socket.user.id);

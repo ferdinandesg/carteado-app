@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import prisma from "../../prisma";
-import { getGuest } from "src/redis/guests";
+import { getGuest } from "@/lib/redis/guests";
 import { SocketUser, UserRole } from "shared/types";
 
 type JwtPayload = {

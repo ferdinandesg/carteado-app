@@ -1,8 +1,8 @@
-import { getRoomState, saveRoomState } from "src/redis/room";
+import { getRoomState, saveRoomState } from "@/lib/redis/room";
 import { SocketContext } from "../../../@types/socket";
-import emitToRoom from "@socket/utils/emitToRoom";
-import ErrorHandler from "src/utils/error.handler";
-import { logger } from "@utils/logger";
+import emitToRoom from "@/socket/utils/emitToRoom";
+import ErrorHandler from "utils/error.handler";
+import { logger } from "@/utils/logger";
 import { SetPlayerStatusPayload } from "../payloads";
 
 export async function SetPlayerStatusEventHandler(

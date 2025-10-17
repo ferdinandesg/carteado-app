@@ -12,18 +12,6 @@
     "backend",
     "shared"
   ],
-  "_moduleAliases": {
-    "@controller": "./backend/dist/src/controller",
-    "@routes": "./backend/dist/src/routes",
-    "@services": "./backend/dist/src/services",
-    "@models": "./backend/dist/src/models",
-    "@socket": "./backend/dist/src/socket",
-    "@utils": "./backend/dist/src/utils",
-    "@socket/*": "./backend/dist/src/socket/*",
-    "src": "./backend/dist/src",
-    "@": "./backend/dist",
-    "shared": "./shared/dist"
-  },
   "scripts": {
     "prepare": "husky install",
     "format": "prettier --write .",
@@ -99,8 +87,5 @@
     "utf-8-validate": "^6.0.5",
     "webpack": "^5.102.0",
     "webpack-cli": "^6.0.1"
-  },
-  "dependencies": {
-    "next": "^15.5.6"
   }
 }

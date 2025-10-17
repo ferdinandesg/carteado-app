@@ -1,5 +1,5 @@
-import { logger } from "@utils/logger";
-import { getGameState } from "../redis/game";
+import { logger } from "@/utils/logger";
+import { getGameState } from "@/lib/redis/game";
 
 export async function getGameByHash(hash: string) {
   try {

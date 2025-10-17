@@ -1,6 +1,6 @@
 import { Card } from "shared/cards";
 
-import styles from "@styles/CardBunch.module.scss";
+import styles from "@/styles/CardBunch.module.scss";
 import CardComponent from "./Card";
 import { withSound } from "./buttons/withSound";
 import classNames from "classnames";

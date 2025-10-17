@@ -1,7 +1,7 @@
 import { AddressInfo } from "net";
 import http from "http";
 import { Server } from "socket.io";
-import SocketClass from "@socket/socket";
+import SocketClass from "@/socket/socket";
 
 jest.mock("@routes/middlewares/auth", () => ({
   verifyJWTToken: jest.fn().mockImplementation((token: string) => {

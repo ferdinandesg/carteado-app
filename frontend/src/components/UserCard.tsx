@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import styles from "@styles/UserCard.module.scss";
+import styles from "@/styles/UserCard.module.scss";
 import { PlayerStatus } from "shared/game";
 import classNames from "classnames";
 import UserPlaceholder from "./UserPlaceholder";

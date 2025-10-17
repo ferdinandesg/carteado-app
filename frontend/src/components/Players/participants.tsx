@@ -1,8 +1,8 @@
 "use client";
 import classNames from "classnames";
-import useRoomByHash from "@/hooks/rooms/useRoomByHash";
+import useRoomByHash from "@//hooks/rooms/useRoomByHash";
 
-import styles from "@styles/Participants.module.scss";
+import styles from "@/styles/Participants.module.scss";
 import UserPlaceholder from "../UserPlaceholder";
 import Image from "next/image";
 import RankMeter from "../RankMeter";

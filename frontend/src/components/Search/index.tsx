@@ -1,5 +1,5 @@
 import { Search } from "lucide-react";
-import styles from "@styles/Rooms.module.scss";
+import styles from "@/styles/Rooms.module.scss";
 
 export default function SearchComponent() {
   return (

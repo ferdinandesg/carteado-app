@@ -1,7 +1,7 @@
-import styles from "@styles/Game.module.scss";
+import styles from "@/styles/Game.module.scss";
 import { useTranslation } from "react-i18next";
 import Shaky from "../Shaky";
-import { useGameStore } from "@/contexts/game.store";
+import { useGameStore } from "@//contexts/game.store";
 
 export default function CurrentBet() {
     const { t } = useTranslation();

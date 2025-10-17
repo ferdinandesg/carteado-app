@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@/tanstack/react-query";
 import { RoomStatus } from "@/models/room";
 import { Participant } from "shared/types";
 import useAxiosAuth from "../useAuthAxios";

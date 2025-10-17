@@ -4,8 +4,8 @@
     "module": "CommonJS",
     "target": "ES2022",
     "outDir": "./dist",
-    "rootDir": "./",
-    "baseUrl": "./",
+    "rootDir": "./src",
+    "baseUrl": "./src",
     "composite": true,
     "incremental": true,
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
@@ -16,14 +16,9 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "paths": {
-      "@controller/*": ["src/controller/*"],
-      "@routes/*": ["src/routes/*"],
-      "@services/*": ["src/services/*"],
-      "@models/*": ["src/models/*"],
-      "@socket/*": ["src/socket/*"],
-      "@utils/*": ["src/utils/*"],
-      "@/*": ["src/*"],
-      "@shared/*": ["../shared/*"]
+      "@/*": ["*"],
+      "@shared/*": ["../shared/*"],
+      "shared/*": ["../shared/*"]
     }
   },
   "include": ["src/**/*.ts"],

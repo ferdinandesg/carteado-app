@@ -1,7 +1,7 @@
 import { ButtonHTMLAttributes } from "react";
 import { withSound } from "./withSound";
 
-import styles from "@styles/Buttons.module.scss";
+import styles from "@/styles/Buttons.module.scss";
 
 type MenuButtonProps = {
   icon: React.ReactNode;

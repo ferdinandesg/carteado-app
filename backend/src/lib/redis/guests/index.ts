@@ -1,5 +1,5 @@
 import { EmptyGuestType, GuestType } from "shared/types";
-import RedisClass from "src/redis/client";
+import RedisClass from "@/lib/redis/client";
 
 export async function saveGuest(guest: EmptyGuestType): Promise<void> {
   const redis = await RedisClass.getDataClient();

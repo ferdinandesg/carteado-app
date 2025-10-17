@@ -1,9 +1,9 @@
 import classNames from "classnames"
 import { Player } from "shared/types"
-import styles from "@styles/Opponent.module.scss";
+import styles from "@/styles/Opponent.module.scss";
 import UserPlaceholder from "../UserPlaceholder"
 import Image from "next/image"
-import { useGameStore } from "@/contexts/game.store";
+import { useGameStore } from "@//contexts/game.store";
 
 type TrucoOpponentProps = {
     player: Player;

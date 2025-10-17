@@ -1,11 +1,11 @@
-import { UserSession } from "@/models/Users";
+import { UserSession } from "@//models/Users";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import jwt from "jsonwebtoken";
 import Credentials from "next-auth/providers/credentials";
 import { UserRole } from "shared/types";
 import axios from "axios";
-import logger from "@/tests/utils/logger";
+import logger from "@//tests/utils/logger";
 
 const axiosInstance = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1`,

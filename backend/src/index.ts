@@ -1,11 +1,10 @@
 import "dotenv/config";
-import "module-alias/register";
 import http from "http";
 import { app } from "./app";
-import RedisClass from "./redis/client";
+import RedisClass from "./lib/redis/client";
 import { env } from "./config/env";
 import { logger } from "./utils/logger";
-import { SocketServer } from "@socket/socket";
+import { SocketServer } from "@/socket/socket";
 
 const httpServer = http.createServer(app);
 

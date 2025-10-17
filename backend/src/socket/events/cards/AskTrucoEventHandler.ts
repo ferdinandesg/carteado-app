@@ -1,8 +1,8 @@
-import emitToRoom from "@socket/utils/emitToRoom";
+import emitToRoom from "@/socket/utils/emitToRoom";
 import { SocketContext } from "../../../@types/socket";
-import { getGameState, saveGameState } from "../../../redis/game";
-import ErrorHandler from "src/utils/error.handler";
-import { TrucoGame } from "src/game/TrucoGameRules";
+import { getGameState, saveGameState } from "@/lib/redis/game";
+import ErrorHandler from "utils/error.handler";
+import { TrucoGame } from "game/TrucoGameRules";
 
 export async function AskTrucoEventHandler(
   context: SocketContext

@@ -3,7 +3,7 @@ import {
   handleValidateUser,
   handleValidateGuest,
   protectedRoute,
-} from "@controller/auth.controller";
+} from "@/controller/auth.controller";
 import authorize from "./middlewares/auth";
 export default express()
   .post("/", handleValidateUser)

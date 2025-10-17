@@ -1,16 +1,16 @@
 "use client"
-import BackButton from "@/components/buttons/BackButton";
-import { withSound } from "@/components/buttons/withSound";
-import usePostRoom from "@/hooks/rooms/usePostRoom";
+import BackButton from "@//components/buttons/BackButton";
+import { withSound } from "@//components/buttons/withSound";
+import usePostRoom from "@//hooks/rooms/usePostRoom";
 import { ArrowRightCircle } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import styles from "@styles/CreateRoom.module.scss";
+import styles from "@/styles/CreateRoom.module.scss";
 import { useRouter } from "next/navigation";
 import classNames from "classnames";
-import UserCard from "@/components/UserCard";
+import UserCard from "@//components/UserCard";
 import { useSession } from "next-auth/react";
-import logger from "@/tests/utils/logger";
+import logger from "@//tests/utils/logger";
 
 type RoomForm = {
     name: string;

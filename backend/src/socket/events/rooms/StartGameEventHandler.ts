@@ -1,12 +1,12 @@
 import { SocketContext } from "../../../@types/socket";
 import prisma from "../../../prisma";
-import { saveGameState } from "../../../redis/game";
-import { getRoomState, saveRoomState } from "../../../redis/room";
-import emitToRoom from "@socket/utils/emitToRoom";
-import ErrorHandler from "src/utils/error.handler";
+import { saveGameState } from "@/lib/redis/game";
+import { getRoomState, saveRoomState } from "@/lib/redis/room";
+import emitToRoom from "@/socket/utils/emitToRoom";
+import ErrorHandler from "utils/error.handler";
 import { createPlayers } from "./utils";
-import { CarteadoGame } from "src/game/CarteadoGameRules";
-import { TrucoGame } from "src/game/TrucoGameRules";
+import { CarteadoGame } from "game/CarteadoGameRules";
+import { TrucoGame } from "game/TrucoGameRules";
 import { Participant } from "shared/types";
 import { PlayerStatus, TrucoPlayer } from "shared/game";
 

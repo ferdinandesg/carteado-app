@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "@/tanstack/react-query";
 import { Participant } from "shared/types";
 import { UserSession } from "@/models/Users";
 import useAxiosAuth from "../useAuthAxios";

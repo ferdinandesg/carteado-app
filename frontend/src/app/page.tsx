@@ -2,13 +2,13 @@
 import { signIn } from "next-auth/react";
 import { useTranslation } from "next-i18next";
 
-import styles from "@styles/Home.module.scss";
+import styles from "@/styles/Home.module.scss";
 import classNames from "classnames";
 import Image from "next/image";
 import { Pixelify_Sans } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import GuestCustomizer from "@/components/GuestCustomizer";
+import GuestCustomizer from "@//components/GuestCustomizer";
 
 const pixelify = Pixelify_Sans({
   weight: ["400"],

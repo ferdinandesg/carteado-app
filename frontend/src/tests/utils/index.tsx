@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
-import { render, RenderOptions } from "@testing-library/react";
+import { render, RenderOptions } from "@/testing-library/react";
 import { SocketProvider } from "@/contexts/socket.context"; // Verifique a importação
 import { SessionProvider } from "next-auth/react";  // Verifique se está importando corretamente
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@/tanstack/react-query";
 import { I18nextProvider } from "react-i18next";
 import { ModalProvider } from "@/components/Modal/ModalContext";
 import { ToastContainer } from "react-toastify";

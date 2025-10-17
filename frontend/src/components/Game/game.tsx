@@ -1,4 +1,4 @@
-import useRoomByHash from "@/hooks/rooms/useRoomByHash";
+import useRoomByHash from "@//hooks/rooms/useRoomByHash";
 import CarteadoGame from "./carteado.game";
 import TrucoGame from "./truco.game";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useSocket } from "@/contexts/socket.context"; // seu socket context
+import { useSocket } from "@//contexts/socket.context"; // seu socket context
 import { GameState } from "shared/types";
 import { useGameStore } from "./game.store";
 import { useSession } from "next-auth/react";

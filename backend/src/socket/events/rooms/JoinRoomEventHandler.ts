@@ -1,11 +1,11 @@
-import { atomicallyUpdateRoomState } from "src/redis/room";
+import { atomicallyUpdateRoomState } from "@/lib/redis/room";
 import { SocketContext } from "../../../@types/socket";
-import emitToRoom from "@socket/utils/emitToRoom";
-import ErrorHandler from "src/utils/error.handler";
+import emitToRoom from "@/socket/utils/emitToRoom";
+import ErrorHandler from "utils/error.handler";
 import { createParticipantObject } from "shared/game";
-import { storeSession } from "src/redis/userSession";
+import { storeSession } from "@/lib/redis/userSession";
 import { JoinRoomPayload } from "../payloads";
-import { logger } from "@utils/logger";
+import { logger } from "@/utils/logger";
 
 export async function JoinRoomEventHandler(
   context: SocketContext<JoinRoomPayload>

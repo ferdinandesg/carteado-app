@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { Play } from "lucide-react";
-import styles from "@/styles/GuestCustomizer.module.scss";
+import styles from "@//styles/GuestCustomizer.module.scss";
 import Image from "next/image";
 import classNames from "classnames";
 import BackButton from "./buttons/BackButton";

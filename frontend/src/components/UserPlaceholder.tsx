@@ -1,6 +1,6 @@
 import { User } from "lucide-react";
 
-import styles from "@styles/UserCard.module.scss";
+import styles from "@/styles/UserCard.module.scss";
 
 export default function UserPlaceholder() {
   return (

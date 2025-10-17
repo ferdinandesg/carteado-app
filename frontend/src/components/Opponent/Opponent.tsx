@@ -1,10 +1,10 @@
 import { Player } from "shared/types";
 
 import UserPlaceholder from "../UserPlaceholder";
-import styles from "@styles/Opponent.module.scss";
+import styles from "@/styles/Opponent.module.scss";
 import classNames from "classnames";
 import Image from "next/image";
-import { useGameStore } from "@/contexts/game.store";
+import { useGameStore } from "@//contexts/game.store";
 
 export default function Opponent({ player }: { player: Player }) {
   const { game } = useGameStore();
