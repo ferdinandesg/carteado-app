@@ -4,7 +4,7 @@ import { SessionProvider } from "next-auth/react";
 import { Inter } from "next/font/google";
 import { ModalProvider } from "@//components/Modal/ModalContext";
 import { ToastContainer } from "react-toastify";
-import { QueryClient, QueryClientProvider } from "@/tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { I18nextProvider, useTranslation } from "react-i18next";
 import i18n from "i18next.config";
 import LanguageSwitcher from "@//components/LanguageSwitcher/LanguageSwitcher";

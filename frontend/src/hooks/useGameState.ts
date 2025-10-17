@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@/tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { GameState } from "shared/types";
 import useAxiosAuth from "./useAuthAxios";
 
