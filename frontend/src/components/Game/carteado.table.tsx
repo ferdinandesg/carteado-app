@@ -3,9 +3,9 @@ import Table from "../Table";
 
 export default function CarteadoTable() {
     return <Table
-        tableActions={
-            null
-        }
-        OpponentComponent={Opponent}
+        deckArea={null}
+        playedCardsArea={null}
+        actionsAreaLeft={null}
+        actionsAreaRight={null}
     />
 }
