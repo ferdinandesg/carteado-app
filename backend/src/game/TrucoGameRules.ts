@@ -70,7 +70,7 @@ export class TrucoGame extends Game<TrucoGame, ITrucoGameRules, TrucoPlayer> {
   }
 }
 
-type ITrucoGameRules = IGameRules<TrucoGame, TrucoPlayer> & {
+type ITrucoGameRules = IGameRules<TrucoGame> & {
   askTruco(game: TrucoGame, userId: string): void;
   acceptTruco(game: TrucoGame, userId: string): void;
   rejectTruco(game: TrucoGame, userId: string): void;
@@ -162,7 +162,7 @@ export class TrucoGameRules implements ITrucoGameRules {
     game.trucoAcceptedBy = userId;
   }
 
-  rejectTruco(game: TrucoGame, _userId: string) {
+  rejectTruco(game: TrucoGame) {
     if (!this.isTrucoPending(game)) throw "CANT_ACCEPT_TRUCO";
     const askingTeamId = this.findTeamByUserId(game, game.trucoAskedBy);
     if (!askingTeamId) return;
@@ -173,7 +173,7 @@ export class TrucoGameRules implements ITrucoGameRules {
     this.finishRound(game, team);
   }
 
-  canPlayCard(game: TrucoGame, userId: string, _card: Card) {
+  canPlayCard(game: TrucoGame, userId: string) {
     if (this.isTrucoPending(game)) throw "CANT_PLAY_TRUCO_PENDING";
     if (game.playerTurn !== userId) {
       throw "NOT_YOUR_TURN";

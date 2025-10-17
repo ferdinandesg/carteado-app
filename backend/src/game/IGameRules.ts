@@ -1,6 +1,6 @@
 import { Card } from "shared/cards";
 
-export interface IGameRules<T, _P> {
+export interface IGameRules<T> {
   dealInitialHands(game: T): void;
 
   canPlayCard(game: T, userId: string, card: Card): void;

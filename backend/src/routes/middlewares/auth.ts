@@ -55,7 +55,7 @@ export default async function authorize(
     }
     req.user = user;
     next();
-  } catch (_error) {
-    res.status(403).json({ message: "INVALID_TOKEN" });
+  } catch (error) {
+    res.status(403).json({ message: "INVALID_TOKEN", error });
   }
 }

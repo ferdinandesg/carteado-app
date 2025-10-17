@@ -15,7 +15,7 @@ export class CarteadoGame extends Game<
   }
 }
 
-export type ICarteadoGameRules = IGameRules<CarteadoGame, CarteadoPlayer> & {
+export type ICarteadoGameRules = IGameRules<CarteadoGame> & {
   isSpecialCard(
     game: CarteadoGame,
     player: CarteadoPlayer,
@@ -181,7 +181,7 @@ export class CarteadoGameRules implements ICarteadoGameRules {
     player.table = player.table.filter((x) => x.toString !== card.toString);
   }
 
-  validateEndTurn(_game: CarteadoGame, _userId: string) {
+  validateEndTurn() {
     // Neste caso não faz nada
     return;
   }

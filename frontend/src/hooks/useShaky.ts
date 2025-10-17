@@ -9,6 +9,7 @@ export function useShake<T>(value: T, duration = 500): boolean {
       previousValue.current !== undefined &&
       previousValue.current !== value
     ) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setAnimate(true);
       const timer = setTimeout(() => {
         setAnimate(false);

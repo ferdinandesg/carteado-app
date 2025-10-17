@@ -8,25 +8,12 @@ type ButtonProps = {
   text: string;
 };
 
-const ButtonWithSound = ({
-  clickSrc,
-  text,
-  onClick,
-}: ButtonProps & {
-  clickSrc: string;
-}) => {
-  const Element = withSound(Button, { clickSrc });
-  return (
-    <Element
-      onClick={onClick}
-      text={text}
-    />
-  );
-};
-
 const Button = ({ onClick, text }: ButtonProps) => (
   <button onClick={onClick}>{text}</button>
 );
+
+const PickUpBunchButton = withSound(Button, { clickSrc: "/assets/sfx/hurt.mp3" });
+const EndTurnButton = withSound(Button, { clickSrc: "/assets/sfx/your-turn.mp3" });
 
 export default function TableActions() {
   const { t } = useTranslation()
@@ -36,15 +23,13 @@ export default function TableActions() {
   if (!isGameStarted) return;
   return (
     <div className={styles.actions}>
-      <ButtonWithSound
+      <PickUpBunchButton
         onClick={pickUpBunch}
         text={t("TableActions.pickUpBunch")}
-        clickSrc="/assets/sfx/hurt.mp3"
       />
-      <ButtonWithSound
+      <EndTurnButton
         onClick={endTurn}
         text={t("TableActions.endTurn")}
-        clickSrc="/assets/sfx/your-turn.mp3"
       />
     </div>
   );

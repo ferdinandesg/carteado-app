@@ -71,7 +71,6 @@ export function SocketProvider({ children }: { children: ReactNode }) {
           }
         }
       })
-      setSocket(socketInstance);
 
       // A função de limpeza é crucial.
       return () => {

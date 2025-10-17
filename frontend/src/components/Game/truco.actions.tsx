@@ -9,27 +9,13 @@ type ButtonProps = {
     disabled?: boolean
 };
 
-const ButtonWithSound = ({
-    clickSrc,
-    text,
-    onClick,
-    disabled
-}: ButtonProps & {
-    clickSrc: string;
-}) => {
-    const Element = withSound(Button, { clickSrc });
-    return (
-        <Element
-            onClick={onClick}
-            text={text}
-            disabled={disabled}
-        />
-    );
-};
-
 const Button = ({ onClick, text, disabled }: ButtonProps) => (
     <button disabled={disabled} onClick={onClick}>{text}</button>
 );
+
+const AcceptButton = withSound(Button, { clickSrc: "/assets/sfx/hurt.mp3" });
+const RejectButton = withSound(Button, { clickSrc: "/assets/sfx/hurt.mp3" });
+const TrucoButton = withSound(Button, { clickSrc: "/assets/sfx/your-turn.mp3" });
 
 export default function TrucoActions() {
     const { data } = useSession();
@@ -47,24 +33,21 @@ export default function TrucoActions() {
 
     return <div className={styles.trucoActions}>
         <div className={styles.acceptReject}>
-            <ButtonWithSound
+            <AcceptButton
                 onClick={acceptTruco}
                 disabled={!canAcceptReject}
                 text={t("TableActions.accept")}
-                clickSrc="/assets/sfx/hurt.mp3"
             />
-            <ButtonWithSound
+            <RejectButton
                 onClick={rejectTruco}
                 disabled={!canAcceptReject}
                 text={t("TableActions.reject")}
-                clickSrc="/assets/sfx/hurt.mp3"
             />
         </div>
-        <ButtonWithSound
+        <TrucoButton
             onClick={askTruco}
             text={t("TableActions.truco")}
             disabled={!canAskTruco}
-            clickSrc="/assets/sfx/your-turn.mp3"
         />
     </div>
 }

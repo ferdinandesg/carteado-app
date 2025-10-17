@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useId } from "react";
 
 import styles from "@styles/RankMeter.module.scss";
 
@@ -16,9 +16,9 @@ const Star: React.FC<StarProps> = ({
   color = "gold",
   backgroundColor = "lightgray",
 }) => {
+  const id = useId();
   const fillHeight = (fillPercentage / 100) * 24;
-  const clipPathId = `clip-star-${Math.random()}`;
-  return null
+  const clipPathId = `clip-star-${id}`;
   return (
     <svg
       width={size}

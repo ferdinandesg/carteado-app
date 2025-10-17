@@ -48,7 +48,7 @@ export default function Room() {
     return () => {
       socket.emit("leave_room", { roomHash: id });
     };
-  }, [isLoading, socket]);
+  }, [isLoading, socket, id]);
 
   if (isLoading)
     return (

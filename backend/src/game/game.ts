@@ -4,7 +4,7 @@ import { BasePlayer, GameStatus } from "shared/game";
 
 export class Game<
   G extends Game<G, R, P>,
-  R extends IGameRules<G, P>,
+  R extends IGameRules<G>,
   P extends BasePlayer,
 > {
   public rulesName: string;

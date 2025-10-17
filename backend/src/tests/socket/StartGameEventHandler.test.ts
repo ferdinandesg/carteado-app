@@ -8,7 +8,6 @@ jest.mock("src/redis/room", () => ({
 
 jest.mock("src/prisma", () => ({
   __esModule: true,
-  default: require("../prisma.mock").default,
 }));
 
 jest.mock("@socket/events/rooms/utils", () => ({

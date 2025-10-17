@@ -24,7 +24,6 @@ const Table: React.FC<TableProps> = ({
   const { game } = useGameStore();
 
   const { mainPlayer, orderedOpponents } = React.useMemo(() => {
-    // ... sua lógica useMemo para encontrar jogadores permanece a mesma
     if (!game || !session?.user) return { mainPlayer: null, orderedOpponents: [] };
     const player = game.players.find((p) => p.userId === session.user.id);
     const mainPlayerIndex = game.players.findIndex(p => p.userId === session.user.id);
@@ -36,7 +35,7 @@ const Table: React.FC<TableProps> = ({
       }
     }
     return { mainPlayer: player, orderedOpponents: opponents };
-  }, [game, session?.user]);
+  }, [game, session]);
 
   if (!game || !mainPlayer) {
     return <div className={styles.loadingTable}>Aguardando o jogo...</div>;
