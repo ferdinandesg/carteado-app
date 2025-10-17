@@ -8,6 +8,7 @@ WORKDIR /app
 # Copia os manifestos de pacotes de todo o workspace
 COPY package.json ./
 COPY package-lock.json ./
+COPY tsconfig*.json ./
 
 COPY backend/package.json ./backend/
 COPY shared/package.json ./shared/
