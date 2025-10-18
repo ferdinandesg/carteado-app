@@ -69,10 +69,10 @@ export default function Chat({ roomHash, isCollapsed, toggleCollapse }: ChatProp
   }, [socket]);
 
   useEffect(() => {
-    if (!useAutoScroll) return;
-    divRef.current!.scroll({
+    if (!useAutoScroll || !divRef.current) return;
+    divRef.current.scroll({
       behavior: "smooth",
-      top: divRef.current!.scrollHeight,
+      top: divRef.current.scrollHeight,
     });
   }, [localMessages, useAutoScroll]);
 
