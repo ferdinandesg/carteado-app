@@ -258,7 +258,9 @@ export class TrucoGameRules implements ITrucoGameRules {
 
     // Lógica para definir o próximo a jogar
     const nextPlayer = game.getPlayer(winnerId);
-    game.playerTurn = nextPlayer?.userId;
+
+    // Se houve empate, o próximo a jogar é quem empatou a mão
+    game.playerTurn = isTie ? game.playerTurn : nextPlayer?.userId;
 
     this.checkRoundEnding(game);
   }
@@ -291,7 +293,11 @@ export class TrucoGameRules implements ITrucoGameRules {
       } else {
         // Empate nas três mãos ou 1 vitória para cada + 1 empate.
         // Neste caso, quem venceu a primeira mão, leva a rodada.
-        const firstHandWinnerId = game.handsResults[0].winnerTeamId;
+        const roundResults = game.handsResults.filter(
+          (r) => r.round === game.rounds
+        );
+        if (roundResults.length === 0) return;
+        const firstHandWinnerId = roundResults[0].winnerTeamId;
         const winnerTeam = game.teams.find((t) => t.id === firstHandWinnerId);
         if (winnerTeam) {
           this.finishRound(game, winnerTeam, game.currentBet);
@@ -328,7 +334,9 @@ export class TrucoGameRules implements ITrucoGameRules {
 
     for (const card of handCards) {
       const value = getCardValue(card, game.manilha);
-      const player = game.players.find((p) => p.playedCards.includes(card));
+      const player = game.players.find((p) =>
+        p.playedCards.some((c) => c.rank === card.rank && c.suit === card.suit)
+      );
       if (!player) continue;
 
       if (value > highestValue) {

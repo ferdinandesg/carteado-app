@@ -2,9 +2,8 @@ import { Card } from "./";
 import { TRUCO_RANK_ORDER, suitValueMap } from "./constants";
 
 export function getCardValue(card: Card, manilhaRank: string): number {
-  const suitVal = suitValueMap[card.suit] ?? 0;
-
   if (card.rank === manilhaRank) {
+    const suitVal = suitValueMap[card.suit] ?? 0;
     return 100 + suitVal;
   }
   const rankVal = TRUCO_RANK_ORDER[card.rank] ?? 0;
