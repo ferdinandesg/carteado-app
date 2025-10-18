@@ -39,9 +39,8 @@ COPY --from=builder /app/shared/dist ./shared/dist
 COPY --from=builder /app/backend/package.json ./backend/package.json
 RUN cd backend && npm install --omit=dev
 
-# <<< CORREÇÃO AQUI >>>
-# Copia o cliente Prisma gerado no estágio de build para a imagem final
-COPY --from=builder /app/backend/node_modules/.prisma ./backend/node_modules/.prisma
+# Copia o cliente Prisma gerado na raiz do node_modules do builder
+COPY --from=builder /app/node_modules/.prisma ./backend/node_modules/.prisma
 
 # O 'shared' se torna uma dependência local, então precisamos copiá-lo
 # para que o Node.js o encontre.
@@ -50,3 +49,4 @@ COPY --from=builder /app/node_modules/shared ./node_modules/shared
 WORKDIR /app/backend
 EXPOSE 4000
 CMD ["node", "dist/index.js"]
+
