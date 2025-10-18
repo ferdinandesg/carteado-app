@@ -29,6 +29,9 @@ RUN npm run build --workspace=backend
 # Dica: Usar 'slim' (baseado em Debian) é mais seguro para o Prisma do que 'alpine'
 FROM node:20-slim
 
+# Instala o OpenSSL, uma dependência de tempo de execução para o Prisma
+RUN apt-get update -y && apt-get install -y openssl
+
 WORKDIR /app
 
 # Copia os artefatos compilados do backend e do shared
@@ -49,4 +52,3 @@ COPY --from=builder /app/node_modules/shared ./node_modules/shared
 WORKDIR /app/backend
 EXPOSE 4000
 CMD ["node", "dist/index.js"]
-
