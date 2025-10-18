@@ -1,5 +1,5 @@
 import { Card } from "shared/cards";
-import { Player } from "shared/types";
+import { Participant } from "shared/types";
 
 export type RoomStatus = "open" | "playing" | "finished";
 
@@ -11,7 +11,7 @@ export interface RoomInterface {
   name: string;
   status: "open" | "playing";
   size: number;
-  players: Player[];
+  participants: Participant[];
   bunch: Card[];
   rule: "CarteadoGameRules" | "TrucoGameRules";
 }

@@ -1,4 +1,4 @@
-import { Player } from "shared/types";
+import { BasePlayer } from "shared/game";
 
 export type UserSession = {
   id?: string;
@@ -9,7 +9,7 @@ export type UserSession = {
   role?: string;
 };
 
-export type PopulatedPlayer = Player &
+export type PopulatedPlayer = BasePlayer &
   UserSession & {
     user: UserSession;
   };

@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
+    "ts-check": "tsc --noEmit",
     "start": "next start -p 3000",
     "lint": "eslint ./src --format=pretty --color",
     "test": "jest -- --silent",

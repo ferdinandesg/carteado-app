@@ -3,8 +3,8 @@ import { useSession } from "next-auth/react";
 import { useGameStore } from "@//contexts/game.store";
 import Opponent from "@//components/Opponent/Opponent";
 import styles from "@//styles/Table.module.scss"; // Estilos específicos da mesa
-import { PlayerWithUser } from "shared/types";
 import GameBoard from "./game.board";
+import { BasePlayer } from "shared/game";
 
 type TableProps = {
   // Props para injetar conteúdo agnóstico
@@ -27,7 +27,7 @@ const Table: React.FC<TableProps> = ({
     if (!game || !session?.user) return { mainPlayer: null, orderedOpponents: [] };
     const player = game.players.find((p) => p.userId === session.user.id);
     const mainPlayerIndex = game.players.findIndex(p => p.userId === session.user.id);
-    const opponents: PlayerWithUser[] = [];
+    const opponents: BasePlayer[] = [];
     if (mainPlayerIndex !== -1) {
       for (let i = 1; i < game.players.length; i++) {
         const opponentIndex = (mainPlayerIndex + i) % game.players.length;

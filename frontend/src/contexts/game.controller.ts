@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 import { useSocket } from "@//contexts/socket.context"; // seu socket context
-import { GameState } from "shared/types";
 import { useGameStore } from "./game.store";
 import { useSession } from "next-auth/react";
+import { IGameState } from "shared/game";
 
 // Este componente não renderiza nada, apenas gerencia a lógica.
 export function GameController() {
@@ -17,8 +17,7 @@ export function GameController() {
     setSocket(socket);
 
     // 2. Ouve o evento de atualização do jogo
-    const handleGameUpdate = (updatedGame: GameState) => {
-      console.log({ updatedGame });
+    const handleGameUpdate = (updatedGame: IGameState) => {
       setGame(updatedGame);
     };
 

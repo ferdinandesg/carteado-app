@@ -13,6 +13,7 @@ export type BasePlayer = {
   hand: Card[];
   name: string;
   playedCards: Card[];
+  image?: string;
   table: Card[];
   teamId: string;
 };

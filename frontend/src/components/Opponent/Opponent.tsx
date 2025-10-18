@@ -1,13 +1,13 @@
-import { Player } from "shared/types";
 
 import UserPlaceholder from "../UserPlaceholder";
 import styles from "@/styles/Opponent.module.scss";
 import classNames from "classnames";
 import Image from "next/image";
-import { useGameStore } from "@//contexts/game.store";
+import { BasePlayer, isTrucoGame } from "shared/game";
+import { useTypedGame } from "@/hooks/useTrucoGame";
 
-export default function Opponent({ player }: { player: Player }) {
-  const { game } = useGameStore();
+export default function Opponent({ player }: { player: BasePlayer }) {
+  const game = useTypedGame(isTrucoGame);
   const isCurrentPlayerTurn = game?.playerTurn === player.userId;
 
   return (

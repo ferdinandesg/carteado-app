@@ -1,9 +1,9 @@
 import { act } from "@testing-library/react";
 import { useGameStore, selectPlayers, selectCurrentPlayer } from "./game.store";
-import { GameState, Player, User } from "shared/types";
+import { User } from "shared/types";
 import { Card } from "shared/cards";
 import { Socket } from "socket.io-client";
-import { PlayerStatus } from "shared/game";
+import { IGameState, PlayerStatus } from "shared/game";
 
 // Criamos um mock do objeto socket com uma função 'emit' que podemos espionar
 const mockSocket = {
@@ -35,7 +35,7 @@ const mockGameState = {
   rounds: 0,
   playerTurn: "user-1",
   winner: null,
-} as unknown as GameState;
+} as unknown as IGameState;
 
 describe("useGameStore", () => {
   // Antes de cada teste, resetamos o estado do store e limpamos o mock do socket

@@ -4,8 +4,9 @@ import { useTranslation } from "react-i18next";
 import BackButton from "@//components/buttons/BackButton";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { selectCurrentPlayer, selectPlayers, useGameStore } from "@//contexts/game.store";
-import { useSession } from "next-auth/react";
+import { selectCurrentPlayer, useGameStore } from "@//contexts/game.store";
+import { useTypedGame } from "@/hooks/useTrucoGame";
+import { isTrucoGame } from "shared/game";
 
 interface ModalGameFinishedProps {
     isOpen: boolean;
@@ -13,7 +14,7 @@ interface ModalGameFinishedProps {
 
 export default function ModalGameFinished({ isOpen }: ModalGameFinishedProps) {
     const { t } = useTranslation()
-    const { game } = useGameStore();
+    const game = useTypedGame(isTrucoGame);
     const player = useGameStore(selectCurrentPlayer);
 
     const router = useRouter();

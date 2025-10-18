@@ -1,20 +1,20 @@
 import classNames from "classnames"
-import { Player } from "shared/types"
 import styles from "@/styles/Opponent.module.scss";
 import UserPlaceholder from "../UserPlaceholder"
 import Image from "next/image"
-import { useGameStore } from "@//contexts/game.store";
+import { BasePlayer, isTrucoGame } from "shared/game";
+import { useTypedGame } from "@/hooks/useTrucoGame";
 
 type TrucoOpponentProps = {
-    player: Player;
+    player: BasePlayer;
     onAccept?: () => void;
     onReject?: () => void;
 }
 export default function TrucoOpponent({ player, onAccept, onReject }: TrucoOpponentProps) {
-    const { game } = useGameStore();
+    const game = useTypedGame(isTrucoGame);
     const isCurrentPlayerTurn = game?.playerTurn === player.userId;
     const teamId = game?.teams.find((team) => team.userIds.includes(player.userId))?.id || ""
-    const trucoAskedBy = game?.trucoAskedBy === player.userId;
+    const trucoAskedBy = game?.trucoAskerId === player.userId;
 
     return (
         <div
