@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { GameState } from "shared/types";
+import { IGameState } from "shared/game";
 import useAxiosAuth from "./useAuthAxios";
 
 export default function useGameState(hash: string) {
@@ -13,7 +13,7 @@ export default function useGameState(hash: string) {
     staleTime: 1000 * 60 * 5,
   });
 
-  const updateGame = (updatedGame: GameState) => {
+  const updateGame = (updatedGame: IGameState) => {
     queryClient.setQueryData(["game", hash], updatedGame);
   };
   return {

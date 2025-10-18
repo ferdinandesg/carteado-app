@@ -1,8 +1,8 @@
 import emitToRoom from "@/socket/utils/emitToRoom";
 import { SocketContext } from "../../../@types/socket";
-import { getGameState, saveGameState } from "@/lib/redis/game";
 import ErrorHandler from "utils/error.handler";
 import { TrucoGame } from "game/TrucoGameRules";
+import { getGameInstance, saveGameInstance } from "@/services/game.service";
 
 export async function RejectTrucoEventHandler(
   context: SocketContext
@@ -11,10 +11,10 @@ export async function RejectTrucoEventHandler(
   try {
     const roomHash = socket.user.room;
     if (!roomHash) throw "ROOM_NOT_FOUND";
-    const game = (await getGameState(roomHash)) as TrucoGame;
-    game.rules.rejectTruco(game, socket.user.id);
+    const game = await getGameInstance<TrucoGame>(roomHash);
+    game.rules.rejectTruco(game);
 
-    await saveGameState(roomHash, game);
+    await saveGameInstance(roomHash, game);
     emitToRoom(channel, roomHash, "game_updated", game);
   } catch (error) {
     ErrorHandler(error, socket);

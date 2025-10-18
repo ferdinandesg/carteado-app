@@ -1,13 +1,17 @@
 export type GameErrorCode =
   | "ROOM_NOT_FOUND"
   | "GAME_NOT_FOUND"
+  | "ROOM_NOT_FULL"
   | "PLAYER_NOT_IN_ROOM"
   | "ROOM_FULL"
   | "UNAUTHORIZED"
   | "VALIDATION"
   | "INVARIANT"
+  | "INVALID_DECK"
   | "CONFLICT"
   | "RATE_LIMIT"
+  | "INVALID_BET"
+  | "INVALID_ACTION"
   | "INTERNAL";
 
 export interface GameErrorOptions {
@@ -21,9 +25,13 @@ export interface GameErrorOptions {
 const defaultMessages: Record<GameErrorCode, string> = {
   ROOM_NOT_FOUND: "Room not found",
   GAME_NOT_FOUND: "Game not found",
+  ROOM_NOT_FULL: "Room is not full",
   PLAYER_NOT_IN_ROOM: "Player not in room",
+  INVALID_DECK: "Invalid or exhausted deck",
   ROOM_FULL: "Room is full",
   UNAUTHORIZED: "Unauthorized",
+  INVALID_BET: "Invalid bet",
+  INVALID_ACTION: "Invalid action",
   VALIDATION: "Validation failed",
   INVARIANT: "Domain invariant violated",
   CONFLICT: "Conflict detected",

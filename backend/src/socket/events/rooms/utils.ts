@@ -1,11 +1,11 @@
-import { GamePlayer } from "shared/game";
+import { BasePlayer } from "shared/game";
 import { Participant } from "shared/types";
 import prisma from "prisma";
 
 export async function createPlayers(
   participants: Participant[],
   roomId: string
-): Promise<GamePlayer[]> {
+): Promise<BasePlayer[]> {
   // 1. Prepara os dados para o `createMany`
   const playersToCreate = participants.map((p) => ({
     roomId,
@@ -28,11 +28,11 @@ export async function createPlayers(
     include: {
       user: true, // Inclui o documento User se a relação existir
     },
-  })) as unknown as GamePlayer[];
+  })) as unknown as BasePlayer[];
   const createdPlayersWithIds = createdPlayers.map((player) => ({
     ...player,
     userId:
       player.userId || participants.find((p) => p.name === player.name)?.userId,
   }));
-  return createdPlayersWithIds as GamePlayer[];
+  return createdPlayersWithIds as BasePlayer[];
 }

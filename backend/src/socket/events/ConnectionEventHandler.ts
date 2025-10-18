@@ -7,8 +7,8 @@ import { registerCardEvents } from "./cards";
 import { registerChatEvents } from "./chat";
 import emitToRoom from "../utils/emitToRoom";
 import { atomicallyUpdateRoomState } from "@/lib/redis/room";
-import { getGameState } from "@/lib/redis/game";
 import { createParticipantObject } from "shared/game";
+import { getGameInstance } from "@/services/game.service";
 
 const handleReconnection = async (socket: Socket, channel: Namespace) => {
   const session = await retrieveSession(socket.user.id);
@@ -38,7 +38,7 @@ const handleReconnection = async (socket: Socket, channel: Namespace) => {
       socket.join(session.roomHash);
       socket.user.room = session.roomHash;
       socket.user.status = session.status;
-      const game = await getGameState(session.roomHash);
+      const game = await getGameInstance(session.roomHash);
       emitToRoom(channel, session.roomHash, "game_updated", game);
 
       emitToRoom(channel, session.roomHash, "room_updated", updatedRoom);

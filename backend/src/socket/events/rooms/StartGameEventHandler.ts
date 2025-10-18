@@ -1,6 +1,5 @@
 import { SocketContext } from "../../../@types/socket";
 import prisma from "../../../prisma";
-import { saveGameState } from "@/lib/redis/game";
 import { getRoomState, saveRoomState } from "@/lib/redis/room";
 import emitToRoom from "@/socket/utils/emitToRoom";
 import ErrorHandler from "utils/error.handler";
@@ -8,7 +7,8 @@ import { createPlayers } from "./utils";
 import { CarteadoGame } from "game/CarteadoGameRules";
 import { TrucoGame } from "game/TrucoGameRules";
 import { Participant } from "shared/types";
-import { PlayerStatus, TrucoPlayer } from "shared/game";
+import { PlayerStatus } from "shared/game";
+import { saveGameInstance } from "@/services/game.service";
 
 export async function StartGameEventHandler(
   context: SocketContext
@@ -52,7 +52,7 @@ export async function StartGameEventHandler(
     if (room.rule === "CarteadoGameRules") {
       game = new CarteadoGame(players);
     } else {
-      game = new TrucoGame(players as TrucoPlayer[]);
+      game = new TrucoGame(players);
     }
 
     game.startGame(); // Prepara o estado inicial do jogo (dar cartas, etc.)
@@ -66,7 +66,7 @@ export async function StartGameEventHandler(
     // Atualizamos o objeto da sala para salvar no Redis
     room.status = "playing";
     const updateRoomRedisPromise = saveRoomState(roomHash, room);
-    const saveGameRedisPromise = saveGameState(roomHash, game);
+    const saveGameRedisPromise = saveGameInstance(roomHash, game);
 
     // Executamos todas as promessas de atualização de estado juntas
     await Promise.all([

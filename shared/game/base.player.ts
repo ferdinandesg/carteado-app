@@ -11,6 +11,8 @@ export type BasePlayer = {
   userId: string;
   status: PlayerStatus;
   hand: Card[];
+  name: string;
   playedCards: Card[];
   table: Card[];
+  teamId: string;
 };

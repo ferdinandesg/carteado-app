@@ -1,7 +1,7 @@
 import emitToRoom from "@/socket/utils/emitToRoom";
 import { SocketContext } from "../../@types/socket";
-import { getGameState, saveGameState } from "@/lib/redis/game";
 import ErrorHandler from "utils/error.handler";
+import { getGameInstance, saveGameInstance } from "@/services/game.service";
 export async function EndTurnEventHandler(
   context: SocketContext
 ): Promise<void> {
@@ -9,9 +9,9 @@ export async function EndTurnEventHandler(
   const { room } = socket.user;
   if (!room) return;
   try {
-    const game = await getGameState(room);
+    const game = await getGameInstance(room);
     game.endTurn(socket.user.id);
-    await saveGameState(room, game);
+    await saveGameInstance(room, game);
     emitToRoom(channel, room, "game_updated", game);
   } catch (error) {
     ErrorHandler(error, socket);

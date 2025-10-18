@@ -1,18 +1,17 @@
 import { Card } from "shared/cards";
 import { create } from "zustand";
-import { GameState, Player } from "shared/types";
 import { Socket } from "socket.io-client";
-import { shallow } from "zustand/shallow";
-const EMPTY_PLAYERS: Player[] = [];
+import { BasePlayer, IGameState } from "shared/game";
+const EMPTY_PLAYERS: BasePlayer[] = [];
 
 interface GameStore {
   // Estado
-  game: GameState | null;
+  game: IGameState | null;
   socket: Socket | null;
   userId: string | null;
 
   // Ações que modificam o estado local
-  setGame: (game: GameState) => void;
+  setGame: (game: IGameState) => void;
   setSocket: (socket: Socket) => void;
   setUserId: (userId: string | null) => void;
 

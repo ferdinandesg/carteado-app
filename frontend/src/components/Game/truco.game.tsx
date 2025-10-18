@@ -1,18 +1,22 @@
 import styles from "@/styles/Game.module.scss";
 import Table from "../Table";
-import { useGameStore } from "@//contexts/game.store";
 import TrucoHud from "./TrucoHud";
 import CardFan from "../CardFan";
 import Card from "../Card";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "react-i18next";
 import CardBunch from "../CardBunch";
+import { useGameStore } from "@/contexts/game.store";
+import { isTrucoGame, ITrucoGameState } from "shared/game";
+import { useTypedGame } from "@/hooks/useTrucoGame";
 
 const DeckArea = () => {
     const { t } = useTranslation();
-    const { game } = useGameStore();
+    const game = useTypedGame(isTrucoGame);
+    console.log({
+        game
+    });
     if (!game) return null;
-
     return (
         <div className={styles.deckAreaContainer}>
             {game.vira && (
@@ -39,32 +43,36 @@ const BunchCardsArea = () => {
 const TrucoActions = () => {
     const { t } = useTranslation();
     const { data } = useSession();
-    const { game } = useGameStore();
-    const isTrucoPending = game?.trucoAskedBy && !game?.trucoAcceptedBy;
-    const isCurrentUserTurn = game?.playerTurn === data?.user?.id;
-    const userTeam = game?.teams.find(t => t.userIds.includes(data?.user?.id))
-    const hasAskedTruco = game?.trucoAskedBy && userTeam?.userIds.includes(game.trucoAskedBy);
+    const game = useTypedGame(isTrucoGame);
+
+    const { acceptTruco, askTruco, rejectTruco } = useGameStore();
+    if (!game) return null;
+    const isTrucoPending = game.trucoState === "PENDING";
+    const isCurrentUserTurn = game.playerTurn === data?.user?.id;
+    const userTeam = game.teams.find(t => t.userIds.includes(data?.user?.id))
+    const hasAskedTruco = game.trucoAskerId && userTeam?.userIds.includes(game.trucoAskerId);
     const canAskTruco = isCurrentUserTurn && !isTrucoPending && !hasAskedTruco;
-    if (isTrucoPending) {
+    if (isTrucoPending && !hasAskedTruco) {
         return (
             <div className={styles.actionsArea}>
-                <button>{t("Game.acceptTruco")}</button>
-                <button>{t("Game.rejectTruco")}</button>
+                <button onClick={acceptTruco}>{t("Game.acceptTruco")}</button>
+                <button onClick={rejectTruco}>{t("Game.rejectTruco")}</button>
             </div>
         )
     }
     return (
         <div className={styles.actionsArea}>
-            <button disabled={!canAskTruco}>{t("Game.askTruco")}</button>
+            <button onClick={askTruco} disabled={!canAskTruco}>{t("Game.askTruco")}</button>
         </div>
     )
 }
 
 
 const HandResultsArea = () => {
-    const { game } = useGameStore();
+    const game = useTypedGame(isTrucoGame);
     if (!game) return null;
-    const handResults = game.handsResults.filter(r => r.round === game.currentBet)
+    const lastPlayedRound = game.handsResults.length > 0 ? game.rounds : game.rounds - 1;
+    const handResults = game.handsResults.filter(r => r.round === lastPlayedRound)
     const cards = handResults.map(r => r.bunch).flat();
     return (
         <div className={styles.playedCards}>
@@ -76,7 +84,8 @@ const HandResultsArea = () => {
 export default function TrucoGame() {
     const { playCard, game } = useGameStore();
     const { data } = useSession();
-    const playerHand = game?.players.find(p => p.userId === data?.user?.id)?.hand || [];
+    if (!game) return null;
+    const playerHand = game.players.find(p => p.userId === data?.user?.id)?.hand || [];
 
     return (
         <div className={styles.Game}>

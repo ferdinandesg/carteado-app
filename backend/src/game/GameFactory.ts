@@ -1,57 +1,94 @@
-import { TrucoGame } from "./TrucoGameRules";
-import { CarteadoGame } from "./CarteadoGameRules";
+import { GameError } from "@/errors/GameError";
+import { CarteadoGame } from "@/game/CarteadoGameRules";
+import { TrucoGame } from "@/game/TrucoGameRules";
 import Deck from "shared/cards";
-import { GamePlayer, GameStatus } from "shared/game";
+import {
+  BasePlayer,
+  GameType,
+  ICarteadoGameState,
+  IGameState,
+  ITrucoGameState,
+} from "shared/game";
+
+// Type mapping from GameType to Game Instance
+type GameInstance<T extends GameType> = T extends "TRUCO"
+  ? TrucoGame
+  : T extends "CARTEADO"
+    ? CarteadoGame
+    : never;
+
+// Registry for game constructors
+const gameRegistry = {
+  TRUCO: TrucoGame,
+  CARTEADO: CarteadoGame,
+};
 
 export class GameFactory {
-  public static deserialize(json: string) {
-    const obj = JSON.parse(json);
-
-    const { rulesName } = obj;
-    switch (rulesName) {
-      case "TrucoGameRules":
-        return this.makeTrucoGame(obj);
-
-      case "CarteadoGameRules":
-        return this.makeCarteadoGame(obj);
-
-      default:
-        throw new Error(`Unknown rulesName: ${rulesName}`);
+  public static create<T extends GameType>(
+    gameType: T,
+    players: BasePlayer[]
+  ): GameInstance<T> {
+    const GameClass = gameRegistry[gameType];
+    if (!GameClass) {
+      throw new GameError({
+        code: "INVALID_ACTION",
+        message: "Game type not found",
+      });
     }
+    // This cast is still a bit of a smell, but it's contained.
+    // CarteadoGame expects CarteadoPlayer[], but since it's just a type alias for BasePlayer, this is fine at runtime.
+    return new GameClass(players) as GameInstance<T>;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private static makeTrucoGame(obj: any): TrucoGame {
-    const players = obj.players;
+  public static recreate(gameData: IGameState): TrucoGame | CarteadoGame {
+    if (isTrucoState(gameData)) {
+      const game = new TrucoGame(gameData.players);
 
-    const game = new TrucoGame(players);
+      // Safe hydration
+      game.bunch = gameData.bunch;
+      game.status = gameData.status;
+      game.playerTurn = gameData.playerTurn;
+      game.deck = Deck.deserialize(gameData.deck);
+      game.vira = gameData.vira;
+      game.manilha = gameData.manilha;
+      game.currentBet = gameData.currentBet;
+      game.trucoState = gameData.trucoState;
+      game.trucoAskerId = gameData.trucoAskerId;
+      game.rounds = gameData.rounds;
+      game.teams = gameData.teams;
+      game.handsResults = gameData.handsResults;
 
-    game.deck = Deck.deserialize(obj.deck);
-    game.bunch = obj.bunch;
-    game.status = obj.status as GameStatus;
-    game.playerTurn = obj.playerTurn;
-    game.vira = obj.vira;
-    game.manilha = obj.manilha;
-    game.currentBet = obj.currentBet;
-    game.trucoAskedBy = obj.trucoAskedBy;
-    game.rounds = obj.rounds;
-    game.trucoAcceptedBy = obj.trucoAcceptedBy;
-    game.teams = obj.teams;
-    game.handsResults = obj.handsResults;
+      return game;
+    }
 
-    return game;
+    if (isCarteadoState(gameData)) {
+      const game = new CarteadoGame(gameData.players);
+      // Safe hydration
+      game.bunch = gameData.bunch;
+      game.status = gameData.status;
+      game.playerTurn = gameData.playerTurn;
+      game.deck = Deck.deserialize(gameData.deck);
+
+      return game;
+    }
+
+    throw new GameError({
+      code: "INVALID_ACTION",
+      message: "Could not recreate game",
+    });
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private static makeCarteadoGame(obj: any): CarteadoGame {
-    const players = obj.players as GamePlayer[];
-    const game = new CarteadoGame(players);
-
-    game.deck = Deck.deserialize(obj.deck);
-    game.bunch = obj.bunch;
-    game.status = obj.status as GameStatus;
-    game.playerTurn = obj.playerTurn;
-
-    return game;
+  public static deserialize(
+    serializedGame: string
+  ): ITrucoGameState | ICarteadoGameState {
+    return JSON.parse(serializedGame);
   }
+}
+
+// Type guards
+function isTrucoState(state: IGameState): state is ITrucoGameState {
+  return state.rulesName === "TrucoGameRules";
+}
+
+function isCarteadoState(state: IGameState): state is ICarteadoGameState {
+  return state.rulesName === "CarteadoGameRules";
 }

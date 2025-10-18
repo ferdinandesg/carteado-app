@@ -1,8 +1,8 @@
 import emitToRoom from "@/socket/utils/emitToRoom";
 import { SocketContext } from "../../../@types/socket";
-import { getGameState, saveGameState } from "@/lib/redis/game";
 import { CarteadoGame } from "game/CarteadoGameRules";
 import { PickHandPayload } from "../payloads";
+import { getGameInstance, saveGameInstance } from "@/services/game.service";
 
 export async function PickHandEventHandler(
   context: SocketContext<PickHandPayload>
@@ -11,11 +11,11 @@ export async function PickHandEventHandler(
   const { cards } = payload;
   const roomHash = socket.user.room;
   if (!roomHash) throw "USER_NOT_IN_ROOM";
-  const game = (await getGameState(roomHash)) as CarteadoGame;
+  const game = await getGameInstance<CarteadoGame>(roomHash);
 
   game.rules.pickHand(game, socket.user.id, cards);
 
   emitToRoom(channel, roomHash, "game_updated", game);
 
-  await saveGameState(roomHash, game);
+  await saveGameInstance(roomHash, game);
 }
