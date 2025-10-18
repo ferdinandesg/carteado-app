@@ -5,7 +5,7 @@ ARG APP_VERSION
 ENV NEXT_PUBLIC_APP_VERSION=$APP_VERSION
 WORKDIR /app
 
-# Copia os manifestos de pacotes de todo o workspace
+# Copia os manifestos de pacotes e configurações de todo o workspace
 COPY package.json ./
 COPY package-lock.json ./
 COPY tsconfig*.json ./
@@ -13,28 +13,31 @@ COPY tsconfig*.json ./
 COPY backend/package.json ./backend/
 COPY shared/package.json ./shared/
  
-# Instala TODAS as dependências do workspace (forma mais eficiente)
+# Instala TODAS as dependências do workspace
 RUN npm install
 
-# Copia o código-fonte do backend e do shared
+# Copia todo o código-fonte
 COPY backend/ ./backend/
 COPY shared/ ./shared/
 
-# Executa o build de ambos os pacotes
-# O script 'npm run build --workspace=backend' já executa 'prisma generate'
+# Executa o build de ambos os pacotes.
+# O 'npm run build --workspace=backend' já executa o 'prisma generate',
+# que agora irá gerar o binaryTarget para 'debian-openssl-3.0.x'
 RUN npm run build --workspace=shared
 RUN npm run build --workspace=backend
 
 # --- Estágio 2: Runner (Produção) ---
-# Dica: Usar 'slim' (baseado em Debian) é mais seguro para o Prisma do que 'alpine'
 FROM node:20-slim
 
-# Instala o OpenSSL, uma dependência de tempo de execução para o Prisma
-RUN apt-get update -y && apt-get install -y openssl
+# Instala o OpenSSL, uma dependência de tempo de execução para o Prisma,
+# e limpa o cache para manter a imagem enxuta.
+RUN apt-get update -y && \
+    apt-get install -y openssl && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copia os artefatos compilados do backend e do shared
+# Copia os artefatos compilados
 COPY --from=builder /app/backend/dist ./backend/dist
 COPY --from=builder /app/shared/dist ./shared/dist
 
@@ -42,13 +45,13 @@ COPY --from=builder /app/shared/dist ./shared/dist
 COPY --from=builder /app/backend/package.json ./backend/package.json
 RUN cd backend && npm install --omit=dev
 
-# Copia o cliente Prisma gerado na raiz do node_modules do builder
+# Copia o cliente Prisma
 COPY --from=builder /app/node_modules/.prisma ./backend/node_modules/.prisma
 
-# O 'shared' se torna uma dependência local, então precisamos copiá-lo
-# para que o Node.js o encontre.
+# Copia o pacote 'shared' como uma dependência local
 COPY --from=builder /app/node_modules/shared ./node_modules/shared
 
 WORKDIR /app/backend
 EXPOSE 4000
 CMD ["node", "dist/index.js"]
+
