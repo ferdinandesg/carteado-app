@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next";
 import { withSound } from "../buttons/withSound";
 import { useSession } from "next-auth/react";
 import { useGameStore } from "@//contexts/game.store";
+import { useTypedGame } from "@/hooks/useTrucoGame";
+import { isTrucoGame } from "shared/game";
 type ButtonProps = {
     onClick: () => void;
     text: string;
@@ -19,13 +21,14 @@ const TrucoButton = withSound(Button, { clickSrc: "/assets/sfx/your-turn.mp3" })
 
 export default function TrucoActions() {
     const { data } = useSession();
-    const { askTruco, rejectTruco, acceptTruco, game } = useGameStore();
+    const game = useTypedGame(isTrucoGame);
+    const { askTruco, rejectTruco, acceptTruco } = useGameStore();
     const { t } = useTranslation()
 
     const myTeam = game?.teams.find(team => team.userIds.includes(data?.user.id || "-"))
-    const isTrucoPending = Boolean(game?.trucoAskedBy && !game?.trucoAcceptedBy)
-    const isTrucoAskedByMyTeam = myTeam?.userIds.includes(game?.trucoAskedBy || "")
-    const isTrucoPendingByMyTeam = isTrucoAskedByMyTeam && !game?.trucoAcceptedBy
+    const isTrucoPending = Boolean(game?.trucoAskerId && game?.trucoState === "PENDING")
+    const isTrucoAskedByMyTeam = myTeam?.userIds.includes(game?.trucoAskerId || "")
+    const isTrucoPendingByMyTeam = isTrucoAskedByMyTeam && !game?.trucoAskerId
 
     const canAcceptReject = isTrucoPending && !isTrucoAskedByMyTeam
 
