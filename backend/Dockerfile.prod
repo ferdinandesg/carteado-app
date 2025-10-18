@@ -12,9 +12,8 @@ COPY tsconfig*.json ./
 
 COPY backend/package.json ./backend/
 COPY shared/package.json ./shared/
-
+ 
 # Instala TODAS as dependências do workspace (forma mais eficiente)
-# Se usar npm, o comando é "npm install". Se usar pnpm, "pnpm install"
 RUN npm install
 
 # Copia o código-fonte do backend e do shared
@@ -22,12 +21,13 @@ COPY backend/ ./backend/
 COPY shared/ ./shared/
 
 # Executa o build de ambos os pacotes
-# Seus scripts de build já devem lidar com isso
+# O script 'npm run build --workspace=backend' já executa 'prisma generate'
 RUN npm run build --workspace=shared
 RUN npm run build --workspace=backend
 
 # --- Estágio 2: Runner (Produção) ---
-FROM node:20-alpine
+# Dica: Usar 'slim' (baseado em Debian) é mais seguro para o Prisma do que 'alpine'
+FROM node:20-slim
 
 WORKDIR /app
 
@@ -38,6 +38,10 @@ COPY --from=builder /app/shared/dist ./shared/dist
 # Copia o package.json do backend e instala APENAS as dependências de produção
 COPY --from=builder /app/backend/package.json ./backend/package.json
 RUN cd backend && npm install --omit=dev
+
+# <<< CORREÇÃO AQUI >>>
+# Copia o cliente Prisma gerado no estágio de build para a imagem final
+COPY --from=builder /app/backend/node_modules/.prisma ./backend/node_modules/.prisma
 
 # O 'shared' se torna uma dependência local, então precisamos copiá-lo
 # para que o Node.js o encontre.
