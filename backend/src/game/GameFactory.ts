@@ -48,7 +48,7 @@ export class GameFactory {
       game.bunch = gameData.bunch;
       game.status = gameData.status;
       game.playerTurn = gameData.playerTurn;
-      game.deck = Deck.deserialize(gameData.deck);
+      game.deck = Deck.deserialize(gameData.deck as unknown as string);
       game.vira = gameData.vira;
       game.manilha = gameData.manilha;
       game.currentBet = gameData.currentBet;
@@ -67,7 +67,7 @@ export class GameFactory {
       game.bunch = gameData.bunch;
       game.status = gameData.status;
       game.playerTurn = gameData.playerTurn;
-      game.deck = Deck.deserialize(gameData.deck);
+      game.deck = Deck.deserialize(gameData.deck as unknown as string);
 
       return game;
     }

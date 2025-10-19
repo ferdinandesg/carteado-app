@@ -1,4 +1,4 @@
-import { Card } from "../cards";
+import Deck, { Card } from "../cards";
 import { HandResult, Team } from "../types";
 import { BasePlayer } from "./base.player";
 import { CarteadoPlayer } from "./carteadoTypes";
@@ -23,7 +23,7 @@ export interface IBaseGameState<P extends BasePlayer, R extends GameRuleNames> {
   status: GameStatus;
   playerTurn: string;
   rulesName: R;
-  deck: string; // Serialized deck
+  deck: Deck; // Serialized deck
 }
 
 // Truco-specific state
