@@ -9,6 +9,7 @@ export class CarteadoGame extends Game<
   ICarteadoGameRules,
   BasePlayer
 > {
+  public type = "CARTEADO";
   constructor(players: BasePlayer[]) {
     const rules = new CarteadoGameRules();
     super(players, rules, "CarteadoGameRules");
@@ -47,7 +48,7 @@ export class CarteadoGameRules implements ICarteadoGameRules {
   }
 
   private isHiddenAndEmpty(card: Card, player: BasePlayer): boolean {
-    return Boolean(card.hidden && player.hand.length === 0);
+    return Boolean(card.isHidden && player.hand.length === 0);
   }
 
   isSpecialCard(game: CarteadoGame, player: BasePlayer, card?: Card): boolean {
@@ -63,7 +64,7 @@ export class CarteadoGameRules implements ICarteadoGameRules {
     const foundPlayer = game.getPlayer(userId);
     if (!foundPlayer) throw Errors.playerNotInRoom({ userId });
 
-    if (card.hidden && foundPlayer.hand.length > 0) {
+    if (card.isHidden && foundPlayer.hand.length > 0) {
       throw Errors.invariant("CANT_PLAY_HIDDEN_YET");
     }
 
@@ -138,7 +139,7 @@ export class CarteadoGameRules implements ICarteadoGameRules {
   }
 
   private executePlayCard(game: CarteadoGame, player: BasePlayer, card: Card) {
-    card.hidden = false;
+    card.isHidden = false;
     game.bunch.push(card);
 
     player.table = player.table.filter((x) => x.toString !== card.toString);
@@ -156,7 +157,7 @@ export class CarteadoGameRules implements ICarteadoGameRules {
       this.validatePlayCard(game, player, card, lastCard);
       this.executePlayCard(game, player, card);
     } catch (error) {
-      if (card.hidden && typeof error === "string") {
+      if (card.isHidden && typeof error === "string") {
         this.addHiddenCardToHand(player, card);
       }
       throw error;
@@ -164,7 +165,7 @@ export class CarteadoGameRules implements ICarteadoGameRules {
   }
 
   addHiddenCardToHand(player: BasePlayer, card: Card) {
-    card.hidden = false;
+    card.isHidden = false;
     player.hand.push(card);
     player.table = player.table.filter((x) => x.toString !== card.toString);
   }
@@ -181,13 +182,13 @@ export class CarteadoGameRules implements ICarteadoGameRules {
     while (player.hand.length < 3 && gameHasCards) {
       const draweeCard = game.deck.draw();
       if (!draweeCard) return;
-      delete draweeCard.hidden;
+      draweeCard.isHidden = false;
       player.hand.push(draweeCard);
     }
 
     if (player.hand.length === 0 && !gameHasCards) {
-      player.hand = player.table.filter((x) => !x.hidden);
-      player.table = player.table.filter((x) => x.hidden);
+      player.hand = player.table.filter((x) => !x.isHidden);
+      player.table = player.table.filter((x) => x.isHidden);
     }
   }
 

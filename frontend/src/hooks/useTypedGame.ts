@@ -10,10 +10,10 @@ export function useTypedGame<T extends IGameState>(
 
   const getSnapshot = () => {
     const game = useGameStore.getState().game;
-    // Retorna o jogo apenas se ele for do tipo correto, senão null
     console.log({
       game,
     });
+    // Retorna o jogo apenas se ele for do tipo correto, senão null
     return typeGuard(game) ? game : null;
   };
 

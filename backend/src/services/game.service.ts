@@ -4,6 +4,7 @@ import { TrucoGame } from "@/game/TrucoGameRules";
 import * as gameRepository from "@/lib/redis/game";
 import { Card } from "shared/cards";
 import { BasePlayer, GameType } from "shared/game";
+import { logger } from "@/utils/logger";
 
 type GameInstance = TrucoGame | CarteadoGame;
 
@@ -13,7 +14,8 @@ export async function getGameInstance<T extends GameInstance>(
   const gameData = await gameRepository.getGameState(roomId);
 
   if (!gameData) {
-    throw new Error("Jogo não encontrado.");
+    logger.error(`Jogo não encontrado para a sala ${roomId}`);
+    return;
   }
 
   // Data from redis is a JSON string, so it needs parsing.

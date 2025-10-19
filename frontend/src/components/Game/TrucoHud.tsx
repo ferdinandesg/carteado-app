@@ -3,7 +3,7 @@ import styles from "@/styles/Game.module.scss";
 import Shaky from "../Shaky";
 import CurrentBet from "./CurrentBet";
 import { useTranslation } from "react-i18next";
-import { useTypedGame } from "@/hooks/useTrucoGame";
+import { useTypedGame } from "@/hooks/useTypedGame";
 import { isTrucoGame } from "shared/game";
 
 export default function TrucoHud() {

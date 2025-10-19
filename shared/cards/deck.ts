@@ -2,7 +2,7 @@ import { ALL_RANKS, ALL_SUITS, RANK_TO_VALUE } from "./constants";
 import { Card } from "./types";
 
 class Deck {
-  private cards: Card[] = [];
+  public cards: Card[] = [];
   private numberOfFullDecks: number;
 
   constructor(numberOfFullDecks: number = 1) {
@@ -55,22 +55,27 @@ class Deck {
   }
 
   giveTableCards(): Card[] {
+    // 1. Puxe todas as 9 cartas de uma vez
     const playerDeck: Card[] = [];
-    while (playerDeck.length < 9) {
+    for (let i = 0; i < 9; i++) {
       const cardDrawed = this.draw();
-      const hiddenCards = playerDeck.filter((x) => x.hidden).length;
-
-      let shouldBeHidden = hiddenCards < 3 ? Math.random() > 0.5 : false;
-
-      if (playerDeck.length === 8 && hiddenCards < 3) {
-        shouldBeHidden = true;
+      if (cardDrawed) {
+        playerDeck.push({ ...cardDrawed, isHidden: false }); // Começam todas visíveis
       }
-
-      playerDeck.push({
-        ...cardDrawed!,
-        hidden: shouldBeHidden,
-      });
     }
+
+    // 2. Escolha 3 índices únicos aleatórios para esconder
+    const hiddenIndices = new Set<number>();
+    while (hiddenIndices.size < 3) {
+      const randomIndex = Math.floor(Math.random() * playerDeck.length);
+      hiddenIndices.add(randomIndex);
+    }
+
+    // 3. Aplique a propriedade 'isHidden' nos índices escolhidos
+    hiddenIndices.forEach((index) => {
+      playerDeck[index].isHidden = true;
+    });
+
     return playerDeck;
   }
 

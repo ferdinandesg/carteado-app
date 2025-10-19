@@ -2,7 +2,7 @@ import styles from "@/styles/Game.module.scss";
 import { useTranslation } from "react-i18next";
 import Shaky from "../Shaky";
 import { useGameStore } from "@//contexts/game.store";
-import { useTypedGame } from "@/hooks/useTrucoGame";
+import { useTypedGame } from "@/hooks/useTypedGame";
 import { isTrucoGame } from "shared/game";
 
 export default function CurrentBet() {

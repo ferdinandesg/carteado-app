@@ -3,12 +3,9 @@ import UserPlaceholder from "../UserPlaceholder";
 import styles from "@/styles/Opponent.module.scss";
 import classNames from "classnames";
 import Image from "next/image";
-import { BasePlayer, isTrucoGame } from "shared/game";
-import { useTypedGame } from "@/hooks/useTrucoGame";
+import { BasePlayer } from "shared/game";
 
-export default function Opponent({ player }: { player: BasePlayer }) {
-  const game = useTypedGame(isTrucoGame);
-  const isCurrentPlayerTurn = game?.playerTurn === player.userId;
+export default function Opponent({ player, isCurrentPlayerTurn }: { player: BasePlayer, isCurrentPlayerTurn?: boolean }) {
 
   return (
     <div

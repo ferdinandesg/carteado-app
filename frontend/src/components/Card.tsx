@@ -9,16 +9,15 @@ interface CardComponentProps extends HtmlHTMLAttributes<HTMLDivElement> {
   card: Card;
   height?: number;
   canHover?: boolean;
+  isHidden?: boolean;
 }
 
 type AvailableSkins = "basics/white" | "basics/black" | "poker" | "8bit";
 const ROOT_PATH = "/assets/skins";
-const handleSkinPath = (skin: AvailableSkins, card: Card) => {
+const handleSkinPath = (skin: AvailableSkins, card: Card, isHidden: boolean) => {
   const cardPath = `${card.suit}/${card.rank}${card.suit}.png`;
 
-  const isHidden = card.hidden;
-
-  if (isHidden) {
+  if (card.isHidden || isHidden) {
     return `${ROOT_PATH}/${skin}/backs/back_blue_1.png`;
   }
 
@@ -30,12 +29,13 @@ const CARD_RATIO = 63 / 88; // ~0.72
 export default function CardComponent({
   card,
   height = 70,
+  isHidden = false,
   canHover = false,
   ...rest
 }: CardComponentProps) {
   const { data } = useSession();
   const userSkin = (data?.user?.skin as AvailableSkins) || "8bit";
-  const cardURL = handleSkinPath(userSkin, card);
+  const cardURL = handleSkinPath(userSkin, card, isHidden);
 
   const width = height * CARD_RATIO;
 

@@ -7,15 +7,13 @@ import { useSession } from "next-auth/react";
 import { useTranslation } from "react-i18next";
 import CardBunch from "../CardBunch";
 import { useGameStore } from "@/contexts/game.store";
-import { isTrucoGame, ITrucoGameState } from "shared/game";
-import { useTypedGame } from "@/hooks/useTrucoGame";
+import { isTrucoGame } from "shared/game";
+import { useTypedGame } from "@/hooks/useTypedGame";
 
 const DeckArea = () => {
     const { t } = useTranslation();
     const game = useTypedGame(isTrucoGame);
-    console.log({
-        game
-    });
+
     if (!game) return null;
     return (
         <div className={styles.deckAreaContainer}>
@@ -30,7 +28,7 @@ const DeckArea = () => {
 };
 
 const BunchCardsArea = () => {
-    const { game } = useGameStore();
+    const game = useTypedGame(isTrucoGame);
     if (!game) return null;
 
     return (
@@ -84,14 +82,14 @@ const HandResultsArea = () => {
 export default function TrucoGame() {
     const { playCard, game } = useGameStore();
     const { data } = useSession();
-    if (!game) return null;
-    const playerHand = game.players.find(p => p.userId === data?.user?.id)?.hand || [];
+    const playerHand = game?.players.find(p => p.userId === data?.user?.id)?.hand || [];
 
     return (
         <div className={styles.Game}>
             <TrucoHud />
 
             <Table
+                game={game}
                 deckArea={<DeckArea />}
                 playedCardsArea={<BunchCardsArea />}
                 actionsAreaLeft={<TrucoActions />}

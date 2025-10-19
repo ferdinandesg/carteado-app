@@ -3,7 +3,7 @@ import styles from "@/styles/Opponent.module.scss";
 import UserPlaceholder from "../UserPlaceholder"
 import Image from "next/image"
 import { BasePlayer, isTrucoGame } from "shared/game";
-import { useTypedGame } from "@/hooks/useTrucoGame";
+import { useTypedGame } from "@/hooks/useTypedGame";
 
 type TrucoOpponentProps = {
     player: BasePlayer;

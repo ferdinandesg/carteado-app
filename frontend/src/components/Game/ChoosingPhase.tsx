@@ -5,6 +5,8 @@ import { selectCurrentPlayer, useGameStore } from "@//contexts/game.store";
 import { useTranslation } from "react-i18next";
 import styles from "@/styles/ChoosingPhase.module.scss";
 import { useCardSelection } from "@//hooks/useCardSelection";
+import { useTypedGame } from "@/hooks/useTypedGame";
+import { isCarteadoGame } from "shared/game";
 
 const ConfirmButton = withSound(
     ({ onClick, disabled, text }: { onClick: () => void; disabled: boolean, text: string }) => {
@@ -26,8 +28,11 @@ export default function ChoosingPhase() {
     const { t } = useTranslation();
     const { handlePickCards } = useGameStore();
     const player = useGameStore(selectCurrentPlayer);
-
-    const initialHand = player?.hand?.filter(h => !h.hidden) || [];
+    const game = useTypedGame(isCarteadoGame);
+    console.log({
+        game
+    })
+    const initialHand = player?.hand?.filter(h => !h.isHidden) || [];
 
     const {
         selectedCards,

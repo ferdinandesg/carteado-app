@@ -4,10 +4,11 @@ import { useGameStore } from "@//contexts/game.store";
 import Opponent from "@//components/Opponent/Opponent";
 import styles from "@//styles/Table.module.scss"; // Estilos específicos da mesa
 import GameBoard from "./game.board";
-import { BasePlayer } from "shared/game";
+import { BasePlayer, IGameState } from "shared/game";
 
 type TableProps = {
   // Props para injetar conteúdo agnóstico
+  game: IGameState | null;
   deckArea: React.ReactNode;
   playedCardsArea: React.ReactNode;
   actionsAreaLeft?: React.ReactNode;
@@ -15,13 +16,14 @@ type TableProps = {
 };
 
 const Table: React.FC<TableProps> = ({
+  game,
   deckArea,
   playedCardsArea,
   actionsAreaLeft,
   actionsAreaRight,
 }) => {
   const { data: session } = useSession();
-  const { game } = useGameStore();
+
 
   const { mainPlayer, orderedOpponents } = React.useMemo(() => {
     if (!game || !session?.user) return { mainPlayer: null, orderedOpponents: [] };
@@ -44,19 +46,18 @@ const Table: React.FC<TableProps> = ({
   const topOpponent = game.players.length === 2 ? orderedOpponents[0] : orderedOpponents[1];
   const leftOpponent = game.players.length > 2 ? orderedOpponents[0] : null;
   const rightOpponent = game.players.length > 2 ? orderedOpponents[2] : null;
-
   return (
     <GameBoard
       // Preenche os slots do GameBoard com os componentes
       slot1={deckArea}
-      slot2={topOpponent && <Opponent player={topOpponent} />}
-      slot4={leftOpponent && <Opponent player={leftOpponent} />}
+      slot2={topOpponent && <Opponent player={topOpponent} isCurrentPlayerTurn={game.playerTurn === topOpponent.userId} />}
+      slot4={leftOpponent && <Opponent player={leftOpponent} isCurrentPlayerTurn={game.playerTurn === leftOpponent.userId} />}
       slot5={playedCardsArea}
-      slot6={rightOpponent && <Opponent player={rightOpponent} />}
+      slot6={rightOpponent && <Opponent player={rightOpponent} isCurrentPlayerTurn={game.playerTurn === rightOpponent.userId} />}
       slot7={actionsAreaLeft}
       slot8={
         <div className={`${styles.playerName} ${game.playerTurn === mainPlayer.userId ? styles.isTurn : ''}`}>
-          <Opponent player={mainPlayer} />
+          <Opponent player={mainPlayer} isCurrentPlayerTurn={game.playerTurn === mainPlayer.userId} />
         </div>
       }
       slot9={actionsAreaRight}

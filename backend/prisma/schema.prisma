@@ -89,7 +89,7 @@ type Message {
 }
 
 type Card {
-  hidden         Boolean?
+  isHidden       Boolean?
   suit           String
   rank           String
   value          Int

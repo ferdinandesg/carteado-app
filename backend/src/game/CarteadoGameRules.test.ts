@@ -95,7 +95,7 @@ describe("CarteadoGameRules", () => {
       value: 12,
       secondaryValue: null,
       toString: "A of clubs",
-      hidden: true,
+      isHidden: true,
     };
 
     // Esperamos que ao chamar canPlayCard dispare erro "CANT_PLAY_HIDDEN_YET"

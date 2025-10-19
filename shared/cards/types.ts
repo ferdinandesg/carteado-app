@@ -20,7 +20,7 @@ export type Rank =
 export type CardAsString = `${Rank} of ${Suit}`;
 
 export interface Card {
-  hidden?: boolean;
+  isHidden?: boolean;
   suit: Suit;
   rank: Rank;
   value: Value;

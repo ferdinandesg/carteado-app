@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { withSound } from "../buttons/withSound";
 import { useSession } from "next-auth/react";
 import { useGameStore } from "@//contexts/game.store";
-import { useTypedGame } from "@/hooks/useTrucoGame";
+import { useTypedGame } from "@/hooks/useTypedGame";
 import { isTrucoGame } from "shared/game";
 type ButtonProps = {
     onClick: () => void;

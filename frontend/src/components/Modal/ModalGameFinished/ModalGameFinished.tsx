@@ -5,7 +5,7 @@ import BackButton from "@//components/buttons/BackButton";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { selectCurrentPlayer, useGameStore } from "@//contexts/game.store";
-import { useTypedGame } from "@/hooks/useTrucoGame";
+import { useTypedGame } from "@/hooks/useTypedGame";
 import { isTrucoGame } from "shared/game";
 
 interface ModalGameFinishedProps {
