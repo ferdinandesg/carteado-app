@@ -103,11 +103,17 @@ export class CarteadoGameRules implements ICarteadoGameRules {
   }
 
   private removeFourOfAKind(game: CarteadoGame) {
-    for (let i = 0; i < game.bunch.length - 3; i++) {
+    // Itera pelo monte procurando o início de uma sequência de 4 cartas
+    // O loop vai até o 4º último item, pois não há como formar uma sequência depois disso
+    for (let i = 0; i <= game.bunch.length - 4; i++) {
       const sequence = game.bunch.slice(i, i + 4);
-      if (sequence.every((x) => x.rank === sequence[0].rank)) {
-        game.bunch = [...game.bunch.slice(0, i), ...game.bunch.slice(i + 4)];
-        break;
+      const isFourOfAKind = sequence.every(
+        (card) => card.rank === sequence[0].rank
+      );
+
+      if (isFourOfAKind) {
+        game.bunch = game.bunch.slice(i + 4);
+        return;
       }
     }
   }
@@ -149,19 +155,39 @@ export class CarteadoGameRules implements ICarteadoGameRules {
   }
 
   applyPlayCard(game: CarteadoGame, userId: string, card: Card) {
-    const player = game.getPlayer(userId);
-    if (!player) throw Errors.playerNotInRoom({ userId });
+    this.canPlayCard(game, userId, card);
 
-    try {
-      const lastCard = game.bunch[game.bunch.length - 1];
-      this.validatePlayCard(game, player, card, lastCard);
-      this.executePlayCard(game, player, card);
-    } catch (error) {
-      if (card.isHidden && typeof error === "string") {
-        this.addHiddenCardToHand(player, card);
-      }
-      throw error;
+    const player = game.getPlayer(userId)!;
+    const lastCard = game.bunch.at(-1);
+
+    const isSpecial =
+      this.isSpecialCard(game, player, lastCard) ||
+      this.isSpecialCard(game, player, card);
+    if (lastCard && !isSpecial && lastCard.value! > card.value) {
+      throw Errors.invariant("LOWER_RANK");
     }
+
+    // 3. Verifica se o jogador POSSUI a carta e a remove (isso resolve a Falha 2)
+    const cardInHandIndex = player.hand.findIndex(
+      (c) => c.toString === card.toString
+    );
+    const cardOnTableIndex = player.table.findIndex(
+      (c) => c.toString === card.toString
+    );
+
+    if (cardInHandIndex !== -1) {
+      player.hand.splice(cardInHandIndex, 1);
+    } else if (cardOnTableIndex !== -1) {
+      player.table.splice(cardOnTableIndex, 1);
+    } else {
+      // Lança o erro que o teste esperava
+      throw Errors.invariant("CARD_NOT_FOUND");
+    }
+
+    // 4. Se tudo passou, executa a jogada
+    card.isHidden = false;
+    game.bunch.push(card);
+    player.playedCards.push(card);
   }
 
   addHiddenCardToHand(player: BasePlayer, card: Card) {
