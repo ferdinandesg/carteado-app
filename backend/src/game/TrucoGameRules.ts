@@ -146,16 +146,18 @@ export class TrucoGameRules implements ITrucoGameRules {
       ? this.findTeamByUserId(game, game.trucoAskerId)
       : null;
 
-    if (askingTeam?.id === lastAskerTeam?.id)
-      throw new GameError({ code: "CONFLICT" });
-    if (game.playerTurn !== userId && game.trucoState !== "ACCEPTED")
-      throw new GameError({ code: "INVALID_ACTION" });
+    if (askingTeam?.id === lastAskerTeam?.id) {
+      throw new GameError({
+        code: "INVALID_ACTION",
+        message: "Seu time já pediu truco. Aguarde a resposta.",
+      });
+    }
     if (game.currentBet >= 12) throw new GameError({ code: "INVALID_BET" });
 
     const betValues = { 1: 3, 3: 6, 6: 9, 9: 12 };
     game.currentBet = betValues[game.currentBet] || 3;
     game.trucoState = "PENDING";
-    game.trucoAskerId = userId;
+    game.trucoAskerId = userId; // Guarda quem fez o último pedido
   }
 
   acceptTruco(game: TrucoGame, userId: string) {
@@ -179,8 +181,13 @@ export class TrucoGameRules implements ITrucoGameRules {
     const askingTeam = this.findTeamByUserId(game, game.trucoAskerId);
     if (!askingTeam) throw new GameError({ code: "INVALID_ACTION" });
 
-    // Na recusa, o valor do ponto é o da aposta ANTERIOR.
-    const points = game.currentBet === 3 ? 1 : (game.currentBet / 3) * 2;
+    // ✅ SUBSTITUA A LÓGICA DE PONTOS POR ESTA:
+    const betValues = { 1: 3, 3: 6, 6: 9, 9: 12 };
+    const points =
+      Number(
+        Object.keys(betValues).find((key) => betValues[key] === game.currentBet)
+      ) || 1;
+
     this.finishRound(game, askingTeam, points);
   }
 
@@ -202,9 +209,6 @@ export class TrucoGameRules implements ITrucoGameRules {
 
     player.hand.splice(cardIndex, 1);
     player.playedCards.push(card);
-
-    const currentHandCards = game.bunch.length % game.players.length;
-    if (currentHandCards === 0) game.bunch = []; // Limpa o monte no início de uma nova mão
 
     game.bunch.push(card);
     game.endTurn(userId);
@@ -237,29 +241,39 @@ export class TrucoGameRules implements ITrucoGameRules {
 
   // Lógica de resolução da mão foi extraída para um método dedicado.
   private resolveHand(game: TrucoGame) {
-    const currentHandCards = game.bunch.slice(-game.players.length);
+    const currentHandCards = game.bunch
+      .slice(-game.players.length)
+      .map((card) => {
+        const player = game.players.find(
+          (p) =>
+            p.playedCards.length > 0 &&
+            p.playedCards[p.playedCards.length - 1].rank === card.rank &&
+            p.playedCards[p.playedCards.length - 1].suit === card.suit
+        )!;
+        return { card, player };
+      });
+
+    // Passa a estrutura correta para getHandWinner
     const [winnerId, isTie] = this.getHandWinner(currentHandCards, game);
+
     const winningTeam = winnerId
       ? this.findTeamByUserId(game, winnerId)
       : undefined;
 
     if (isTie) {
-      game.teams.forEach((t) => (t.roundWins += 1)); // Em caso de empate, ambos os times "ganham" a mão.
+      game.teams.forEach((t) => (t.roundWins += 1));
     } else if (winningTeam) {
       winningTeam.roundWins += 1;
     }
 
     game.handsResults.push({
       winnerTeamId: isTie ? null : winningTeam?.id || null,
-      bunch: [...currentHandCards],
+      bunch: currentHandCards.map((c) => c.card), // Apenas as cartas
       round: game.rounds,
       isTie: isTie,
     });
 
-    // Lógica para definir o próximo a jogar
     const nextPlayer = game.getPlayer(winnerId);
-
-    // Se houve empate, o próximo a jogar é quem empatou a mão
     game.playerTurn = isTie ? game.playerTurn : nextPlayer?.userId;
 
     this.checkRoundEnding(game);
@@ -271,10 +285,14 @@ export class TrucoGameRules implements ITrucoGameRules {
     const teamA = game.teams[0];
     const teamB = game.teams[1];
 
-    const isRoundOver = game.handsResults.length >= 2;
-    if (!isRoundOver) return;
+    const roundResults = game.handsResults.filter(
+      (r) => r.round === game.rounds
+    );
 
-    // Cenário 1: Um time venceu as duas primeiras mãos.
+    // Se menos de 2 mãos foram jogadas neste round, não há nada a fazer.
+    if (roundResults.length < 2) return;
+
+    // Cenário 1: Vencedor claro após 2 mãos (ganhou-ganhou ou empatou-ganhou).
     if (teamA.roundWins >= 2 && teamA.roundWins > teamB.roundWins) {
       this.finishRound(game, teamA, game.currentBet);
       return;
@@ -284,32 +302,31 @@ export class TrucoGameRules implements ITrucoGameRules {
       return;
     }
 
-    // Cenário 2: Três mãos foram jogadas.
-    if (game.handsResults.length === 3) {
+    // Cenário 2: Se 3 mãos foram jogadas, precisamos de um desempate.
+    if (roundResults.length === 3) {
       if (teamA.roundWins > teamB.roundWins) {
         this.finishRound(game, teamA, game.currentBet);
       } else if (teamB.roundWins > teamA.roundWins) {
         this.finishRound(game, teamB, game.currentBet);
       } else {
-        // Empate nas três mãos ou 1 vitória para cada + 1 empate.
-        // Neste caso, quem venceu a primeira mão, leva a rodada.
-        const roundResults = game.handsResults.filter(
-          (r) => r.round === game.rounds
-        );
-        if (roundResults.length === 0) return;
+        // ✅ LÓGICA DE DESEMPATE CORRIGIDA E SIMPLIFICADA
+        // Se os 'roundWins' são iguais, o vencedor da primeira mão leva a rodada.
         const firstHandWinnerId = roundResults[0].winnerTeamId;
         const winnerTeam = game.teams.find((t) => t.id === firstHandWinnerId);
+
         if (winnerTeam) {
           this.finishRound(game, winnerTeam, game.currentBet);
         } else {
-          // Se a primeira empatou, ninguém ganha o ponto da rodada.
+          // Se a primeira mão empatou, ninguém ganha a rodada.
           this.startNewRound(game);
         }
       }
     }
   }
 
-  private finishRound(game: TrucoGame, winningTeam: Team, points: number) {
+  public finishRound(game: TrucoGame, winningTeam: Team, points: number) {
+    if (game.status === GameStatus.FINISHED) return;
+
     winningTeam.score += points;
     if (winningTeam.score >= 12) {
       game.status = GameStatus.FINISHED;
@@ -324,7 +341,7 @@ export class TrucoGameRules implements ITrucoGameRules {
   }
 
   private getHandWinner(
-    handCards: Card[],
+    handCards: { card: Card; player: BasePlayer }[],
     game: TrucoGame
   ): [string | undefined, boolean] {
     if (!handCards.length) return [undefined, false];
@@ -332,12 +349,8 @@ export class TrucoGameRules implements ITrucoGameRules {
     let highestValue = -1;
     let winners: { card: Card; player: BasePlayer }[] = [];
 
-    for (const card of handCards) {
+    for (const { card, player } of handCards) {
       const value = getCardValue(card, game.manilha);
-      const player = game.players.find((p) =>
-        p.playedCards.some((c) => c.rank === card.rank && c.suit === card.suit)
-      );
-      if (!player) continue;
 
       if (value > highestValue) {
         highestValue = value;
