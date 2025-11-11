@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "test": "jest",
+    "test": "jest --silent --coverage",
     "dev": "nodemon src/index.ts",
     "build": "npx prisma generate && npx tsc && npx tsc-alias",
     "lint": "npm run build --prefix ../shared && prisma generate && tsc --noEmit && eslint ./src --format=pretty --color",

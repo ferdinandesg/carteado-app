@@ -8,7 +8,8 @@
     "ts-check": "tsc --noEmit",
     "start": "next start -p 3000",
     "lint": "eslint ./src --format=pretty --color",
-    "test": "jest -- --silent",
+    "test": "jest --silent --coverage",
+    "test:playwright": "playwright test",
     "test:watch": "jest --watch"
   },
   "dependencies": {
@@ -39,6 +40,8 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^24.9.0",
     "pino-pretty": "^13.1.1"
   }
 }
