@@ -142,8 +142,14 @@ jobs:
             set -e
             echo "### Navegando para a pasta de deploy..."
             cd ${{ env.DEPLOY_PATH }}/deploy
+
             echo "### Autenticando no Docker Hub..."
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+            echo "### Realizando limpeza preventiva..."
+            # Remove containers parados, redes não usadas e imagens 'dangling' (camadas soltas)
+            docker system prune -f
+
             echo "### Puxando as imagens mais recentes..."
             docker compose -f docker-compose-prod.yml pull
             echo "### Parando e subindo a aplicação..."
