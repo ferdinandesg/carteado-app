@@ -1,5 +1,5 @@
 import { Socket } from "socket.io/dist/socket";
-import RedisClass from "./client";
+import RedisClass from "@/lib/redis/client";
 import { logger } from "@/utils/logger";
 
 export async function storeSession(socket: Socket, roomHash: string) {

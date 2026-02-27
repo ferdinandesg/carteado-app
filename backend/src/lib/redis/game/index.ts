@@ -1,5 +1,5 @@
 import { GameFactory } from "game/GameFactory";
-import RedisClass from "../client";
+import RedisClass from "@/lib/redis/client";
 import { TrucoGame } from "game/TrucoGameRules";
 import { CarteadoGame } from "game/CarteadoGameRules";
 import { logger } from "@/utils/logger";

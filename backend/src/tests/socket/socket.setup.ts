@@ -1,9 +1,15 @@
 import { AddressInfo } from "net";
 import http from "http";
 import { Server } from "socket.io";
-import SocketClass from "@/socket/socket";
+import { SocketServer } from "@/socket/socket";
 
-jest.mock("@routes/middlewares/auth", () => ({
+jest.mock("@/lib/redis/userSession", () => ({
+  retrieveSession: jest.fn().mockResolvedValue(null),
+  storeSession: jest.fn().mockResolvedValue(undefined),
+  expireSession: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock("@/routes/middlewares/auth", () => ({
   verifyJWTToken: jest.fn().mockImplementation((token: string) => {
     if (token.includes("valid-token")) {
       return {
@@ -25,7 +31,8 @@ export function socketTestSetup() {
 
   beforeAll((done) => {
     httpServer = http.createServer();
-    ioServer = SocketClass.init(httpServer);
+    const socketServer = new SocketServer(httpServer);
+    ioServer = socketServer.io;
     httpServer.listen(0, () => {
       port = (httpServer.address() as AddressInfo).port;
       done();

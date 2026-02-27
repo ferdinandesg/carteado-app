@@ -1,4 +1,4 @@
-import RedisClass from "../client";
+import RedisClass from "@/lib/redis/client";
 import { Participant } from "shared/types/room";
 
 import { Room } from "@prisma/client";

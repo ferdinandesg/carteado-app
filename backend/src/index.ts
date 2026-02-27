@@ -1,7 +1,7 @@
 import "dotenv/config";
 import http from "http";
 import { app } from "./app";
-import RedisClass from "./lib/redis/client";
+import RedisClass from "@/lib/redis/client";
 import { env } from "./config/env";
 import { logger } from "./utils/logger";
 import { SocketServer } from "@/socket/socket";

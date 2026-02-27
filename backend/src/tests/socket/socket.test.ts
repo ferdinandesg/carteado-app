@@ -1,10 +1,10 @@
 import { socketTestSetup } from "./socket.setup";
 import { closeSockets, createTestSocket } from "./utils";
-jest.mock("src/redis/client", () => {
-  return {
+jest.mock("@/lib/redis/client", () => ({
+  default: {
     getDataClient: jest.fn().mockResolvedValue("mocked-redis-client"),
-  };
-});
+  },
+}));
 describe("Socket Class", () => {
   const { getPort } = socketTestSetup();
   it("should connect to socket.io and authenticate", (done) => {

@@ -1,5 +1,5 @@
 import { Message } from "@prisma/client";
-import RedisClass from "../client";
+import RedisClass from "@/lib/redis/client";
 
 export async function getMessages(roomHash: string) {
   const redis = await RedisClass.getDataClient();

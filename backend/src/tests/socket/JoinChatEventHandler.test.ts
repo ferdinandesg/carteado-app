@@ -1,11 +1,11 @@
-import { CHANNEL } from "@socket/channels";
+import { CHANNEL } from "@/socket/channels";
 import { socketTestSetup } from "./socket.setup";
 import { createTestSocket } from "./utils";
 
-jest.mock("@socket/events/chat/addMessage", () => ({
+jest.mock("@/socket/events/chat/addMessage", () => ({
   addMessage: jest.fn(),
 }));
-jest.mock("src/redis/chat", () => ({
+jest.mock("@/lib/redis/chat", () => ({
   getMessages: jest.fn().mockResolvedValue([
     {
       name: "system",
