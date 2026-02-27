@@ -1,6 +1,22 @@
 // jest.setup.ts
 import "@testing-library/jest-dom";
 
+// Mock do logger (pino usa setImmediate, não disponível em jsdom)
+jest.mock("@//tests/utils/logger", () => ({
+  default: {
+    info: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
+    child: jest.fn(() => ({
+      info: jest.fn(),
+      error: jest.fn(),
+      warn: jest.fn(),
+      debug: jest.fn(),
+    })),
+  },
+}));
+
 // 1. MOCKS DE BIBLIOTECAS DE UI E TRADUÇÃO (MANTIDOS)
 // Esses mocks são perfeitos para evitar side-effects visuais e de tradução.
 
