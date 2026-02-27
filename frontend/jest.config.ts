@@ -1,4 +1,4 @@
-import path from "node:path";
+import * as path from "node:path";
 import nextJest from "next/jest.js";
 import { pathsToModuleNameMapper } from "ts-jest";
 

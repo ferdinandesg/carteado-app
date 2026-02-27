@@ -132,6 +132,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Set deploy env
+        run: echo "APP_VERSION=${GITHUB_SHA::7}" >> $GITHUB_ENV
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v2
         with:
@@ -153,15 +155,20 @@ jobs:
             # Remove containers parados, redes não usadas e imagens 'dangling' (camadas soltas)
             docker system prune -f
 
+            echo "### Criando .env a partir dos secrets..."
+            cat > .env << ENVEOF
+          GOOGLE_ID=${{ secrets.GOOGLE_ID }}
+          GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}
+          NEXTAUTH_URL=${{ env.NEXTAUTH_URL }}
+          NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+          APP_VERSION=${{ env.APP_VERSION }}
+          ENVEOF
+
             echo "### Puxando as imagens mais recentes..."
             docker compose -f docker-compose-prod.yml pull
             echo "### Parando e subindo a aplicação..."
-            export GOOGLE_ID='${{ secrets.GOOGLE_ID }}'
-            export GOOGLE_SECRET='${{ secrets.GOOGLE_SECRET }}'
-            export NEXTAUTH_URL='${{ env.NEXTAUTH_URL }}'
-            export NEXTAUTH_SECRET='${{ secrets.NEXTAUTH_SECRET }}'
-            export DATABASE_URL='${{ secrets.DATABASE_URL }}'
-            export JWT_SECRET_KEY='${{ secrets.JWT_SECRET_KEY }}'
             docker compose -f docker-compose-prod.yml down --remove-orphans
             docker compose -f docker-compose-prod.yml up -d
             echo "### Limpando imagens não referenciadas (dangling)..."

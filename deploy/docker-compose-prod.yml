@@ -1,6 +1,6 @@
 # Produção – nginx, frontend, backend, redis, mongodb
 # Uso: cd deploy && docker compose -f docker-compose-prod.yml up -d
-# Requer ../.env ou deploy/.env: JWT_SECRET_KEY, GOOGLE_ID, GOOGLE_SECRET, NEXTAUTH_SECRET (opcional)
+# CI cria .env no servidor a cada deploy. Execução manual: cd deploy && docker compose up -d (usa .env existente)
 
 services:
   nginx:
@@ -33,7 +33,7 @@ services:
     depends_on:
       - backend
     env_file:
-      - ../.env
+      - .env
     environment:
       - NODE_ENV=production
       # Server-side (NextAuth → backend via rede Docker)
@@ -45,7 +45,7 @@ services:
       - GOOGLE_ID=${GOOGLE_ID}
       - GOOGLE_SECRET=${GOOGLE_SECRET}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-${JWT_SECRET_KEY}}
-      - APP_VERSION=${APP_VERSION}
+      - APP_VERSION=${APP_VERSION:-latest}
       - AUTH_TRUST_HOST=true
     restart: always
     logging:
@@ -67,7 +67,7 @@ services:
       redis:
         condition: service_healthy
     env_file:
-      - ../.env
+      - .env
     environment:
       - NODE_ENV=production
       - PORT=4000

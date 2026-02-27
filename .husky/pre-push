@@ -1,0 +1,8 @@
+echo ">> Rodando testes antes do push..."
+npm run test
+if [ $? -ne 0 ]; then
+  echo "Testes falharam. Corrija antes de fazer push."
+  exit 1
+fi
+
+echo "Push liberado!"

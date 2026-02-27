@@ -36,6 +36,10 @@
     "dev:services:down": "docker compose -f docker-compose.services.yml down",
     "deploy:prod": "docker compose -f deploy/docker-compose-prod.yml up --build",
     "deploy:prod:local": "npm run build && docker compose -f deploy/docker-compose.prod.local.yml up --build",
+    "deploy:prod:env": "node scripts/prepare-deploy-env.js",
+    "deploy:prod:send": "scp -i ~/.ssh/id_ed25519 -r deploy/ franmlfran@34.10.106.241:/home/franmlfran/",
+    "deploy:prod:up": "ssh -i ~/.ssh/id_ed25519 franmlfran@34.10.106.241 \"cd /home/franmlfran/deploy && docker compose -f docker-compose-prod.yml pull && docker compose -f docker-compose-prod.yml up -d\"",
+    "deploy:prod:manual": "npm run deploy:prod:env && npm run deploy:prod:send && npm run deploy:prod:up",
     "ssh": "ssh -i ~/.ssh/id_ed25519 franmlfran@34.10.106.241",
     "ssh:tunnel": "ssh -i ~/.ssh/id_ed25519 -L 27017:localhost:27017 franmlfran@34.10.106.241"
   },
