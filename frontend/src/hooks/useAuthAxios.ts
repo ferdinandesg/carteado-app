@@ -6,7 +6,7 @@ const useAxiosAuth = () => {
   const { data: session } = useSession();
 
   const axiosAuth = axios.create({
-    baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1`,
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
     headers: { "Content-Type": "application/json" },
   });
   useEffect(() => {

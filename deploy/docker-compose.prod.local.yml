@@ -1,0 +1,112 @@
+# Simula produção localmente – npm run build && npm run deploy:prod:local
+# Acesso: http://localhost:3000 (frontend), http://localhost:4000 (backend)
+# Requer .env com JWT_SECRET_KEY, GOOGLE_ID, GOOGLE_SECRET
+
+services:
+  frontend:
+    build:
+      context: ..
+      dockerfile: frontend/Dockerfile.prod
+    image: carteado-frontend:local
+    container_name: carteado_frontend_local
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    env_file:
+      - ../.env
+    environment:
+      NODE_ENV: production
+      # Server-side (NextAuth → backend)
+      API_URL: http://backend:4000/api/v1
+      NEXTAUTH_URL: http://localhost:3000
+      # Client (browser)
+      NEXT_PUBLIC_API_URL: http://localhost:4000/api/v1
+      NEXT_PUBLIC_SOCKET_URL: http://localhost:4000
+      GOOGLE_ID: ${GOOGLE_ID:-dummy}
+      GOOGLE_SECRET: ${GOOGLE_SECRET:-dummy}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-local-dev-secret-change-me}
+      AUTH_TRUST_HOST: "true"
+      APP_VERSION: local
+    networks:
+      - app_network
+
+  backend:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile.prod
+    image: carteado-backend:local
+    container_name: carteado_backend_local
+    ports:
+      - "4000:4000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - ../.env
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      REDIS_URL: redis://redis:6379
+      DATABASE_URL: mongodb://mongodb:27017/carteado?replicaSet=rs0
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-local-dev-secret-change-me}
+      FRONTEND_URL: http://localhost:3000
+    healthcheck:
+      test:
+        ["CMD", "wget", "-q", "--spider", "http://localhost:4000/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - app_network
+
+  redis:
+    image: redis:7.0
+    container_name: redis_local
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app_network
+    command:
+      ["redis-server", "--notify-keyspace-events", "Ex", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  mongodb:
+    build:
+      context: ./mongodb_rs
+    container_name: mongodb_local
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: carteado
+      MONGO_REPLICA_PORT: 27017
+      MONGO_REPLICA_HOST: mongodb
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+volumes:
+  redis_data:
+  mongodb_data:
+
+networks:
+  app_network:
+    driver: bridge

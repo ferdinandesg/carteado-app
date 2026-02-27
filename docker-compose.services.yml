@@ -1,0 +1,46 @@
+# Apenas Redis e MongoDB para dev local
+# Uso: npm run dev:services (sobe Redis + Mongo) e depois npm run dev (front + back)
+# Backend e frontend rodam localmente; .env deve ter DATABASE_URL e REDIS_URL apontando para localhost
+
+services:
+  mongodb:
+    build:
+      context: ./deploy/mongodb_rs
+      args:
+        MONGO_VERSION: "6.0"
+    container_name: carteado_mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: carteado
+      MONGO_REPLICA_PORT: 27017
+      MONGO_REPLICA_HOST: mongodb
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  redis:
+    image: redis:7.0
+    container_name: carteado_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command:
+      ["redis-server", "--notify-keyspace-events", "Ex", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  mongodb_data:
+  redis_data:

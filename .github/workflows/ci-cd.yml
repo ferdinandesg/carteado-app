@@ -14,6 +14,7 @@ env:
   GCP_INSTANCE_NAME: carteado-app
   DEPLOY_USER: franmlfran
   DEPLOY_PATH: /home/franmlfran
+  NEXTAUTH_URL: https://carteado.ferdinandes.com.br
 
 jobs:
   # --- Job: Detecta alterações nos diretórios ---
@@ -30,14 +31,14 @@ jobs:
           filters: |
             backend:
               - 'backend/**'
+              - 'shared/**'
             frontend:
               - 'frontend/**'
+              - 'shared/**'
 
-  # --- Job 1: Instalação e Testes Iniciais ---
+  # --- Job 1: Instalação e Testes (requerido antes de build) ---
   setup:
     runs-on: ubuntu-latest
-    # Adicionado para que o setup não rode desnecessariamente em deploys manuais
-    if: github.event_name == 'push'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -50,6 +51,8 @@ jobs:
         run: npm ci
       - name: Lint project
         run: npm run lint
+      - name: Run tests
+        run: npm run test
 
   # --- Job 2: Build do Backend ---
   build-backend:
@@ -159,9 +162,9 @@ jobs:
             export NEXTAUTH_SECRET='${{ secrets.NEXTAUTH_SECRET }}'
             export DATABASE_URL='${{ secrets.DATABASE_URL }}'
             export JWT_SECRET_KEY='${{ secrets.JWT_SECRET_KEY }}'
-            docker compose -f docker-compose-prod.yml down -v --remove-orphans
+            docker compose -f docker-compose-prod.yml down --remove-orphans
             docker compose -f docker-compose-prod.yml up -d
-            echo "### Limpando imagens Docker não utilizadas..."
-            docker image prune -af
+            echo "### Limpando imagens não referenciadas (dangling)..."
+            docker image prune -f
             echo ">>> DEPLOY CONCLUÍDO <<<"
           EOF

@@ -1,10 +1,14 @@
+import path from "node:path";
 import nextJest from "next/jest.js";
 import { pathsToModuleNameMapper } from "ts-jest";
-import tsconfig from "./tsconfig.json";
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const tsconfig = require("./tsconfig.json") as {
+  compilerOptions: { paths?: Record<string, string[]> };
+};
 
 const createJestConfig = nextJest({
-  // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
-  dir: "./",
+  dir: path.resolve(__dirname),
 });
 
 // Add any custom config to be passed to Jest
@@ -22,18 +26,21 @@ const customJestConfig = {
   coverageDirectory: "coverage",
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
-  moduleNameMapper: pathsToModuleNameMapper(tsconfig.compilerOptions.paths, {
-    prefix: "<rootDir>/",
-  }),
+  moduleNameMapper: pathsToModuleNameMapper(
+    tsconfig.compilerOptions?.paths ?? {},
+    {
+      prefix: "<rootDir>/",
+    }
+  ),
 
   // Stop running tests after `n` failures
   // bail: 1, // Uncomment if you want tests to stop on the first failure
 
   // The root directory that Jest should scan for tests and modules within
-  rootDir: ".", // Optional: `.` is the default
+  rootDir: ".",
 
-  // A list of paths to directories that Jest should use to search for files in
-  // roots: ['<rootDir>'], // Optional: Defaults to rootDir
+  // E2E tests use Playwright, not Jest
+  testPathIgnorePatterns: ["/node_modules/", "/tests/e2e/", "e2e\\.test\\.ts"],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

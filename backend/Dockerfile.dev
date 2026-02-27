@@ -1,16 +1,32 @@
-FROM node:18-alpine
+# Contexto: raiz do monorepo (docker compose context: .)
+# Build: docker compose -f docker-compose-dev.yml up --build
+FROM node:20-alpine
+
+RUN apk add --no-cache openssl
 
 WORKDIR /app
 
+# 1. Manifests e shared (cache de deps)
+COPY package.json package-lock.json ./
+COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
+COPY shared/package.json ./shared/
+COPY shared/ ./shared/
 COPY tsconfig.base.json ./
 
-COPY backend/package.json ./backend/
-COPY backend/package-lock.json ./backend/
-COPY shared/ ./backend/shared/
+# 2. Instala deps do workspace (backend usa shared)
+RUN npm ci
+
+# 3. Build do shared (backend importa de dist/)
+RUN npm run build -w shared
+
+# 4. Código do backend
+COPY backend/ ./backend/
 
 WORKDIR /app/backend
-RUN npm install
 
-COPY backend/ ./
+# Prisma generate (não conecta ao DB; URL dummy só para validar schema)
+ENV DATABASE_URL="mongodb://localhost:27017/carteado"
+RUN npx prisma generate
 
 CMD ["npm", "run", "dev"]

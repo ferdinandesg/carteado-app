@@ -1,16 +1,22 @@
-FROM node:18-alpine AS builder
-RUN apk add --no-cache python3 make g++
+# Contexto: raiz do monorepo (docker compose context: .)
+# Build: docker compose -f docker-compose-dev.yml up --build
+FROM node:20-alpine
 
 WORKDIR /app
 
+# 1. Manifests e shared (cache de deps)
+COPY package.json package-lock.json ./
+COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
+COPY shared/package.json ./shared/
+COPY shared/ ./shared/
 COPY tsconfig.base.json ./
-COPY frontend/package.json frontend/package.json
-COPY frontend/package-lock.json frontend/package-lock.json
-COPY shared/ ./frontend/shared
+
+# 2. Instala deps do workspace (frontend usa shared)
+RUN npm ci
+
+# 3. Código do frontend
+COPY frontend/ ./frontend/
 
 WORKDIR /app/frontend
-RUN npm install
-
-COPY frontend/ ./
-
 CMD ["npm", "run", "dev"]

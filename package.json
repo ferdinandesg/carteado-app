@@ -2,6 +2,9 @@
   "name": "carteado-app",
   "private": true,
   "packageManager": "npm@10.9.0",
+  "engines": {
+    "node": ">=20"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
@@ -16,16 +19,23 @@
     "prepare": "husky install",
     "format": "prettier --write .",
     "clean": "git clean -fdX -- ./backend/dist ./frontend/.next ./frontend/out ./shared/dist || exit 0",
-    "build": "npm run build -ws",
+    "build": "npm run build -w shared && npm run build -w backend && npm run build -w frontend",
     "lint": "npm run lint -ws --if-present",
+    "typecheck": "npm run ts-check -ws --if-present",
+    "validate": "npm run lint && npm run typecheck && npm run test && npm run build",
+    "validate:ci": "npm run lint && npm run typecheck && npm run test -- --ci --coverage && npm run build",
     "dev": "npm run dev --workspace=backend & npm run dev --workspace=frontend",
+    "dev:run": "npm run validate && npm run dev",
     "test": "jest",
     "test:backend": "npm test --workspace=backend",
     "test:frontend": "npm test --workspace=frontend",
     "test:backend:watch": "npm run test:backend -- --watch",
     "test:frontend:watch": "npm run test:frontend -- --watch",
     "deploy:dev": "docker-compose -f docker-compose-dev.yml up --build",
-    "deploy:prod": "docker-compose -f docker-compose-prod.yml up --build",
+    "dev:services": "docker compose -f docker-compose.services.yml up -d",
+    "dev:services:down": "docker compose -f docker-compose.services.yml down",
+    "deploy:prod": "docker compose -f deploy/docker-compose-prod.yml up --build",
+    "deploy:prod:local": "npm run build && docker compose -f deploy/docker-compose.prod.local.yml up --build",
     "ssh": "ssh -i ~/.ssh/id_ed25519 franmlfran@34.10.106.241",
     "ssh:tunnel": "ssh -i ~/.ssh/id_ed25519 -L 27017:localhost:27017 franmlfran@34.10.106.241"
   },

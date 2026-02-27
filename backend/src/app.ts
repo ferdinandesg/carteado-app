@@ -19,9 +19,14 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
-app.use(limiter);
 app.use(PinoHttp({ logger }));
 
+// Health check (sem rate limit para permitir healthchecks do Docker/K8s)
+app.get("/api/v1/health", (_req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
+app.use(limiter);
 routes(app);
 
 export { app };

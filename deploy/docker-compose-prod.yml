@@ -1,3 +1,7 @@
+# Produção – nginx, frontend, backend, redis, mongodb
+# Uso: cd deploy && docker compose -f docker-compose-prod.yml up -d
+# Requer ../.env ou deploy/.env: JWT_SECRET_KEY, GOOGLE_ID, GOOGLE_SECRET, NEXTAUTH_SECRET (opcional)
+
 services:
   nginx:
     image: nginx:latest
@@ -28,20 +32,21 @@ services:
       - "3000:3000"
     depends_on:
       - backend
+    env_file:
+      - ../.env
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=https://carteado.ferdinandes.com.br
-      - NEXTAUTH_URL=http://backend:4000
-      - SOCKET_URL=http://carteado.ferdinandes.com.br/socket.io/
+      # Server-side (NextAuth → backend via rede Docker)
+      - API_URL=http://backend:4000/api/v1
+      - NEXTAUTH_URL=https://carteado.ferdinandes.com.br
+      # Client (browser) – base das chamadas API e socket
+      - NEXT_PUBLIC_API_URL=https://carteado.ferdinandes.com.br/api/v1
+      - NEXT_PUBLIC_SOCKET_URL=https://carteado.ferdinandes.com.br
       - GOOGLE_ID=${GOOGLE_ID}
       - GOOGLE_SECRET=${GOOGLE_SECRET}
-      # Secret used by NextAuth (set in .env file, do NOT hardcode). Must be long & random.
-      - NEXTAUTH_SECRET=${JWT_SECRET_KEY}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-${JWT_SECRET_KEY}}
       - APP_VERSION=${APP_VERSION}
-      # Trust proxy headers since we are behind nginx
       - AUTH_TRUST_HOST=true
-      # JWT secret used by your custom generateJWT (keep separate for rotation if desired)
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     restart: always
     logging:
       driver: "json-file"
@@ -57,15 +62,26 @@ services:
     ports:
       - "4000:4000"
     depends_on:
-      - mongodb
-      - redis
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - ../.env
     environment:
       - NODE_ENV=production
       - PORT=4000
       - REDIS_URL=redis://redis:6379
-      - DATABASE_URL=mongodb://mongodb:27017/carteado
+      - DATABASE_URL=mongodb://mongodb:27017/carteado?replicaSet=rs0
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - FRONTEND_URL=https://carteado.ferdinandes.com.br
+    healthcheck:
+      test:
+        ["CMD", "wget", "-q", "--spider", "http://localhost:4000/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     restart: always
     logging:
       driver: "json-file"
@@ -90,6 +106,11 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
     restart: always
     networks:
       - app_network
@@ -102,6 +123,12 @@ services:
     container_name: mongodb
     ports:
       - "27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password

@@ -7,8 +7,9 @@ import { UserRole } from "shared/types";
 import axios from "axios";
 import logger from "@//tests/utils/logger";
 
+// API_URL = server-side (Docker: backend:4000). NEXT_PUBLIC_API_URL = dev local
 const axiosInstance = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL}/api/v1`,
+  baseURL: process.env.API_URL || process.env.NEXT_PUBLIC_API_URL,
 });
 
 const validateUser = async (payload: UserSession) => {

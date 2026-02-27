@@ -12,6 +12,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
+    "ts-check": "tsc --noEmit",
     "dev": "tsc -w"
   },
   "keywords": [],

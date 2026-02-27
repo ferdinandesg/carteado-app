@@ -9,6 +9,7 @@
     "test": "jest --silent --coverage",
     "dev": "nodemon src/index.ts",
     "build": "npx prisma generate && npx tsc && npx tsc-alias",
+    "ts-check": "tsc --noEmit",
     "lint": "npm run build --prefix ../shared && prisma generate && tsc --noEmit && eslint ./src --format=pretty --color",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",

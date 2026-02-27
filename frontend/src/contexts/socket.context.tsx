@@ -1,4 +1,10 @@
-import { ReactNode, createContext, useContext, useEffect, useState } from "react";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { Socket, io } from "socket.io-client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -14,11 +20,11 @@ const SocketContext = createContext<SocketContextProps | null>(null);
 
 // Criamos a instância do socket fora do componente, com autoConnect: false.
 // Isso garante que temos uma instância única que não tenta se conectar sozinha.
-const socketInstance = io(`${process.env.NEXT_PUBLIC_API_URL}/room`, {
+const socketInstance = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}/room`, {
   reconnectionDelayMax: 10000,
   path: "/carteado_socket",
   transports: ["websocket"],
-  autoConnect: false
+  autoConnect: false,
 });
 
 export function SocketProvider({ children }: { children: ReactNode }) {
@@ -54,7 +60,6 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         return toast.error(t(`ServerMessages.errors.${err.message}`));
       };
 
-
       const onInfo = (message: string) => {
         return toast.info(t(`ServerMessages.infos.${message}`));
       };
@@ -70,7 +75,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
             socketInstance.emit("player_reconnected");
           }
         }
-      })
+      });
 
       // A função de limpeza é crucial.
       return () => {
@@ -83,7 +88,6 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       socketInstance.disconnect();
       router.push("/");
     }
-
   }, [status, token, router, t]); // <-- Array de dependências completo
 
   return (

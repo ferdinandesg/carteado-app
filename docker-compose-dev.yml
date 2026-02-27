@@ -1,7 +1,9 @@
-include:
-  - path: backend/docker-compose-dev.yml
+# Ambiente de desenvolvimento completo
+# Uso: npm run deploy:dev
+# Requer .env na raiz (JWT_SECRET_KEY obrigatório; DATABASE_URL e REDIS_URL são definidos aqui para Docker)
 
 services:
+  # ─── Next.js (frontend) ─────────────────────────────────────────────────
   frontend:
     build:
       context: .
@@ -11,12 +13,20 @@ services:
       - "3000:3000"
     depends_on:
       - backend
+    env_file:
+      - .env
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1
-      - NODE_ENV=development
+      NODE_ENV: development
+      # Next.js server (API routes, NextAuth) – usa rede Docker
+      API_URL: http://backend:4000/api/v1
+      NEXTAUTH_URL: http://localhost:3000
+      # Client (browser) – NEXT_PUBLIC_* é injetado no bundle
+      NEXT_PUBLIC_API_URL: http://localhost:4000/api/v1
+      NEXT_PUBLIC_SOCKET_URL: http://localhost:4000
     networks:
       - carteado_network
 
+  # ─── Express (backend) ──────────────────────────────────────────────────
   backend:
     build:
       context: .
@@ -25,14 +35,65 @@ services:
     ports:
       - "4000:4000"
     depends_on:
-      - mongodb
-      - redis
-    networks:
-      - carteado_network
-    environment:
-      - NODE_ENV=development
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     env_file:
       - .env
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      DATABASE_URL: mongodb://mongodb:27017/carteado
+      REDIS_URL: redis://redis:6379
+    networks:
+      - carteado_network
+
+  mongodb:
+    build:
+      context: ./deploy/mongodb_rs
+      args:
+        MONGO_VERSION: "6.0"
+    container_name: carteado_mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: carteado
+      MONGO_REPLICA_PORT: 27017
+      MONGO_REPLICA_HOST: mongodb
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - carteado_network
+
+  redis:
+    image: redis:7.0
+    container_name: carteado_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command:
+      ["redis-server", "--notify-keyspace-events", "Ex", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    networks:
+      - carteado_network
+
+volumes:
+  mongodb_data:
+  redis_data:
 
 networks:
   carteado_network:
