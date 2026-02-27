@@ -1,5 +1,5 @@
 # Contexto: raiz do monorepo (docker compose context: .)
-# Build: docker compose -f docker-compose-dev.yml up --build
+# Build: docker compose -f docker/compose.dev.yml up --build
 FROM node:20-alpine
 
 WORKDIR /app

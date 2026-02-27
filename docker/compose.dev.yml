@@ -1,0 +1,49 @@
+# Dev completo – frontend, backend, mongodb, redis
+# Uso: npm run deploy:dev
+name: carteado
+
+include:
+  - compose.base.yml
+
+services:
+  frontend:
+    build:
+      context: ..
+      dockerfile: frontend/Dockerfile.dev
+    container_name: carteado_frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    env_file:
+      - ../.env
+    environment:
+      NODE_ENV: development
+      API_URL: http://backend:4000/api/v1
+      NEXTAUTH_URL: http://localhost:3000
+      NEXT_PUBLIC_API_URL: http://localhost:4000/api/v1
+      NEXT_PUBLIC_SOCKET_URL: http://localhost:4000
+    networks:
+      - carteado_network
+
+  backend:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile.dev
+    container_name: carteado_backend
+    ports:
+      - "4000:4000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - ../.env
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      DATABASE_URL: mongodb://mongodb:27017/carteado
+      REDIS_URL: redis://redis:6379
+    networks:
+      - carteado_network

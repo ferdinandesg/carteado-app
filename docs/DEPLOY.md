@@ -97,5 +97,5 @@ docker compose -f docker-compose-prod.yml up -d
 | `npm run dev`               | Backend + Frontend em modo dev                  |
 | `npm run dev:run`           | Validate + dev                                  |
 | `npm run deploy:prod:local` | Build + Docker stack local                      |
-| `npm run deploy:dev`        | Docker compose dev (usa docker-compose-dev.yml) |
+| `npm run deploy:dev`        | Docker compose dev (usa docker/compose.dev.yml) |
 | `npm run deploy:prod`       | Deploy prod (compose na VM)                     |

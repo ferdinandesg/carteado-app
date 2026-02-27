@@ -1,0 +1,6 @@
+# Apenas Redis e MongoDB – para dev local (npm run dev)
+# Uso: npm run dev:services
+name: carteado
+
+include:
+  - compose.base.yml
