@@ -97,6 +97,10 @@ jobs:
     permissions:
       contents: "read"
     steps:
+      - name: Free disk space (evita "no space left" com sass-embedded)
+        run: |
+          docker system prune -af || true
+          docker builder prune -af || true
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Derive image tag
@@ -151,9 +155,11 @@ jobs:
             echo "### Autenticando no Docker Hub..."
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-            echo "### Realizando limpeza preventiva..."
-            # Remove containers parados, redes não usadas e imagens 'dangling' (camadas soltas)
-            docker system prune -f
+            echo "### Realizando limpeza preventiva (liberar espaço para pull)..."
+            # Remove containers parados, redes não usadas, imagens não referenciadas
+            docker system prune -af
+            # Remove cache de build (economiza GB em VMs com pouco disco)
+            docker builder prune -af
 
             echo "### Criando .env a partir dos secrets..."
             cat > .env << ENVEOF
