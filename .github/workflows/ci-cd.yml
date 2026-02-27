@@ -123,6 +123,8 @@ jobs:
             ${{ env.IMAGE_FRONTEND }}:latest
           build-args: |
             APP_VERSION=${{ env.TAG }}
+            NEXT_PUBLIC_API_URL=${{ env.NEXTAUTH_URL }}/api/v1
+            NEXT_PUBLIC_SOCKET_URL=${{ env.NEXTAUTH_URL }}
           cache-from: type=registry,ref=${{ env.IMAGE_FRONTEND }}:buildcache
           cache-to: type=registry,ref=${{ env.IMAGE_FRONTEND }}:buildcache,mode=max
 

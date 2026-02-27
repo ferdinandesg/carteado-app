@@ -18,7 +18,14 @@ RUN npm ci --ignore-scripts
 # 3. Copia o restante do código-fonte
 COPY . .
 
-# 4. Constrói os pacotes na ordem correta
+# 4. Cria .env.production com valores de build (Next.js lê NEXT_PUBLIC_* do .env no build)
+#    O .env da VM só existe no deploy – o build ocorre no CI, então injetamos via build-args
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_SOCKET_URL
+RUN echo "NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}" > frontend/.env.production && \
+    echo "NEXT_PUBLIC_SOCKET_URL=${NEXT_PUBLIC_SOCKET_URL}" >> frontend/.env.production
+
+# 5. Constrói os pacotes na ordem correta
 RUN npm run build -w shared
 RUN npm run build -w frontend
 
@@ -32,24 +39,24 @@ WORKDIR /app
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# 5. Copia os arquivos de dependência da RAIZ do projeto
+# 6. Copia os arquivos de dependência da RAIZ do projeto
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/package-lock.json ./
 COPY --from=builder /app/frontend/package.json ./frontend/
 COPY --from=builder /app/shared/package.json ./shared/
 
-# 6. Instala APENAS as dependências de PRODUÇÃO, IGNORANDO SCRIPTS (COMO O HUSKY)
+# 7. Instala APENAS as dependências de PRODUÇÃO, IGNORANDO SCRIPTS (COMO O HUSKY)
 RUN npm ci --omit=dev --workspace=frontend --ignore-scripts
 
-# 7. Define o diretório de trabalho para o frontend
+# 8. Define o diretório de trabalho para o frontend
 WORKDIR /app/frontend
 
-# 8. Copia os artefatos de build, a pasta public e a configuração do Next.js
+# 9. Copia os artefatos de build, a pasta public e a configuração do Next.js
 COPY --from=builder /app/frontend/.next ./.next
 COPY --from=builder /app/frontend/public ./public
 COPY --from=builder /app/frontend/next.config.js ./
 
 EXPOSE 3000
 
-# 9. O comando para iniciar a aplicação a partir do diretório correto
+# 10. O comando para iniciar a aplicação a partir do diretório correto
 CMD ["npm", "run", "start"]

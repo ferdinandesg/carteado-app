@@ -7,6 +7,9 @@ services:
     build:
       context: ..
       dockerfile: frontend/Dockerfile.prod
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:4000/api/v1
+        NEXT_PUBLIC_SOCKET_URL: http://localhost:4000
     image: carteado-frontend:local
     container_name: carteado_frontend_local
     ports:

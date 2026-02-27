@@ -16,7 +16,7 @@ const nextConfig = {
   transpilePackages: ["shared"],
 
   sassOptions: {
-    implementation: "sass-embedded",
+    implementation: "sass",
     includePaths: [path.join(__dirname, "styles")],
     prependData: `@use 'variables' as *;`,
   },
