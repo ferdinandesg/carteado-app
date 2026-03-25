@@ -4,6 +4,7 @@ import cors from "cors";
 import rateLimit from "express-rate-limit";
 import PinoHttp from "pino-http";
 import routes from "./routes";
+import { checkHealth } from "./health";
 import { logger } from "./utils/logger";
 
 const app = express();
@@ -22,8 +23,10 @@ const limiter = rateLimit({
 app.use(PinoHttp({ logger }));
 
 // Health check (sem rate limit para permitir healthchecks do Docker/K8s)
-app.get("/api/v1/health", (_req, res) => {
-  res.status(200).json({ status: "ok" });
+app.get("/api/v1/health", async (_req, res) => {
+  const result = await checkHealth();
+  const statusCode = result.status === "ok" ? 200 : 503;
+  res.status(statusCode).json(result);
 });
 
 app.use(limiter);

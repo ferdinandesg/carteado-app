@@ -2,6 +2,7 @@ import { Server, Socket, Namespace } from "socket.io";
 import http from "http";
 import { CHANNEL } from "./channels";
 import { ConnectionEventHandler } from "./events/ConnectionEventHandler";
+import { ChatConnectionEventHandler } from "./events/chat/ChatConnectionEventHandler";
 import { Authentication } from "./events/middleware/AuthSocket";
 
 export class SocketServer {
@@ -20,9 +21,15 @@ export class SocketServer {
     });
     this.roomChannel = this.io.of("/room");
     this.chatChannel = this.io.of("/chat");
+
     this.roomChannel.use(Authentication);
     this.roomChannel.on(CHANNEL.CLIENT.CONNECTION, (socket: Socket) =>
       ConnectionEventHandler(socket, this.roomChannel)
+    );
+
+    this.chatChannel.use(Authentication);
+    this.chatChannel.on(CHANNEL.CLIENT.CONNECTION, (socket: Socket) =>
+      ChatConnectionEventHandler(socket, this.chatChannel)
     );
   }
 }

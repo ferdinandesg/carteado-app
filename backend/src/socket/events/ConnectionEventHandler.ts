@@ -4,7 +4,6 @@ import { retrieveSession } from "@/lib/redis/userSession";
 import { logger } from "@/utils/logger";
 import { registerRoomEvents } from "./rooms";
 import { registerCardEvents } from "./cards";
-import { registerChatEvents } from "./chat";
 import emitToRoom from "../utils/emitToRoom";
 import { atomicallyUpdateRoomState } from "@/lib/redis/room";
 import { createParticipantObject } from "shared/game";
@@ -58,7 +57,6 @@ export async function ConnectionEventHandler(
 ): Promise<void> {
   registerRoomEvents(socket, channel);
   registerCardEvents(socket, channel);
-  registerChatEvents(socket, channel);
 
   socket.on("disconnecting", () =>
     DisconnectingEventHandler({ socket, channel })

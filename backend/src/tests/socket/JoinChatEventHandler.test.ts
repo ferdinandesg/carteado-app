@@ -1,6 +1,6 @@
 import { CHANNEL } from "@/socket/channels";
 import { socketTestSetup } from "./socket.setup";
-import { createTestSocket } from "./utils";
+import { createTestChatSocket } from "./utils";
 
 jest.mock("@/socket/events/chat/addMessage", () => ({
   addMessage: jest.fn(),
@@ -18,7 +18,7 @@ describe("JoinChatEventHandler - integration", () => {
   const { getPort } = socketTestSetup();
   it("user should be able to join in chat and receive the messages", (done) => {
     const port = getPort();
-    const socket = createTestSocket("valid-token", port);
+    const socket = createTestChatSocket("valid-token", port);
 
     socket.on("load_messages", (messages) => {
       try {
@@ -38,8 +38,8 @@ describe("JoinChatEventHandler - integration", () => {
 
   it("should notify user A when user B joins the same room", (done) => {
     const port = getPort();
-    const socketA = createTestSocket("userA-valid-token", port);
-    const socketB = createTestSocket("userB-valid-token", port);
+    const socketA = createTestChatSocket("userA-valid-token", port);
+    const socketB = createTestChatSocket("userB-valid-token", port);
 
     socketA.on("connect", () => {
       socketA.emit(CHANNEL.CLIENT.JOIN_CHAT, { roomHash: "room-test" });
@@ -66,8 +66,8 @@ describe("JoinChatEventHandler - integration", () => {
   });
   it("should be able to send and receive messages", (done) => {
     const port = getPort();
-    const socketA = createTestSocket("userA-valid-token", port);
-    const socketB = createTestSocket("userB-valid-token", port);
+    const socketA = createTestChatSocket("userA-valid-token", port);
+    const socketB = createTestChatSocket("userB-valid-token", port);
 
     socketA.on("connect", () => {
       socketA.emit(CHANNEL.CLIENT.JOIN_CHAT, { roomHash: "room-test" });

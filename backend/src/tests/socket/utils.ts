@@ -8,6 +8,15 @@ export function createTestSocket(token: string, port: number): Socket {
   });
 }
 
+/** Socket for chat namespace (/chat) */
+export function createTestChatSocket(token: string, port: number): Socket {
+  return io(`http://localhost:${port}/chat`, {
+    path: "/carteado_socket",
+    auth: { token },
+    transports: ["websocket"],
+  });
+}
+
 export function connectAndJoinRoom(
   token: string,
   roomHash: string,

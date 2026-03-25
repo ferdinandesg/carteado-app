@@ -1,6 +1,7 @@
 import { createClient, RedisClientType } from "redis";
-import { expireRoomByHash } from "@/services/room.service"; // Sua função para expirar a sala no banco
+import { expireRoomByHash } from "@/services/room.service";
 import { logger } from "@/utils/logger";
+import { REDIS_KEY_PREFIX } from "@/config/redis";
 
 class RedisClass {
   private static dataClient: RedisClientType | null = null;
@@ -42,9 +43,9 @@ class RedisClass {
 
       RedisClass.subscribeClient.pSubscribe(
         "__keyevent@0__:expired",
-        async (channel) => {
-          if (channel.startsWith("room:")) {
-            const roomHash = channel.split(":")[1];
+        async (key) => {
+          if (key.startsWith(REDIS_KEY_PREFIX.room)) {
+            const roomHash = key.slice(REDIS_KEY_PREFIX.room.length);
             await expireRoomByHash(roomHash);
           }
         }

@@ -1,5 +1,6 @@
 import RedisClass from "@/lib/redis/client";
 import { Participant } from "shared/types/room";
+import { REDIS_KEYS, REDIS_TTL } from "@/config/redis";
 
 import { Room } from "@prisma/client";
 export type RoomWithParticipants = Room & { participants: Participant[] };
@@ -8,14 +9,14 @@ export async function getRoomState(
   roomHash: string
 ): Promise<RoomWithParticipants | null> {
   const redis = await RedisClass.getDataClient();
-  const data = await redis.get(`room:${roomHash}`);
+  const data = await redis.get(REDIS_KEYS.room(roomHash));
   return data ? JSON.parse(String(data)) : null;
 }
 
 export async function saveRoomState(roomHash: string, roomState: object) {
   const redis = await RedisClass.getDataClient();
-  await redis.set(`room:${roomHash}`, JSON.stringify(roomState), {
-    EX: 7200,
+  await redis.set(REDIS_KEYS.room(roomHash), JSON.stringify(roomState), {
+    EX: REDIS_TTL.room,
   });
 }
 
@@ -24,7 +25,7 @@ export async function atomicallyUpdateRoomState(
   updateFn: (room: RoomWithParticipants) => RoomWithParticipants | null
 ): Promise<RoomWithParticipants | null> {
   const redis = await RedisClass.getDataClient();
-  const key = `room:${roomHash}`;
+  const key = REDIS_KEYS.room(roomHash);
 
   for (let i = 0; i < 3; i++) {
     // Retry up to 3 times
@@ -45,7 +46,7 @@ export async function atomicallyUpdateRoomState(
     }
 
     const multi = redis.multi();
-    multi.set(key, JSON.stringify(updatedRoom), { EX: 7200 });
+    multi.set(key, JSON.stringify(updatedRoom), { EX: REDIS_TTL.room });
     const result = await multi.exec();
 
     if (result) {

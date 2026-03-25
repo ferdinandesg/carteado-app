@@ -2,7 +2,7 @@ import { atomicallyUpdateRoomState } from "@/lib/redis/room";
 import { SocketContext } from "../../../@types/socket";
 import emitToRoom from "@/socket/utils/emitToRoom";
 import ErrorHandler from "utils/error.handler";
-import { createParticipantObject } from "shared/game";
+import { PlayerStatus, createParticipantObject } from "shared/game";
 import { storeSession } from "@/lib/redis/userSession";
 import { JoinRoomPayload } from "../payloads";
 import { logger } from "@/utils/logger";
@@ -40,7 +40,7 @@ export async function JoinRoomEventHandler(
       const participant = createParticipantObject(socket.user);
 
       room.participants.push(participant);
-      socket.user.status = "not_ready";
+      socket.user.status = PlayerStatus.NOT_READY;
       return room;
     });
 
