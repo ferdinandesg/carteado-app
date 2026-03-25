@@ -82,8 +82,8 @@ services:
       - NODE_ENV=production
       - PORT=4000
       - REDIS_URL=redis://redis:6379
-      # Credenciais alinhadas ao serviço mongodb (root/password); sem auth o Prisma falha e /health devolve 503
-      - DATABASE_URL=mongodb://root:password@mongodb:27017/carteado?replicaSet=rs0&authSource=admin
+      # DATABASE_URL vem só do .env (CI: secrets.DATABASE_URL). Deve coincidir com o usuário real no MongoDB
+      # (MONGO_INITDB_* só aplicam na primeira criação do volume; senão ajuste a senha no Mongo ou o secret).
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - FRONTEND_URL=https://carteado.ferdinandes.com.br
     healthcheck:
