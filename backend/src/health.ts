@@ -23,7 +23,7 @@ export async function checkHealth(): Promise<HealthCheckResult> {
   }
 
   try {
-    await prisma.$queryRaw`SELECT 1`;
+    await (prisma as any).$queryRaw`SELECT 1`;
     dbStatus = "up";
   } catch (err) {
     logger.warn({ err }, "Health check: Database ping failed");
