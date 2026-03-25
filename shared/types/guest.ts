@@ -1,3 +1,5 @@
+import { PlayerStatus } from "shared/game";
+
 export type UserRole = "guest" | "user";
 
 export type User = {
@@ -14,9 +16,9 @@ type UserMeta = {
   name: string;
   rank: number;
   room: string;
-  status: string;
+  status: PlayerStatus;
   isRegistered: boolean;
-  image?: string;
+  image?: string | null;
   skin?: string;
 };
 
@@ -24,7 +26,7 @@ export type EmptyGuestType = Omit<GuestType, "room" | "status">;
 
 export type GuestType = UserMeta & {
   role: "guest";
-  isRegistered: boolean;
+  isRegistered?: boolean;
 };
 
 export type SocketUser = UserMeta & {

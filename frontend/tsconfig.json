@@ -28,7 +28,6 @@
       "@components/*": ["./src/components/*"],
       "@hooks/*": ["./src/hooks/*"],
       "@contexts/*": ["./src/contexts/*"],
-      "@models/*": ["./src/contexts/*"],
       "@styles/*": ["./src/styles/*"],
       "@tests/*": ["./src/tests/*"],
       "shared/*": ["../shared/*"]

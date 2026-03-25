@@ -154,8 +154,8 @@ export class TrucoGameRules implements ITrucoGameRules {
     }
     if (game.currentBet >= 12) throw new GameError({ code: "INVALID_BET" });
 
-    const betValues = { 1: 3, 3: 6, 6: 9, 9: 12 };
-    game.currentBet = betValues[game.currentBet] || 3;
+    const betValues: Record<number, number> = { 1: 3, 3: 6, 6: 9, 9: 12 };
+    game.currentBet = betValues[game.currentBet] ?? 3;
     game.trucoState = "PENDING";
     game.trucoAskerId = userId; // Guarda quem fez o último pedido
   }
@@ -181,12 +181,11 @@ export class TrucoGameRules implements ITrucoGameRules {
     const askingTeam = this.findTeamByUserId(game, game.trucoAskerId);
     if (!askingTeam) throw new GameError({ code: "INVALID_ACTION" });
 
-    // ✅ SUBSTITUA A LÓGICA DE PONTOS POR ESTA:
-    const betValues = { 1: 3, 3: 6, 6: 9, 9: 12 };
-    const points =
-      Number(
-        Object.keys(betValues).find((key) => betValues[key] === game.currentBet)
-      ) || 1;
+    const betValues: Record<number, number> = { 1: 3, 3: 6, 6: 9, 9: 12 };
+    const matchingKey = Object.entries(betValues).find(
+      ([, v]) => v === game.currentBet
+    )?.[0];
+    const points = matchingKey ? Number(matchingKey) : 1;
 
     this.finishRound(game, askingTeam, points);
   }
@@ -273,8 +272,10 @@ export class TrucoGameRules implements ITrucoGameRules {
       isTie: isTie,
     });
 
-    const nextPlayer = game.getPlayer(winnerId);
-    game.playerTurn = isTie ? game.playerTurn : nextPlayer?.userId;
+    const nextPlayer = winnerId ? game.getPlayer(winnerId) : undefined;
+    game.playerTurn = isTie
+      ? game.playerTurn
+      : (nextPlayer?.userId ?? game.playerTurn);
 
     this.checkRoundEnding(game);
   }

@@ -1,18 +1,27 @@
 "use client";
+
 import { HtmlHTMLAttributes, ReactNode } from "react";
-import { twMerge } from "tailwind-merge";
+import classNames from "classnames";
+
+import styles from "./Modal.module.scss";
 
 interface ModalRootProps extends HtmlHTMLAttributes<HTMLDivElement> {
   children: ReactNode;
 }
-export default function Root({ children, ...props }: ModalRootProps) {
+
+export default function Root({
+  children,
+  className,
+  ...props
+}: ModalRootProps) {
   return (
-    <div className="absolute z-50 bg-black w-screen bg-opacity-75 h-screen flex justify-center items-center">
+    <div
+      className={styles.modalRoot}
+      role="dialog"
+      aria-modal>
       <div
-        className={twMerge(
-          "w-1/2 h-1/2 flex flex-col justify-between",
-          props.className
-        )}>
+        className={classNames(styles.modalPanel, className)}
+        {...props}>
         {children}
       </div>
     </div>

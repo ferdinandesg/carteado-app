@@ -4,9 +4,7 @@ import CreateRoomPage from "./page";
 import usePostRoom from "@/hooks/rooms/usePostRoom";
 
 jest.mock("@/components/buttons/withSound", () => ({
-  withSound: (Component: React.ComponentType<any>) => (props: any) => (
-    <Component {...props} />
-  ),
+  withSound: (Component: unknown) => Component,
 }));
 
 // Mock do Next.js router para simular a navegação

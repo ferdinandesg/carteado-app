@@ -1,17 +1,25 @@
 @use "variables" as *;
+@use "design-system/spinner" as *;
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+// Reset mínimo e base (sem Tailwind)
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
 body {
   overflow: hidden;
+  margin: 0;
+  min-height: 100vh;
 }
 
-.darkBg {
-  background: $gradient-background;
-}
-
+// Utilitários de espaçamento
 .spacing-s {
   margin: $spacing-s;
 }
@@ -22,4 +30,8 @@ body {
 
 .spacing-l {
   margin: $spacing-l;
+}
+
+.darkBg {
+  background: $gradient-background;
 }

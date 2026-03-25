@@ -1,18 +1,25 @@
+"use client";
+
 import { ButtonHTMLAttributes, ReactNode } from "react";
-import { twMerge } from "tailwind-merge";
+import classNames from "classnames";
+
+import styles from "./Modal.module.scss";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon: ReactNode;
 }
-export default function Buttons({ icon: Icon, ...props }: ButtonProps) {
+
+export default function Buttons({
+  icon: Icon,
+  className,
+  disabled,
+  ...props
+}: ButtonProps) {
   return (
     <button
-      {...props}
-      className={twMerge(
-        "p-2 rounded-sm transition",
-        props.className,
-        props.disabled ? "opacity-50" : "opacity-100"
-      )}>
+      className={classNames(styles.modalButton, className)}
+      disabled={disabled}
+      {...props}>
       {Icon}
     </button>
   );

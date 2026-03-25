@@ -1,3 +1,4 @@
+// Home — landing/login (identidade cartoon)
 .Home {
   height: 100vh;
   width: 100vw;
@@ -5,60 +6,117 @@
   align-items: center;
   justify-content: center;
   gap: $spacing-l;
+
   .container {
     width: 30%;
     position: relative;
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding: $spacing-s;
+    padding: $spacing-l;
     justify-content: space-around;
-    background-color: rgba(black, 0.2);
+    background-color: rgba($color-bg-secondary, 0.6);
     align-items: center;
+    border-radius: $border-radius-l;
+    border: $border-width solid $color-outline-light;
+    box-shadow: $shadow-card;
   }
+
   .banner {
     height: 100%;
     position: relative;
     width: 30%;
+    border-radius: $border-radius-l;
+    overflow: hidden;
+    border: $border-width solid $color-outline-light;
   }
+
   .authMethods {
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: $spacing-m;
+
     .google {
       display: flex;
       align-items: center;
-      border-radius: 50px;
+      border-radius: $border-radius-full;
       overflow: hidden;
-      background-color: white;
+      background-color: $color-white;
       justify-content: space-around;
-      padding: $spacing-s;
-      gap: $spacing-xs;
-      font-size: 0.9rem;
+      padding: $spacing-m;
+      gap: $spacing-s;
+      font-size: $font-size-s;
+      font-weight: $font-weight-bold;
+      text-transform: uppercase;
+      letter-spacing: $letter-spacing-wide;
+      transition: opacity $transition-normal, box-shadow $transition-normal;
+      border: $border-width solid $color-outline;
+      box-shadow: $shadow-button;
+
+      &:hover:not(:disabled) {
+        cursor: pointer;
+        opacity: 0.95;
+        box-shadow: 0 2px 0 rgba($color-black, 0.3);
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.8;
+      }
+    }
+
+    .guest {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: $spacing-m;
+      border-radius: $border-radius-m;
+      color: $color-white;
+      background-color: $color-bg-secondary;
+      border: $border-width solid $color-outline-light;
+      font-weight: $font-weight-bold;
+      text-transform: uppercase;
+      letter-spacing: $letter-spacing-wide;
+      transition: background-color $transition-normal, box-shadow $transition-normal;
+      box-shadow: $shadow-button;
 
       &:hover {
-        cursor: pointer;
-        text-decoration: underline;
+        background-color: lighten($color-bg-secondary, 5%);
+        box-shadow: 0 2px 0 rgba($color-black, 0.3);
       }
     }
   }
 
   .title {
-    color: $primary-color;
-    font-size: 4rem;
-    font-weight: bold;
+    color: $color-primary;
+    font-size: $font-size-4xl;
+    font-weight: $font-weight-bold;
     text-align: center;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: $letter-spacing-wide;
+    text-shadow: $border-width $border-width 0 rgba($color-black, 0.3);
   }
 
-  .rulesButton {
+  .rulesLink {
     cursor: pointer;
-    color: white;
-    font-size: 0.95rem;
+    color: $color-white;
+    font-size: $font-size-s;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    background: none;
+    border: none;
+    font: inherit;
+    padding: $spacing-s;
+
     &:hover {
       text-decoration: underline;
+      color: $color-primary;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-primary;
+      outline-offset: 2px;
     }
   }
 }
@@ -70,11 +128,11 @@
       height: 80%;
 
       .authMethods {
-        width: 60%;
+        width: 80%;
 
         .google {
-          padding: $spacing-s;
-          font-size: 0.95rem;
+          padding: $spacing-m;
+          font-size: $font-size-m;
         }
       }
     }

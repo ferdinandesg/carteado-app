@@ -10,8 +10,10 @@ type JwtPayload = {
 };
 
 const promisifyVerifyToken = (token: string) => {
+  const secret = process.env.JWT_SECRET_KEY;
+  if (!secret) throw new Error("JWT_SECRET_KEY is not defined");
   return new Promise<JwtPayload>((resolve, reject) => {
-    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+    jwt.verify(token, secret, (err, decoded) => {
       if (err) {
         reject(err);
       } else {

@@ -26,4 +26,5 @@ export async function getGameState(
     return game;
   }
   logger.error("GAME_NOT_FOUND");
+  throw new Error("GAME_NOT_FOUND");
 }

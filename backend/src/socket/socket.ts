@@ -19,6 +19,7 @@ export class SocketServer {
       },
     });
     this.roomChannel = this.io.of("/room");
+    this.chatChannel = this.io.of("/chat");
     this.roomChannel.use(Authentication);
     this.roomChannel.on(CHANNEL.CLIENT.CONNECTION, (socket: Socket) =>
       ConnectionEventHandler(socket, this.roomChannel)

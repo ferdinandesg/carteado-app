@@ -1,74 +1,105 @@
-<h1 align="center">Welcome to carteado-app 👋</h1>
-<p>
+<h1 align="center">Carteado App 👋</h1>
+
+<p align="center">
   <img alt="Version" src="https://img.shields.io/badge/version-1.0-blue.svg?cacheSeconds=2592000" />
 </p>
 
-> Carteado card game
-> Project created with the aim of learning more about Docker, deployment, socket, redis and other technologies
+> Jogo de cartas Carteado – projeto full-stack (Next.js + Express) com Socket.io, Redis e MongoDB.
 
-## Install
+## Instalação
 
-To carry out the installation you just need to run the docker-compose file
-
-```sh
-npm run start:dev
+```bash
+npm install
+cp .env.example .env   # edite com suas credenciais
+nvm use                # ou nvm install se 20.15.1 não estiver instalado
 ```
 
-and soon after the web application will be available on port `:3000`
+**Requisitos:** Node 20+ (use `nvm use` com o `.nvmrc`), Docker para MongoDB e Redis.
 
-## Author
+---
+
+## Rodar localmente
+
+### Desenvolvimento rápido
+
+```bash
+# 1. Subir MongoDB e Redis (Docker)
+npm run dev:services
+
+# 2. Subir backend e frontend
+npm run dev
+```
+
+Aplicação em http://localhost:3000.
+
+### Desenvolvimento com validação antes
+
+```bash
+npm run dev:safe
+```
+
+Executa lint, typecheck, testes e build antes de iniciar. Útil antes de commits ou deploy.
+
+### Simular produção local (Docker)
+
+```bash
+npm run deploy:prod:local
+```
+
+Build completo + stack Docker (nginx, frontend, backend, mongo, redis).
+
+---
+
+## Comandos principais
+
+| Comando                     | Descrição                       |
+| --------------------------- | ------------------------------- |
+| `npm run dev`               | Backend + Frontend (dev rápido) |
+| `npm run dev:safe`          | Validate + dev                  |
+| `npm run dev:services`      | Sobe MongoDB e Redis (Docker)   |
+| `npm run dev:services:down` | Para MongoDB e Redis            |
+| `npm run validate`          | Lint + typecheck + test + build |
+| `npm run test`              | Testes (backend + frontend)     |
+| `npm run deploy:dev`        | Stack dev completa em Docker    |
+
+---
+
+## Documentação
+
+- [Deploy e ambientes](docs/DEPLOY.md)
+- [Docker – análise e estrutura](docs/DOCKER_ANALISE.md)
+- [Plano de melhorias DX](docs/PLANO_DX_REFACTORS.md)
+
+---
+
+## Arquitetura
+
+### Stack
+
+- **Frontend:** Next.js 15, React 19, Tailwind, Socket.io client
+- **Backend:** Express 5, Socket.io, Prisma (MongoDB)
+- **Shared:** Lógica e tipos de jogo compartilhados entre front e back
+
+### Data Stores
+
+- **MongoDB:** Persistência (profiles, rooms, histórico)
+- **Redis:** Estado efêmero em tempo real, pub/sub para o jogo
+
+### Configuração
+
+- Variáveis validadas no startup com Zod (`backend/src/config/env.ts`)
+- `.env` na raiz – ver `.env.example`
+
+---
+
+## Autor
 
 👤 **Ferdinandes Guimaraes**
 
-- Website: ferdinandes.com.br
+- Website: [ferdinandes.com.br](https://ferdinandes.com.br)
 - Github: [@ferdinandesg](https://github.com/ferdinandesg)
 - LinkedIn: [@ferdinandes-nascimento](https://linkedin.com/in/ferdinandes-nascimento)
 
 ## Show your support
 
 Give a ⭐️ if this project helped you!
-
----
-
-## Architecture & Stack Decisions
-
-### Data Stores
-
-- MongoDB: (Explain intended usage: e.g., player profiles / persistence?)
-- Redis: Ephemeral fast storage for game state, rooms, real-time pub/sub.
-- Prisma (DATABASE_URL): Used for relational data. If both Mongo + relational persist same concepts, plan consolidation.
-
-### Shared Package
-
-`shared/` contains isomorphic card & game logic consumed by both backend and frontend. Planned to become a proper workspace package with versioning to prevent type drift.
-
-### Error Handling
-
-Custom `GameError` with typed codes -> unified HTTP mapping (see `backend/src/errors/GameError.ts`). Express middleware serializes consistent error shape.
-
-### Environment Configuration
-
-Env variables validated at startup using Zod (`backend/src/config/env.ts`). Application crashes fast on invalid config.
-
-### Testing Strategy (Planned)
-
-- Domain/game rules: pure unit tests colocated near implementation (fast).
-- Integration: Redis / Prisma / socket under `backend/src/tests/integration`.
-- Frontend: component + hooks tests in-component folders.
-- Contract (future): generated API types or tRPC/OpenAPI.
-
-### Tooling Roadmap
-
-- Workspaces (pnpm) for shared build & caching.
-- Central Jest + ESLint presets.
-- CI (lint, type-check, test, build) + security scans.
-
-### Security
-
-- Secrets (e.g., service account) removed from VCS; use environment inject (Docker secrets / cloud secret manager).
-
-### Naming & Layers (Target)
-
-`domain` (pure rules) → `application` (use-cases) → `infrastructure` (Express, Redis, DB, Socket). Current code being migrated incrementally.
-
-_This README was generated with ❤️ by [readme-md-generator](https://github.com/kefranabg/readme-md-generator)_

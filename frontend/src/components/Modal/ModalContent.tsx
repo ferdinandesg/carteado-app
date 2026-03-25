@@ -1,12 +1,18 @@
+"use client";
+
 import { HtmlHTMLAttributes } from "react";
-import { twMerge } from "tailwind-merge";
+import classNames from "classnames";
+
+import styles from "./Modal.module.scss";
 
 export default function Content({
+  className,
   ...props
 }: HtmlHTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={twMerge("p-2 h-full bg-white", props.className)}>
-      {props.children}
-    </div>
+    <div
+      className={classNames(styles.modalContent, className)}
+      {...props}
+    />
   );
 }

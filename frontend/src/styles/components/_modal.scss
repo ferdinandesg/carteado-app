@@ -1,0 +1,67 @@
+// Modal — componentes do design-system
+@use "../design-system/tokens" as *;
+@use "../design-system/mixins" as *;
+
+.root {
+  position: absolute;
+  z-index: $z-modal;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba($color-black, 0.75);
+  @include flex-center;
+}
+
+.panel {
+  width: 50%;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.header {
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-s;
+  background-color: $color-gray-300;
+  border-radius: $border-radius-l $border-radius-l 0 0;
+}
+
+.headerTitle {
+  font-weight: $font-weight-bold;
+  font-size: $font-size-l;
+  color: $color-gray-800;
+}
+
+.closeButton {
+  padding: $spacing-s;
+  border-radius: $border-radius-s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color $transition-normal;
+
+  &:hover {
+    background-color: $color-gray-400;
+    color: $color-white;
+  }
+}
+
+.content {
+  padding: $spacing-s;
+  height: 100%;
+  background-color: $color-white;
+}
+
+.footer {
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $spacing-m;
+  padding: $spacing-s;
+  background-color: $color-gray-300;
+  border-radius: 0 0 $border-radius-l $border-radius-l;
+}

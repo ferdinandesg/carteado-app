@@ -1,0 +1,110 @@
+// ==========================================================================
+// Design Tokens — Carteado (identidade cartoon/comic)
+// Baseado na referência visual: azul escuro, outlines bold, acentos vibrantes
+// ==========================================================================
+
+// --- Spacing ---
+$spacing-2xs: 2px;
+$spacing-xs: 4px;
+$spacing-s: 8px;
+$spacing-m: 16px;
+$spacing-l: 32px;
+$spacing-xl: 48px;
+$spacing-2xl: 64px;
+$spacing-3xl: 96px;
+
+// --- Colors (paleta cartoon/comic) ---
+// Backgrounds
+$color-bg: #2c305b;
+$color-bg-secondary: #4c62b0;
+$color-bg-input: #f9f4ec;
+
+$color-primary: #fdb820;
+$color-primary-hover: #ffc94d;
+$color-secondary: #4c62b0;
+$color-success: #3ced01;
+$color-error: #e53e3e;
+$color-warning: #ed8936;
+
+$color-white: #ffffff;
+$color-black: #000000;
+
+// Accent colors (scrollbar, botões secundários, highlights)
+$color-accent-pink: #e25b8c;
+$color-accent-teal: #72e1ef;
+
+$color-gray-100: #f7fafc;
+$color-gray-200: #edf2f7;
+$color-gray-300: #e2e8f0;
+$color-gray-400: #cbd5e0;
+$color-gray-500: #a0aec0;
+$color-gray-600: #718096;
+$color-gray-700: #4a5568;
+$color-gray-800: #2d3748;
+$color-gray-900: #1a202c;
+
+$color-text-inverse: $color-white;
+$color-text-primary: $color-primary;
+$color-text-muted: $color-gray-500;
+
+// Outline (estilo cartoon)
+$color-outline: rgba($color-black, 0.4);
+$color-outline-light: rgba($color-white, 0.9);
+
+// --- Typography ---
+$font-family-base: system-ui, -apple-system, sans-serif;
+$font-family-display: "Pixelify Sans", $font-family-base;
+
+$font-size-xs: 0.75rem;
+$font-size-s: 0.875rem;
+$font-size-m: 1rem;
+$font-size-l: 1.125rem;
+$font-size-xl: 1.25rem;
+$font-size-2xl: 1.5rem;
+$font-size-3xl: 2rem;
+$font-size-4xl: 4rem;
+
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+$line-height-tight: 1.25;
+$line-height-normal: 1.5;
+$line-height-relaxed: 1.75;
+
+$letter-spacing-tight: -0.5px;
+$letter-spacing-normal: 0;
+$letter-spacing-wide: 2px;
+
+// --- Borders ---
+$border-radius-s: 4px;
+$border-radius-m: 10px;
+$border-radius-l: 16px;
+$border-radius-xl: 24px;
+$border-radius-full: 50px;
+
+$border-width: 2px;
+$border-width-bold: 3px;
+$border-color: $color-outline;
+
+// --- Shadows (estilo cartoon) ---
+$shadow-card: 0 4px 0 rgba($color-black, 0.3);
+$shadow-button: 0 3px 0 rgba($color-black, 0.4);
+
+// --- Transitions ---
+$transition-fast: 150ms ease;
+$transition-normal: 250ms ease;
+$transition-slow: 350ms ease;
+
+// --- Z-index scale ---
+$z-dropdown: 100;
+$z-modal: 1000;
+$z-toast: 1100;
+$z-tooltip: 1200;
+
+// --- Breakpoints ---
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;

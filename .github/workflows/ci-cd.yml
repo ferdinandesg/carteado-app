@@ -183,3 +183,19 @@ jobs:
             docker image prune -f
             echo ">>> DEPLOY CONCLUÍDO <<<"
           EOF
+      - name: Healthcheck – verificar se a API está respondendo
+        run: |
+          APP_URL="${{ env.NEXTAUTH_URL }}"
+          HEALTH_URL="${APP_URL}/api/v1/health"
+          echo "Aguardando 15s para os containers subirem..."
+          sleep 15
+          for i in 1 2 3 4 5; do
+            if curl -sf "${HEALTH_URL}" | grep -q '"status":"ok"'; then
+              echo "Healthcheck OK: ${HEALTH_URL} respondeu."
+              exit 0
+            fi
+            echo "Tentativa $i/5 falhou. Aguardando 10s..."
+            sleep 10
+          done
+          echo "ERRO: Healthcheck falhou – ${HEALTH_URL} não respondeu após 5 tentativas."
+          exit 1

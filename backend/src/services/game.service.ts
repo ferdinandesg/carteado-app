@@ -15,7 +15,7 @@ export async function getGameInstance<T extends GameInstance>(
 
   if (!gameData) {
     logger.error(`Jogo não encontrado para a sala ${roomId}`);
-    return;
+    throw new Error(`Jogo não encontrado para a sala ${roomId}`);
   }
 
   // Data from redis is a JSON string, so it needs parsing.

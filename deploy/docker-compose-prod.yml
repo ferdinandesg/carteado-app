@@ -20,8 +20,10 @@ services:
         max-size: "10m" # Rotação de logs: máximo de 10 megabytes por arquivo
         max-file: "3" # Rotação de logs: manter no máximo 3 arquivos de log
     depends_on:
-      - frontend
-      - backend
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
     networks:
       - app_network
 
@@ -31,7 +33,15 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test:
+        ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
     env_file:
       - .env
     environment:

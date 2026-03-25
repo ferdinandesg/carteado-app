@@ -5,7 +5,7 @@ import Message from "./message";
 
 import styles from "@/styles/Chat.module.scss";
 import { useTranslation } from "react-i18next";
-import { PanelLeftClose, PanelRight, } from "lucide-react";
+import { PanelLeftClose, PanelRight } from "lucide-react";
 
 type MessageType = {
   message: string;
@@ -16,9 +16,13 @@ interface ChatProps {
   isCollapsed?: boolean;
   toggleCollapse?: () => void;
 }
-export default function Chat({ roomHash, isCollapsed, toggleCollapse }: ChatProps) {
+export default function Chat({
+  roomHash,
+  isCollapsed,
+  toggleCollapse,
+}: ChatProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const divRef = useRef<HTMLDivElement | null>(null);
   const chatRef = useRef<HTMLDivElement | null>(null);
 
@@ -46,9 +50,9 @@ export default function Chat({ roomHash, isCollapsed, toggleCollapse }: ChatProp
         updateMessages({
           name: "system",
           message: t("ServerMessages.infos.PLAYER_JOINED", {
-            player: message.message
+            player: message.message,
           }),
-        })
+        });
       },
       receive_message: (message: MessageType) => updateMessages(message),
       load_messages: (payload: MessageType[]) => {
@@ -93,7 +97,9 @@ export default function Chat({ roomHash, isCollapsed, toggleCollapse }: ChatProp
       className={styles.Chat}
       ref={chatRef}
       onFocus={setReadMessages}>
-      <div className={styles.header} onClick={toggleCollapse}>
+      <div
+        className={styles.header}
+        onClick={toggleCollapse}>
         {isCollapsed ? <PanelRight /> : <PanelLeftClose />}
       </div>
       {!isCollapsed && (
@@ -101,7 +107,9 @@ export default function Chat({ roomHash, isCollapsed, toggleCollapse }: ChatProp
           <div
             ref={divRef}
             className={styles.messagesContainer}>
-            {isLoading && <span className="text-white">Loading...</span>}
+            {isLoading && (
+              <span className={styles.loadingMessage}>{t("loading")}</span>
+            )}
             {!isLoading &&
               localMessages?.map((m, i) => (
                 <Message
@@ -118,14 +126,10 @@ export default function Chat({ roomHash, isCollapsed, toggleCollapse }: ChatProp
                 type="text"
               />
             </div>
-            <button
-              onClick={(e) => sendMessage(e)}>
-              {t("send")}
-            </button>
+            <button onClick={(e) => sendMessage(e)}>{t("send")}</button>
           </form>
         </>
       )}
-
-    </aside >
+    </aside>
   );
 }

@@ -1,19 +1,22 @@
+"use client";
+
 import { HtmlHTMLAttributes, ReactNode } from "react";
-import { twMerge } from "tailwind-merge";
+import classNames from "classnames";
+
+import styles from "./Modal.module.scss";
 
 interface FooterProps extends HtmlHTMLAttributes<HTMLDivElement> {
   onClose?: () => void;
   onConfirm?: () => void;
   children: ReactNode;
 }
-export default function Footer({ ...props }: FooterProps) {
+
+export default function Footer({ className, children, ...props }: FooterProps) {
   return (
-    <div
-      className={twMerge(
-        "h-16 flex bg-gray-300 p-2 justify-end items-center gap-3 rounded-b",
-        props.className
-      )}>
-      {props.children}
-    </div>
+    <footer
+      className={classNames(styles.modalFooter, className)}
+      {...props}>
+      {children}
+    </footer>
   );
 }

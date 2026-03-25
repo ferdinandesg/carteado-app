@@ -47,7 +47,7 @@ frontend/.cache/
 backend/.cache/
 
 # Configuração de IDEs e sistemas operacionais
-.vscode/
+# .vscode/ removido para commitar workspace settings compartilhados
 .idea/
 .DS_Store
 Thumbs.db

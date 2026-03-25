@@ -1,9 +1,22 @@
+"use client";
+
+import styles from "@/styles/Separator.module.scss";
+
 export default function Separator({ text }: { text: string }) {
   return (
-    <div className="flex items-center py-2 w-full">
-      <div className=" h-px bg-white w-full"></div>
-      <span className="text-center w-full text-white">{text}</span>
-      <div className=" h-px bg-white w-full"></div>
+    <div
+      className={styles.separator}
+      role="separator"
+      aria-label={text}>
+      <div
+        className={styles.line}
+        aria-hidden
+      />
+      <span className={styles.text}>{text}</span>
+      <div
+        className={styles.line}
+        aria-hidden
+      />
     </div>
   );
 }

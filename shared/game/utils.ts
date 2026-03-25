@@ -8,7 +8,7 @@ export const createParticipantObject = (
     userId: user.id,
     status: PlayerStatus.NOT_READY, // Default status when joining
     name: user.name,
-    image: user.image,
+    image: user.image ?? undefined,
     socketId: user.id,
     isRegistered: user.role === "user",
     isOnline: true,

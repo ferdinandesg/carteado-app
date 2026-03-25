@@ -13,7 +13,13 @@ import { useTranslation } from "react-i18next";
 import useTitle from "@//hooks/useTitle";
 import RoomInfo from "@//components/Players/roomInfo";
 
-const RenderScreen = ({ status, roomHash }: { status?: RoomStatus, roomHash: string }) => {
+const RenderScreen = ({
+  status,
+  roomHash,
+}: {
+  status?: RoomStatus;
+  roomHash: string;
+}) => {
   const { t } = useTranslation();
   switch (status) {
     case "open":
@@ -22,17 +28,17 @@ const RenderScreen = ({ status, roomHash }: { status?: RoomStatus, roomHash: str
     case "finished":
       return <Game roomHash={roomHash} />;
     default:
-      <div>{t("loading")}</div>;
+      return <div>{t("loading")}</div>;
   }
 };
 
 export default function Room() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const { id } = useParams();
   useTitle({
     title: t("pageTitles.lobby", {
-      hash: String(id)
-    })
+      hash: String(id),
+    }),
   });
   const { socket } = useSocket();
   const { room, isLoading } = useRoomByHash(String(id));
@@ -42,7 +48,6 @@ export default function Room() {
   const toggleChatCollapse = () => setChatCollapsed((c) => !c);
 
   useEffect(() => {
-
     if (isLoading) return;
     socket.emit("join_room", { roomHash: id });
     return () => {
@@ -50,31 +55,34 @@ export default function Room() {
     };
   }, [isLoading, socket, id]);
 
-  if (isLoading)
-    return (
-      <h1 className="text-white font-semibold text-center pt-5">
-        {t("loading")}
-      </h1>
-    );
+  if (isLoading) return <h1 className={styles.loadingState}>{t("loading")}</h1>;
   if (!room)
-    return (
-      <h1 className="text-white font-semibold text-center pt-5">
-        {t("Room.notFound")}
-      </h1>
-    );
+    return <h1 className={styles.loadingState}>{t("Room.notFound")}</h1>;
 
   const lobbyContainerStyle = {
-    '--chat-column-width': isChatCollapsed ? '40px' : '25%', // Mude de '1fr' para '25%'
-    '--main-column-width': '1fr',                             // Mude de '2fr' para '1fr'
-    '--info-column-width': isInfoCollapsed ? '40px' : '25%', // Mude de '1fr' para '25%'
+    "--chat-column-width": isChatCollapsed ? "40px" : "25%", // Mude de '1fr' para '25%'
+    "--main-column-width": "1fr", // Mude de '2fr' para '1fr'
+    "--info-column-width": isInfoCollapsed ? "40px" : "25%", // Mude de '1fr' para '25%'
   } as React.CSSProperties;
 
   return (
-    <div className={styles.roomContainer} style={lobbyContainerStyle}>
-      <Chat toggleCollapse={toggleChatCollapse} roomHash={room.hash} isCollapsed={isChatCollapsed} />
-      <RenderScreen status={room.status} roomHash={room.hash} />
-      <RoomInfo toggleCollapse={toggleInfoCollapse} isCollapsed={isInfoCollapsed} room={room} />
-
+    <div
+      className={styles.roomContainer}
+      style={lobbyContainerStyle}>
+      <Chat
+        toggleCollapse={toggleChatCollapse}
+        roomHash={room.hash}
+        isCollapsed={isChatCollapsed}
+      />
+      <RenderScreen
+        status={room.status}
+        roomHash={room.hash}
+      />
+      <RoomInfo
+        toggleCollapse={toggleInfoCollapse}
+        isCollapsed={isInfoCollapsed}
+        room={room}
+      />
     </div>
   );
 }

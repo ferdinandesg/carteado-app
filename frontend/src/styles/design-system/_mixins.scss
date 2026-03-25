@@ -1,0 +1,77 @@
+// ==========================================================================
+// Mixins — Carteado Design System
+// ==========================================================================
+
+@use "tokens" as *;
+
+// --- Flexbox ---
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// --- Button base ---
+@mixin button-reset {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+// --- Focus visible (acessibilidade) ---
+@mixin focus-ring {
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
+}
+
+// --- Transition padrão ---
+@mixin transition($properties: all) {
+  transition: $properties $transition-normal;
+}
+
+// --- Media queries ---
+@mixin mq-sm {
+  @media (min-width: $breakpoint-sm) {
+    @content;
+  }
+}
+
+@mixin mq-md {
+  @media (min-width: $breakpoint-md) {
+    @content;
+  }
+}
+
+@mixin mq-lg {
+  @media (min-width: $breakpoint-lg) {
+    @content;
+  }
+}
+
+@mixin mq-max-md {
+  @media (max-width: $breakpoint-md) {
+    @content;
+  }
+}

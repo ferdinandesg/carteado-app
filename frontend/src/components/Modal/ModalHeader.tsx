@@ -1,21 +1,30 @@
+"use client";
+
 import { X } from "lucide-react";
 import { HtmlHTMLAttributes } from "react";
+
+import styles from "./Modal.module.scss";
 
 interface HeaderProps extends HtmlHTMLAttributes<HTMLDivElement> {
   title: string;
   onClose?: () => void;
 }
-export default function Header({ ...props }: HeaderProps) {
+
+export default function Header({ title, onClose, ...props }: HeaderProps) {
   return (
-    <div className="h-16 flex bg-gray-300 p-2 items-center justify-between rounded-t-xl">
-      <span className="font-bold text-lg text-gray-800">{props.title}</span>
-      {props.onClose && (
+    <header
+      className={styles.modalHeader}
+      {...props}>
+      <h2 className={styles.modalHeaderTitle}>{title}</h2>
+      {onClose && (
         <button
-          className="hover:bg-gray-400 transition rounded-lg p-1 hover:text-white"
-          onClick={props.onClose}>
+          type="button"
+          className={styles.modalCloseButton}
+          onClick={onClose}
+          aria-label="Fechar">
           <X />
         </button>
       )}
-    </div>
+    </header>
   );
 }

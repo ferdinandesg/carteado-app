@@ -10,10 +10,9 @@ export async function createPlayers(
   const playersToCreate = participants.map((p) => ({
     roomId,
     name: p.name,
-    image: p.image,
-    status: "choosing", // ou outro status inicial
-    // O userId só é adicionado se o participante for um usuário registrado
-    userId: p.isRegistered ? p.userId : undefined,
+    image: p.image ?? "",
+    status: "choosing",
+    userId: p.isRegistered && p.userId ? p.userId : undefined,
   }));
 
   // 2. Cria todos os registros de Player no banco de dados de uma vez

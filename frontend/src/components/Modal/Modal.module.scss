@@ -1,0 +1,81 @@
+// Usa variáveis globais (prepended via next.config)
+
+.modalRoot {
+  position: absolute;
+  z-index: $z-modal;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba($color-black, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalPanel {
+  width: 50%;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.modalHeader {
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-s;
+  background-color: $color-gray-300;
+  border-radius: $border-radius-l $border-radius-l 0 0;
+}
+
+.modalHeaderTitle {
+  font-weight: $font-weight-bold;
+  font-size: $font-size-l;
+  color: $color-gray-800;
+}
+
+.modalCloseButton {
+  padding: $spacing-s;
+  border-radius: $border-radius-s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color $transition-normal;
+
+  &:hover {
+    background-color: $color-gray-400;
+    color: $color-white;
+  }
+}
+
+.modalContent {
+  padding: $spacing-s;
+  flex: 1;
+  background-color: $color-white;
+  overflow: auto;
+}
+
+.modalFooter {
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $spacing-m;
+  padding: $spacing-s;
+  background-color: $color-gray-300;
+  border-radius: 0 0 $border-radius-l $border-radius-l;
+}
+
+.modalButton {
+  padding: $spacing-s;
+  border-radius: $border-radius-s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: opacity $transition-normal;
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}

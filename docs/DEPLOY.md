@@ -33,7 +33,7 @@ Sobe backend (porta 4000) e frontend (porta 3000). Acesso em http://localhost:30
 ### Modo desenvolvimento com validação antes
 
 ```bash
-npm run dev:run
+npm run dev:safe
 ```
 
 Executa `validate` e, se passar, inicia o modo desenvolvimento.
@@ -95,7 +95,7 @@ docker compose -f docker-compose-prod.yml up -d
 | --------------------------- | ----------------------------------------------- |
 | `npm run validate`          | Lint + typecheck + test + build                 |
 | `npm run dev`               | Backend + Frontend em modo dev                  |
-| `npm run dev:run`           | Validate + dev                                  |
+| `npm run dev:safe`          | Validate + dev                                  |
 | `npm run deploy:prod:local` | Build + Docker stack local                      |
 | `npm run deploy:dev`        | Docker compose dev (usa docker/compose.dev.yml) |
 | `npm run deploy:prod`       | Deploy prod (compose na VM)                     |
