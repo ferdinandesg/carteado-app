@@ -42,9 +42,12 @@ export async function createRoom(
 
 export async function listRooms() {
   const dbRooms = await prisma.room.findMany({
-    where: { status: { in: ["open", "playing"] } },
-    orderBy: { createdAt: "desc" },
+    where: {
+      OR: [{ status: "open" }, { status: "playing" }, { status: null }],
+    },
   });
+
+  dbRooms.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   const cacheRooms = (await Promise.all(
     dbRooms.map(async (room) => {

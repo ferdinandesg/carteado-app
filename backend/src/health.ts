@@ -23,7 +23,8 @@ export async function checkHealth(): Promise<HealthCheckResult> {
   }
 
   try {
-    await (prisma as any).$queryRaw`SELECT 1`;
+    // MongoDB no Prisma não suporta $queryRaw (só providers SQL)
+    await prisma.$runCommandRaw({ ping: 1 });
     dbStatus = "up";
   } catch (err) {
     logger.warn({ err }, "Health check: Database ping failed");
