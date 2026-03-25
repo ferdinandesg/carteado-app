@@ -22,7 +22,12 @@ const limiter = rateLimit({
 
 app.use(PinoHttp({ logger }));
 
-// Health check (sem rate limit para permitir healthchecks do Docker/K8s)
+// Liveness: só confirma que o processo HTTP responde (Docker/K8s); não toca em Redis/Mongo
+app.get("/api/v1/live", (_req, res) => {
+  res.status(200).json({ status: "up" });
+});
+
+// Readiness: dependências (Redis + Mongo)
 app.get("/api/v1/health", async (_req, res) => {
   const result = await checkHealth();
   const statusCode = result.status === "ok" ? 200 : 503;

@@ -87,13 +87,13 @@ services:
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - FRONTEND_URL=https://carteado.ferdinandes.com.br
     healthcheck:
-      # node:20-slim não inclui wget/curl; usa fetch do Node
+      # Liveness em /live (sem DB). Readiness real: curl/grep em /api/v1/health (ver deploy/diagnose-backend.sh)
       test:
         [
           "CMD",
           "node",
           "-e",
-          "fetch('http://127.0.0.1:4000/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+          "fetch('http://127.0.0.1:4000/api/v1/live').then(r=>r.text().then(t=>{if(r.ok)process.exit(0);console.log('hc_fail',r.status,t.slice(0,240));process.exit(1)})).catch(e=>{console.log('hc_fail',e&&e.message?e.message:String(e));process.exit(1)})",
         ]
       interval: 10s
       timeout: 5s

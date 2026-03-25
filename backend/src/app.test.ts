@@ -2,6 +2,12 @@ import request from "supertest";
 import { app } from "./app";
 
 describe("App Setup", () => {
+  it("should return 200 from liveness route", async () => {
+    const response = await request(app).get("/api/v1/live");
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ status: "up" });
+  });
+
   it("should return 404 for a non-existent route", async () => {
     const response = await request(app).get("/a-route-that-does-not-exist");
     expect(response.status).toBe(404);
