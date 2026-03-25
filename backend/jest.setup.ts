@@ -1,3 +1,5 @@
+process.env.JWT_SECRET_KEY ??= "test-jwt-secret-for-jest";
+
 jest.mock(
   "pino-http",
   () => () => (_req: unknown, _res: unknown, next: () => void) => next()
