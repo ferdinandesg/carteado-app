@@ -151,6 +151,19 @@ jobs:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
       - name: Set up gcloud CLI
         uses: google-github-actions/setup-gcloud@v2
+      # Gera .env no runner (indentação consistente). Heredoc dentro do SSH remoto corrompia chaves
+      # (ex.: espaços antes de DATABASE_URL) e o backend não recebia a URL correta.
+      - name: Write deploy/.env (secrets)
+        run: |
+          cat > deploy/.env << 'EOF'
+          GOOGLE_ID=${{ secrets.GOOGLE_ID }}
+          GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}
+          NEXTAUTH_URL=${{ env.NEXTAUTH_URL }}
+          NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+          APP_VERSION=${{ env.APP_VERSION }}
+          EOF
       - name: Deploy to VM
         run: |
           gcloud compute scp --recurse ./deploy/ ${{ env.DEPLOY_USER }}@${{ env.GCP_INSTANCE_NAME }}:${{ env.DEPLOY_PATH }} --zone ${{ env.GCP_ZONE }}
@@ -167,17 +180,6 @@ jobs:
             docker system prune -af
             # Remove cache de build (economiza GB em VMs com pouco disco)
             docker builder prune -af
-
-            echo "### Criando .env a partir dos secrets..."
-            cat > .env << ENVEOF
-          GOOGLE_ID=${{ secrets.GOOGLE_ID }}
-          GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}
-          NEXTAUTH_URL=${{ env.NEXTAUTH_URL }}
-          NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
-          DATABASE_URL=${{ secrets.DATABASE_URL }}
-          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
-          APP_VERSION=${{ env.APP_VERSION }}
-          ENVEOF
 
             echo "### Puxando as imagens mais recentes..."
             docker compose -f docker-compose-prod.yml pull
