@@ -9,6 +9,9 @@ import { logger } from "./utils/logger";
 
 const app = express();
 
+// Atrás de nginx/reverse proxy (X-Forwarded-For); necessário para express-rate-limit e req.ip corretos
+app.set("trust proxy", 1);
+
 app.use(express.json());
 app.use(cors());
 
