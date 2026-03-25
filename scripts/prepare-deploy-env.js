@@ -12,7 +12,8 @@ const deployDir = path.join(__dirname, "../deploy");
 
 const prodDefaults = {
   NEXTAUTH_URL: "https://carteado.ferdinandes.com.br",
-  DATABASE_URL: "mongodb://mongodb:27017/carteado?replicaSet=rs0",
+  DATABASE_URL:
+    "mongodb://root:password@mongodb:27017/carteado?replicaSet=rs0&authSource=admin",
   APP_VERSION: "latest",
 };
 
