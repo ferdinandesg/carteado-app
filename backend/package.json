@@ -10,7 +10,6 @@
     "dev": "nodemon src/index.ts",
     "build": "npx prisma generate && npx tsc && npx tsc-alias",
     "ts-check": "tsc --noEmit",
-    "lint": "eslint ./src --format=pretty --color",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "prisma:studio": "prisma studio",

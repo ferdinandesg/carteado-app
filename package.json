@@ -22,21 +22,17 @@
     "clean": "git clean -fdX -- ./backend/dist ./frontend/.next ./frontend/out ./shared/dist || exit 0",
     "build": "npm run build:shared && npm run build -w backend && npm run build -w frontend",
     "build:shared": "npm run build -w shared",
-    "lint": "npm run lint -ws --if-present",
+    "lint": "eslint -c eslint.node.mjs backend/src shared && eslint -c frontend/eslint.config.mjs frontend/src",
     "typecheck": "npm run ts-check -ws --if-present",
-    "validate": "npm run build:shared && npm run lint && npm run typecheck && npm run test && npm run build -w backend && npm run build -w frontend",
-    "validate:ci": "npm run build:shared && npm run lint && npm run typecheck && npm run test -- --ci --coverage && npm run build -w backend && npm run build -w frontend",
+    "check": "npm run build:shared && npm run lint && npm run typecheck",
+    "validate": "npm run check && npm run test && npm run build -w backend && npm run build -w frontend",
+    "validate:ci": "npm run check && npm run test -- --ci --coverage && npm run build -w backend && npm run build -w frontend",
     "dev": "concurrently -k -n shared,backend,frontend -c magenta,blue,green \"npm run dev -w shared\" \"npm run dev -w backend\" \"npm run dev -w frontend\"",
     "dev:backend": "npm run dev -w backend",
     "dev:frontend": "npm run dev -w frontend",
     "dev:shared": "npm run dev -w shared",
     "dev:safe": "npm run validate && npm run dev",
     "test": "jest",
-    "test:backend": "npm test --workspace=backend",
-    "test:frontend": "npm test --workspace=frontend",
-    "test:shared": "npm test --workspace=shared",
-    "test:backend:watch": "npm run test:backend -- --watch",
-    "test:frontend:watch": "npm run test:frontend -- --watch",
     "deploy:dev": "docker compose -f docker/compose.dev.yml up --build",
     "dev:services": "docker compose -f docker/compose.dev.services.yml up -d",
     "dev:services:down": "docker compose -f docker/compose.dev.services.yml down",
@@ -49,6 +45,22 @@
     "ssh": "ssh -i ~/.ssh/id_ed25519 franmlfran@34.10.106.241",
     "ssh:tunnel": "ssh -i ~/.ssh/id_ed25519 -L 27017:localhost:27017 franmlfran@34.10.106.241"
   },
+  "lint-staged": {
+    "*.{json,md,yml,yaml}": "prettier --write",
+    "backend/src/**/*.ts": [
+      "prettier --write",
+      "eslint -c eslint.node.mjs --fix"
+    ],
+    "frontend/src/**/*.{ts,tsx}": [
+      "prettier --write",
+      "eslint -c frontend/eslint.config.mjs --fix"
+    ],
+    "shared/**/*.ts": [
+      "prettier --write",
+      "eslint -c eslint.node.mjs --fix",
+      "node scripts/staged-shared-check.mjs"
+    ]
+  },
   "devDependencies": {
     "@babel/core": "^7.29.7",
     "@babel/preset-env": "^7.29.7",
@@ -56,7 +68,6 @@
     "@babel/preset-typescript": "^7.29.7",
     "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^21.0.2",
-    "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9.39.4",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
@@ -70,8 +81,6 @@
     "@types/react": "19.2.16",
     "@types/react-dom": "19.2.3",
     "@types/supertest": "^7.2.0",
-    "@typescript-eslint/eslint-plugin": "^8.60.1",
-    "@typescript-eslint/parser": "^8.60.1",
     "autoprefixer": "^10.5.0",
     "babel-jest": "^30.4.1",
     "bufferutil": "^4.1.0",
@@ -79,11 +88,10 @@
     "eslint": "^9.39.4",
     "eslint-config-next": "16.2.7",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-formatter-pretty": "^7.1.0",
     "eslint-plugin-jest": "^29.15.2",
-    "eslint-plugin-prettier": "^5.5.6",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
+    "typescript-eslint": "^8.60.1",
     "globals": "^17.6.0",
     "husky": "^9.1.7",
     "jest": "^30.4.2",
@@ -101,8 +109,6 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^6.0.3",
-    "utf-8-validate": "^6.0.6",
-    "webpack": "^5.107.2",
-    "webpack-cli": "^7.0.3"
+    "utf-8-validate": "^6.0.6"
   }
 }

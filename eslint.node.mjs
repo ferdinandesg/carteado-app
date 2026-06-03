@@ -4,23 +4,17 @@ import tseslint from "typescript-eslint";
 import eslintConfigPrettier from "eslint-config-prettier";
 import jestPlugin from "eslint-plugin-jest";
 
-export default [
+export default tseslint.config(
+  {
+    ignores: ["**/dist/**", "**/node_modules/**", "**/coverage/**"],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
-  eslintConfigPrettier,
   {
-    files: ["**/*.{ts,tsx,js,mjs}"],
+    files: ["backend/src/**/*.ts", "shared/**/*.ts"],
     plugins: { jest: jestPlugin },
     languageOptions: {
-      globals: {
-        ...globals.node,
-        ...globals.jest,
-      },
-      parser: tseslint.parser,
-      parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module",
-      },
+      globals: { ...globals.node, ...globals.jest },
     },
     rules: {
       "no-console": "warn",
@@ -32,4 +26,5 @@ export default [
       "@typescript-eslint/explicit-module-boundary-types": "off",
     },
   },
-];
+  eslintConfigPrettier
+);

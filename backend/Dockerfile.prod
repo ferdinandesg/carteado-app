@@ -5,6 +5,11 @@ ARG APP_VERSION
 ENV NEXT_PUBLIC_APP_VERSION=$APP_VERSION
 WORKDIR /app
 
+# Prisma CLI roda neste estágio; OpenSSL precisa estar disponível aqui também.
+RUN apt-get update -y && \
+    apt-get install -y openssl && \
+    rm -rf /var/lib/apt/lists/*
+
 # Copia os manifestos de pacotes e configurações de todo o workspace
 COPY package.json ./
 COPY package-lock.json ./
@@ -13,16 +18,17 @@ COPY tsconfig*.json ./
 COPY backend/package.json ./backend/
 COPY shared/package.json ./shared/
  
-# Instala TODAS as dependências do workspace
-RUN npm install
+# Instala dependências do workspace sem rodar scripts de postinstall.
+RUN npm ci --ignore-scripts
 
 # Copia todo o código-fonte
 COPY backend/ ./backend/
 COPY shared/ ./shared/
 
-# Executa o build de ambos os pacotes.
-# O 'npm run build --workspace=backend' já executa o 'prisma generate',
-# que agora irá gerar o binaryTarget para 'debian-openssl-3.0.x'
+# Gera o client do Prisma só após o schema estar presente.
+RUN npm run prisma:generate --workspace=backend
+
+# Executa o build dos pacotes.
 RUN npm run build --workspace=shared
 RUN npm run build --workspace=backend
 
