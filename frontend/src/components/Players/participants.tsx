@@ -10,7 +10,6 @@ import { useTranslation } from "react-i18next";
 import { PlayerStatus } from "shared/game";
 import { Crown } from "lucide-react";
 
-
 export default function Participants({ roomHash }: { roomHash: string }) {
   const { t } = useTranslation();
   const { room } = useRoomByHash(roomHash);
@@ -23,10 +22,11 @@ export default function Participants({ roomHash }: { roomHash: string }) {
       <div
         className={styles.participant}
         key={`player-pos-${i}`}>
-        <div className={classNames(
-          styles.avatar,
-          isReady ? styles.yourTurn : styles.waiting
-        )}>
+        <div
+          className={classNames(
+            styles.avatar,
+            isReady ? styles.yourTurn : styles.waiting
+          )}>
           {participant?.image ? (
             <Image
               alt={participant.name || ""}
@@ -40,15 +40,22 @@ export default function Participants({ roomHash }: { roomHash: string }) {
           )}
         </div>
         <div className={styles.metadata}>
-          <span className={styles.username}>{participant.name}
+          <span className={styles.username}>
+            {participant.name}
             {isOwner && <Crown />}
           </span>
           <RankMeter
             currentValue={0}
             size={25}
           />
-          <span className={classNames(styles.playerStatus, isReady ? styles.ready : styles.notReady)}>
-            {isReady ? t("Participants.status.ready") : t("Participants.status.notReady")}
+          <span
+            className={classNames(
+              styles.playerStatus,
+              isReady ? styles.ready : styles.notReady
+            )}>
+            {isReady
+              ? t("Participants.status.ready")
+              : t("Participants.status.notReady")}
           </span>
         </div>
       </div>

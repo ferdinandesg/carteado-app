@@ -12,11 +12,15 @@ const Button = ({ onClick, text }: ButtonProps) => (
   <button onClick={onClick}>{text}</button>
 );
 
-const PickUpBunchButton = withSound(Button, { clickSrc: "/assets/sfx/hurt.mp3" });
-const EndTurnButton = withSound(Button, { clickSrc: "/assets/sfx/your-turn.mp3" });
+const PickUpBunchButton = withSound(Button, {
+  clickSrc: "/assets/sfx/hurt.mp3",
+});
+const EndTurnButton = withSound(Button, {
+  clickSrc: "/assets/sfx/your-turn.mp3",
+});
 
 export default function TableActions() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const { game, endTurn, pickUpBunch } = useGameStore();
 
   const isGameStarted = game?.status === "playing";

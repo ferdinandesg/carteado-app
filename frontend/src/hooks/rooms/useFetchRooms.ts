@@ -29,8 +29,7 @@ export default function useFetchRooms() {
   return {
     data: data || [],
     isLoading:
-      sessionStatus === "loading" ||
-      (authReady && (isLoading || isFetching)),
+      sessionStatus === "loading" || (authReady && (isLoading || isFetching)),
     isError,
   };
 }

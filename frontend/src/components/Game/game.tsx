@@ -7,16 +7,12 @@ export default function Game({ roomHash }: { roomHash: string }) {
   if (isLoading || !room) return;
 
   if (room.rule === "CarteadoGameRules") {
-    return (
-      <CarteadoGame />
-    )
+    return <CarteadoGame />;
   }
 
   if (room.rule === "TrucoGameRules") {
-    return (
-      <TrucoGame />
-    )
+    return <TrucoGame />;
   }
 
-  return null
+  return null;
 }

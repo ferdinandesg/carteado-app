@@ -1,7 +1,4 @@
-import {
-  AuthenticatedUser,
-  isRegisteredUser,
-} from "shared/types/guest";
+import { AuthenticatedUser, isRegisteredUser } from "shared/types/guest";
 import { Participant } from "shared/types";
 import { PlayerStatus } from "./base.player";
 

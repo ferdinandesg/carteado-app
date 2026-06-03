@@ -40,7 +40,7 @@ const RoomStatus = ({ status }: { status: "open" | "playing" }) => {
   );
 };
 
-const RoomItem = ({ room, onClick = () => { } }: RoomItemProps) => {
+const RoomItem = ({ room, onClick = () => {} }: RoomItemProps) => {
   const { t } = useTranslation();
 
   const ownerPic = room.owner?.image || "/assets/avatars/default.jpg";
@@ -65,12 +65,8 @@ const RoomItem = ({ room, onClick = () => { } }: RoomItemProps) => {
       <div className={styles.roomData}>
         <RoomStatus status={room.status} />
         <div className={styles.infoCount}>
-          <span className={styles.label}>
-            {t("RoomItem.rule")}:
-          </span>
-          <span className={styles.count}>
-            {t(`RoomItem.${room.rule}`)}
-          </span>
+          <span className={styles.label}>{t("RoomItem.rule")}:</span>
+          <span className={styles.count}>{t(`RoomItem.${room.rule}`)}</span>
         </div>
         <div className={styles.infoCount}>
           <span className={styles.label}>{t("RoomItem.players")}</span>

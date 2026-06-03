@@ -22,7 +22,9 @@ export default function Lobby() {
 
   const handleReadyClick = () => {
     if (!room) return;
-    const newStatus = !isPlayerReady ? PlayerStatus.READY : PlayerStatus.NOT_READY;
+    const newStatus = !isPlayerReady
+      ? PlayerStatus.READY
+      : PlayerStatus.NOT_READY;
     setIsPlayerReady((prev) => !prev);
     socket.emit("set_player_status", { status: newStatus });
   };
@@ -45,11 +47,13 @@ export default function Lobby() {
         onClick={handleReadyClick}>
         {t("Lobby.imReady")}
       </button>
-      {isOwner && <button
-        className={styles.startGame}
-        onClick={handleStartGame}>
-        {t("Lobby.startGame")}
-      </button>}
+      {isOwner && (
+        <button
+          className={styles.startGame}
+          onClick={handleStartGame}>
+          {t("Lobby.startGame")}
+        </button>
+      )}
     </div>
   );
 }

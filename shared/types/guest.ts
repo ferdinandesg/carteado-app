@@ -41,9 +41,8 @@ export type AdminSocketUser = UserMeta & {
 export type RegisteredSocketUser = SocketUser | AdminSocketUser;
 export type AuthenticatedUser = GuestType | RegisteredSocketUser;
 
-export const isRegisteredRole = (
-  role: UserRole
-): role is RegisteredUserRole => role !== "guest";
+export const isRegisteredRole = (role: UserRole): role is RegisteredUserRole =>
+  role !== "guest";
 
 export const isRegisteredUser = (
   user: Pick<AuthenticatedUser, "role">

@@ -18,13 +18,17 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
     <I18nextProvider i18n={i18n}>
       <html lang="en">
         <head>
           <title>{t("pageTitles.home")}</title>
-          <link rel="icon" href="/favicon.webp" type="image/png" />
+          <link
+            rel="icon"
+            href="/favicon.webp"
+            type="image/png"
+          />
         </head>
         <body className={inter.className}>
           <header>
