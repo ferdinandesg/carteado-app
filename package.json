@@ -18,6 +18,7 @@
     "prepare": "husky install",
     "postinstall": "npm run prisma:generate -w backend",
     "format": "prettier --write .",
+    "precommit": "lint-staged -p false -q -r",
     "clean": "git clean -fdX -- ./backend/dist ./frontend/.next ./frontend/out ./shared/dist || exit 0",
     "build": "npm run build:shared && npm run build -w backend && npm run build -w frontend",
     "build:shared": "npm run build -w shared",

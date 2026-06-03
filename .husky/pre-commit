@@ -1,3 +1,1 @@
-echo ">> lint-staged (prettier + eslint + typecheck shared)..."
-npx lint-staged -p false || exit 1
-echo ">> commit ok"
+npm run precommit || exit 1
