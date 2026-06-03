@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: 20.15.1
+  NODE_VERSION: 24.14.0
   IMAGE_BACKEND: ferdinandes/carteado-backend
   IMAGE_FRONTEND: ferdinandes/carteado-frontend
   GCP_ZONE: us-central1-c

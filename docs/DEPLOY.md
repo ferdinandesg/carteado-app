@@ -1,78 +1,79 @@
-# Deploy — Carteado App
+# Deploy e ambientes — Carteado App
 
 ## Pré-requisitos
 
-- Node 20 (use `nvm use` ou `.nvmrc`)
+- **Node 24.14.0** (`.nvmrc` + CI)
 - Docker e Docker Compose
-- Variáveis de ambiente (veja `.env.example`)
+- `.env` na raiz (ver `.env.example` e [GETTING_STARTED.md](./GETTING_STARTED.md))
 
 ---
 
-## Validação local (antes de qualquer deploy)
+## Validação local
 
 ```bash
 npm run validate
 ```
 
-Roda lint → typecheck → testes → build. Se passar, o que vai para o CI/deploy deve funcionar.
+Lint → typecheck → testes → build (`shared` antes de `backend` / `frontend`).
 
 ---
 
-## Rodar o app localmente
-
-### Modo desenvolvimento (recomendado para dev diário)
+## Desenvolvimento local (recomendado)
 
 ```bash
-npm run dev
+npm run dev:services   # Mongo + Redis
+npm run dev            # backend :4000 + frontend :3000
 ```
 
-Sobe backend (porta 4000) e frontend (porta 3000). Acesso em http://localhost:3000.
+Alternativas:
 
-**Requisitos:** MongoDB e Redis rodando localmente (ou via Docker).
+| Comando | Uso |
+|---------|-----|
+| `npm run dev:safe` | `validate` + `dev` |
+| `npm run deploy:dev` | Stack inteira em Docker (`docker/compose.dev.yml`) |
 
-### Modo desenvolvimento com validação antes
+### Variáveis (dev híbrido — app no host)
 
-```bash
-npm run dev:safe
-```
+Além de `JWT_SECRET_KEY`, `NEXTAUTH_SECRET`, Google:
 
-Executa `validate` e, se passar, inicia o modo desenvolvimento.
+- `NEXTAUTH_URL=http://localhost:3000`
+- `API_URL=http://localhost:4000/api/v1` (SSR NextAuth → backend)
+- `NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1`
+- `NEXT_PUBLIC_SOCKET_URL=http://localhost:4000`
 
-### Simular produção local (Docker)
+Socket: path `/carteado_socket`, namespace `/room`.
+
+---
+
+## Produção local (Docker)
 
 ```bash
 npm run deploy:prod:local
 ```
 
-Faz o build do monorepo, builda as imagens Docker e sobe a stack completa (frontend, backend, Redis, MongoDB).
+- Frontend: http://localhost:3000  
+- Backend: http://localhost:4000  
+- Health: http://localhost:4000/api/v1/health  
 
-- Frontend: http://localhost:3000
-- Backend: http://localhost:4000
-- Health: http://localhost:4000/api/v1/health
-
-Crie um `.env` na raiz com `JWT_SECRET_KEY`, `GOOGLE_ID` e `GOOGLE_SECRET` (ou use os valores dummy para teste).
+`.env` na raiz com `JWT_SECRET_KEY`, `GOOGLE_ID`, `GOOGLE_SECRET` (dummies ok para smoke test).
 
 ---
 
-## Deploy em produção (GCP VM)
+## Produção (GCP VM + CI)
 
-### Via CI/CD (push em `master`)
+### CI/CD (`push` em `master` ou `workflow_dispatch`)
 
-1. Push para a branch `master`
-2. O workflow `.github/workflows/ci-cd.yml`:
-   - Roda lint e testes
-   - Builda imagens Docker (backend e frontend)
-   - Faz push para Docker Hub
-   - SCP do `deploy/` para a VM
-   - SSH na VM e executa `docker compose pull` + `up -d`
+Workflow `.github/workflows/ci-cd.yml` (Node **24.14.0**):
 
-### Manual (na VM)
+1. Lint e testes  
+2. Build e push imagens Docker Hub  
+3. SCP de `deploy/` para a VM  
+4. `docker compose pull` + `up -d`  
+
+### Manual na VM
 
 ```bash
-# Na máquina local
 npm run ssh
-
-# Na VM
 cd ~/deploy
 docker compose -f docker-compose-prod.yml pull
 docker compose -f docker-compose-prod.yml up -d
@@ -81,9 +82,8 @@ docker compose -f docker-compose-prod.yml up -d
 ### Rollback
 
 ```bash
-# Na VM: usar imagem com tag anterior
 docker compose -f docker-compose-prod.yml down
-# Editar compose para usar tag :abc1234 em vez de :latest
+# Usar tag de imagem anterior em vez de :latest
 docker compose -f docker-compose-prod.yml up -d
 ```
 
@@ -91,11 +91,11 @@ docker compose -f docker-compose-prod.yml up -d
 
 ## Comandos úteis
 
-| Comando                     | Descrição                                       |
-| --------------------------- | ----------------------------------------------- |
-| `npm run validate`          | Lint + typecheck + test + build                 |
-| `npm run dev`               | Backend + Frontend em modo dev                  |
-| `npm run dev:safe`          | Validate + dev                                  |
-| `npm run deploy:prod:local` | Build + Docker stack local                      |
-| `npm run deploy:dev`        | Docker compose dev (usa docker/compose.dev.yml) |
-| `npm run deploy:prod`       | Deploy prod (compose na VM)                     |
+| Comando | Descrição |
+|---------|-----------|
+| `npm run validate` | Lint + typecheck + test + build |
+| `npm run dev:services` | Só Mongo + Redis |
+| `npm run dev` | Backend + frontend |
+| `npm run deploy:dev` | Docker dev completo |
+| `npm run deploy:prod:local` | Simula prod local |
+| `npm run deploy:prod` | Compose prod (VM) |

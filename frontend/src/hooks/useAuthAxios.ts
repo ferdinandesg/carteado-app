@@ -1,33 +1,25 @@
 import { useSession } from "next-auth/react";
-import axios from "axios";
-import { useEffect } from "react";
+import { apiClient, setApiAuthToken } from "@/lib/api/client";
+
+/** Só dispara queries autenticadas quando a sessão JWT já está disponível. */
+export function useAuthQueryEnabled(): boolean {
+  const { status, data } = useSession();
+  return (
+    status === "authenticated" && Boolean(data?.user?.accessToken)
+  );
+}
 
 const useAxiosAuth = () => {
-  const { data: session } = useSession();
+  const { status, data } = useSession();
+  const token = data?.user?.accessToken;
 
-  const axiosAuth = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
-    headers: { "Content-Type": "application/json" },
-  });
-  useEffect(() => {
-    if (!session?.user.accessToken) return;
-    const requestIntercept = axiosAuth.interceptors.request.use(
-      (config) => {
-        if (!config.headers["Authorization"]) {
-          config.headers["Authorization"] =
-            `Bearer ${session?.user?.accessToken}`;
-        }
-        return config;
-      },
-      (error) => Promise.reject(error)
-    );
+  if (token) {
+    setApiAuthToken(token);
+  } else if (status === "unauthenticated") {
+    setApiAuthToken(undefined);
+  }
 
-    return () => {
-      axiosAuth.interceptors.request.eject(requestIntercept);
-    };
-  }, [session, axiosAuth]);
-
-  return axiosAuth;
+  return apiClient;
 };
 
 export default useAxiosAuth;

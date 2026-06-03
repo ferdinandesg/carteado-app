@@ -16,10 +16,13 @@ export const REDIS_KEYS = {
   guest: (id: string) => `guest:${id}`,
 } as const;
 
+/** 30 dias — alinhado com expiração do access token / sessão NextAuth. */
+const THIRTY_DAYS_SEC = 30 * 24 * 60 * 60;
+
 export const REDIS_TTL = {
   room: 7200, // 2h
   game: 7200,
   chat: 7200,
-  session: 300, // 5min for reconnection
-  guest: 7200, // 2h
+  session: 7200, // 2h — janela de reconexão de sala
+  guest: THIRTY_DAYS_SEC,
 } as const;

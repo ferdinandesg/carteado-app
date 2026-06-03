@@ -1,6 +1,6 @@
 # --- Estágio 1: Builder ---
 # Este estágio constrói todo o monorepo
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -32,7 +32,7 @@ RUN npm run build -w frontend
 
 # --- Estágio 2: Runner (Produção) ---
 # Este estágio é uma imagem limpa, apenas com o necessário para rodar o Next.js
-FROM node:20-alpine
+FROM node:24-alpine
 
 WORKDIR /app
 

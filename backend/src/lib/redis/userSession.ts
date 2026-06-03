@@ -1,4 +1,4 @@
-import { Socket } from "socket.io/dist/socket";
+import { Socket } from "socket.io";
 import RedisClass from "@/lib/redis/client";
 import { logger } from "@/utils/logger";
 import { REDIS_KEYS, REDIS_TTL } from "@/config/redis";
@@ -9,7 +9,7 @@ export async function storeSession(socket: Socket, roomHash: string) {
     userId: socket.user.id,
     name: socket.user.name,
     roomHash: roomHash,
-    status: "playing",
+    status: socket.user.status,
   };
 
   await redis.set(REDIS_KEYS.session(socket.user.id), JSON.stringify(session), {

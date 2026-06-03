@@ -1,17 +1,3 @@
-echo ">> Rodando lint-staged (lint e format para arquivos modificados)..."
-npx lint-staged
-if [ $? -ne 0 ]; then
-  echo "Lint falhou, commit bloqueado."
-  exit 1
-fi
-
-# Se você usa Jest e quer rodar testes só para arquivos relacionados
-# (por exemplo, se front/back usam o mesmo jest config)
-# echo ">> Rodando testes relacionados aos arquivos modificados..."
-# npx jest --findRelatedTests
-# if [ $? -ne 0 ]; then
-#   echo "Testes falharam, commit bloqueado."
-#   exit 1
-# fi
-
-echo "Commit liberado!"
+echo ">> lint-staged (prettier + eslint + typecheck shared)..."
+npx lint-staged -p false || exit 1
+echo ">> commit ok"

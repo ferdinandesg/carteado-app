@@ -22,7 +22,11 @@
     "joinAsGuest": "Entrar como convidado",
     "guestNickname": "Apelido do convidado",
     "customizeGuest": "Personalizar convidado",
-    "ChooseAvatar": "Escolha um avatar"
+    "ChooseAvatar": "Escolha um avatar",
+    "customizeProfileTitle": "Personalize o seu Perfil",
+    "chooseCardSkin": "Escolha uma skin para as cartas",
+    "play": "Jogar",
+    "avatarOption": "Avatar {{index}}"
   },
   "inviteUser": {
     "placeholder": "Nome de usuário"

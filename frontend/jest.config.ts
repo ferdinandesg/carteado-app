@@ -1,8 +1,11 @@
 import * as path from "node:path";
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 import nextJest from "next/jest.js";
 import { pathsToModuleNameMapper } from "ts-jest";
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const require = createRequire(import.meta.url);
 const tsconfig = require("./tsconfig.json") as {
   compilerOptions: { paths?: Record<string, string[]> };
 };

@@ -5,7 +5,8 @@ import {
   saveRoomState,
 } from "@/lib/redis/room";
 import { randomUUID } from "node:crypto";
-import { GuestType, SocketUser } from "shared/types";
+import { AuthenticatedUser } from "shared/types/guest";
+import { UserFactory } from "@/users/UserFactory";
 export async function createRoom(
   {
     name,
@@ -16,7 +17,7 @@ export async function createRoom(
     size: number;
     rule: "CarteadoGameRules" | "TrucoGameRules";
   },
-  user: SocketUser | GuestType
+  user: AuthenticatedUser
 ): Promise<RoomWithParticipants> {
   const uuid = randomUUID();
   const hash = uuid.substring(uuid.length - 4);
@@ -28,7 +29,7 @@ export async function createRoom(
       name: name,
       chatId: chat.id,
       size: size,
-      ...(user.role === "user" && { ownerId: user.id }),
+      ...(UserFactory.canOwnRoom(user) && { ownerId: user.id }),
     },
   });
   const room = {

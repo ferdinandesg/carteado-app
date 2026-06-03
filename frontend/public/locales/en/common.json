@@ -17,7 +17,12 @@
   },
   "Home": {
     "joinAsGuest": "Join as guest",
-    "guestNickname": "Guest nickname"
+    "guestNickname": "Guest nickname",
+    "ChooseAvatar": "Choose an avatar",
+    "customizeProfileTitle": "Customize your profile",
+    "chooseCardSkin": "Choose a card skin",
+    "play": "Play",
+    "avatarOption": "Avatar {{index}}"
   },
   "inviteUser": {
     "placeholder": "Username"

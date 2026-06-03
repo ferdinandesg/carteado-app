@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 import ptFlag from 'public/flags/brasil.png';
 import enFlag from 'public/flags/eua.png';

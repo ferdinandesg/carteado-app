@@ -1,4 +1,4 @@
-import useRoomByHash from "@//hooks/rooms/useRoomByHash";
+import useRoomByHash from "@/hooks/rooms/useRoomByHash";
 import styles from "@/styles/Chat.module.scss";
 
 export default function Header({

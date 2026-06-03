@@ -1,8 +1,12 @@
-import { GuestType, Participant, SocketUser } from "shared/types";
+import {
+  AuthenticatedUser,
+  isRegisteredUser,
+} from "shared/types/guest";
+import { Participant } from "shared/types";
 import { PlayerStatus } from "./base.player";
 
 export const createParticipantObject = (
-  user: SocketUser | GuestType
+  user: AuthenticatedUser
 ): Participant => {
   return {
     userId: user.id,
@@ -10,7 +14,7 @@ export const createParticipantObject = (
     name: user.name,
     image: user.image ?? undefined,
     socketId: user.id,
-    isRegistered: user.role === "user",
+    isRegistered: isRegisteredUser(user),
     isOnline: true,
   };
 };

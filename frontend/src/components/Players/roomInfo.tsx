@@ -1,4 +1,4 @@
-import { RoomsInterface } from "@//hooks/rooms/useRoomByHash";
+import { RoomsInterface } from "@/hooks/rooms/useRoomByHash";
 import styles from "@/styles/RoomInfo.module.scss";
 import { PanelLeftClose, PanelRight } from "lucide-react";
 import { useTranslation } from "react-i18next";

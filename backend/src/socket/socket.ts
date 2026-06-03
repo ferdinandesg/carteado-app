@@ -12,7 +12,8 @@ export class SocketServer {
 
   constructor(server: http.Server) {
     this.io = new Server(server, {
-      pingTimeout: 1000,
+      pingTimeout: 20000,
+      pingInterval: 10000,
       path: "/carteado_socket",
       cors: {
         origin: "*",

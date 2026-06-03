@@ -4,15 +4,15 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 import styles from "@/styles/Menu.module.scss";
-import UserCard from "@//components/UserCard";
+import UserCard from "@/components/UserCard";
 import { List, ListPlus, Play } from "lucide-react";
 import classNames from "classnames";
-import MenuButton from "@//components/buttons/MenuButton";
+import MenuButton from "@/components/buttons/MenuButton";
 import { useTranslation } from "react-i18next";
-import useTitle from "@//hooks/useTitle";
+import useTitle from "@/hooks/useTitle";
 
 export default function Menu() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   useTitle({ title: t("pageTitles.menu") });
 
   const router = useRouter();

@@ -1,28 +1,55 @@
 import { User } from "@prisma/client";
 import prisma from "../prisma";
-import { randomUUID } from "node:crypto";
-import { saveGuest } from "@/lib/redis/guests";
-import { EmptyGuestType } from "shared/types";
+import {
+  EmptyGuestType,
+  RegisteredUserRole,
+  normalizeRegisteredRole,
+} from "shared/types";
 import { logger } from "@/utils/logger";
+import { UserFactory } from "@/users/UserFactory";
 
 type UserLogin = Omit<User, "id" | "role" | "skin">;
 
-export async function validateUser(user: UserLogin): Promise<User> {
+export type RegisteredAuthProfile = {
+  id: string;
+  email: string;
+  name: string;
+  image: string;
+  rank: number;
+  role: RegisteredUserRole;
+  skin: string | null;
+};
+
+function toRegisteredProfile(user: User): RegisteredAuthProfile {
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    image: user.image,
+    rank: user.rank,
+    role: normalizeRegisteredRole(user.role),
+    skin: user.skin,
+  };
+}
+
+export async function validateUser(
+  user: UserLogin
+): Promise<RegisteredAuthProfile> {
   const foundUser = await prisma.user.findFirst({
     where: { email: user.email },
   });
   if (!foundUser) {
-    const userData = {
-      email: user.email,
-      name: user.name,
-      image: user.image,
-      rank: user.rank,
-    };
     const newUser = await prisma.user.create({
-      data: { ...userData, rank: 0 },
+      data: {
+        email: user.email,
+        name: user.name,
+        image: user.image,
+        rank: 0,
+      },
     });
-    return newUser;
-  } else return foundUser;
+    return toRegisteredProfile(newUser);
+  }
+  return toRegisteredProfile(foundUser);
 }
 
 export async function validateGuestUser(
@@ -30,19 +57,7 @@ export async function validateGuestUser(
   skin?: string,
   avatar?: string
 ): Promise<EmptyGuestType> {
-  const uuid = randomUUID();
-  const hash = uuid.substring(uuid.length - 4);
-  const guestUser: EmptyGuestType = {
-    id: uuid as string,
-    email: `guest-${hash}@guest.com`,
-    name: username,
-    role: "guest",
-    rank: 0,
-    skin,
-    image: avatar,
-    isRegistered: false,
-  };
+  const guestUser = await UserFactory.createGuest({ username, skin, avatar });
   logger.info({ guestUser }, "Criando usuário convidado:");
-  await saveGuest(guestUser);
   return guestUser;
 }

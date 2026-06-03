@@ -1,6 +1,6 @@
 "use client";
 import classNames from "classnames";
-import useRoomByHash from "@//hooks/rooms/useRoomByHash";
+import useRoomByHash from "@/hooks/rooms/useRoomByHash";
 
 import styles from "@/styles/Participants.module.scss";
 import UserPlaceholder from "../UserPlaceholder";

@@ -1,7 +1,7 @@
 import styles from "@/styles/Game.module.scss";
 import CardFan from "../CardFan";
 import CarteadoTable from "./carteado.table";
-import { selectCurrentPlayer, useGameStore } from "@//contexts/game.store";
+import { selectCurrentPlayer, useGameStore } from "@/contexts/game.store";
 
 export default function PlayingPhase() {
     const { playCard } = useGameStore();

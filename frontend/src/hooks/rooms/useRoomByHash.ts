@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { RoomStatus } from "@/models/room";
 import { Participant } from "shared/types";
-import useAxiosAuth from "../useAuthAxios";
+import useAxiosAuth, { useAuthQueryEnabled } from "../useAuthAxios";
 
 export type RoomsInterface = {
   id: string;
@@ -17,12 +17,13 @@ export type RoomsInterface = {
 
 export default function useRoomByHash(hash: string) {
   const axiosAuth = useAxiosAuth();
+  const authReady = useAuthQueryEnabled();
   const queryClient = useQueryClient();
   const { data, isLoading, isError, error, refetch } = useQuery<RoomsInterface>(
     {
       queryKey: ["room", hash],
       queryFn: () => axiosAuth.get(`/rooms/${hash}`).then((res) => res.data),
-      enabled: !!hash,
+      enabled: !!hash && authReady,
       retry: 1,
       staleTime: 1000 * 60 * 5,
     }

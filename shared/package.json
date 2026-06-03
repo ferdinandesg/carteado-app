@@ -2,12 +2,16 @@
   "name": "shared",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/types/index.js",
+  "types": "dist/types/index.d.ts",
   "exports": {
-    ".": "./dist/index.js",
+    ".": "./dist/types/index.js",
     "./cards": "./dist/cards/index.js",
-    "./game": "./dist/game/index.js"
+    "./game": "./dist/game/index.js",
+    "./types": "./dist/types/index.js",
+    "./types/guest": "./dist/types/guest.js",
+    "./types/room": "./dist/types/room.js",
+    "./types/game": "./dist/types/game.js"
   },
   "scripts": {
     "test": "jest",

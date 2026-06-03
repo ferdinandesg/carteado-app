@@ -1,9 +1,9 @@
-import { GuestType, SocketUser } from "shared/types";
+import { AuthenticatedUser } from "shared/types/guest";
 import { Socket, Namespace } from "socket.io";
 
 declare module "socket.io" {
   interface Socket {
-    user: SocketUser | GuestType;
+    user: AuthenticatedUser;
   }
 }
 

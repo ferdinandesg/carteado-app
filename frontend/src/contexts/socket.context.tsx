@@ -1,97 +1,90 @@
-import {
-  ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { Socket, io } from "socket.io-client";
+"use client";
+
+import { ReactNode, createContext, useContext, useEffect } from "react";
+import type { Socket } from "socket.io-client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
-import logger from "@//tests/utils/logger";
+import { gameSocket } from "@/lib/socket/client";
+import logger from "@/lib/logger";
 
-type SocketContextProps = {
+type SocketContextValue = {
   socket: Socket;
 };
 
-const SocketContext = createContext<SocketContextProps | null>(null);
+const SocketContext = createContext<SocketContextValue | null>(null);
 
-// Criamos a instância do socket fora do componente, com autoConnect: false.
-// Isso garante que temos uma instância única que não tenta se conectar sozinha.
-const socketInstance = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}/room`, {
-  reconnectionDelayMax: 10000,
-  path: "/carteado_socket",
-  transports: ["websocket"],
-  autoConnect: false,
-});
+function bindSocketListeners(
+  socket: Socket,
+  token: string,
+  translate: (key: string) => string
+) {
+  const onConnectError = (err: Error) => {
+    toast.error(translate(`ServerMessages.errors.${err.message}`));
+  };
+
+  const onError = (err: string) => {
+    toast.error(translate(`ServerMessages.errors.${err}`));
+  };
+
+  const onInfo = (message: string) => {
+    toast.info(translate(`ServerMessages.infos.${message}`));
+  };
+
+  const onConnect = () => {
+    socket.auth = { token };
+    if (socket.recovered) {
+      logger.info("Reconexão bem-sucedida. A sincronizar estado...");
+      socket.emit("player_reconnected");
+    }
+  };
+
+  socket.on("connect_error", onConnectError);
+  socket.on("error", onError);
+  socket.on("info", onInfo);
+  socket.on("connect", onConnect);
+
+  return () => {
+    socket.off("connect_error", onConnectError);
+    socket.off("error", onError);
+    socket.off("info", onInfo);
+    socket.off("connect", onConnect);
+  };
+}
 
 export function SocketProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const router = useRouter();
-  const { data, status } = useSession(); // required: false é o padrão
+  const { status, data } = useSession();
   const token = data?.user?.accessToken;
 
-  // Usamos o useState para expor a instância no contexto
-  const [socket, setSocket] = useState<Socket>(socketInstance);
-
-  // Efeito colateral para salvar o token, separado da lógica do socket.
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem("accessToken", token);
-    }
-  }, [token]);
-
-  // Efeito principal que gerencia o ciclo de vida da conexão do socket.
   useEffect(() => {
     if (status === "loading") return;
 
-    if (status === "authenticated" && token) {
-      // Autenticamos e conectamos o socket apenas quando temos um token.
-      socketInstance.auth = { token };
-      socketInstance.connect();
+    const isAuthenticated = status === "authenticated" && Boolean(token);
 
-      const onError = (err: string) => {
-        return toast.error(t(`ServerMessages.errors.${err}`));
-      };
-
-      const onConnectError = (err: Error) => {
-        return toast.error(t(`ServerMessages.errors.${err.message}`));
-      };
-
-      const onInfo = (message: string) => {
-        return toast.info(t(`ServerMessages.infos.${message}`));
-      };
-
-      // Adicionamos os listeners com as funções corretas
-      socketInstance.on("connect_error", onConnectError);
-      socketInstance.on("error", onError);
-      socketInstance.on("info", onInfo);
-      socketInstance.on("connect", () => {
-        if (socketInstance.recovered) {
-          if (socketInstance.recovered) {
-            logger.info("Reconexão bem-sucedida. A sincronizar estado...");
-            socketInstance.emit("player_reconnected");
-          }
-        }
-      });
-
-      // A função de limpeza é crucial.
-      return () => {
-        socketInstance.off("connect_error", onConnectError);
-        socketInstance.off("error", onError);
-        socketInstance.off("info", onInfo);
-        socketInstance.disconnect();
-      };
-    } else {
-      socketInstance.disconnect();
-      router.push("/");
+    if (!isAuthenticated) {
+      gameSocket.disconnect();
+      router.replace("/");
+      return;
     }
-  }, [status, token, router, t]); // <-- Array de dependências completo
+
+    gameSocket.auth = { token };
+    const unbind = bindSocketListeners(gameSocket, token!, (key) => t(key));
+
+    if (!gameSocket.connected) {
+      gameSocket.connect();
+    }
+
+    return () => {
+      unbind();
+      gameSocket.disconnect();
+    };
+  }, [status, token, router]);
 
   return (
-    <SocketContext.Provider value={{ socket }}>
+    <SocketContext.Provider value={{ socket: gameSocket }}>
       {children}
     </SocketContext.Provider>
   );
@@ -99,7 +92,8 @@ export function SocketProvider({ children }: { children: ReactNode }) {
 
 export function useSocket() {
   const context = useContext(SocketContext);
-  if (!context)
+  if (!context) {
     throw new Error("useSocket must be used within a SocketProvider");
+  }
   return context;
 }

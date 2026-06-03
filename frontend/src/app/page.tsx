@@ -49,10 +49,12 @@ export default function Home() {
         <div
           className={styles.authMethods}
           role="group"
-          aria-label={t("authMethods")}>
+          aria-label={t("authMethods")}
+          data-testid="auth-methods-section">
           <button
             type="button"
             className={styles.google}
+            data-testid="google-signin-button"
             disabled={isLoadingGoogle}
             aria-busy={isLoadingGoogle}
             aria-label={isLoadingGoogle ? t("loading") : t("googleAuth")}
@@ -77,6 +79,7 @@ export default function Home() {
           <button
             type="button"
             className={styles.guest}
+            data-testid="guest-signin-button"
             onClick={() => setView("guestSetup")}
             aria-label={t("joinAsGuest")}>
             {t("joinAsGuest")}
@@ -86,6 +89,7 @@ export default function Home() {
         <button
           type="button"
           className={styles.rulesLink}
+          data-testid="rules-button"
           onClick={handleGoToRules}
           aria-label={t("seeRules")}>
           {t("seeRules")}

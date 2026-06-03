@@ -12,10 +12,20 @@ export async function saveGuest(guest: EmptyGuestType): Promise<void> {
 
 export async function getGuest(id: string): Promise<GuestType> {
   const redis = await RedisClass.getDataClient();
-  const serializedGuest = await redis.get(REDIS_KEYS.guest(id));
+  const key = REDIS_KEYS.guest(id);
+  const serializedGuest = await redis.get(key);
 
   if (serializedGuest) {
     return JSON.parse(String(serializedGuest));
   }
   throw "Guest não encontrado";
+}
+
+/** Renova TTL do guest a cada conexão autenticada (socket/HTTP). */
+export async function touchGuest(id: string): Promise<void> {
+  const redis = await RedisClass.getDataClient();
+  const key = REDIS_KEYS.guest(id);
+  const serializedGuest = await redis.get(key);
+  if (!serializedGuest) return;
+  await redis.set(key, serializedGuest, { EX: REDIS_TTL.guest });
 }

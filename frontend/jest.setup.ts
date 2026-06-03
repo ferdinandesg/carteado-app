@@ -2,7 +2,7 @@
 import "@testing-library/jest-dom";
 
 // Mock do logger (pino usa setImmediate, não disponível em jsdom)
-jest.mock("@//tests/utils/logger", () => ({
+jest.mock("@/tests/utils/logger", () => ({
   default: {
     info: jest.fn(),
     error: jest.fn(),

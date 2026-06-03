@@ -1,10 +1,10 @@
 "use client"
 import styles from "@/styles/ModalGameFinished.module.scss";
 import { useTranslation } from "react-i18next";
-import BackButton from "@//components/buttons/BackButton";
+import BackButton from "@/components/buttons/BackButton";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { selectCurrentPlayer, useGameStore } from "@//contexts/game.store";
+import { selectCurrentPlayer, useGameStore } from "@/contexts/game.store";
 import { useTypedGame } from "@/hooks/useTypedGame";
 import { isTrucoGame } from "shared/game";
 

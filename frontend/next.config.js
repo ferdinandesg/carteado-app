@@ -20,9 +20,8 @@ const nextConfig = {
     includePaths: [path.join(__dirname, "styles")],
     prependData: `@use 'variables' as *;`,
   },
-  // Removed manual react / react-dom aliasing: Next.js and Node ESM resolver
-  // will correctly resolve workspace-hoisted React and its jsx-runtime.
-  webpack: (config) => config,
+  // Next 16 uses Turbopack by default; empty config acknowledges custom sassOptions only.
+  turbopack: {},
 };
 
 module.exports = nextConfig;

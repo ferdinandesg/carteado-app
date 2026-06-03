@@ -92,3 +92,4 @@ frontend/.netlify/
 
 # Docs
 docs/
+.cursor/

@@ -1,42 +1,16 @@
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import prisma from "../../prisma";
-import { getGuest } from "@/lib/redis/guests";
-import { SocketUser, UserRole } from "shared/types";
+import { verifyAccessToken } from "@/lib/jwt";
+import { touchGuest } from "@/lib/redis/guests";
+import { UserFactory } from "@/users/UserFactory";
 
-type JwtPayload = {
-  role: UserRole;
-  id: string;
-};
-
-const promisifyVerifyToken = (token: string) => {
-  const secret = process.env.JWT_SECRET_KEY;
-  if (!secret) throw new Error("JWT_SECRET_KEY is not defined");
-  return new Promise<JwtPayload>((resolve, reject) => {
-    jwt.verify(token, secret, (err, decoded) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(decoded as JwtPayload);
-      }
-    });
-  });
-};
-
-export const verifyJWTToken = async (token: string) => {
-  const decoded = await promisifyVerifyToken(token);
-
-  let user;
-  if (decoded.role === "guest") {
-    user = await getGuest(decoded.id);
-  } else if (decoded.role === "user") {
-    user = (await prisma.user.findUnique({
-      where: { id: decoded.id },
-    })) as SocketUser;
+export const verifyJWTToken = async (token: string | undefined) => {
+  const decoded = await verifyAccessToken(token);
+  if (!decoded) return null;
+  const user = await UserFactory.fromJwtPayload(decoded);
+  if (user?.role === "guest") {
+    await touchGuest(user.id);
   }
-  if (!user) return null;
-  user.isRegistered = decoded.role === "user";
-  return user as SocketUser;
+  return user;
 };
 
 export default async function authorize(

@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import { Participant } from "shared/types";
 import { UserSession } from "@/models/Users";
-import useAxiosAuth from "../useAuthAxios";
+import useAxiosAuth, { useAuthQueryEnabled } from "../useAuthAxios";
 
 export type RoomInterface = {
   id: string;
@@ -17,14 +18,19 @@ export type RoomInterface = {
 };
 
 export default function useFetchRooms() {
+  const { status: sessionStatus } = useSession();
   const axiosAuth = useAxiosAuth();
-  const { data, isLoading, isError } = useQuery<RoomInterface[]>({
+  const authReady = useAuthQueryEnabled();
+  const { data, isLoading, isError, isFetching } = useQuery<RoomInterface[]>({
     queryKey: ["rooms"],
     queryFn: () => axiosAuth.get("/rooms").then((res) => res.data),
+    enabled: authReady,
   });
   return {
     data: data || [],
-    isLoading,
+    isLoading:
+      sessionStatus === "loading" ||
+      (authReady && (isLoading || isFetching)),
     isError,
   };
 }

@@ -1,30 +1,47 @@
 import request from "supertest";
 import { app } from "@/app";
+import { signAccessToken } from "@/lib/jwt";
 
 const PROTECTED_ROUTE = "/api/v1/auth/protected";
 
-jest.mock("@/lib/redis/guests", () => ({
-  getGuest: jest.fn().mockResolvedValue({ id: 1, name: "User" }),
-}));
+const guestUser = {
+  id: "guest-test-id",
+  email: "guest@test.com",
+  name: "User",
+  role: "guest" as const,
+  rank: 0,
+  room: "",
+  status: "not_ready",
+  isRegistered: false,
+};
 
-jest.mock("jsonwebtoken", () => ({
-  verify: jest.fn().mockImplementation((token, _secret, callback) => {
-    if (token === "valid-token") {
-      callback(null, { id: 1, role: "guest" });
-    } else {
-      callback(new Error("Invalid token"), null);
-    }
+jest.mock("@/lib/redis/guests", () => ({
+  getGuest: jest.fn().mockResolvedValue({
+    id: "guest-test-id",
+    email: "guest@test.com",
+    name: "User",
+    role: "guest",
+    rank: 0,
+    room: "",
+    status: "not_ready",
+    isRegistered: false,
   }),
+  touchGuest: jest.fn().mockResolvedValue(undefined),
 }));
 
 describe("Protected Route", () => {
+  const validToken = signAccessToken({ id: guestUser.id, role: "guest" });
+
   it("should return 200 if valid JWT is provided", async () => {
     const response = await request(app)
       .get(PROTECTED_ROUTE)
-      .set("Authorization", "Bearer valid-token");
+      .set("Authorization", `Bearer ${validToken}`);
     expect(response.status).toBe(200);
     expect(response.body.message).toBe("Welcome to the protected route");
-    expect(response.body.user).toMatchObject({ id: 1, name: "User" });
+    expect(response.body.user).toMatchObject({
+      id: guestUser.id,
+      name: guestUser.name,
+    });
   });
 
   it("should return 401 if no JWT is provided", async () => {
@@ -35,11 +52,11 @@ describe("Protected Route", () => {
     );
   });
 
-  it("should return 403 if invalid JWT is provided", async () => {
+  it("should return 401 if invalid JWT is provided", async () => {
     const response = await request(app)
       .get(PROTECTED_ROUTE)
       .set("Authorization", "Bearer invalid-token");
-    expect(response.status).toBe(403);
-    expect(response.body.message).toBe("INVALID_TOKEN");
+    expect(response.status).toBe(401);
+    expect(response.body.message).toBe("NOT_AUTHORIZED");
   });
 });

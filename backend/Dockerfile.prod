@@ -1,5 +1,5 @@
 # Stage 1: Builder - Instala dependências e compila o código
-FROM node:20-slim AS builder
+FROM node:24-slim AS builder
 ARG APP_VERSION
 
 ENV NEXT_PUBLIC_APP_VERSION=$APP_VERSION
@@ -27,7 +27,7 @@ RUN npm run build --workspace=shared
 RUN npm run build --workspace=backend
 
 # --- Estágio 2: Runner (Produção) ---
-FROM node:20-slim
+FROM node:24-slim
 
 # Instala o OpenSSL, uma dependência de tempo de execução para o Prisma,
 # e limpa o cache para manter a imagem enxuta.

@@ -1,15 +1,24 @@
 import { Socket } from "socket.io";
 import { verifyJWTToken } from "@/routes/middlewares/auth";
+import { touchGuest } from "@/lib/redis/guests";
 
 export async function Authentication(
   socket: Socket,
   next: (err?: Error) => void
 ): Promise<void> {
-  const token = socket.handshake.auth.token;
-  const user = await verifyJWTToken(token);
-  if (!user) return next(new Error("Unauthorized"));
-  socket.user = user;
+  try {
+    const token = socket.handshake.auth.token as string | undefined;
+    const user = await verifyJWTToken(token);
+    if (!user) return next(new Error("Unauthorized"));
 
-  socket.join(socket.user.email);
-  return next();
+    if (user.role === "guest") {
+      await touchGuest(user.id);
+    }
+
+    socket.user = user;
+    socket.join(socket.user.email);
+    return next();
+  } catch {
+    return next(new Error("Unauthorized"));
+  }
 }

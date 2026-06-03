@@ -1,9 +1,9 @@
-import { GuestType, SocketUser } from "shared/types";
+import { AuthenticatedUser } from "shared/types/guest";
 
 declare global {
   namespace Express {
     export interface Request {
-      user: SocketUser | GuestType;
+      user: AuthenticatedUser;
     }
   }
 }

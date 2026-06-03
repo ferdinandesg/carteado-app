@@ -1,4 +1,4 @@
-import { RoomInterface } from "@//hooks/rooms/useFetchRooms";
+import { RoomInterface } from "@/hooks/rooms/useFetchRooms";
 import classNames from "classnames";
 
 import styles from "@/styles/Rooms.module.scss";
