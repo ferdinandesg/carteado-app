@@ -151,6 +151,16 @@ jobs:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
       - name: Set up gcloud CLI
         uses: google-github-actions/setup-gcloud@v2
+      - name: Resolve VM public IP
+        run: |
+          DEPLOY_HOST=$(gcloud compute instances describe "${{ env.GCP_INSTANCE_NAME }}" --zone "${{ env.GCP_ZONE }}" --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
+          echo "DEPLOY_HOST=${DEPLOY_HOST}" >> "$GITHUB_ENV"
+      - name: Configure SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${DEPLOY_HOST}" >> ~/.ssh/known_hosts
       # Gera .env no runner (indentação consistente). Heredoc dentro do SSH remoto corrompia chaves
       # (ex.: espaços antes de DATABASE_URL) e o backend não recebia a URL correta.
       - name: Write deploy/.env (secrets)
@@ -166,8 +176,8 @@ jobs:
           EOF
       - name: Deploy to VM
         run: |
-          gcloud compute scp --recurse ./deploy/ ${{ env.DEPLOY_USER }}@${{ env.GCP_INSTANCE_NAME }}:${{ env.DEPLOY_PATH }} --zone ${{ env.GCP_ZONE }}
-          gcloud compute ssh ${{ env.DEPLOY_USER }}@${{ env.GCP_INSTANCE_NAME }} --zone ${{ env.GCP_ZONE }} -- << EOF
+          scp -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes -r ./deploy/ ${{ env.DEPLOY_USER }}@${DEPLOY_HOST}:${{ env.DEPLOY_PATH }}
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes ${{ env.DEPLOY_USER }}@${DEPLOY_HOST} << EOF
             set -e
             echo "### Navegando para a pasta de deploy..."
             cd ${{ env.DEPLOY_PATH }}/deploy

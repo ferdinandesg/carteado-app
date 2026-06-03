@@ -1,7 +1,7 @@
-echo ">> Rodando testes antes do push..."
-npm run test
+echo ">> Rodando quality gate leve antes do push (lint + typecheck)..."
+npm run prepush
 if [ $? -ne 0 ]; then
-  echo "Testes falharam. Corrija antes de fazer push."
+  echo "Qualidade falhou. Corrija antes de fazer push."
   exit 1
 fi
 

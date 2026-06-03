@@ -8,7 +8,7 @@
     "start": "node dist/index.js",
     "test": "jest --silent --coverage",
     "dev": "nodemon src/index.ts",
-    "build": "npx prisma generate && npx tsc && npx tsc-alias",
+    "build": "npx tsc && npx tsc-alias",
     "ts-check": "tsc --noEmit",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
