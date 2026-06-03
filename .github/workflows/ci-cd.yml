@@ -231,13 +231,6 @@ jobs:
             echo "### Navegando para a pasta de deploy..."
             cd ${{ env.DEPLOY_PATH }}/deploy
 
-            echo "### Configurando rotação global de logs do Docker..."
-            DESIRED_DOCKER_DAEMON='{"log-driver":"json-file","log-opts":{"max-size":"10m","max-file":"3"}}'
-            if [ ! -f /etc/docker/daemon.json ] || ! sudo grep -Fq '"max-size":"10m"' /etc/docker/daemon.json || ! sudo grep -Fq '"max-file":"3"' /etc/docker/daemon.json; then
-              echo "${DESIRED_DOCKER_DAEMON}" | sudo tee /etc/docker/daemon.json > /dev/null
-              sudo systemctl restart docker
-            fi
-
             echo "### Autenticando no Docker Hub..."
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
