@@ -6,6 +6,10 @@ on:
   # ADICIONE ESTAS DUAS LINHAS PARA PERMITIR O ACIONAMENTO MANUAL
   workflow_dispatch:
 
+concurrency:
+  group: production-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   NODE_VERSION: 24.14.0
   IMAGE_BACKEND: ferdinandes/carteado-backend
@@ -134,6 +138,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [setup, changes, build-backend, build-frontend]
+    timeout-minutes: 30
     environment: production
     # Só faz deploy com testes OK; builds skipped (sem alterações) não contam como falha
     if: >-
@@ -146,13 +151,45 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Set deploy env
-        run: echo "APP_VERSION=${GITHUB_SHA::7}" >> $GITHUB_ENV
+        run: |
+          APP_VERSION="${GITHUB_SHA::7}"
+          echo "APP_VERSION=${APP_VERSION}" >> $GITHUB_ENV
+          echo "BACKEND_IMAGE=${{ env.IMAGE_BACKEND }}:${APP_VERSION}" >> $GITHUB_ENV
+          echo "FRONTEND_IMAGE=${{ env.IMAGE_FRONTEND }}:${APP_VERSION}" >> $GITHUB_ENV
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
       - name: Set up gcloud CLI
         uses: google-github-actions/setup-gcloud@v2
+      - name: Validate required deploy secrets
+        env:
+          DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          GOOGLE_ID: ${{ secrets.GOOGLE_ID }}
+          GOOGLE_SECRET: ${{ secrets.GOOGLE_SECRET }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+        run: |
+          set -e
+          required=(
+            DEPLOY_SSH_PRIVATE_KEY
+            DOCKERHUB_USERNAME
+            DOCKERHUB_TOKEN
+            GOOGLE_ID
+            GOOGLE_SECRET
+            NEXTAUTH_SECRET
+            DATABASE_URL
+            JWT_SECRET_KEY
+          )
+          for key in "${required[@]}"; do
+            if [ -z "${!key}" ]; then
+              echo "Missing required secret: ${key}" >&2
+              exit 1
+            fi
+          done
       - name: Resolve VM public IP
         run: |
           DEPLOY_HOST=$(gcloud compute instances describe "${{ env.GCP_INSTANCE_NAME }}" --zone "${{ env.GCP_ZONE }}" --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
@@ -175,31 +212,46 @@ jobs:
           DATABASE_URL=${{ secrets.DATABASE_URL }}
           JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
           APP_VERSION=${{ env.APP_VERSION }}
+          BACKEND_IMAGE=${{ env.BACKEND_IMAGE }}
+          FRONTEND_IMAGE=${{ env.FRONTEND_IMAGE }}
           EOF
       - name: Deploy to VM
         run: |
           scp -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes -r ./deploy/ ${{ env.DEPLOY_USER }}@${DEPLOY_HOST}:${{ env.DEPLOY_PATH }}
           ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes ${{ env.DEPLOY_USER }}@${DEPLOY_HOST} << EOF
-            set -e
+            set -euo pipefail
+            on_error() {
+              echo "### Falha no deploy. Coletando diagnóstico..."
+              cd ${{ env.DEPLOY_PATH }}/deploy || exit 1
+              docker compose -f docker-compose-prod.yml ps || true
+              docker compose -f docker-compose-prod.yml logs --tail=200 backend frontend nginx || true
+            }
+            trap on_error ERR
+
             echo "### Navegando para a pasta de deploy..."
             cd ${{ env.DEPLOY_PATH }}/deploy
+
+            echo "### Configurando rotação global de logs do Docker..."
+            DESIRED_DOCKER_DAEMON='{"log-driver":"json-file","log-opts":{"max-size":"10m","max-file":"3"}}'
+            if [ ! -f /etc/docker/daemon.json ] || ! sudo grep -Fq '"max-size":"10m"' /etc/docker/daemon.json || ! sudo grep -Fq '"max-file":"3"' /etc/docker/daemon.json; then
+              echo "${DESIRED_DOCKER_DAEMON}" | sudo tee /etc/docker/daemon.json > /dev/null
+              sudo systemctl restart docker
+            fi
 
             echo "### Autenticando no Docker Hub..."
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-            echo "### Realizando limpeza preventiva (liberar espaço para pull)..."
-            # Remove containers parados, redes não usadas, imagens não referenciadas
-            docker system prune -af
-            # Remove cache de build (economiza GB em VMs com pouco disco)
-            docker builder prune -af
+            echo "### Pré-limpeza para evitar falta de espaço..."
+            sudo find /var/lib/docker/containers -type f -name "*-json.log" -size +50M -exec truncate -s 0 {} \; || true
+            docker image prune -af --filter "until=168h" || true
+            docker builder prune -af --filter "until=168h" || true
 
             echo "### Puxando as imagens mais recentes..."
             docker compose -f docker-compose-prod.yml pull
-            echo "### Parando e subindo a aplicação..."
-            docker compose -f docker-compose-prod.yml down --remove-orphans
-            docker compose -f docker-compose-prod.yml up -d
-            echo "### Limpando imagens não referenciadas (dangling)..."
-            docker image prune -f
+            echo "### Aplicando atualização sem derrubar toda a stack..."
+            docker compose -f docker-compose-prod.yml up -d --remove-orphans
+            echo "### Estado dos serviços após deploy..."
+            docker compose -f docker-compose-prod.yml ps
             echo ">>> DEPLOY CONCLUÍDO <<<"
           EOF
       - name: Healthcheck – verificar se a API está respondendo

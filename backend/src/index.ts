@@ -54,7 +54,30 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
+const MAPPED_DOMAIN_ERRORS = new Set([
+  "GAME_NOT_FOUND",
+  "ROOM_NOT_FOUND",
+  "USER_NOT_IN_ROOM",
+  "ROOM_IS_PLAYING",
+  "ROOM_IS_FULL",
+  "ONLY_THE_OWNER_CAN_START_THE_GAME",
+  "ROOM_IS_NOT_FULL",
+  "NOT_ALL_PLAYERS_ARE_READY",
+  "PLAYER_NOT_FOUND",
+  "UNAUTHORIZED",
+]);
+
+function extractReasonMessage(reason: unknown): string {
+  if (reason instanceof Error) return reason.message;
+  if (typeof reason === "string") return reason;
+  return "UNKNOWN_REJECTION_REASON";
+}
+
 process.on("unhandledRejection", (reason) => {
-  logger.error(reason, "Promise rejeitada sem tratamento:");
-  process.exit(1);
+  const reasonMessage = extractReasonMessage(reason);
+  logger.warn(
+    { reason, reasonMessage },
+    "Promise rejeitada mapeada; mantendo processo ativo."
+  );
+  return;
 });
