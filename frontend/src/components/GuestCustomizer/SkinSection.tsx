@@ -15,10 +15,14 @@ export default function SkinSection({ skin, onSelectSkin }: SkinSectionProps) {
   const { t } = useTranslation();
 
   return (
-    <section className={styles.formGroup}>
-      <label>{t("Home.chooseCardSkin")}</label>
+    <section
+      className={styles.formGroup}
+      aria-labelledby="guest-skin-options-label">
+      <label id="guest-skin-options-label">{t("Home.chooseCardSkin")}</label>
       <div
         className={styles.skinGrid}
+        role="group"
+        aria-labelledby="guest-skin-options-label"
         data-testid="skin-section">
         {skinOptions.map((option) => (
           <button

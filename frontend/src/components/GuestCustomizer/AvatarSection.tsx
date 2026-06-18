@@ -17,10 +17,14 @@ export default function AvatarSection({
 }: AvatarSectionProps) {
   const { t } = useTranslation();
   return (
-    <section className={styles.formGroup}>
-      <label>{t("Home.ChooseAvatar")}</label>
+    <section
+      className={styles.formGroup}
+      aria-labelledby="guest-avatar-options-label">
+      <label id="guest-avatar-options-label">{t("Home.ChooseAvatar")}</label>
       <div
         className={styles.avatarList}
+        role="group"
+        aria-labelledby="guest-avatar-options-label"
         data-testid="avatar-section">
         <button
           type="button"

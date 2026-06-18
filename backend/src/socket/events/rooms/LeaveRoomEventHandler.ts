@@ -1,18 +1,27 @@
-import { getRoom } from "@/services/room.service";
-import { SocketContext } from "../../../@types/socket";
-import { saveRoomState } from "@/lib/redis/room";
+import { SocketContext } from "@/@types/socket";
+import { atomicallyUpdateRoomState } from "@/lib/redis/room";
 import emitToRoom from "@/socket/utils/emitToRoom";
+import { clearSession } from "@/lib/redis/userSession";
+import { CHANNEL } from "@/socket/channels";
 
 export async function LeaveRoomEventHandler(
   context: SocketContext
 ): Promise<void> {
   const { socket, channel } = context;
-  const room = await getRoom(socket.user.room);
+  const roomHash = socket.user.room;
+  if (!roomHash) return;
+
+  const room = await atomicallyUpdateRoomState(roomHash, (room) => {
+    room.participants = room.participants.filter(
+      (player) => player.userId !== socket.user.id
+    );
+    return room;
+  });
+
   if (!room) return;
-  room.participants = room.participants.filter(
-    (player) => player.userId !== socket.user.id
-  );
-  await saveRoomState(room.hash, room);
-  emitToRoom(channel, room.hash, "room_updated", room);
-  channel.to(socket.user.room).emit("quit", JSON.stringify(socket.user));
+  await clearSession(socket.user.id);
+  emitToRoom(channel, roomHash, CHANNEL.SERVER.ROOM_UPDATED, room);
+  channel
+    .to(roomHash)
+    .emit(CHANNEL.CLIENT.LEAVE_ROOM, JSON.stringify(socket.user));
 }

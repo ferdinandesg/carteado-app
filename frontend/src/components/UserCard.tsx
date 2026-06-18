@@ -32,7 +32,7 @@ export default function UserCard({ user, size = "large" }: UserCardProps) {
         )}>
         {user?.image ? (
           <Image
-            alt="user.name"
+            alt={user.name}
             src={user.image}
             width={150}
             height={100}

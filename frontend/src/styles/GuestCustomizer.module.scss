@@ -93,7 +93,7 @@
   height: 120px;
   overflow: hidden;
   background-color: rgba($color-black, 0.22);
-  border: $border-width solid $color-outline-light;
+  border: $border-width solid $color-outline;
   border-radius: $border-radius-full;
 
   z-index: 2;
@@ -215,58 +215,8 @@
   margin-top: auto;
 }
 
-.resetButton {
-  color: $color-white;
-  font-family: var(--font-mouse-memoirs), sans-serif;
-  font-size: 1.25rem;
-  text-transform: uppercase;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
-}
-
-.createButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 140px;
-  padding: $spacing-s $spacing-l;
-  color: $color-white;
-  font-family: var(--font-mouse-memoirs), sans-serif;
-  font-size: 1.25rem;
-  font-weight: $font-weight-bold;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  background-color: $color-primary;
-  border: $border-width solid $color-outline;
-  border-radius: $border-radius-s;
-  box-shadow: $shadow-button;
-  cursor: pointer;
-  gap: $spacing-s;
-
-  &:enabled {
-    &:hover {
-      background-color: $color-primary-hover;
-    }
-
-    &:active {
-      transform: translateY(1px);
-    }
-  }
-
-  &:disabled {
-    color: $color-gray-800;
-    background-color: $color-gray-400;
-    box-shadow: none;
-    cursor: not-allowed;
-  }
+.applyButton {
+  flex-shrink: 0;
 }
 
 @media (max-width: 768px) {
@@ -296,7 +246,7 @@
     flex-direction: column-reverse;
   }
 
-  .createButton {
+  .applyButton {
     width: 100%;
   }
 }

@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
-import { loginSchema } from "../schemas/auth.schemas";
+import { guestSchema, loginSchema } from "../schemas/auth.schemas";
 import { validateGuestUser, validateUser } from "../services/auth.service";
 import { withAccessToken } from "@/lib/authResponse";
+import { serializeRouteError } from "@/utils/routeError";
 
 export async function handleValidateUser(req: Request, res: Response) {
   try {
@@ -9,17 +10,17 @@ export async function handleValidateUser(req: Request, res: Response) {
     const profile = await validateUser({ email, name, image, rank: 0 });
     res.status(200).json(withAccessToken(profile));
   } catch (error) {
-    res.status(400).json(error);
+    res.status(400).json(serializeRouteError(error));
   }
 }
 
 export async function handleValidateGuest(req: Request, res: Response) {
   try {
-    const { username, skin, avatar } = req.body;
+    const { username, skin, avatar } = guestSchema.parse(req.body);
     const guest = await validateGuestUser(username, skin, avatar);
     res.status(200).json(withAccessToken(guest));
   } catch (error) {
-    res.status(400).json(error);
+    res.status(400).json(serializeRouteError(error));
   }
 }
 

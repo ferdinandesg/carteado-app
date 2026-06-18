@@ -1,9 +1,9 @@
-import useRoomByHash from "@/hooks/rooms/useRoomByHash";
+import { useRoomContext } from "@/contexts/room.context";
 import CarteadoGame from "./carteado.game";
 import TrucoGame from "./truco.game";
 
-export default function Game({ roomHash }: { roomHash: string }) {
-  const { room, isLoading } = useRoomByHash(roomHash);
+export default function Game() {
+  const { room, isLoading } = useRoomContext();
   if (isLoading || !room) return;
 
   if (room.rule === "CarteadoGameRules") {

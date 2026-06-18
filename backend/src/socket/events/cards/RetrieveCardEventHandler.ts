@@ -1,8 +1,9 @@
 import emitToRoom from "@/socket/utils/emitToRoom";
-import { SocketContext } from "../../../@types/socket";
-import ErrorHandler from "utils/error.handler";
-import { CarteadoGame } from "game/CarteadoGameRules";
+import { SocketContext } from "@/@types/socket";
+import ErrorHandler from "@/utils/error.handler";
+import { CarteadoGame } from "@/game/CarteadoGameRules";
 import { getGameInstance, saveGameInstance } from "@/services/game.service";
+import { CHANNEL } from "@/socket/channels";
 
 export async function RetrieveCardEventHandler(
   context: SocketContext
@@ -14,7 +15,7 @@ export async function RetrieveCardEventHandler(
     const game = await getGameInstance<CarteadoGame>(roomHash);
     game.rules.undoPlay(game, socket.user.id);
     await saveGameInstance(roomHash, game);
-    emitToRoom(channel, roomHash, "game_updated", game);
+    emitToRoom(channel, roomHash, CHANNEL.SERVER.GAME_UPDATED, game);
   } catch (error) {
     ErrorHandler(error, socket);
   }

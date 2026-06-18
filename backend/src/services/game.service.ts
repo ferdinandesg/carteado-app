@@ -3,8 +3,9 @@ import { CarteadoGame } from "@/game/CarteadoGameRules";
 import { TrucoGame } from "@/game/TrucoGameRules";
 import * as gameRepository from "@/lib/redis/game";
 import { Card } from "shared/cards";
-import { BasePlayer, GameType } from "shared/game";
+import { BasePlayer, GameRuleNames, GameType } from "shared/game";
 import { logger } from "@/utils/logger";
+import { GameError } from "@/errors/GameError";
 
 type GameInstance = TrucoGame | CarteadoGame;
 
@@ -15,7 +16,11 @@ export async function getGameInstance<T extends GameInstance>(
 
   if (!gameData) {
     logger.error(`Jogo não encontrado para a sala ${roomId}`);
-    throw new Error(`Jogo não encontrado para a sala ${roomId}`);
+    throw new GameError({
+      code: "GAME_NOT_FOUND",
+      message: "GAME_NOT_FOUND",
+      meta: { roomId },
+    });
   }
 
   // Data from redis is a JSON string, so it needs parsing.
@@ -37,7 +42,11 @@ async function getAndRun<T extends GameInstance>(
   const game = await getGameInstance(roomId);
 
   if (!gameTypeGuard(game)) {
-    throw new Error(`Ação inválida para o tipo de jogo ${game.rulesName}`);
+    throw new GameError({
+      code: "INVALID_ACTION",
+      message: "INVALID_ACTION",
+      meta: { rulesName: game.rulesName },
+    });
   }
 
   action(game);
@@ -54,6 +63,15 @@ function isTrucoGame(game: GameInstance): game is TrucoGame {
 export async function createGame(gameType: GameType, players: BasePlayer[]) {
   // This function doesn't interact with a saved game, so it's different.
   return GameFactory.create(gameType, players);
+}
+
+export async function createGameFromRuleName(
+  rule: GameRuleNames,
+  players: BasePlayer[]
+) {
+  const gameType =
+    rule === "TrucoGameRules" ? GameType.TRUCO : GameType.CARTEADO;
+  return createGame(gameType, players);
 }
 
 export async function askTruco(roomId: string, userId: string) {

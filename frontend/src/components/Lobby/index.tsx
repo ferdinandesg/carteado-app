@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSocket } from "@/contexts/socket.context";
+import { useRoomContext } from "@/contexts/room.context";
 import classNames from "classnames";
-import useRoomByHash from "@/hooks/rooms/useRoomByHash";
 import { useParams } from "next/navigation";
 
 import styles from "@/styles/Lobby.module.scss";
@@ -17,7 +17,7 @@ export default function Lobby() {
   const { id } = useParams();
   const { data } = useSession();
   const roomId = String(id);
-  const { room } = useRoomByHash(String(id));
+  const { room } = useRoomContext();
   const isOwner = room?.ownerId === data?.user.id;
 
   const handleReadyClick = () => {
@@ -35,7 +35,7 @@ export default function Lobby() {
 
   return (
     <div className={classNames(styles.LobbyContainer)}>
-      <Participants roomHash={roomId} />
+      <Participants />
       <span className={classNames("animate-bounce", styles.waiting)}>
         {t("Lobby.waitingPlayers")}
       </span>

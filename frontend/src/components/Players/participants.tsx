@@ -1,6 +1,6 @@
 "use client";
 import classNames from "classnames";
-import useRoomByHash from "@/hooks/rooms/useRoomByHash";
+import { useRoomContext } from "@/contexts/room.context";
 
 import styles from "@/styles/Participants.module.scss";
 import UserPlaceholder from "../UserPlaceholder";
@@ -10,9 +10,9 @@ import { useTranslation } from "react-i18next";
 import { PlayerStatus } from "shared/game";
 import { Crown } from "lucide-react";
 
-export default function Participants({ roomHash }: { roomHash: string }) {
+export default function Participants() {
   const { t } = useTranslation();
-  const { room } = useRoomByHash(roomHash);
+  const { room } = useRoomContext();
 
   return room?.participants.map((participant, i) => {
     const isReady = participant.status === PlayerStatus.READY;

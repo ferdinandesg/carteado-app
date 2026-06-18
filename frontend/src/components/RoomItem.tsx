@@ -1,4 +1,4 @@
-import { RoomInterface } from "@/hooks/rooms/useFetchRooms";
+import { RoomInterface, RoomStatus } from "@/models/room";
 import classNames from "classnames";
 
 import styles from "@/styles/Rooms.module.scss";
@@ -11,7 +11,7 @@ type RoomItemProps = {
   onClick?: (room: RoomInterface) => void;
 };
 
-const RoomStatus = ({ status }: { status: "open" | "playing" }) => {
+const RoomStatusBadge = ({ status }: { status: RoomStatus }) => {
   const { t } = useTranslation();
   let icon = null;
   if (status === "open") {
@@ -63,7 +63,7 @@ const RoomItem = ({ room, onClick = () => {} }: RoomItemProps) => {
         <span className={styles.roomName}>{room.name}</span>
       </div>
       <div className={styles.roomData}>
-        <RoomStatus status={room.status} />
+        <RoomStatusBadge status={room.status} />
         <div className={styles.infoCount}>
           <span className={styles.label}>{t("RoomItem.rule")}:</span>
           <span className={styles.count}>{t(`RoomItem.${room.rule}`)}</span>

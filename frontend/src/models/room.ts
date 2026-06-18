@@ -1,17 +1,21 @@
 import { Card } from "shared/cards";
 import { Participant } from "shared/types";
+import { UserSession } from "./Users";
 
 export type RoomStatus = "open" | "playing" | "finished";
+export type RoomRule = "CarteadoGameRules" | "TrucoGameRules";
 
 export interface RoomInterface {
   id: string;
-  chatId: string;
-  createdAt: string;
   hash: string;
   name: string;
-  status: "open" | "playing";
+  status: RoomStatus;
   size: number;
   participants: Participant[];
-  bunch: Card[];
-  rule: "CarteadoGameRules" | "TrucoGameRules";
+  rule: RoomRule;
+  createdAt: string;
+  owner?: UserSession;
+  ownerId?: string;
+  chatId?: string;
+  bunch?: Card[];
 }

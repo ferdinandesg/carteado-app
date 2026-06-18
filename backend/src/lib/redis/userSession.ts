@@ -24,8 +24,13 @@ export async function retrieveSession(userId: string) {
   return JSON.parse(String(sessionData));
 }
 
+export async function clearSession(userId: string) {
+  const redis = await RedisClass.getDataClient();
+  await redis.del(REDIS_KEYS.session(userId));
+}
+
 export async function expireSession(userId: string) {
   const redis = await RedisClass.getDataClient();
   logger.info(`User ${userId} disconnected. Setting session TTL.`);
-  redis.expire(REDIS_KEYS.session(userId), REDIS_TTL.session);
+  await redis.expire(REDIS_KEYS.session(userId), REDIS_TTL.session);
 }

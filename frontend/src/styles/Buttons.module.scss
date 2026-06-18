@@ -41,6 +41,97 @@
   }
 }
 
+.ActionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-s;
+  min-width: 140px;
+  color: $color-white;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-weight: $font-weight-bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: $border-width solid $color-outline;
+  border-radius: $border-radius-s;
+  box-shadow: $shadow-button;
+  cursor: pointer;
+  transition:
+    background-color $transition-normal,
+    transform $transition-normal;
+
+  &:enabled {
+    &:active {
+      transform: translateY(1px);
+    }
+  }
+
+  &:disabled {
+    color: $color-gray-800;
+    background-color: $color-gray-400;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+}
+
+.md {
+  padding: $spacing-s $spacing-l;
+  font-size: 1.25rem;
+}
+
+.lg {
+  padding: $spacing-m $spacing-l;
+  font-size: 2rem;
+  letter-spacing: $letter-spacing-wide;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.primary {
+  background-color: $color-primary;
+
+  &:enabled:hover {
+    background-color: $color-primary-hover;
+  }
+}
+
+.secondary {
+  background-color: $color-bg-secondary;
+
+  &:enabled:hover {
+    background-color: lighten($color-bg-secondary, 8%);
+  }
+}
+
+.accent {
+  background-color: $color-accent-pink;
+
+  &:enabled:hover {
+    background-color: lighten($color-accent-pink, 8%);
+  }
+}
+
+.ghost {
+  min-width: auto;
+  padding: 0;
+  color: $color-white;
+  font-size: 1.25rem;
+  font-weight: $font-weight-semibold;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+
+  &:enabled:hover {
+    color: $color-primary-hover;
+    background: none;
+  }
+}
+
 .BackButton {
   margin-top: 10px;
   margin: $spacing-s auto 0;

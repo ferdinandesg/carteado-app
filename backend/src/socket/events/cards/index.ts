@@ -9,33 +9,39 @@ import { PlayCardEventHandler } from "./PlayCardEventHandler";
 import { RejectTrucoEventHandler } from "./RejectTrucoEventHandler";
 import { RetrieveCardEventHandler } from "./RetrieveCardEventHandler";
 import { EndTurnEventHandler } from "../EndTurnEventHandler";
+import { registerSafeSocketEvent } from "../registerSafeSocketEvent";
+import { PickHandPayload, PlayCardPayload } from "../payloads";
 
 export function registerCardEvents(socket: Socket, channel: Namespace): void {
   const context: Omit<SocketContext, "payload"> = { socket, channel };
 
-  socket.on(CHANNEL.CLIENT.PLAY_CARD, (payload) =>
-    PlayCardEventHandler({ ...context, payload })
+  registerSafeSocketEvent<PlayCardPayload>(
+    socket,
+    CHANNEL.CLIENT.PLAY_CARD,
+    (payload) => PlayCardEventHandler({ ...context, payload })
   );
-  socket.on(CHANNEL.CLIENT.PICK_HAND, (payload) =>
-    PickHandEventHandler({ ...context, payload })
+  registerSafeSocketEvent<PickHandPayload>(
+    socket,
+    CHANNEL.CLIENT.PICK_HAND,
+    (payload) => PickHandEventHandler({ ...context, payload })
   );
-  socket.on(CHANNEL.CLIENT.RETRIEVE_CARD, (payload) =>
+  registerSafeSocketEvent(socket, CHANNEL.CLIENT.RETRIEVE_CARD, (payload) =>
     RetrieveCardEventHandler({ ...context, payload })
   );
-  socket.on(CHANNEL.CLIENT.END_TURN, (payload) =>
+  registerSafeSocketEvent(socket, CHANNEL.CLIENT.END_TURN, (payload) =>
     EndTurnEventHandler({ ...context, payload })
   );
-  socket.on(CHANNEL.CLIENT.DRAW_TABLE, (payload) =>
+  registerSafeSocketEvent(socket, CHANNEL.CLIENT.DRAW_TABLE, (payload) =>
     DrawTableEventHandler({ ...context, payload })
   );
 
-  socket.on("ask_truco", (payload) => {
-    AskTrucoEventHandler({ ...context, payload });
-  });
-  socket.on("reject_truco", (payload) => {
-    RejectTrucoEventHandler({ ...context, payload });
-  });
-  socket.on("accept_truco", (payload) => {
-    AcceptTrucoEventHandler({ ...context, payload });
-  });
+  registerSafeSocketEvent(socket, CHANNEL.CLIENT.ASK_TRUCO, (payload) =>
+    AskTrucoEventHandler({ ...context, payload })
+  );
+  registerSafeSocketEvent(socket, CHANNEL.CLIENT.REJECT_TRUCO, (payload) =>
+    RejectTrucoEventHandler({ ...context, payload })
+  );
+  registerSafeSocketEvent(socket, CHANNEL.CLIENT.ACCEPT_TRUCO, (payload) =>
+    AcceptTrucoEventHandler({ ...context, payload })
+  );
 }

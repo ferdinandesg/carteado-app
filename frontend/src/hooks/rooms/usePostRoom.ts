@@ -1,4 +1,4 @@
-import logger from "@/tests/utils/logger";
+import logger from "@/lib/logger";
 import useAxiosAuth from "../useAuthAxios";
 
 type CreateRoomPayload = {

@@ -1,6 +1,6 @@
 "use client";
 import BackButton from "@/components/buttons/BackButton";
-import { withSound } from "@/components/buttons/withSound";
+import ActionButton from "@/components/buttons/ActionButton";
 import usePostRoom from "@/hooks/rooms/usePostRoom";
 import { ArrowRightCircle } from "lucide-react";
 import { useState } from "react";
@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import classNames from "classnames";
 import UserCard from "@/components/UserCard";
 import { useSession } from "next-auth/react";
-import logger from "@/tests/utils/logger";
+import logger from "@/lib/logger";
 
 type RoomForm = {
   name: string;
@@ -22,33 +22,6 @@ const players = {
   carteado: [2, 3, 4],
   truco: [2, 4],
 };
-
-const CreateRoomButton = withSound(
-  ({
-    onClick,
-    disabled,
-    text,
-  }: {
-    onClick: () => void;
-    disabled: boolean;
-    text: string;
-  }) => {
-    return (
-      <button
-        type="button"
-        data-testid="create-room-button"
-        className={styles.createButton}
-        onClick={onClick}
-        disabled={disabled}>
-        <span>{text}</span>
-        <ArrowRightCircle size={24} />
-      </button>
-    );
-  },
-  {
-    clickSrc: "/assets/sfx/button-click.mp3",
-  }
-);
 
 export default function CreateRoom() {
   const { t } = useTranslation();
@@ -84,6 +57,7 @@ export default function CreateRoom() {
 
   const roomSize =
     roomPayload.rule === "CarteadoGameRules" ? players.carteado : players.truco;
+
   return (
     <div className={classNames(styles.CreateRoom, "app-background")}>
       <div className={styles.menuContent}>
@@ -145,11 +119,16 @@ export default function CreateRoom() {
           </button>
         </div>
 
-        <CreateRoomButton
-          text={t("CreateRoom.create")}
+        <ActionButton
+          type="button"
+          className={styles.createButton}
           onClick={handleCreateRoom}
           disabled={!isFormValid}
-        />
+          icon={<ArrowRightCircle size={24} />}
+          iconPosition="right"
+          data-testid="create-room-button">
+          {t("CreateRoom.create")}
+        </ActionButton>
       </div>
     </div>
   );

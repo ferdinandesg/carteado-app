@@ -22,6 +22,7 @@ export async function createRoom(
   const uuid = randomUUID();
   const hash = uuid.substring(uuid.length - 4);
   const chat = await prisma.chat.create({});
+  const ownerId = UserFactory.canOwnRoom(user) ? user.id : undefined;
   const createdRoom = await prisma.room.create({
     data: {
       hash,
@@ -29,7 +30,7 @@ export async function createRoom(
       name: name,
       chatId: chat.id,
       size: size,
-      ...(UserFactory.canOwnRoom(user) && { ownerId: user.id }),
+      ...(ownerId && { ownerId }),
     },
   });
   const room = {

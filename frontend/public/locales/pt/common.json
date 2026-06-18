@@ -95,7 +95,8 @@
     "owner": "Dono",
     "participants": "Participantes",
     "hash": "Código",
-    "status": "Status: {{status}}"
+    "status": "Status: {{status}}",
+    "modality": "Modo: {{rule}}"
   },
   "Participants": {
     "status": {
@@ -161,5 +162,8 @@
       "MATCH_STARTED": "O jogo começou",
       "PLAYER_JOINED": "O jogador {{player}} entrou na sala"
     }
+  },
+  "Chat": {
+    "roomMessages": "Bate-papo da sala {{roomName}} ({{count}})"
   }
 }

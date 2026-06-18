@@ -1,15 +1,18 @@
 import { Namespace, Socket } from "socket.io";
 import { DisconnectingEventHandler } from "./DisconnectingEventHandler";
-import { retrieveSession } from "@/lib/redis/userSession";
-import { getRoomState } from "@/lib/redis/room";
+import { clearSession, retrieveSession } from "@/lib/redis/userSession";
+import { atomicallyUpdateRoomState } from "@/lib/redis/room";
 import { logger } from "@/utils/logger";
 import { registerRoomEvents } from "./rooms";
 import { registerCardEvents } from "./cards";
 import { registerChatEvents } from "./chat";
 import emitToUser from "../utils/emitToUser";
 import { getGameInstance } from "@/services/game.service";
+import ErrorHandler from "@/utils/error.handler";
+import { registerSafeSocketEvent } from "./registerSafeSocketEvent";
+import { CHANNEL } from "@/socket/channels";
 
-const handleReconnection = async (socket: Socket, channel: Namespace) => {
+const handleReconnection = async (socket: Socket) => {
   const session = await retrieveSession(socket.user.id);
   if (session && session.roomHash) {
     logger.info(
@@ -17,22 +20,40 @@ const handleReconnection = async (socket: Socket, channel: Namespace) => {
       "User reconnected. Restoring session."
     );
 
-    socket.join(session.roomHash);
-    socket.user.room = session.roomHash;
-    socket.user.status = session.status;
-
-    const room = await getRoomState(session.roomHash);
-    if (room) {
-      const game = await getGameInstance(session.roomHash);
-      if (game) {
-        emitToUser(socket, "game_updated", game);
+    let restoredParticipant = false;
+    const room = await atomicallyUpdateRoomState(session.roomHash, (room) => {
+      const participant = room.participants.find(
+        (p) => p.userId === socket.user.id
+      );
+      if (!participant) {
+        return null;
       }
 
-      emitToUser(socket, "room_updated", room);
-      socket.emit("reconnected", {
+      participant.isOnline = true;
+      socket.user.status = participant.status;
+      restoredParticipant = true;
+      return room;
+    });
+    if (room && restoredParticipant) {
+      await socket.join(session.roomHash);
+      socket.user.room = session.roomHash;
+
+      const game = await getGameInstance(session.roomHash);
+      if (game) {
+        emitToUser(socket, CHANNEL.SERVER.GAME_UPDATED, game);
+      }
+
+      emitToUser(socket, CHANNEL.SERVER.ROOM_UPDATED, room);
+      socket.emit(CHANNEL.SERVER.RECONNECTED, {
         message: "WELCOME_BACK",
         room,
       });
+    } else {
+      logger.warn(
+        { userId: socket.user.id, roomHash: session.roomHash },
+        "Discarding stale session without room participant."
+      );
+      await clearSession(socket.user.id);
     }
   } else {
     logger.info({ userId: socket.user.id }, "New user connected.");
@@ -47,8 +68,19 @@ export async function ConnectionEventHandler(
   registerCardEvents(socket, channel);
   registerChatEvents(socket, channel);
 
-  socket.on("disconnecting", () =>
+  registerSafeSocketEvent(socket, CHANNEL.SERVER.DISCONNECTING, () =>
     DisconnectingEventHandler({ socket, channel })
   );
-  await handleReconnection(socket, channel);
+  try {
+    await handleReconnection(socket);
+  } catch (error) {
+    try {
+      ErrorHandler(error, socket);
+    } catch (unhandledError) {
+      logger.error(
+        { error: unhandledError },
+        "Unhandled socket connection error."
+      );
+    }
+  }
 }

@@ -49,31 +49,7 @@
     }
     .createButton {
       width: 30%;
-      display: flex;
       margin-top: $spacing-l;
-      justify-content: center;
-      border-radius: $border-radius;
-      align-items: center;
-      color: white;
-      background-color: $primary-color;
-      gap: $spacing-s;
-      padding: $spacing-m;
-      font-size: 1.25rem;
-      cursor: pointer;
-
-      &:enabled {
-        &:hover {
-          background-color: lighten($color: $primary-color, $amount: 20);
-        }
-        &:active {
-          background-color: darken($color: $primary-color, $amount: 5);
-        }
-      }
-      &:disabled {
-        cursor: pointer;
-        background-color: #ccc;
-        cursor: not-allowed;
-      }
     }
 
     .errorFeedback {

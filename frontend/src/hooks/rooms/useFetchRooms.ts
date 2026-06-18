@@ -1,21 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import { Participant } from "shared/types";
-import { UserSession } from "@/models/Users";
+import { RoomInterface } from "@/models/room";
 import useAxiosAuth, { useAuthQueryEnabled } from "../useAuthAxios";
-
-export type RoomInterface = {
-  id: string;
-  hash: string;
-  name: string;
-  size: number;
-  status: "open" | "playing";
-  owner?: UserSession;
-  ownerId?: string;
-  rule: "CarteadoGameRules" | "TrucoGameRules";
-  createdAt: string;
-  participants: Participant[];
-};
 
 export default function useFetchRooms() {
   const { status: sessionStatus } = useSession();

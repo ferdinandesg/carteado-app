@@ -1,11 +1,12 @@
 import { atomicallyUpdateRoomState } from "@/lib/redis/room";
-import { SocketContext } from "../../../@types/socket";
+import { SocketContext } from "@/@types/socket";
 import emitToRoom from "@/socket/utils/emitToRoom";
-import ErrorHandler from "utils/error.handler";
+import ErrorHandler from "@/utils/error.handler";
 import { PlayerStatus, createParticipantObject } from "shared/game";
 import { storeSession } from "@/lib/redis/userSession";
 import { JoinRoomPayload } from "../payloads";
 import { logger } from "@/utils/logger";
+import { CHANNEL } from "@/socket/channels";
 
 export async function JoinRoomEventHandler(
   context: SocketContext<JoinRoomPayload>
@@ -18,19 +19,22 @@ export async function JoinRoomEventHandler(
 
   try {
     if (!roomHash || !socket.user) return;
+    let shouldBroadcastUserJoined = false;
 
     // Atomic update for joining a room
     const updatedRoom = await atomicallyUpdateRoomState(roomHash, (room) => {
+      const existingParticipant = room.participants.find(
+        (player) => player.userId === socket.user.id
+      );
+
+      if (existingParticipant) {
+        existingParticipant.isOnline = true;
+        socket.user.status = existingParticipant.status;
+        return room;
+      }
+
       if (room.status === "playing") {
-        const isPlayer = room.participants.findIndex(
-          (player) => player.userId === socket.user.id
-        );
-        if (isPlayer === -1) {
-          throw "ROOM_IS_PLAYING";
-        }
-        // If the player is already in the game, no state change is needed here.
-        // We just need to emit the current state to them.
-        return null; // Returning null signifies no update was made
+        throw "ROOM_IS_PLAYING";
       }
 
       if (room.participants.length >= room.size) {
@@ -38,25 +42,27 @@ export async function JoinRoomEventHandler(
       }
 
       const participant = createParticipantObject(socket.user);
-
       room.participants.push(participant);
       socket.user.status = PlayerStatus.NOT_READY;
+      shouldBroadcastUserJoined = true;
       return room;
     });
 
     if (!updatedRoom) {
       return;
     }
-    socket.join(roomHash);
+    await socket.join(roomHash);
     socket.user.room = roomHash;
 
     await storeSession(socket, roomHash);
 
-    emitToRoom(channel, roomHash, "room_updated", updatedRoom);
-    emitToRoom(socket, roomHash, "user_joined", {
-      message: `O usuário ${socket.user.name} entrou na sala.`,
-      players: { user: socket.user, isOnline: true },
-    });
+    emitToRoom(channel, roomHash, CHANNEL.SERVER.ROOM_UPDATED, updatedRoom);
+    if (shouldBroadcastUserJoined) {
+      emitToRoom(socket, roomHash, CHANNEL.SERVER.USER_JOINED, {
+        message: `O usuário ${socket.user.name} entrou na sala.`,
+        players: { user: socket.user, isOnline: true },
+      });
+    }
 
     logger.info({ userId, roomHash }, "User successfully joined room.");
   } catch (error) {

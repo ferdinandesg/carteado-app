@@ -39,7 +39,10 @@ const Table: React.FC<TableProps> = ({
     }
     return { mainPlayer: player, orderedOpponents: opponents };
   }, [game, session]);
-
+  console.log({
+    game,
+    mainPlayer,
+  });
   if (!game || !mainPlayer) {
     return <div className={styles.loadingTable}>Aguardando o jogo...</div>;
   }

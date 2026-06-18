@@ -1,8 +1,10 @@
 import { atomicallyUpdateRoomState } from "@/lib/redis/room";
-import { SocketContext } from "../../@types/socket";
+import { SocketContext } from "@/@types/socket";
 import emitToRoom from "@/socket/utils/emitToRoom";
 import { expireSession } from "@/lib/redis/userSession";
 import { logger } from "@/utils/logger";
+import { CHANNEL } from "@/socket/channels";
+import { PlayerStatus } from "shared/game";
 
 export async function DisconnectingEventHandler(
   context: Omit<SocketContext, "payload">
@@ -19,16 +21,13 @@ export async function DisconnectingEventHandler(
     const participant = room.participants.find((p) => p.userId === userId);
     if (participant) {
       participant.isOnline = false;
-    }
-    // If the room is open, we can also filter out the disconnected player
-    if (room.status === "open") {
-      room.participants = room.participants.filter((p) => p.userId !== userId);
+      participant.status = PlayerStatus.NOT_READY;
     }
     return room;
   });
 
   if (updatedRoom) {
-    emitToRoom(channel, roomHash, "room_updated", updatedRoom);
+    emitToRoom(channel, roomHash, CHANNEL.SERVER.ROOM_UPDATED, updatedRoom);
     logger.info({ userId, roomHash }, "User marked as offline.");
   }
 

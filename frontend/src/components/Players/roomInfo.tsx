@@ -1,4 +1,4 @@
-import { RoomsInterface } from "@/hooks/rooms/useRoomByHash";
+import { RoomInterface } from "@/models/room";
 import styles from "@/styles/RoomInfo.module.scss";
 import { PanelLeftClose, PanelRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -8,7 +8,7 @@ export default function RoomInfo({
   isCollapsed,
   toggleCollapse,
 }: {
-  room: RoomsInterface;
+  room: RoomInterface;
   isCollapsed?: boolean;
   toggleCollapse?: () => void;
 }) {
@@ -34,7 +34,7 @@ export default function RoomInfo({
             {t("RoomInfo.hash")}: <span> {room.hash}</span>
           </p>
           <p className={styles.roomModality}>
-            {room.rule === "TrucoGameRules" ? "Truco" : "Carteado"}
+            {t("RoomInfo.modality", { rule: t(`RoomItem.${room.rule}`) })}
           </p>
         </div>
       )}

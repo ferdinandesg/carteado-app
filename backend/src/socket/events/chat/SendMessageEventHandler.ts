@@ -1,8 +1,9 @@
-import { SocketContext } from "../../../@types/socket";
+import { SocketContext } from "@/@types/socket";
 import emitToRoom from "@/socket/utils/emitToRoom";
 import { addMessage } from "./addMessage";
 import { logger } from "@/utils/logger";
 import { SendMessagePayload } from "../payloads";
+import { CHANNEL } from "@/socket/channels";
 
 export async function SendMessageEventHandler(
   context: SocketContext<SendMessagePayload>
@@ -16,7 +17,7 @@ export async function SendMessageEventHandler(
       createdAt: new Date(),
     };
     await addMessage(roomHash, messageDoc);
-    emitToRoom(channel, roomHash, "receive_message", messageDoc);
+    emitToRoom(channel, roomHash, CHANNEL.SERVER.RECEIVE_MESSAGE, messageDoc);
     logger.info(`Emitted to: ${roomHash} - ${messageDoc.message}`);
   } catch (error) {
     logger.error(error);

@@ -6,6 +6,7 @@ import { SocketServer } from "@/socket/socket";
 jest.mock("@/lib/redis/userSession", () => ({
   retrieveSession: jest.fn().mockResolvedValue(null),
   storeSession: jest.fn().mockResolvedValue(undefined),
+  clearSession: jest.fn().mockResolvedValue(undefined),
   expireSession: jest.fn().mockResolvedValue(undefined),
 }));
 

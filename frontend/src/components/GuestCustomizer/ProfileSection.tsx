@@ -38,6 +38,8 @@ export default function ProfileSection({
           data-testid="guest-name-input"
           id="guestname"
           placeholder={t("Home.guestNicknamePlaceholder")}
+          aria-label={t("Home.guestNickname")}
+          autoComplete="nickname"
           className={styles.input}
           value={name}
           onChange={(event) => onChangeName(event.target.value)}

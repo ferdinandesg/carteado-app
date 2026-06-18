@@ -2,10 +2,10 @@
 import { useEffect, useState } from "react";
 import Game from "@/components/Game/game";
 import { useSocket } from "@/contexts/socket.context";
+import { useRoomContext } from "@/contexts/room.context";
 import Lobby from "@/components/Lobby";
 import { RoomStatus } from "@/models/room";
 import { useParams } from "next/navigation";
-import useRoomByHash from "@/hooks/rooms/useRoomByHash";
 
 import styles from "@/styles/Room.module.scss";
 import Chat from "@/components/Chat";
@@ -13,20 +13,14 @@ import { useTranslation } from "react-i18next";
 import useTitle from "@/hooks/useTitle";
 import RoomInfo from "@/components/Players/roomInfo";
 
-const RenderScreen = ({
-  status,
-  roomHash,
-}: {
-  status?: RoomStatus;
-  roomHash: string;
-}) => {
+const RenderScreen = ({ status }: { status?: RoomStatus }) => {
   const { t } = useTranslation();
   switch (status) {
     case "open":
       return <Lobby />;
     case "playing":
     case "finished":
-      return <Game roomHash={roomHash} />;
+      return <Game />;
     default:
       return <div>{t("loading")}</div>;
   }
@@ -41,7 +35,7 @@ export default function Room() {
     }),
   });
   const { socket } = useSocket();
-  const { room, isLoading } = useRoomByHash(String(id));
+  const { room, isLoading } = useRoomContext();
   const [isChatCollapsed, setChatCollapsed] = useState(false);
   const [isInfoCollapsed, setInfoCollapsed] = useState(false);
   const toggleInfoCollapse = () => setInfoCollapsed((c) => !c);
@@ -74,10 +68,7 @@ export default function Room() {
         roomHash={room.hash}
         isCollapsed={isChatCollapsed}
       />
-      <RenderScreen
-        status={room.status}
-        roomHash={room.hash}
-      />
+      <RenderScreen status={room.status} />
       <RoomInfo
         toggleCollapse={toggleInfoCollapse}
         isCollapsed={isInfoCollapsed}

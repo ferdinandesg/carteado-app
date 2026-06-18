@@ -6,6 +6,9 @@
   "authMethods": "Sign in options",
   "loading": "Loading...",
   "send": "Send",
+  "chatPlaceholder": "Type your message...",
+  "open": "Open",
+  "logout": "Logout",
   "back": "Back",
   "confirm": "Confirm",
   "pageTitles": {
@@ -19,6 +22,7 @@
     "joinAsGuest": "Join as guest",
     "guestNickname": "Guest nickname",
     "guestNicknamePlaceholder": "Player name",
+    "customizeGuest": "Customize guest",
     "ChooseAvatar": "Choose an avatar",
     "customizeProfileTitle": "Customize your profile",
     "chooseCardSkin": "Choose a card skin",
@@ -79,7 +83,20 @@
   "Game": {
     "choseYourHand": "Select your hand",
     "gameFinished": "The game is over",
-    "winner": "Winner: {{winner}}"
+    "winner": "Winner: {{winner}}",
+    "askTruco": "Call Truco",
+    "acceptTruco": "Accept Truco",
+    "rejectTruco": "Reject Truco",
+    "truco": "Truco",
+    "vira": "Vira"
+  },
+  "RoomInfo": {
+    "title": "Room information",
+    "owner": "Owner",
+    "participants": "Participants",
+    "hash": "Code",
+    "status": "Status: {{status}}",
+    "modality": "Mode: {{rule}}"
   },
   "Participants": {
     "status": {
@@ -91,6 +108,7 @@
     }
   },
   "RoomItem": {
+    "participants": "Players",
     "players": "Players",
     "status": "Status",
     "join": "Join",
@@ -134,7 +152,10 @@
       "CANT_PLAY_TRUCO_PENDING": "You cannot play while truco is pending",
       "CANT_ACCEPT_TRUCO": "You cannot accept truco",
       "CANT_REJECT_TRUCO": "You cannot reject truco",
-      "CANT_ASK_TRUCO_ANYMORE": "The game has reached the maximum truco level"
+      "NOT_ALL_PLAYERS_ARE_READY": "Not all players are ready",
+      "CANT_ASK_TRUCO_ANYMORE": "The game has reached the maximum truco level",
+      "ONLY_THE_OWNER_CAN_START_THE_GAME": "Only the room owner can start the game",
+      "ROOM_IS_NOT_FULL": "The room is not full"
     },
     "infos": {
       "YOUR_TURN": "It's your turn",
@@ -142,5 +163,8 @@
       "MATCH_STARTED": "The game has started",
       "PLAYER_JOINED": "Player {{player}} joined the room"
     }
+  },
+  "Chat": {
+    "roomMessages": "Room chat {{roomName}} ({{count}})"
   }
 }

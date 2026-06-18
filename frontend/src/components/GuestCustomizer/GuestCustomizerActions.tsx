@@ -1,6 +1,7 @@
 import { Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import ActionButton from "@/components/buttons/ActionButton";
 import styles from "@/styles/GuestCustomizer.module.scss";
 
 interface GuestCustomizerActionsProps {
@@ -20,32 +21,25 @@ export default function GuestCustomizerActions({
 
   return (
     <footer className={styles.actions}>
-      <button
+      <ActionButton
         type="button"
-        className={styles.resetButton}
+        variant="ghost"
         onClick={onReset}
         disabled={isLoading}
         data-testid="guest-reset-button">
         {t("Home.reset")}
-      </button>
+      </ActionButton>
 
-      <button
+      <ActionButton
         type="button"
-        className={styles.createButton}
+        className={styles.applyButton}
+        icon={<Check size={18} />}
         onClick={onApply}
         disabled={!canApply || isLoading}
-        aria-busy={isLoading}
+        isLoading={isLoading}
         data-testid="guest-play-button">
-        {isLoading ? (
-          <span
-            className="spinner"
-            aria-hidden
-          />
-        ) : (
-          <Check size={18} />
-        )}
         {t("Home.apply")}
-      </button>
+      </ActionButton>
     </footer>
   );
 }
