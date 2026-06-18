@@ -48,11 +48,14 @@ $color-text-primary: $color-primary;
 $color-text-muted: $color-gray-500;
 
 // Outline (estilo cartoon)
-$color-outline: rgba($color-black, 0.4);
+$color-outline: darken(#3f87bd, 35%);
 $color-outline-light: rgba($color-white, 0.9);
 
 // --- Typography ---
-$font-family-base: system-ui, -apple-system, sans-serif;
+$font-family-base:
+  system-ui,
+  -apple-system,
+  sans-serif;
 $font-family-display: "Pixelify Sans", $font-family-base;
 
 $font-size-xs: 0.75rem;
@@ -82,7 +85,7 @@ $border-radius-s: 4px;
 $border-radius-m: 10px;
 $border-radius-l: 16px;
 $border-radius-xl: 24px;
-$border-radius-full: 50px;
+$border-radius-full: 9999px;
 
 $border-width: 2px;
 $border-width-bold: 3px;

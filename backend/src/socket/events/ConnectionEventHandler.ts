@@ -1,13 +1,12 @@
 import { Namespace, Socket } from "socket.io";
 import { DisconnectingEventHandler } from "./DisconnectingEventHandler";
 import { retrieveSession } from "@/lib/redis/userSession";
+import { getRoomState } from "@/lib/redis/room";
 import { logger } from "@/utils/logger";
 import { registerRoomEvents } from "./rooms";
 import { registerCardEvents } from "./cards";
 import { registerChatEvents } from "./chat";
-import emitToRoom from "../utils/emitToRoom";
-import { atomicallyUpdateRoomState } from "@/lib/redis/room";
-import { createParticipantObject } from "shared/game";
+import emitToUser from "../utils/emitToUser";
 import { getGameInstance } from "@/services/game.service";
 
 const handleReconnection = async (socket: Socket, channel: Namespace) => {
@@ -18,33 +17,21 @@ const handleReconnection = async (socket: Socket, channel: Namespace) => {
       "User reconnected. Restoring session."
     );
 
-    const updatedRoom = await atomicallyUpdateRoomState(
-      session.roomHash,
-      (room) => {
-        const participant = room.participants.find(
-          (p) => p.userId === socket.user.id
-        );
-        if (participant) {
-          participant.isOnline = true;
-        } else {
-          const created = createParticipantObject(socket.user);
-          room.participants.push(created);
-        }
-        return room;
-      }
-    );
+    socket.join(session.roomHash);
+    socket.user.room = session.roomHash;
+    socket.user.status = session.status;
 
-    if (updatedRoom) {
-      socket.join(session.roomHash);
-      socket.user.room = session.roomHash;
-      socket.user.status = session.status;
+    const room = await getRoomState(session.roomHash);
+    if (room) {
       const game = await getGameInstance(session.roomHash);
-      emitToRoom(channel, session.roomHash, "game_updated", game);
+      if (game) {
+        emitToUser(socket, "game_updated", game);
+      }
 
-      emitToRoom(channel, session.roomHash, "room_updated", updatedRoom);
+      emitToUser(socket, "room_updated", room);
       socket.emit("reconnected", {
         message: "WELCOME_BACK",
-        room: updatedRoom,
+        room,
       });
     }
   } else {

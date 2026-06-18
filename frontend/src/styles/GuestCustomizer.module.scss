@@ -1,99 +1,302 @@
+@use "design-system/tokens" as tokens;
 .customizerContainer {
   display: flex;
   justify-content: center;
-
   min-height: 100vh;
-}
-
-.title {
-  font-size: 2rem;
-  font-weight: 600;
-  margin-top: $spacing-s;
-  color: $primary-color;
+  font-family: var(--font-big-shoulders), sans-serif;
 }
 
 .customizerBox {
-  width: 70%;
-  height: 100vh;
-  position: relative;
-  background-color: rgba(black, 0.2);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  color: white;
   gap: $spacing-l;
-  .input {
-    border-radius: $border-radius;
-    border: 1px solid #ccc;
-    padding: $spacing-m;
-    color: black;
-    font-size: 20px;
-    font-weight: 300;
+  width: min(760px, 100%);
+  min-height: 90vh;
+  margin-top: auto;
+  padding: $spacing-l tokens.$spacing-2xl;
+  overflow: auto;
+  color: $color-white;
+  background-color: #3f87bd;
+  border: 5px solid $color-outline;
+  border-bottom: none;
+  border-radius: $border-radius-l $border-radius-l 0 0;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  gap: $spacing-s;
+}
+
+.headerSpacer {
+  width: 40px;
+  height: 40px;
+}
+
+.title {
+  margin: $spacing-s 0 0;
+  color: $color-white;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: 2.5rem;
+  font-weight: $font-weight-bold;
+  letter-spacing: $letter-spacing-wide;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.closeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: $color-white;
+  background-color: transparent;
+  border: 0;
+  cursor: pointer;
+  filter: drop-shadow(2px 2px 0 rgba($color-black, 0.45));
+  transition:
+    filter $transition-normal,
+    transform $transition-normal;
+
+  &:hover {
+    filter: drop-shadow(3px 3px 0 rgba($color-black, 0.5));
+    transform: translateY(-1px);
   }
 
-  .optionsGrid {
-    display: flex;
-    gap: $spacing-m;
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: tokens.$spacing-xl;
+}
+
+.profileSection {
+  display: flex;
+
+  align-items: center;
+}
+
+.selectedAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
+  background-color: rgba($color-black, 0.22);
+  border: $border-width solid $color-outline-light;
+  border-radius: $border-radius-full;
+
+  z-index: 2;
+}
+
+.selectedAvatarImage {
+  border-radius: $border-radius-full;
+}
+.nicknameField {
+  z-index: 1;
+  position: relative;
+  left: -10px;
+  width: 50%;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.formGroup label {
+  color: darken(#23304f, 4%);
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: $font-size-l;
+  font-weight: $font-weight-semibold;
+}
+
+.input {
+  width: 100%;
+  padding: $spacing-m $spacing-m;
+  color: $color-gray-800;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: tokens.$font-size-2xl;
+  letter-spacing: $letter-spacing-wide;
+  text-transform: uppercase;
+  background-color: $color-bg-input;
+  border: $border-width solid $color-outline;
+  border-radius: 0;
+
+  &::placeholder {
+    color: $color-gray-400;
   }
 
-  .formGroup {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-m;
-    label {
-      font-size: 1.25rem;
-    }
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 1px;
+  }
+}
+
+.avatarList {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $spacing-m;
+}
+
+.skinGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: $spacing-s;
+}
+
+.optionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: $color-white;
+  background-color: transparent;
+  border: $border-width solid transparent;
+  cursor: pointer;
+  transition:
+    box-shadow $transition-normal,
+    transform $transition-normal;
+
+  &:hover {
+    transform: translateY(-2px);
   }
 
-  .optionItem {
-    border-radius: 8px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.2s ease;
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
+}
 
+.avatarOption {
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
+  background-color: rgba($color-white, 0.12);
+  border-radius: $border-radius-full;
+
+  img {
+    border-radius: $border-radius-full;
+  }
+}
+
+.skinOption {
+  min-height: 116px;
+  padding: $spacing-s 0;
+  border-radius: $border-radius-s;
+}
+
+.optionItem {
+  background-color: transparent;
+}
+
+.selected {
+  border-color: $success-color;
+  box-shadow: 0 0 0 2px rgba($success-color, 0.35);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-m;
+  margin-top: auto;
+}
+
+.resetButton {
+  color: $color-white;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: 1.25rem;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.createButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+  padding: $spacing-s $spacing-l;
+  color: $color-white;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: 1.25rem;
+  font-weight: $font-weight-bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background-color: $color-primary;
+  border: $border-width solid $color-outline;
+  border-radius: $border-radius-s;
+  box-shadow: $shadow-button;
+  cursor: pointer;
+  gap: $spacing-s;
+
+  &:enabled {
     &:hover {
-      transform: scale(1.05);
+      background-color: $color-primary-hover;
     }
 
-    &.selected {
-      border-color: #4caf50; // Cor de destaque
-      box-shadow: 0 0 10px #4caf50;
+    &:active {
+      transform: translateY(1px);
     }
+  }
+
+  &:disabled {
+    color: $color-gray-800;
+    background-color: $color-gray-400;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+}
+
+@media (max-width: 768px) {
+  .customizerContainer {
+    padding: $spacing-m;
+  }
+
+  .customizerBox {
+    min-height: auto;
+    padding: $spacing-m;
+  }
+
+  .title {
+    font-size: 2.25rem;
+  }
+
+  .profileSection {
+    width: 100%;
+  }
+
+  .skinGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
   }
 
   .createButton {
-    width: 30%;
-    display: flex;
-    margin-top: $spacing-l;
-    justify-content: center;
-    border-radius: $border-radius;
-    align-items: center;
-    color: white;
-    background-color: $primary-color;
-    gap: $spacing-s;
-    margin: auto 0;
-    padding: $spacing-m;
-    font-size: 1.25rem;
-    cursor: pointer;
-
-    &:enabled {
-      &:hover {
-        background-color: lighten($color: $primary-color, $amount: 20);
-      }
-      &:active {
-        background-color: darken($color: $primary-color, $amount: 5);
-      }
-    }
-    &:disabled {
-      cursor: pointer;
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-  }
-
-  .errorFeedback {
-    color: red;
-    font-size: 12px;
-    margin-top: $spacing-s;
+    width: 100%;
   }
 }

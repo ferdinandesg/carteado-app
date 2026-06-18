@@ -23,7 +23,7 @@ export default function RootLayout({
     <div
       className={classNames(
         styles.RootLayout,
-        "square-bg",
+        "app-background",
         pixelify.className
       )}>
       <SocketProvider>

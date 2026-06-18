@@ -18,11 +18,16 @@
   "Home": {
     "joinAsGuest": "Join as guest",
     "guestNickname": "Guest nickname",
+    "guestNicknamePlaceholder": "Player name",
     "ChooseAvatar": "Choose an avatar",
     "customizeProfileTitle": "Customize your profile",
     "chooseCardSkin": "Choose a card skin",
+    "selectedAvatar": "Selected avatar",
+    "apply": "Apply",
+    "reset": "Reset",
     "play": "Play",
-    "avatarOption": "Avatar {{index}}"
+    "avatarOption": "Avatar {{index}}",
+    "noAvatar": "No avatar"
   },
   "inviteUser": {
     "placeholder": "Username"

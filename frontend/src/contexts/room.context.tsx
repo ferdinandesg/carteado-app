@@ -10,8 +10,6 @@ import { RoomStatus } from "@/models/room";
 import { useParams } from "next/navigation";
 import useRoomByHash, { RoomsInterface } from "@/hooks/rooms/useRoomByHash";
 
-
-
 type RoomContextProps = {
   name: string;
   status: RoomStatus;
@@ -26,17 +24,12 @@ export function RoomProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!id) return;
-
-    socket.on("room_updated", (updatedRoom: RoomsInterface) => {
-
-      updateRoom(updatedRoom);
-    });
+    socket.on("room_updated", updateRoom);
 
     return () => {
-      socket.emit("quit");
-      socket.off("room_updated");
+      socket.off("room_updated", updateRoom);
     };
-  }, [id, socket]);
+  }, [id, socket, updateRoom]);
   return (
     <RoomContext.Provider
       value={{

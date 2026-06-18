@@ -7,7 +7,7 @@ import { Pixelify_Sans } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import GuestCustomizer from "@/components/GuestCustomizer";
+import GuestCustomizer from "@/components/GuestCustomizer/GuestCustomizer";
 import styles from "@/styles/Home.module.scss";
 import classNames from "classnames";
 
@@ -41,7 +41,7 @@ export default function Home() {
 
   return (
     <main
-      className={classNames(styles.Home, "square-bg", pixelify.className)}
+      className={classNames(styles.Home, "app-background", pixelify.className)}
       role="main">
       <div className={styles.container}>
         <h1 className={styles.title}>Carteado</h1>

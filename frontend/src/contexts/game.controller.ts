@@ -16,14 +16,11 @@ export function GameController() {
   useEffect(() => {
     setSocket(socket);
 
-    // 2. Ouve o evento de atualização do jogo
     const handleGameUpdate = (updatedGame: IGameState) => {
       setGame(updatedGame);
     };
 
-    socket.on("game_updated", (updated) => {
-      handleGameUpdate(updated);
-    });
+    socket.on("game_updated", handleGameUpdate);
 
     return () => {
       socket.off("game_updated", handleGameUpdate);
@@ -33,7 +30,7 @@ export function GameController() {
   useEffect(() => {
     if (!data?.user.id) return;
     setUserId(data.user.id);
-  }, [data]);
+  }, [data, setUserId]);
 
   return null;
 }

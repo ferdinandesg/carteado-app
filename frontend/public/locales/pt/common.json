@@ -21,12 +21,17 @@
   "Home": {
     "joinAsGuest": "Entrar como convidado",
     "guestNickname": "Apelido do convidado",
+    "guestNicknamePlaceholder": "Nome do jogador",
     "customizeGuest": "Personalizar convidado",
     "ChooseAvatar": "Escolha um avatar",
-    "customizeProfileTitle": "Personalize o seu Perfil",
+    "customizeProfileTitle": "Editar perfil",
     "chooseCardSkin": "Escolha uma skin para as cartas",
+    "selectedAvatar": "Avatar selecionado",
+    "apply": "Aplicar",
+    "reset": "Resetar",
     "play": "Jogar",
-    "avatarOption": "Avatar {{index}}"
+    "avatarOption": "Avatar {{index}}",
+    "noAvatar": "Sem avatar"
   },
   "inviteUser": {
     "placeholder": "Nome de usuário"

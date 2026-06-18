@@ -1,6 +1,31 @@
 @use "variables" as *;
 @use "design-system/spinner" as *;
 
+@font-face {
+  font-family: "Big Shoulders";
+  src: url("/assets/fonts/Big_Shoulders/BigShoulders-VariableFont_opsz,wght.ttf")
+    format("truetype");
+  font-weight: 100 900;
+  letter-spacing: 1px;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Mouse Memoirs";
+  src: url("/assets/fonts/Mouse_Memoirs/MouseMemoirs-Regular.ttf")
+    format("truetype");
+  letter-spacing: 1px;
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-big-shoulders: "Big Shoulders";
+  --font-mouse-memoirs: "Mouse Memoirs";
+}
+
 // Reset mínimo e base (sem Tailwind)
 *,
 *::before,
@@ -34,4 +59,14 @@ body {
 
 .darkBg {
   background: $gradient-background;
+}
+
+.font-big-shoulders {
+  letter-spacing: 1px;
+  font-family: var(--font-big-shoulders), sans-serif;
+}
+
+.font-mouse-memoirs {
+  letter-spacing: 1px;
+  font-family: var(--font-mouse-memoirs), sans-serif;
 }

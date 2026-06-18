@@ -85,7 +85,7 @@ export default function CreateRoom() {
   const roomSize =
     roomPayload.rule === "CarteadoGameRules" ? players.carteado : players.truco;
   return (
-    <div className={classNames(styles.CreateRoom, "square-bg")}>
+    <div className={classNames(styles.CreateRoom, "app-background")}>
       <div className={styles.menuContent}>
         <UserCard user={data?.user} />
         <BackButton

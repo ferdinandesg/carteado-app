@@ -19,7 +19,7 @@ export default function Menu() {
   const { data } = useSession();
   return (
     <>
-      <div className={classNames(styles.Menu, "square-bg")}>
+      <div className={classNames(styles.Menu, "app-background")}>
         <div className={styles.menuContent}>
           <UserCard user={data?.user} />
           <div className={styles.menuActions}>
