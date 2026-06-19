@@ -67,6 +67,7 @@
     "shop": "Shop",
     "friends": "Meus amigos",
     "searchFriends": "Pesquisar",
+    "searchRooms": "Pesquisar",
     "online": "Online",
     "offline": "Offline",
     "statistics": "Estatísticas",
@@ -87,7 +88,8 @@
     "loading": "Carregando...",
     "leave": "Sair",
     "loadingRoom": "Carregando sala...",
-    "notFound": "Sala não encontrada"
+    "notFound": "Sala não encontrada",
+    "noRooms": "Nenhuma sala encontrada"
   },
   "Lobby": {
     "imReady": "Estou pronto",

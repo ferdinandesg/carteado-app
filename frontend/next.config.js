@@ -10,7 +10,16 @@ const nextConfig = {
       process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:4000",
   },
   images: {
-    domains: ["lh3.googleusercontent.com", "developers.google.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "developers.google.com",
+      },
+    ],
   },
   reactStrictMode: false,
   transpilePackages: ["shared"],

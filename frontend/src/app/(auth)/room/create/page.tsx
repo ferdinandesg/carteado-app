@@ -2,15 +2,13 @@
 import BackButton from "@/components/buttons/BackButton";
 import ActionButton from "@/components/buttons/ActionButton";
 import usePostRoom from "@/hooks/rooms/usePostRoom";
-import { ArrowRightCircle } from "lucide-react";
+import { ArrowRightCircle, Users } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "@/styles/CreateRoom.module.scss";
 import { useRouter } from "next/navigation";
-import classNames from "classnames";
-import UserCard from "@/components/UserCard";
-import { useSession } from "next-auth/react";
 import logger from "@/lib/logger";
+import useTitle from "@/hooks/useTitle";
 
 type RoomForm = {
   name: string;
@@ -25,8 +23,9 @@ const players = {
 
 export default function CreateRoom() {
   const { t } = useTranslation();
+  useTitle({ title: t("CreateRoom.createRoom") });
+
   const router = useRouter();
-  const { data } = useSession();
 
   const [roomPayload, setRoomPayload] = useState<RoomForm>({
     name: "",
@@ -41,6 +40,9 @@ export default function CreateRoom() {
       setRoomPayload((prev) => ({
         ...prev,
         [key]: value,
+        ...(key === "rule" && value === "TrucoGameRules" && prev.size === 3
+          ? { size: 2 }
+          : {}),
       }));
     };
 
@@ -59,77 +61,95 @@ export default function CreateRoom() {
     roomPayload.rule === "CarteadoGameRules" ? players.carteado : players.truco;
 
   return (
-    <div className={classNames(styles.CreateRoom, "app-background")}>
-      <div className={styles.menuContent}>
-        <UserCard user={data?.user} />
-        <BackButton
-          data-testid="back-button"
-          color="dark"
-          onClick={() => window.history.back()}
-          size={24}
-        />
-        <input
-          type="text"
-          data-testid="room-name-input"
-          id="username"
-          placeholder={t("CreateRoom.roomName")}
-          className={styles.input}
-          onChange={(e) => handleUpdateRoomPayload("name")(e.target.value)}
-        />
-        <div className={styles.playersForm}>
-          {roomSize.map((player) => (
-            <button
-              data-testid={`room-size-button-${player}`}
-              onClick={(e) =>
-                handleUpdateRoomPayload("size")(+e.currentTarget.value)
-              }
-              value={player}
-              key={`room-size-${player}`}
-              className={classNames(
-                roomPayload.size === player && styles.selected
-              )}>
-              {player}
-            </button>
-          ))}
-        </div>
-        <div className={styles.playersForm}>
-          <button
-            data-testid="room-rule-button-CarteadoGameRules"
-            onClick={(e) =>
-              handleUpdateRoomPayload("rule")(e.currentTarget.value)
-            }
-            value="CarteadoGameRules"
-            key={`room-rule-CarteadoGameRules`}
-            className={classNames(
-              roomPayload.rule === "CarteadoGameRules" && styles.selected
-            )}>
-            Carteado
-          </button>
-          <button
-            data-testid="room-rule-button-TrucoGameRules"
-            onClick={(e) =>
-              handleUpdateRoomPayload("rule")(e.currentTarget.value)
-            }
-            value="TrucoGameRules"
-            key={`room-rule-TrucoGameRules`}
-            className={classNames(
-              roomPayload.rule === "TrucoGameRules" && styles.selected
-            )}>
-            Truco
-          </button>
-        </div>
+    <main className={styles.CreateRoom}>
+      <section className={styles.createRoomPanel}>
+        <header className={styles.createRoomHeader}>
+          <BackButton
+            data-testid="back-button"
+            color="white"
+            onClick={() => window.history.back()}
+            size={24}
+          />
+          <h1>{t("CreateRoom.createRoom")}</h1>
+          <span aria-hidden />
+        </header>
 
-        <ActionButton
-          type="button"
-          className={styles.createButton}
-          onClick={handleCreateRoom}
-          disabled={!isFormValid}
-          icon={<ArrowRightCircle size={24} />}
-          iconPosition="right"
-          data-testid="create-room-button">
-          {t("CreateRoom.create")}
-        </ActionButton>
-      </div>
-    </div>
+        <form
+          className={styles.formContent}
+          onSubmit={(event) => {
+            event.preventDefault();
+            void handleCreateRoom();
+          }}>
+          <label className={styles.fieldGroup}>
+            <span>{t("CreateRoom.roomName")}</span>
+            <input
+              type="text"
+              data-testid="room-name-input"
+              id="room-name"
+              placeholder={t("CreateRoom.roomName")}
+              className={styles.input}
+              value={roomPayload.name}
+              onChange={(event) =>
+                handleUpdateRoomPayload("name")(event.target.value)
+              }
+            />
+          </label>
+
+          <fieldset className={styles.fieldGroup}>
+            <legend>{t("RoomItem.rule")}</legend>
+            <div className={styles.optionGroup}>
+              {(["CarteadoGameRules", "TrucoGameRules"] as const).map(
+                (rule) => (
+                  <button
+                    type="button"
+                    data-testid={`room-rule-button-${rule}`}
+                    onClick={() => handleUpdateRoomPayload("rule")(rule)}
+                    value={rule}
+                    key={`room-rule-${rule}`}
+                    className={
+                      roomPayload.rule === rule ? styles.selected : undefined
+                    }>
+                    {t(`RoomItem.${rule}`)}
+                  </button>
+                )
+              )}
+            </div>
+          </fieldset>
+
+          <fieldset className={styles.fieldGroup}>
+            <legend>{t("CreateRoom.maxPlayers")}</legend>
+            <div className={styles.optionGroup}>
+              {roomSize.map((player) => (
+                <button
+                  type="button"
+                  data-testid={`room-size-button-${player}`}
+                  onClick={() => handleUpdateRoomPayload("size")(player)}
+                  value={player}
+                  key={`room-size-${player}`}
+                  className={
+                    roomPayload.size === player ? styles.selected : undefined
+                  }>
+                  <Users
+                    size={20}
+                    aria-hidden
+                  />
+                  {player}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          <ActionButton
+            type="submit"
+            className={styles.createButton}
+            disabled={!isFormValid}
+            icon={<ArrowRightCircle size={24} />}
+            iconPosition="right"
+            data-testid="create-room-button">
+            {t("CreateRoom.create")}
+          </ActionButton>
+        </form>
+      </section>
+    </main>
   );
 }

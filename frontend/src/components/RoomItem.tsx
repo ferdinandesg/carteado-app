@@ -3,83 +3,87 @@ import classNames from "classnames";
 
 import styles from "@/styles/Rooms.module.scss";
 import Image from "next/image";
-import { Circle, Loader } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 type RoomItemProps = {
   room: RoomInterface;
   onClick?: (room: RoomInterface) => void;
+  isSelected?: boolean;
 };
 
 const RoomStatusBadge = ({ status }: { status: RoomStatus }) => {
   const { t } = useTranslation();
-  let icon = null;
-  if (status === "open") {
-    icon = (
-      <Circle
-        className={styles.icon}
-        size={24}
-      />
-    );
-  }
-  if (status === "playing") {
-    icon = (
-      <Loader
-        className={styles.icon}
-        size={24}
-      />
-    );
-  }
+
   return (
     <span
       data-testid={`room-status-${status}`}
-      className={classNames(styles.roomStatus, styles[status])}>
-      {icon}
-      <span className={styles.label}>{t(`RoomItem.${status}`)}</span>
-    </span>
+      className={classNames(styles.roomStatus, styles[status])}
+      aria-label={t(`RoomItem.${status}`)}
+    />
   );
 };
 
-const RoomItem = ({ room, onClick = () => {} }: RoomItemProps) => {
+const RoomItem = ({
+  room,
+  isSelected = false,
+  onClick = () => {},
+}: RoomItemProps) => {
   const { t } = useTranslation();
+  const participants = room.participants ?? [];
+  const fallbackAvatar = room.owner?.image || "/assets/avatars/avatar1.png";
+  const visibleParticipants =
+    participants.length > 0
+      ? participants.slice(0, 4)
+      : [{ name: room.owner?.name || room.name, image: fallbackAvatar }];
 
-  const ownerPic = room.owner?.image || "/assets/avatars/default.jpg";
+  const status = room.status ?? "open";
+  const rule = room.rule ?? "CarteadoGameRules";
+  const roomSize = room.size ?? participants.length;
+  const playersCount = `${participants.length}/${roomSize}`;
 
   return (
-    <div
+    <button
+      type="button"
       data-testid={`room-item-${room.id}`}
       onClick={() => onClick(room)}
-      className={styles.RoomItem}
+      className={classNames(styles.RoomItem, {
+        [styles.selectedRoom]: isSelected,
+      })}
+      aria-pressed={isSelected}
       key={room.id}>
-      <Image
-        className={styles.owner}
-        alt={ownerPic}
-        src={ownerPic}
-        width={100}
-        height={100}
-      />
-      <div className={styles.roomInfo}>
-        <span className={styles.roomHash}>#{room.hash.toUpperCase()}</span>
-        <span className={styles.roomName}>{room.name}</span>
+      <div
+        className={styles.participantStack}
+        aria-label={t("RoomItem.participants")}>
+        {visibleParticipants.map((participant, index) => (
+          <Image
+            key={`${participant.name}-${index}`}
+            className={styles.participantAvatar}
+            alt={participant.name}
+            src={participant.image || "/assets/avatars/avatar1.png"}
+            width={58}
+            height={58}
+          />
+        ))}
       </div>
+
       <div className={styles.roomData}>
-        <RoomStatusBadge status={room.status} />
         <div className={styles.infoCount}>
-          <span className={styles.label}>{t("RoomItem.rule")}:</span>
-          <span className={styles.count}>{t(`RoomItem.${room.rule}`)}</span>
+          <span className={styles.label}>{t("RoomItem.rule")}</span>
+          <strong className={styles.count}>{t(`RoomItem.${rule}`)}</strong>
         </div>
         <div className={styles.infoCount}>
           <span className={styles.label}>{t("RoomItem.players")}</span>
-          <span className={styles.count}>
-            {room.participants.length}/{room.size}
-          </span>
+          <strong className={styles.count}>{playersCount}</strong>
         </div>
-        <div className={styles.infoCount}>
-          <span className={styles.label}>{t("RoomItem.rank")}</span>
-          <span className={styles.count}>{room.owner?.rank}</span>
+
+        <div className={styles.roomInfo}>
+          <span className={styles.roomName}>{room.name}</span>
+          <span className={styles.roomHash}>#{room.hash.toUpperCase()}</span>
         </div>
       </div>
-    </div>
+
+      <RoomStatusBadge status={status} />
+    </button>
   );
 };
 

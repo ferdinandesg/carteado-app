@@ -1,158 +1,283 @@
 .Rooms {
-  width: 60%;
-  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(220px, 28vw) minmax(0, 1fr);
+  gap: $spacing-xl;
+  width: 100%;
+  min-height: 100%;
+  padding: $spacing-l;
+  color: $color-white;
+  background: linear-gradient(
+    90deg,
+    rgba(#3f87bd, 0.96) 0%,
+    rgba(#3f87bd, 0.96) 27%,
+    rgba($color-bg, 0.98) 27.2%,
+    rgba($color-bg, 0.98) 100%
+  );
+}
+
+.roomsSidebar {
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   gap: $spacing-m;
-  padding: $spacing-m;
-  background-color: rgba(black, 0.2);
-  height: 100%;
-  .backButton {
-    margin: $spacing-s auto;
-    color: lightgray;
-    display: flex;
-    gap: $spacing-xs;
-    cursor: pointer;
+  min-width: 0;
+  padding: $spacing-xl 0;
+}
 
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-  .searchBox {
-    display: flex;
-    margin: 0 auto;
-    width: 50%;
-    gap: $spacing-s;
-    align-items: center;
-    justify-content: space-between;
-    padding: $spacing-s;
-    border: 1px solid gray;
-    border-radius: 5px;
-    background-color: white;
+.roomsContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  gap: $spacing-l;
+}
 
-    .searchInput {
-      width: 100%;
-      display: flex;
-      border: none;
-      outline: none;
-      font-size: 1.5rem;
-    }
+.roomsHeader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+  align-items: center;
+  gap: $spacing-l;
 
-    .searchButton {
-      background-color: $primary-color;
-      color: white;
-      padding: $spacing-s;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1.5rem;
-
-      &:hover {
-        background-color: lighten($primary-color, 10);
-      }
-
-      &:active {
-        background-color: darken($primary-color, 10);
-      }
-    }
-  }
-
-  .RoomList {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-m;
-    overflow-y: auto;
-    scrollbar-width: none;
-    .RoomItem {
-      display: flex;
-      padding: $spacing-s;
-      align-items: center;
-      gap: $spacing-m;
-      background-color: darken($primary-color, 3);
-      cursor: pointer;
-      border-radius: 8px;
-
-      &:hover {
-        background-color: lighten($primary-color, 5);
-      }
-
-      .owner {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        margin-right: $spacing-s;
-      }
-
-      .roomInfo {
-        display: flex;
-        flex-direction: column;
-        .roomHash {
-          color: white;
-        }
-        .roomName {
-          font-size: 1.5rem;
-          font-weight: bold;
-        }
-      }
-
-      .roomData {
-        display: flex;
-        align-items: center;
-        margin-left: auto;
-        justify-content: space-around;
-        width: 50%;
-        .roomStatus {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: $spacing-s;
-
-          &.open {
-            color: green;
-
-            .icon {
-              color: rgb(0, 165, 0);
-              fill: rgb(0, 165, 0);
-            }
-          }
-
-          &.playing {
-            color: white;
-          }
-
-          .label {
-            font-weight: bold;
-            font-size: 1.1rem;
-            text-transform: uppercase;
-          }
-        }
-      }
-
-      .infoCount {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-
-        .label {
-          font-size: 0.85rem;
-          font-weight: 400;
-        }
-
-        .count {
-          font-size: 2rem;
-          font-weight: bold;
-        }
-      }
-    }
+  h1 {
+    margin: 0;
+    font-family: var(--font-mouse-memoirs), sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    letter-spacing: $letter-spacing-wide;
+    line-height: 1;
+    text-transform: uppercase;
   }
 }
 
-@media screen and (max-width: 768px) {
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: $spacing-s;
+  min-width: 0;
+  padding: $spacing-xs $spacing-s;
+  color: $color-gray-400;
+  background-color: $color-bg-input;
+  border: $border-width solid rgba($color-outline, 0.5);
+
+  svg {
+    flex: 0 0 auto;
+  }
+}
+
+.searchInput {
+  min-width: 0;
+  width: 100%;
+  color: $color-gray-800;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: 1.25rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: none;
+  border: 0;
+  outline: 0;
+
+  &::placeholder {
+    color: $color-gray-400;
+  }
+}
+
+.roomsListFrame {
+  min-height: min(56vh, 460px);
+  max-height: 62vh;
+  overflow-y: auto;
+  padding-right: $spacing-s;
+  scrollbar-color: $color-accent-teal $color-accent-pink;
+  scrollbar-width: thin;
+}
+
+.RoomList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-s;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.RoomItem {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(160px, 0.9fr) minmax(0, 1.6fr) 20px;
+  align-items: center;
+  width: 100%;
+  min-height: 92px;
+  padding: $spacing-s $spacing-m;
+  color: $color-white;
+  text-align: left;
+  background-color: rgba(#3f87bd, 0.78);
+  border: $border-width solid rgba($color-outline-light, 0.75);
+  border-radius: $border-radius-l;
+  box-shadow:
+    0 3px 0 rgba($color-black, 0.38),
+    inset 0 0 0 2px rgba($color-outline, 0.4);
+  cursor: pointer;
+  gap: $spacing-m;
+  transition:
+    background-color $transition-normal,
+    transform $transition-normal;
+
+  &:hover {
+    background-color: rgba(#4a97cb, 0.88);
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 3px;
+  }
+}
+
+.selectedRoom {
+  background-color: rgba(#4a97cb, 0.96);
+  border-color: $color-primary;
+  box-shadow:
+    0 3px 0 rgba($color-black, 0.38),
+    0 0 0 2px rgba($color-primary, 0.28),
+    inset 0 0 0 2px rgba($color-outline, 0.4);
+}
+
+.participantStack {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding-left: $spacing-xs;
+}
+
+.participantAvatar {
+  width: 58px;
+  height: 58px;
+  object-fit: cover;
+  background-color: rgba($color-bg-input, 0.92);
+  border: $border-width solid $color-outline-light;
+  border-radius: $border-radius-full;
+  box-shadow: 2px 2px 0 rgba($color-black, 0.28);
+
+  & + & {
+    margin-left: -$spacing-s;
+  }
+}
+
+.roomData {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.9fr) minmax(90px, 0.7fr) minmax(
+      120px,
+      1fr
+    );
+  align-items: center;
+  gap: $spacing-m;
+  min-width: 0;
+}
+
+.roomInfo,
+.infoCount {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.roomInfo {
+  align-items: flex-start;
+}
+
+.label {
+  color: rgba(#23304f, 0.8);
+  font-size: $font-size-s;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.count,
+.roomName {
+  overflow: hidden;
+  color: $color-white;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: clamp(1.5rem, 2.5vw, 2.1rem);
+  letter-spacing: 1px;
+  line-height: 1;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.roomHash {
+  margin-top: $spacing-xs;
+  color: rgba($color-white, 0.72);
+  font-size: $font-size-s;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.roomStatus {
+  align-self: start;
+  justify-self: end;
+  width: 16px;
+  height: 16px;
+  margin-top: $spacing-xs;
+  border: $border-width solid rgba($color-outline-light, 0.7);
+  border-radius: $border-radius-full;
+  box-shadow: 0 0 0 2px rgba($color-black, 0.12);
+}
+
+.open {
+  background-color: $success-color;
+}
+
+.playing {
+  background-color: $color-gray-400;
+}
+
+.finished {
+  background-color: $color-accent-pink;
+}
+
+.feedback {
+  display: inline-flex;
+  padding: $spacing-m $spacing-l;
+  color: rgba($color-white, 0.8);
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background-color: rgba($color-black, 0.18);
+  border: $border-width solid rgba($color-outline-light, 0.16);
+  border-radius: $border-radius-s;
+}
+
+@media screen and (max-width: 980px) {
   .Rooms {
-    width: 100%;
-    .searchBox {
-      width: 100%;
-    }
+    grid-template-columns: 1fr;
+    gap: $spacing-l;
+    background: $color-bg;
+  }
+
+  .roomsSidebar {
+    padding: 0;
+  }
+}
+
+@media screen and (max-width: 720px) {
+  .Rooms {
+    padding: $spacing-m;
+  }
+
+  .roomsHeader,
+  .RoomItem,
+  .roomData {
+    grid-template-columns: 1fr;
+  }
+
+  .RoomItem {
+    align-items: stretch;
+  }
+
+  .roomStatus {
+    position: absolute;
+    top: $spacing-m;
+    right: $spacing-m;
   }
 }

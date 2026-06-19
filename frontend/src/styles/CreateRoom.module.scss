@@ -1,67 +1,159 @@
 .CreateRoom {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: $spacing-l;
-  height: 100%;
   width: 100%;
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: $spacing-l;
+  color: $color-white;
+  background: linear-gradient(
+    90deg,
+    rgba(#3f87bd, 0.96) 0%,
+    rgba(#3f87bd, 0.96) 27%,
+    rgba($color-bg, 0.98) 27.2%,
+    rgba($color-bg, 0.98) 100%
+  );
+}
+
+.createRoomPanel {
+  width: min(760px, 100%);
+  padding: $spacing-l;
+  background-color: rgba(#3f87bd, 0.82);
+  border: 3px solid rgba($color-outline-light, 0.72);
+  border-radius: $border-radius-l;
+  box-shadow:
+    0 5px 0 rgba($color-black, 0.38),
+    inset 0 0 0 2px rgba($color-outline, 0.32);
+}
+
+.createRoomHeader {
+  display: grid;
+  grid-template-columns: 120px 1fr 120px;
+  align-items: center;
+  gap: $spacing-m;
+  margin-bottom: $spacing-l;
+
+  h1 {
+    margin: 0;
+    font-family: var(--font-mouse-memoirs), sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    letter-spacing: $letter-spacing-wide;
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+  }
+}
+
+.formContent {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-l;
+  width: min(520px, 100%);
   margin: 0 auto;
+}
 
-  .menuContent {
-    width: 70%;
-    height: 100%;
-    position: relative;
-    background-color: rgba(black, 0.2);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-s;
+  padding: 0;
+  margin: 0;
+  border: 0;
+
+  span,
+  legend {
+    padding: 0;
+    color: #1f2a46;
+    font-family: var(--font-mouse-memoirs), sans-serif;
+    font-size: 1.25rem;
+    font-weight: $font-weight-semibold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+}
+
+.input {
+  width: 100%;
+  padding: $spacing-s $spacing-m;
+  color: $color-gray-800;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background-color: $color-bg-input;
+  border: $border-width solid $color-outline;
+  border-radius: 0;
+
+  &::placeholder {
+    color: $color-gray-400;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
+}
+
+.optionGroup {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: $spacing-s;
+
+  button {
+    display: inline-flex;
     align-items: center;
-    gap: $spacing-m;
-    .input {
-      border-radius: $border-radius;
-      border: 1px solid #ccc;
-      padding: $spacing-m;
-      font-size: 20px;
-      font-weight: 300;
+    justify-content: center;
+    gap: $spacing-xs;
+    min-height: 56px;
+    padding: $spacing-s $spacing-m;
+    color: $color-white;
+    font-family: var(--font-mouse-memoirs), sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background-color: rgba($color-bg, 0.72);
+    border: $border-width solid rgba($color-outline-light, 0.55);
+    border-radius: $border-radius-s;
+    box-shadow: $shadow-button;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #394b7a;
     }
 
-    .playersForm {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      gap: $spacing-m;
-      button {
-        padding: $spacing-xs $spacing-m;
-        font-size: 36px;
-
-        border-radius: 10px;
-        &:hover {
-          background-color: lighten($color: $primary-color, $amount: 20);
-        }
-        &:active {
-          background-color: darken($color: $primary-color, $amount: 5);
-        }
-        &.selected {
-          background-color: $primary-color;
-        }
-      }
-    }
-    .createButton {
-      width: 30%;
-      margin-top: $spacing-l;
-    }
-
-    .errorFeedback {
-      color: red;
-      font-size: 12px;
-      margin-top: $spacing-s;
+    &:focus-visible {
+      outline: 2px solid $color-primary;
+      outline-offset: 2px;
     }
   }
 }
 
+.selected {
+  color: $color-gray-800 !important;
+  background-color: $color-primary !important;
+  border-color: $color-outline !important;
+}
+
+.createButton {
+  align-self: flex-end;
+  min-width: 180px;
+}
+
 @media (max-width: 768px) {
-  .ModalRoot {
-    width: 80%;
+  .CreateRoom {
+    padding: $spacing-m;
+    background: $color-bg;
+  }
+
+  .createRoomPanel {
+    padding: $spacing-m;
+  }
+
+  .createRoomHeader {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .createButton {
+    width: 100%;
   }
 }

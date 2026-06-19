@@ -1,16 +1,30 @@
 import { Search } from "lucide-react";
 import styles from "@/styles/Rooms.module.scss";
 
-export default function SearchComponent() {
+type SearchComponentProps = {
+  value?: string;
+  placeholder?: string;
+  onChange?: (value: string) => void;
+};
+
+export default function SearchComponent({
+  value = "",
+  placeholder,
+  onChange,
+}: SearchComponentProps) {
   return (
-    <div className={styles.searchBox}>
+    <label className={styles.searchBox}>
       <input
-        type="text"
+        type="search"
         className={styles.searchInput}
+        value={value}
+        placeholder={placeholder}
+        onChange={(event) => onChange?.(event.target.value)}
       />
-      <button className={styles.searchButton}>
-        <Search />
-      </button>
-    </div>
+      <Search
+        size={24}
+        aria-hidden
+      />
+    </label>
   );
 }
