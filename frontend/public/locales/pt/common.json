@@ -59,7 +59,19 @@
   "Menu": {
     "play": "Jogar",
     "createRoom": "Criar sala",
-    "createdRooms": "Salas criadas"
+    "createdRooms": "Salas criadas",
+    "gameplay": "Gameplay",
+    "level": "Level {{level}}",
+    "xp": "XP",
+    "gold": "Gold",
+    "shop": "Shop",
+    "friends": "Meus amigos",
+    "searchFriends": "Pesquisar",
+    "online": "Online",
+    "offline": "Offline",
+    "statistics": "Estatísticas",
+    "history": "Histórico",
+    "version": "Versão 000.0000"
   },
   "CreateRoom": {
     "create": "Criar sala",

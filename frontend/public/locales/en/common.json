@@ -59,7 +59,19 @@
   "Menu": {
     "play": "Play",
     "createRoom": "Create room",
-    "createdRooms": "Created rooms"
+    "createdRooms": "Created rooms",
+    "gameplay": "Gameplay",
+    "level": "Level {{level}}",
+    "xp": "XP",
+    "gold": "Gold",
+    "shop": "Shop",
+    "friends": "My friends",
+    "searchFriends": "Search",
+    "online": "Online",
+    "offline": "Offline",
+    "statistics": "Statistics",
+    "history": "History",
+    "version": "Version 000.0000"
   },
   "CreateRoom": {
     "create": "Create room",

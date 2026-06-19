@@ -1,62 +1,464 @@
+@use "design-system/tokens" as tokens;
+
 .RootLayout {
-  height: 100vh;
+  position: relative;
   width: 100vw;
+  height: 100vh;
   overflow: hidden;
 }
 
 .Menu {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  grid-template-columns: minmax(240px, 29vw) minmax(420px, 1fr) minmax(
+      240px,
+      28vw
+    );
   gap: $spacing-l;
-  height: 100%;
   width: 100%;
-  margin: 0 auto;
-
-  .menuContent {
-    width: 70%;
-    height: 100%;
-    position: relative;
-    background-color: rgba(black, 0.2);
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: $spacing-l;
-
-    .menuActions {
-      width: 50%;
-      display: flex;
-      flex-direction: column;
-      gap: $spacing-l;
-    }
-  }
+  height: 100%;
+  padding: $spacing-l;
+  color: $color-white;
+  background: linear-gradient(
+    90deg,
+    rgba(#3f87bd, 0.96) 0%,
+    rgba(#3f87bd, 0.96) 24%,
+    rgba($color-bg, 0.98) 24.2%,
+    rgba($color-bg, 0.98) 100%
+  );
 }
 
 .logout {
+  z-index: 5;
   position: absolute;
-  left: 0;
-  top: 0;
-  padding: $spacing-s;
-  background: none;
-  border: none;
-  color: white;
+  top: $spacing-l;
+  left: $spacing-l;
+  padding: $spacing-xs $spacing-m;
+  color: $color-white;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: 1.25rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background-color: $color-accent-pink;
+  border: $border-width solid $color-outline;
+  border-radius: $border-radius-s;
+  box-shadow: $shadow-button;
   cursor: pointer;
-  font-size: 1rem;
 
   &:hover {
-    text-decoration: underline;
+    background-color: lighten($color-accent-pink, 8%);
   }
 }
 
-@media (max-width: 768px) {
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-m;
+  min-width: 0;
+  padding: $spacing-xl $spacing-m $spacing-l;
+}
+
+.profileAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 118px;
+  height: 118px;
+  overflow: hidden;
+  background-color: rgba($color-bg-input, 0.92);
+  border: $border-width solid $color-outline;
+  border-radius: $border-radius-full;
+  box-shadow: $shadow-card;
+
+  img,
+  svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.profileName {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-s;
+  max-width: 100%;
+  color: $color-white;
+  text-align: center;
+  text-transform: uppercase;
+
+  h1 {
+    max-width: 220px;
+    margin: 0;
+    overflow: hidden;
+    font-family: var(--font-mouse-memoirs), sans-serif;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.levelBadge {
+  padding: $spacing-xs $spacing-m;
+  color: $color-white;
+  font-weight: $font-weight-bold;
+  text-transform: uppercase;
+  background-color: $color-bg;
+  border: $border-width solid $color-outline;
+  border-radius: $border-radius-s;
+}
+
+.statsButton,
+.helpButton {
+  color: $color-white;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.statsButton {
+  margin-top: $spacing-s;
+  font-size: 1.2rem;
+}
+
+.helpButton {
+  width: 48px;
+  height: 48px;
+  margin-top: auto;
+  font-size: 2rem;
+  background-color: rgba($color-bg-input, 0.92);
+  border: $border-width solid $color-outline;
+  border-radius: $border-radius-s;
+  box-shadow: $shadow-button;
+}
+
+.mainPanel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  gap: $spacing-l;
+}
+
+.topBar {
+  display: grid;
+  grid-template-columns: minmax(170px, 1fr) auto auto auto;
+  align-items: center;
+  gap: $spacing-m;
+}
+
+.xpWidget,
+.wallet {
+  display: flex;
+  align-items: center;
+  gap: $spacing-s;
+}
+
+.hexBadge {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 42px;
+  color: $color-bg;
+  font-weight: $font-weight-bold;
+  background-color: $color-accent-teal;
+  clip-path: polygon(24% 0, 76% 0, 100% 50%, 76% 100%, 24% 100%, 0 50%);
+}
+
+.xpTrack {
+  flex: 1;
+  height: 28px;
+  overflow: hidden;
+  background-color: rgba($color-black, 0.35);
+  border: $border-width solid $color-outline;
+  border-radius: $border-radius-full;
+
+  span {
+    display: block;
+    height: 100%;
+    background-color: #3f87bd;
+  }
+}
+
+.wallet {
+  padding: $spacing-xs $spacing-s;
+  background-color: rgba($color-black, 0.32);
+  border: $border-width solid rgba($color-outline-light, 0.18);
+  border-radius: $border-radius-s;
+
+  svg {
+    color: $color-primary;
+  }
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    color: $color-bg;
+    font-weight: $font-weight-bold;
+    background-color: $color-bg-input;
+    border: $border-width solid $color-outline;
+    border-radius: $border-radius-s;
+    cursor: pointer;
+  }
+}
+
+.shopButton,
+.settingsButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-s;
+  color: $color-white;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: 1.25rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background-color: $color-primary;
+  border: $border-width solid $color-outline;
+  border-radius: $border-radius-s;
+  box-shadow: $shadow-button;
+  cursor: pointer;
+}
+
+.shopButton {
+  padding: $spacing-s $spacing-l;
+}
+
+.settingsButton {
+  width: 52px;
+  height: 48px;
+  color: $color-bg;
+  background-color: $color-accent-teal;
+}
+
+.gameplayCard {
+  position: relative;
+  padding: $spacing-xl $spacing-l $spacing-l;
+  background-color: rgba(#171833, 0.92);
+  border: $border-width solid rgba($color-outline-light, 0.18);
+  border-radius: $border-radius-s;
+}
+
+.cardTabs {
+  position: absolute;
+  top: -$spacing-s;
+  left: $spacing-l;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  width: min(80%, 360px);
+  height: 52px;
+
+  span {
+    display: flex;
+    align-items: center;
+    padding: 0 $spacing-m;
+    color: $color-accent-teal;
+    font-family: var(--font-mouse-memoirs), sans-serif;
+    font-size: 1.45rem;
+    text-transform: uppercase;
+    background-color: #202247;
+    border: $border-width solid rgba($color-outline-light, 0.12);
+  }
+
+  span:first-child {
+    background-color: #26295a;
+  }
+}
+
+.menuActions {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
+  width: min(100%, 440px);
+  margin: 0 auto;
+}
+
+.menuAction {
+  width: 100%;
+  min-height: 74px;
+}
+
+.panelFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-m;
+  color: rgba($color-accent-teal, 0.72);
+  font-size: $font-size-s;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-s;
+    padding: $spacing-xs $spacing-l;
+    color: $color-white;
+    font-family: var(--font-mouse-memoirs), sans-serif;
+    font-size: 1.25rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background-color: rgba($color-bg-input, 0.12);
+    border: $border-width solid rgba($color-outline-light, 0.28);
+    border-radius: $border-radius-s;
+    cursor: pointer;
+  }
+}
+
+.friendsPanel {
+  align-self: center;
+  min-height: min(74vh, 520px);
+  padding: $spacing-l;
+  background-color: rgba(#171833, 0.9);
+  border: $border-width solid rgba($color-outline-light, 0.18);
+  border-radius: $border-radius-s;
+
+  h2 {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-s;
+    margin: 0 0 $spacing-m;
+    padding: $spacing-s $spacing-l;
+    color: $color-white;
+    font-family: var(--font-mouse-memoirs), sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background-color: $color-accent-pink;
+    border: $border-width solid $color-outline;
+    border-radius: $border-radius-s;
+    box-shadow: $shadow-button;
+  }
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: $spacing-s;
+  padding: $spacing-xs $spacing-s;
+  background-color: $color-bg-input;
+  border: $border-width solid rgba($color-outline, 0.5);
+
+  svg {
+    color: tokens.$color-gray-600;
+  }
+
+  input {
+    min-width: 0;
+    width: 100%;
+    color: $color-gray-800;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    background: none;
+    border: 0;
+    outline: 0;
+  }
+}
+
+.friendsList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-s;
+  padding: 0;
+  margin: $spacing-m 0 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: $spacing-m;
+    padding: $spacing-s;
+    background-color: rgba($color-bg, 0.72);
+    border: $border-width solid rgba($color-outline-light, 0.08);
+  }
+
+  strong,
+  span {
+    display: block;
+    text-transform: uppercase;
+  }
+
+  strong {
+    font-family: var(--font-mouse-memoirs), sans-serif;
+    font-size: 1.25rem;
+  }
+
+  span {
+    color: $color-accent-teal;
+    font-size: $font-size-s;
+  }
+}
+
+.friendAvatar {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  overflow: hidden;
+  color: $color-primary;
+  background-color: rgba($color-bg-input, 0.14);
+  border: $border-width solid rgba($color-outline-light, 0.18);
+  border-radius: $border-radius-full;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+@media (max-width: 1100px) {
+  .RootLayout {
+    overflow-y: auto;
+  }
+
   .Menu {
-    .menuContent {
-      width: 100%;
-      .menuActions {
-        width: 80%;
-      }
-    }
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: 100%;
+    background: $color-bg;
+  }
+
+  .logout {
+    position: fixed;
+  }
+
+  .sidebar {
+    padding-top: $spacing-xl;
+  }
+
+  .topBar {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .friendsPanel {
+    width: 100%;
+    min-height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .Menu {
+    padding: $spacing-m;
+  }
+
+  .topBar {
+    grid-template-columns: 1fr;
+  }
+
+  .cardTabs {
+    left: $spacing-m;
+    width: calc(100% - #{$spacing-l});
+  }
+
+  .panelFooter {
+    align-items: stretch;
+    flex-direction: column;
   }
 }
