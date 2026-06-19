@@ -1,9 +1,9 @@
-import { selectCurrentPlayer, useGameStore } from "@/contexts/game.store";
+import { useCurrentPlayer } from "@/hooks/game/useCurrentPlayer";
 import ChoosingPhase from "./ChoosingPhase";
 import PlayingPhase from "./PlayingPhase";
 
 const GamePhaseManager = () => {
-  const player = useGameStore(selectCurrentPlayer);
+  const player = useCurrentPlayer();
 
   if (player?.status === "choosing") {
     return <ChoosingPhase />;

@@ -26,7 +26,7 @@
     padding: 0;
     color: $color-white;
     font-family: var(--font-mouse-memoirs), sans-serif;
-    font-size: 1.25rem;
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
     font-weight: $font-weight-semibold;
     letter-spacing: 1px;
     text-transform: uppercase;
@@ -35,7 +35,7 @@
 
 .optionGroup {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
   gap: $spacing-s;
 
   button {
@@ -47,7 +47,7 @@
     padding: $spacing-s $spacing-m;
     color: $color-white;
     font-family: var(--font-mouse-memoirs), sans-serif;
-    font-size: 1.5rem;
+    font-size: clamp(1rem, 3vw, 1.5rem);
     letter-spacing: 1px;
     text-transform: uppercase;
     background-color: rgba($color-bg, 0.72);
@@ -78,8 +78,21 @@
   min-width: 180px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: $breakpoint-md) {
+  .createRoomContent {
+    gap: $spacing-m;
+  }
+
+  .formContent {
+    gap: $spacing-m;
+  }
+
+  .optionGroup button {
+    min-height: 48px;
+  }
+
   .createButton {
+    align-self: stretch;
     width: 100%;
   }
 }

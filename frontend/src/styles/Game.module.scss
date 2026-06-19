@@ -1,139 +1,180 @@
+.gameRoot {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .Game {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  height: 100%; /* Ocupa 100% da altura da célula do grid pai */
   width: 100%;
-  overflow: hidden; /* Garante que nada vaze */
-  gap: 1rem; /* Espaçamento opcional entre HUD, Mesa e Mão */
-  padding: 1rem 0; /* Adiciona um respiro vertical */
+  min-width: 0;
+  min-height: 0;
+  gap: $spacing-s;
+  padding: 0;
+  overflow: hidden;
+}
 
-  .playedCards {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .deckItem {
-    display: flex;
+.gameHud {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: $spacing-s;
+  width: 100%;
+  padding: $spacing-s;
+  background-color: rgba($color-panel-deep, 0.72);
+  border: $border-width solid $color-border-subtle;
+  border-radius: $border-radius-m;
+}
+
+.hudStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  min-width: 0;
+  padding: $spacing-s $spacing-m;
+  text-align: center;
+  background-color: rgba($color-black, 0.22);
+  border: $border-width solid rgba($color-outline-light, 0.12);
+  border-radius: $border-radius-s;
+}
+
+.hudLabel {
+  color: $color-accent-teal;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.hudValue {
+  color: $color-white;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: clamp(1.35rem, 3vw, 2rem);
+  letter-spacing: 1px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.hudTeams {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  width: 100%;
+}
+
+.playedCards {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 120px;
+  padding: $spacing-s;
+}
+
+.deckItem {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-s;
+}
+
+.deckLabel {
+  padding: $spacing-xs $spacing-s;
+  color: $color-white;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: $font-size-s;
+  font-weight: $font-weight-bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background-color: rgba($color-black, 0.55);
+  border: $border-width solid rgba($color-outline-light, 0.2);
+  border-radius: $border-radius-s;
+}
+
+.tableDeckArea,
+.deckAreaContainer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.deckCount {
+  position: absolute;
+  right: -$spacing-s;
+  bottom: -$spacing-s;
+  min-width: 2rem;
+  padding: $spacing-xs $spacing-s;
+  color: $color-white;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: $font-size-l;
+  font-weight: $font-weight-bold;
+  text-align: center;
+  background-color: rgba($color-black, 0.78);
+  border: $border-width solid $color-outline-light;
+  border-radius: $border-radius-s;
+  box-shadow: $shadow-button;
+}
+
+.actionPanel {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  gap: $spacing-s;
+
+  &.column {
     flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
   }
 
-  .deckLabel {
-    color: $color-white;
-    font-weight: bold;
-    font-size: 1.5rem;
-    text-shadow: 1px 1px 2px $color-black;
-  }
-  .actionsArea {
-    display: flex;
-    height: 100%;
+  &.row {
+    flex-direction: row;
+    align-items: center;
     justify-content: center;
+  }
+
+  &.truco {
     flex-direction: column;
-    margin: auto;
+    justify-content: center;
     gap: $spacing-m;
-    button {
-      font-size: 1.25rem;
-      padding: $spacing-s $spacing-s;
-      border-radius: $border-radius;
-      transition: background-color 0.3s;
-      color: $color-white;
-      &:disabled {
-        background-color: gray;
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      &:enabled {
-        background-color: $primary-color;
-        &:hover {
-          background-color: lighten($primary-color, 10);
-        }
-        &:active {
-          background-color: darken($primary-color, 10);
-        }
-      }
-    }
-  }
-
-  .deckAreaContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .TrucoHud {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 1.5rem;
-    color: $color-white;
-    width: 100%;
-    .currentBet {
-      display: flex;
-      align-items: center;
-      gap: $spacing-m;
-    }
-
-    .currentBet span {
-      font-size: 2.5rem;
-      display: inline-block;
-    }
-  }
-
-  .trucoActions {
-    position: absolute;
-    display: flex;
-    justify-content: space-between;
-    width: 130%;
-    top: 90%;
-    transform: translateY(-50%);
-    right: -10%;
-    align-items: center;
-    z-index: 2;
-
-    .acceptReject {
-      display: flex;
-      flex-direction: column;
-      gap: $spacing-s;
-    }
-  }
-
-  .actions {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    z-index: 10;
-    max-width: 50vw;
   }
 }
 
-@media (max-width: 768px) {
-  .Game {
-    height: 80%;
-    .actions {
-      width: 160%;
-      right: -30%;
+.trucoActionsRow {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-s;
+}
 
-      button {
-        font-size: 1.25rem;
-        padding: $spacing-xs;
-        max-width: 100px;
-      }
-    }
+.handDock {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  padding: $spacing-xs $spacing-s $spacing-s;
+  overflow-x: auto;
+  overflow-y: visible;
+  scrollbar-width: thin;
+  scrollbar-color: $color-accent-teal rgba($color-black, 0.2);
+}
 
-    .gameTable {
-      display: flex;
-      justify-content: center;
-      height: 400px;
-      width: 70%;
-    }
+@media (max-width: $breakpoint-md) {
+  .gameHud {
+    grid-template-columns: 1fr;
+  }
 
-    .cardTable {
-      height: 150px;
-
-      div {
-        width: 32%;
-      }
-    }
+  .actionPanel.truco {
+    gap: $spacing-s;
   }
 }

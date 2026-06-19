@@ -1,43 +1,31 @@
 .choosingPhaseContainer {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  gap: $spacing-l;
+  width: 100%;
   height: 100%;
-  gap: 20px;
-  padding: 20px;
+  padding: $spacing-l;
 }
 
 .cardArea {
   display: flex;
-  justify-content: center;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  gap: $spacing-m;
   min-height: 160px;
 }
 
 .cardPlaceholder {
   width: 105px;
   height: 150px;
-  border: 2px dashed #4a4a4a;
-  border-radius: 8px;
+  background-color: rgba($color-black, 0.18);
+  border: $border-width dashed rgba($color-outline-light, 0.35);
+  border-radius: $border-radius-m;
 }
 
 .confirmButtonContainer {
-  margin-top: 20px;
-}
-
-.confirmButton {
-  padding: 12px 32px;
-  font-size: 1.2rem;
-  background-color: #4caf50;
-  color: $color-white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-
-  &:disabled {
-    background-color: #555;
-    cursor: not-allowed;
-  }
+  width: min(100%, 320px);
 }

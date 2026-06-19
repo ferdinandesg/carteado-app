@@ -1,12 +1,15 @@
 import React from "react";
-import { useSession } from "next-auth/react";
+import classNames from "classnames";
 import Opponent from "@/components/Opponent/Opponent";
-import styles from "@/styles/Table.module.scss"; // Estilos específicos da mesa
-import GameBoard from "./game.board";
+import { resolveTableSeats } from "@/lib/game/tableLayout";
+import { useTablePlayers } from "@/hooks/game/useTablePlayers";
+import styles from "@/styles/Table.module.scss";
 import { BasePlayer, IGameState } from "shared/game";
+import { testIds } from "@/tests/testIds";
+
+import GameBoard from "./game.board";
 
 type TableProps = {
-  // Props para injetar conteúdo agnóstico
   game: IGameState | null;
   deckArea: React.ReactNode;
   playedCardsArea: React.ReactNode;
@@ -14,85 +17,88 @@ type TableProps = {
   actionsAreaRight?: React.ReactNode;
 };
 
-const Table: React.FC<TableProps> = ({
+function TableOpponent({
+  player,
+  playerTurn,
+}: {
+  player: BasePlayer;
+  playerTurn: string;
+}) {
+  return (
+    <Opponent
+      player={player}
+      isCurrentPlayerTurn={playerTurn === player.userId}
+    />
+  );
+}
+
+export default function Table({
   game,
   deckArea,
   playedCardsArea,
   actionsAreaLeft,
   actionsAreaRight,
-}) => {
-  const { data: session } = useSession();
+}: TableProps) {
+  const { mainPlayer, orderedOpponents } = useTablePlayers(game);
 
-  const { mainPlayer, orderedOpponents } = React.useMemo(() => {
-    if (!game || !session?.user)
-      return { mainPlayer: null, orderedOpponents: [] };
-    const player = game.players.find((p) => p.userId === session.user.id);
-    const mainPlayerIndex = game.players.findIndex(
-      (p) => p.userId === session.user.id
-    );
-    const opponents: BasePlayer[] = [];
-    if (mainPlayerIndex !== -1) {
-      for (let i = 1; i < game.players.length; i++) {
-        const opponentIndex = (mainPlayerIndex + i) % game.players.length;
-        opponents.push(game.players[opponentIndex]);
-      }
-    }
-    return { mainPlayer: player, orderedOpponents: opponents };
-  }, [game, session]);
-  console.log({
-    game,
-    mainPlayer,
-  });
   if (!game || !mainPlayer) {
-    return <div className={styles.loadingTable}>Aguardando o jogo...</div>;
+    return (
+      <div
+        className={styles.loadingTable}
+        data-testid={testIds.game.tableLoading}>
+        Aguardando o jogo...
+      </div>
+    );
   }
 
-  const topOpponent =
-    game.players.length === 2 ? orderedOpponents[0] : orderedOpponents[1];
-  const leftOpponent = game.players.length > 2 ? orderedOpponents[0] : null;
-  const rightOpponent = game.players.length > 2 ? orderedOpponents[2] : null;
-  return (
-    <GameBoard
-      // Preenche os slots do GameBoard com os componentes
-      slot1={deckArea}
-      slot2={
-        topOpponent && (
-          <Opponent
-            player={topOpponent}
-            isCurrentPlayerTurn={game.playerTurn === topOpponent.userId}
-          />
-        )
-      }
-      slot4={
-        leftOpponent && (
-          <Opponent
-            player={leftOpponent}
-            isCurrentPlayerTurn={game.playerTurn === leftOpponent.userId}
-          />
-        )
-      }
-      slot5={playedCardsArea}
-      slot6={
-        rightOpponent && (
-          <Opponent
-            player={rightOpponent}
-            isCurrentPlayerTurn={game.playerTurn === rightOpponent.userId}
-          />
-        )
-      }
-      slot7={actionsAreaLeft}
-      slot8={
-        <div
-          className={`${styles.playerName} ${game.playerTurn === mainPlayer.userId ? styles.isTurn : ""}`}>
-          <Opponent
-            player={mainPlayer}
-            isCurrentPlayerTurn={game.playerTurn === mainPlayer.userId}
-          />
-        </div>
-      }
-      slot9={actionsAreaRight}
-    />
-  );
-};
+  const seats = resolveTableSeats(game.players.length, orderedOpponents);
+  const isMainPlayerTurn = game.playerTurn === mainPlayer.userId;
 
-export default Table;
+  return (
+    <div
+      className={styles.tableRoot}
+      data-testid={testIds.game.table}>
+      <GameBoard
+        slot1={deckArea}
+        slot2={
+          seats.top && (
+            <TableOpponent
+              player={seats.top}
+              playerTurn={game.playerTurn}
+            />
+          )
+        }
+        slot4={
+          seats.left && (
+            <TableOpponent
+              player={seats.left}
+              playerTurn={game.playerTurn}
+            />
+          )
+        }
+        slot5={playedCardsArea}
+        slot6={
+          seats.right && (
+            <TableOpponent
+              player={seats.right}
+              playerTurn={game.playerTurn}
+            />
+          )
+        }
+        slot7={actionsAreaLeft}
+        slot8={
+          <div
+            className={classNames(styles.playerSeat, {
+              [styles.isTurn]: isMainPlayerTurn,
+            })}>
+            <TableOpponent
+              player={mainPlayer}
+              playerTurn={game.playerTurn}
+            />
+          </div>
+        }
+        slot9={actionsAreaRight}
+      />
+    </div>
+  );
+}

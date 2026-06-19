@@ -44,12 +44,26 @@ $shadow-button: tokens.$shadow-button;
 $z-modal: tokens.$z-modal;
 $font-weight-bold: tokens.$font-weight-bold;
 $font-weight-semibold: tokens.$font-weight-semibold;
+
+$breakpoint-sm: tokens.$breakpoint-sm;
+$breakpoint-md: tokens.$breakpoint-md;
+$breakpoint-lg: tokens.$breakpoint-lg;
+$breakpoint-xl: tokens.$breakpoint-xl;
 $font-size-s: tokens.$font-size-s;
-$font-size-l: tokens.$font-size-l;
+$font-size-xs: tokens.$font-size-xs;
 $font-size-m: tokens.$font-size-m;
+$font-size-l: tokens.$font-size-l;
+$font-size-xl: tokens.$font-size-xl;
+$font-size-2xl: tokens.$font-size-2xl;
+$font-size-3xl: tokens.$font-size-3xl;
 $font-size-4xl: tokens.$font-size-4xl;
 $letter-spacing-wide: tokens.$letter-spacing-wide;
-
+$letter-spacing-tight: tokens.$letter-spacing-tight;
+$letter-spacing-normal: tokens.$letter-spacing-normal;
+$letter-spacing-wide: tokens.$letter-spacing-wide;
+$line-height-tight: tokens.$line-height-tight;
+$line-height-normal: tokens.$line-height-normal;
+$line-height-relaxed: tokens.$line-height-relaxed;
 $background-color: tokens.$color-bg;
 $primary-color: tokens.$color-primary;
 $secondary-color: tokens.$color-secondary;

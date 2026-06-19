@@ -2,6 +2,7 @@
   position: relative;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   font-family: var(--font-mouse-memoirs), sans-serif;
   letter-spacing: 1px;
@@ -45,15 +46,29 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  gap: $spacing-l;
+  min-height: 0;
+  gap: $spacing-xl;
 }
 
 .topBar {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  padding: $spacing-m $spacing-l;
   align-items: center;
+  gap: $spacing-s;
   width: 100%;
+  padding: $spacing-m $spacing-l;
+}
+
+.topBarExtras {
+  display: flex;
+  align-items: center;
+  gap: $spacing-s;
+}
+
+.friendsToggle {
+  display: none;
+  min-width: 0;
 }
 
 .gameplayCard,
@@ -65,7 +80,9 @@
 .wallet {
   display: flex;
   align-items: center;
-  width: 30%;
+  flex: 1 1 180px;
+  min-width: 0;
+  max-width: 280px;
 }
 
 .hexBadge {
@@ -77,7 +94,6 @@
   color: $color-bg;
   font-weight: $font-weight-bold;
   font-size: 1.5rem;
-
   background-color: $color-accent-teal;
   border: $border-width-bold solid $color-outline;
   border-radius: $border-radius-full;
@@ -106,14 +122,20 @@
   background-color: rgba($color-black, 0.32);
   border: $border-width-bold solid $color-outline;
   border-radius: $border-radius-s;
-  display: flex;
-  align-items: center;
   gap: $spacing-s;
   justify-content: space-between;
+
   span {
     display: flex;
     align-items: center;
     gap: $spacing-s;
+    min-width: 0;
+  }
+
+  strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   button {
@@ -152,8 +174,12 @@
 
 .gameplayCard {
   position: relative;
-  margin: auto auto 0 auto;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
   width: 80%;
+  margin: auto auto 0 auto;
   padding: $spacing-xl $spacing-l $spacing-l;
   background-color: darken($color-bg, 10%);
   border: $border-width-bold solid $color-outline;
@@ -162,6 +188,12 @@
 
 .wideCard {
   width: min(100%, 760px);
+}
+
+.menuCardBody {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .cardTabs {
@@ -173,13 +205,14 @@
   width: 100%;
   height: 50px;
   gap: $spacing-xs;
+
   span {
     display: flex;
     align-items: center;
     padding: 0 $spacing-m;
     color: $color-accent-teal;
     font-family: var(--font-mouse-memoirs), sans-serif;
-    font-size: 2rem;
+    font-size: clamp(1.25rem, 3vw, 2rem);
     text-transform: uppercase;
     background-color: darken($color-bg, 20%);
     border-bottom: $border-width-bold solid $color-outline;
@@ -187,7 +220,6 @@
     &.activeTab {
       background-color: darken($color-bg, 10%);
       border: $border-width-bold solid $color-outline;
-
       border-bottom: none;
     }
   }
@@ -327,40 +359,118 @@
   }
 }
 
-@media (max-width: 1100px) {
+@media (max-width: $breakpoint-lg) {
   .RootLayout {
     overflow-y: auto;
   }
 
   .Menu {
     grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
     height: auto;
     min-height: 100%;
+    min-height: 100dvh;
     background: $color-bg;
   }
 
   .logout {
     position: fixed;
+    top: $spacing-s;
+    left: $spacing-s;
+    z-index: $z-modal;
+    font-size: 1rem;
+    padding: $spacing-xs $spacing-s;
+  }
+
+  .mainPanel {
+    order: 2;
+    flex: 1;
+    margin: $spacing-s 0;
   }
 
   .friendsPanel {
-    width: 100%;
+    order: 3;
+    display: none;
+    width: auto;
     min-height: auto;
+    margin: 0 $spacing-m $spacing-m;
+  }
+
+  .Menu.friendsOpen .friendsPanel {
+    display: block;
+  }
+
+  .friendsToggle {
+    display: inline-flex;
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+
+  .topBarExtras {
+    display: none;
+  }
+
+  .gameplayCard,
+  .wideCard,
+  .panelFooter {
+    width: 100%;
+  }
+
+  .gameplayCard {
+    margin: 0;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: $breakpoint-md) {
   .Menu {
-    padding: $spacing-m;
+    padding: $spacing-s;
+  }
+
+  .topBar {
+    padding: $spacing-s;
+  }
+
+  .xpWidget,
+  .wallet {
+    flex: 1 1 calc(50% - #{$spacing-s});
+    max-width: none;
+  }
+
+  .gameplayCard {
+    padding: $spacing-l $spacing-m $spacing-m;
   }
 
   .cardTabs {
-    left: $spacing-m;
-    width: calc(100% - #{$spacing-l});
+    left: $spacing-s;
+    width: calc(100% - #{$spacing-m});
+    height: 44px;
+    top: -44px;
+  }
+
+  .menuAction {
+    min-height: 58px;
   }
 
   .panelFooter {
     align-items: stretch;
     flex-direction: column;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .wallet {
+    strong {
+      font-size: $font-size-s;
+    }
+  }
+
+  .hexBadge {
+    width: 40px;
+    height: 36px;
+    font-size: 1.25rem;
+  }
+
+  .xpTrack {
+    height: 28px;
   }
 }

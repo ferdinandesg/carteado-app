@@ -1,40 +1,18 @@
 import CardComponent from "@/components/Card";
 import Separator from "@/components/Separator";
-import { withSound } from "@/components/buttons/withSound";
-import { selectCurrentPlayer, useGameStore } from "@/contexts/game.store";
-import { useTranslation } from "react-i18next";
-import styles from "@/styles/ChoosingPhase.module.scss";
+import ActionButton from "@/components/buttons/ActionButton";
+import { useGameStore } from "@/contexts/game.store";
+import { useCurrentPlayer } from "@/hooks/game/useCurrentPlayer";
 import { useCardSelection } from "@/hooks/useCardSelection";
-
-const ConfirmButton = withSound(
-  ({
-    onClick,
-    disabled,
-    text,
-  }: {
-    onClick: () => void;
-    disabled: boolean;
-    text: string;
-  }) => {
-    return (
-      <div className={styles.confirmButtonContainer}>
-        <button
-          onClick={onClick}
-          disabled={disabled}
-          className={styles.confirmButton}>
-          {text}
-        </button>
-      </div>
-    );
-  },
-  {}
-);
+import styles from "@/styles/ChoosingPhase.module.scss";
+import { testIds } from "@/tests/testIds";
+import { useTranslation } from "react-i18next";
 
 export default function ChoosingPhase() {
   const { t } = useTranslation();
   const { handlePickCards } = useGameStore();
-  const player = useGameStore(selectCurrentPlayer);
-  const initialHand = player?.hand?.filter((h) => !h.isHidden) || [];
+  const player = useCurrentPlayer();
+  const initialHand = player?.hand?.filter((card) => !card.isHidden) ?? [];
 
   const {
     selectedCards,
@@ -47,12 +25,13 @@ export default function ChoosingPhase() {
   const confirmHand = () => {
     if (!isSelectionComplete) return;
     handlePickCards(selectedCards);
-    resetSelection(); // Limpa o estado local após o envio
+    resetSelection();
   };
 
   return (
-    <div className={styles.choosingPhaseContainer}>
-      {/* 1. Área das cartas para escolher */}
+    <div
+      className={styles.choosingPhaseContainer}
+      data-testid={testIds.game.choosingPhase}>
       <div className={styles.cardArea}>
         {availableCards.map((card) => (
           <CardComponent
@@ -66,18 +45,16 @@ export default function ChoosingPhase() {
 
       <Separator text={t("Game.choseYourHand")} />
 
-      {/* 2. Área das cartas já escolhidas */}
       <div className={styles.cardArea}>
         {selectedCards.map((card) => (
           <CardComponent
             height={150}
             card={card}
             key={`selected-${card.toString}`}
-            onClick={() => toggleCard(card)} // Clicar aqui devolve a carta
+            onClick={() => toggleCard(card)}
           />
         ))}
 
-        {/* Placeholders para os espaços vazios */}
         {Array.from({ length: 3 - selectedCards.length }).map((_, index) => (
           <div
             key={`placeholder-${index}`}
@@ -86,12 +63,15 @@ export default function ChoosingPhase() {
         ))}
       </div>
 
-      {/* 3. Botão de confirmação */}
-      <ConfirmButton
-        text={t("confirm")}
-        onClick={confirmHand}
-        disabled={!isSelectionComplete}
-      />
+      <div className={styles.confirmButtonContainer}>
+        <ActionButton
+          onClick={confirmHand}
+          disabled={!isSelectionComplete}
+          data-testid={testIds.game.confirmHand}
+          fullWidth>
+          {t("confirm")}
+        </ActionButton>
+      </div>
     </div>
   );
 }

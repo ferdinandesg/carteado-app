@@ -116,6 +116,13 @@
     "modality": "Modo: {{rule}}"
   },
   "Participants": {
+    "level": "Nível {{level}}",
+    "badge": {
+      "ready": "Pronto!",
+      "waiting": "Em espera",
+      "away": "Ausente",
+      "playing": "Jogando"
+    },
     "status": {
       "ready": "Pronto",
       "notReady": "Não pronto",
@@ -138,7 +145,9 @@
   },
   "Truco": {
     "currentBet": "Aposta atual",
-    "rounds": "Rodadas - {{rounds}}/12"
+    "roundsLabel": "Rodadas",
+    "rounds": "{{rounds}}/12",
+    "scoreboard": "Placar"
   },
   "TableActions": {
     "pickUpBunch": "Comprar cartas",

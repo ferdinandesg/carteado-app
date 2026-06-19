@@ -109,9 +109,56 @@
   box-shadow: $shadow-button;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: $breakpoint-lg) {
   .sidebar {
+    order: 1;
+    flex-direction: row;
+    align-items: center;
     height: auto;
-    padding-top: $spacing-xl;
+    padding: $spacing-m;
+    gap: $spacing-m;
+  }
+
+  .profileContainer {
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    margin: 0;
+    gap: $spacing-s;
+  }
+
+  .profileAvatar {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+  }
+
+  .profileName {
+    justify-content: flex-start;
+    text-align: left;
+
+    h1 {
+      font-size: clamp(1.1rem, 4vw, 1.5rem);
+    }
+  }
+
+  .levelBadge,
+  .statsButton,
+  .rankMeter {
+    display: none;
+  }
+
+  .helpButton {
+    margin: 0;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .sidebar {
+    padding-top: calc(#{$spacing-xl} + #{$spacing-xs});
   }
 }

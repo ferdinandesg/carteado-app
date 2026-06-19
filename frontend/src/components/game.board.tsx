@@ -1,4 +1,6 @@
+import classNames from "classnames";
 import React from "react";
+
 import styles from "@/styles/GameBoard.module.scss";
 
 type GameBoardProps = {
@@ -13,7 +15,7 @@ type GameBoardProps = {
   slot9?: React.ReactNode;
 };
 
-const GameBoard: React.FC<GameBoardProps> = ({
+export default function GameBoard({
   slot1,
   slot2,
   slot3,
@@ -23,20 +25,20 @@ const GameBoard: React.FC<GameBoardProps> = ({
   slot7,
   slot8,
   slot9,
-}) => {
+}: GameBoardProps) {
   return (
     <div className={styles.gameBoard}>
       <div className={styles.gridCell}>{slot1}</div>
       <div className={styles.gridCell}>{slot2}</div>
       <div className={styles.gridCell}>{slot3}</div>
       <div className={styles.gridCell}>{slot4}</div>
-      <div className={styles.gridCell}>{slot5}</div>
+      <div className={classNames(styles.gridCell, styles.centerCell)}>
+        {slot5}
+      </div>
       <div className={styles.gridCell}>{slot6}</div>
       <div className={styles.gridCell}>{slot7}</div>
       <div className={styles.gridCell}>{slot8}</div>
       <div className={styles.gridCell}>{slot9}</div>
     </div>
   );
-};
-
-export default GameBoard;
+}

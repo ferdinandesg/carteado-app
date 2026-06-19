@@ -77,6 +77,7 @@
 .sm {
   padding: $spacing-xs $spacing-s;
   font-size: 1rem;
+  min-width: 100px;
 }
 
 .md {
@@ -88,6 +89,22 @@
   padding: $spacing-m $spacing-l;
   font-size: 2rem;
   letter-spacing: $letter-spacing-wide;
+}
+
+@media (max-width: $breakpoint-md) {
+  .lg {
+    min-width: 0;
+    padding: $spacing-s $spacing-m;
+    font-size: 1.35rem;
+    letter-spacing: 1px;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .lg {
+    min-height: 52px;
+    font-size: 1.15rem;
+  }
 }
 
 .fullWidth {

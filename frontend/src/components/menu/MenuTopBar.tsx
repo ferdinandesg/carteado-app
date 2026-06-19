@@ -1,19 +1,23 @@
 "use client";
 
-import { Coins, Plus, Settings, ShoppingBag } from "lucide-react";
+import { Coins, Plus, Settings, ShoppingBag, Users } from "lucide-react";
 
 import styles from "@/styles/Menu.module.scss";
 import ActionButton from "../buttons/ActionButton";
+import { testIds } from "@/tests/testIds";
 import { useTranslation } from "react-i18next";
 
 type MenuTopBarProps = {
   playerLevel: number;
   playerXp: number;
-  playerGold: string;
+  playerGold: string | number;
   xpLabel: string;
   goldAriaLabel: string;
   shopLabel: string;
   settingsAriaLabel: string;
+  friendsLabel: string;
+  isFriendsOpen: boolean;
+  onToggleFriends: () => void;
 };
 
 export default function MenuTopBar({
@@ -24,8 +28,12 @@ export default function MenuTopBar({
   goldAriaLabel,
   shopLabel,
   settingsAriaLabel,
+  friendsLabel,
+  isFriendsOpen,
+  onToggleFriends,
 }: MenuTopBarProps) {
   const { t } = useTranslation();
+
   return (
     <header className={styles.topBar}>
       <div className={styles.xpWidget}>

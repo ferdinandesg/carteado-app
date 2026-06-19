@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Game from "@/components/Game/game";
 import { useSocket } from "@/contexts/socket.context";
 import { useRoomContext } from "@/contexts/room.context";
@@ -8,11 +8,13 @@ import { RoomStatus } from "@/models/room";
 import { useParams } from "next/navigation";
 
 import styles from "@/styles/Room.module.scss";
-import Chat from "@/components/Chat";
 import { useTranslation } from "react-i18next";
 import useTitle from "@/hooks/useTitle";
 import RoomInfo from "@/components/Players/roomInfo";
 import RoomShell from "@/components/room/RoomShell";
+import { testIds } from "@/tests/testIds";
+import RoomParticipantsPanel from "@/components/room/RoomParticipantsPanel";
+import classNames from "classnames";
 
 const RenderScreen = ({ status }: { status?: RoomStatus }) => {
   const { t } = useTranslation();
@@ -37,10 +39,6 @@ export default function Room() {
   });
   const { socket } = useSocket();
   const { room, isLoading } = useRoomContext();
-  const [isChatCollapsed, setChatCollapsed] = useState(false);
-  const [isInfoCollapsed, setInfoCollapsed] = useState(false);
-  const toggleInfoCollapse = () => setInfoCollapsed((c) => !c);
-  const toggleChatCollapse = () => setChatCollapsed((c) => !c);
 
   useEffect(() => {
     if (isLoading) return;
@@ -50,29 +48,29 @@ export default function Room() {
     };
   }, [isLoading, socket, id]);
 
-  if (isLoading) return <h1 className={styles.loadingState}>{t("loading")}</h1>;
+  if (isLoading) {
+    return (
+      <h1
+        className={styles.loadingState}
+        data-testid={testIds.room.loading}>
+        {t("loading")}
+      </h1>
+    );
+  }
   if (!room)
     return <h1 className={styles.loadingState}>{t("Room.notFound")}</h1>;
 
   return (
     <RoomShell
-      isChatCollapsed={isChatCollapsed}
-      isInfoCollapsed={isInfoCollapsed}
-      chat={
-        <Chat
-          toggleCollapse={toggleChatCollapse}
-          roomHash={room.hash}
-          isCollapsed={isChatCollapsed}
-        />
-      }
-      info={
-        <RoomInfo
-          toggleCollapse={toggleInfoCollapse}
-          isCollapsed={isInfoCollapsed}
-          room={room}
-        />
-      }>
-      <RenderScreen status={room.status} />
+      participants={<RoomParticipantsPanel />}
+      info={<RoomInfo room={room} />}>
+      <div
+        className={classNames(styles.roomStageContent, {
+          [styles.roomStageGame]: room.status !== "open",
+        })}
+        data-testid={testIds.room.stage}>
+        <RenderScreen status={room.status} />
+      </div>
     </RoomShell>
   );
 }

@@ -56,10 +56,12 @@ export default function UserPanel({
         </div>
         <span className={styles.levelBadge}>{levelLabel}</span>
 
-        <RankMeter
-          currentValue={userRank}
-          size={34}
-        />
+        <div className={styles.rankMeter}>
+          <RankMeter
+            currentValue={userRank}
+            size={34}
+          />
+        </div>
 
         <button
           type="button"

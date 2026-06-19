@@ -1,0 +1,144 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  gap: $spacing-m;
+  padding: $spacing-m;
+  overflow: hidden;
+  color: $color-white;
+}
+.backButton {
+  margin-right: auto;
+}
+.participantList {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: $spacing-s;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  list-style: none;
+  scrollbar-width: thin;
+  scrollbar-color: $color-accent-teal rgba($color-black, 0.2);
+}
+
+.participantItem {
+  display: flex;
+  align-self: end;
+}
+
+.statusBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-s;
+  color: $color-panel-text-dark;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: $font-size-m;
+  font-weight: $font-weight-bold;
+  letter-spacing: 1px;
+  line-height: 1.1;
+  text-align: center;
+  text-transform: uppercase;
+
+  &.ready {
+    background-color: $color-online;
+  }
+
+  &.waiting {
+    color: $color-white;
+    background-color: $color-panel-blue;
+  }
+
+  &.away {
+    background-color: $color-gray-400;
+  }
+
+  &.playing {
+    background-color: $color-primary;
+  }
+}
+
+.participantBody {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: $spacing-s;
+  padding: $spacing-s $spacing-s $spacing-s 0;
+}
+
+.participantMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: $spacing-s;
+  min-width: 0;
+}
+
+.participantName {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  letter-spacing: 1px;
+  line-height: 1;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.participantStatus {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.levelBadge {
+  padding: $spacing-xs $spacing-m;
+  color: $color-white;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  background-color: rgba($color-black, 0.55);
+  border-radius: $border-radius-full;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  overflow: hidden;
+  background-color: rgba($color-bg-input, 0.92);
+  border: $border-width solid rgba($color-outline-light, 0.65);
+  border-radius: $border-radius-full;
+  flex-shrink: 0;
+
+  img,
+  svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .panel {
+    max-height: min(42dvh, 360px);
+  }
+
+  .participantItem {
+    min-height: 76px;
+  }
+
+  .avatar {
+    width: 60px;
+    height: 60px;
+  }
+}

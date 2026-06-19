@@ -1,50 +1,76 @@
 .Opponent {
   display: flex;
-  position: relative;
   flex-direction: column;
   align-items: center;
-  .avatar {
-    border-radius: 50%;
-    &.isTurn {
-      box-shadow: 0 0 10px 3px $primary-color;
-    }
-  }
-  .trucoAskedBy {
-    height: 30px;
-    width: 30px;
-    border-radius: 50%;
-    background: $primary-color;
-    position: absolute;
-    top: -20px;
-    left: -10px;
-  }
+  gap: $spacing-xs;
+  max-width: 140px;
+}
 
-  .name {
-    color: $color-white;
-    font-size: 14px;
-    margin-top: 8px;
-  }
+.avatarFrame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  padding: 3px;
+  background-color: rgba($color-bg-input, 0.12);
+  border: $border-width-bold solid rgba($color-outline-light, 0.45);
+  border-radius: $border-radius-full;
+  box-shadow: $shadow-card;
+  transition:
+    border-color $transition-normal,
+    box-shadow $transition-normal;
 
-  .infoBox {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: $color-black;
-    color: $color-white;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba($color-black, 0.5);
-    white-space: nowrap;
-    opacity: 0;
-    visibility: hidden;
-    transition:
-      opacity 0.3s ease-in-out,
-      visibility 0.3s ease-in-out;
+  &.isTurn {
+    border-color: $color-primary;
+    box-shadow:
+      0 0 0 2px rgba($color-primary, 0.28),
+      $shadow-button;
   }
+}
 
-  &:hover .infoBox {
-    opacity: 1;
-    visibility: visible;
+.avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: $border-radius-full;
+}
+
+.cardCount {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  min-width: 1.5rem;
+  padding: 2px $spacing-xs;
+  color: $color-panel-text-dark;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  line-height: 1;
+  text-align: center;
+  background-color: $color-primary;
+  border: $border-width solid $color-outline;
+  border-radius: $border-radius-full;
+  box-shadow: $shadow-button;
+}
+
+.name {
+  overflow: hidden;
+  max-width: 100%;
+  color: $color-white;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  letter-spacing: 0.8px;
+  line-height: 1.1;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@media (max-width: $breakpoint-md) {
+  .avatarFrame {
+    width: 72px;
+    height: 72px;
   }
 }

@@ -1,75 +1,211 @@
-import React, { useId } from "react";
+import React, { CSSProperties, useId } from "react";
 
 import styles from "@/styles/RankMeter.module.scss";
 
-interface StarProps {
+const STAR_POINTS =
+  "12,1.8 14.8,8.6 22.2,9.2 16.6,14.1 18.4,21.4 12,17.8 5.6,21.4 7.4,14.1 1.8,9.2 9.2,8.6";
+
+type StarProps = {
   size?: number;
   fillPercentage?: number;
-  color?: string;
-  stars?: number;
-  backgroundColor?: string;
-}
+  filterId: string;
+  filledGradientId: string;
+  emptyGradientId: string;
+  shineGradientId: string;
+};
 
-const Star: React.FC<StarProps> = ({
+function Star({
   size = 50,
   fillPercentage = 100,
-  color = "gold",
-  backgroundColor = "lightgray",
-}) => {
-  const id = useId();
+  filterId,
+  filledGradientId,
+  emptyGradientId,
+  shineGradientId,
+}: StarProps) {
+  const clipId = useId();
   const fillHeight = (fillPercentage / 100) * 24;
-  const clipPathId = `clip-star-${id}`;
+  const isPartial = fillPercentage > 0 && fillPercentage < 100;
+  const showFilled = fillPercentage >= 100;
+  const showEmpty = fillPercentage <= 0;
+
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 24 24"
+      className={styles.star}
+      aria-hidden
       xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <clipPath id={clipPathId}>
-          <polygon points="12,2 15,9 23,9 17,14 19,22 12,18 5,22 7,14 1,9 9,9" />
+        <clipPath id={clipId}>
+          <polygon points={STAR_POINTS} />
         </clipPath>
       </defs>
 
-      <polygon
-        points="12,2 15,9 23,9 17,14 19,22 12,18 5,22 7,14 1,9 9,9"
-        fill={backgroundColor}
-      />
+      <g filter={`url(#${filterId})`}>
+        {!showFilled && (
+          <polygon
+            points={STAR_POINTS}
+            fill={`url(#${emptyGradientId})`}
+            stroke="rgba(255, 255, 255, 0.18)"
+            strokeWidth="0.35"
+            strokeLinejoin="round"
+          />
+        )}
 
-      <rect
-        x="0"
-        y={24 - fillHeight}
-        width="24"
-        height={fillHeight}
-        fill={color}
-        clipPath={`url(#${clipPathId})`}
-      />
+        {!showEmpty && (
+          <>
+            {isPartial ? (
+              <rect
+                x="0"
+                y={24 - fillHeight}
+                width="24"
+                height={fillHeight}
+                fill={`url(#${filledGradientId})`}
+                clipPath={`url(#${clipId})`}
+              />
+            ) : (
+              <polygon
+                points={STAR_POINTS}
+                fill={`url(#${filledGradientId})`}
+                stroke="rgba(120, 70, 0, 0.35)"
+                strokeWidth="0.35"
+                strokeLinejoin="round"
+              />
+            )}
+
+            {showFilled && (
+              <polygon
+                points={STAR_POINTS}
+                fill={`url(#${shineGradientId})`}
+                opacity="0.22"
+                clipPath={`url(#${clipId})`}
+              />
+            )}
+          </>
+        )}
+      </g>
     </svg>
   );
-};
+}
 
-type StarRatingProps = {
+type RankMeterProps = {
   maxValue?: number;
   currentValue: number;
   size?: number;
-  color?: string;
-  backgroundColor?: string;
 };
 
-const RankMeter: React.FC<StarRatingProps> = ({
+export default function RankMeter({
   maxValue = 20,
   currentValue,
   size = 50,
-  color = "gold",
-  backgroundColor = "lightgray",
-}) => {
+}: RankMeterProps) {
+  const filterId = useId();
+  const filledGradientId = useId();
+  const emptyGradientId = useId();
+  const shineGradientId = useId();
   const totalStars = 5;
   const starValue = maxValue / totalStars;
   const fullStars = Math.floor(currentValue / starValue);
   const remainder = ((currentValue % starValue) / starValue) * 100;
 
   return (
-    <div className={styles.RankMeter}>
+    <div
+      className={styles.RankMeter}
+      style={{ "--star-size": `${size}px` } as CSSProperties}
+      role="img"
+      aria-label={`Rating ${currentValue} of ${maxValue}`}>
+      <svg
+        width="0"
+        height="0"
+        aria-hidden
+        className={styles.defs}>
+        <defs>
+          <filter
+            id={filterId}
+            x="-40%"
+            y="-40%"
+            width="180%"
+            height="180%"
+            colorInterpolationFilters="sRGB">
+            <feDropShadow
+              dx="0"
+              dy="1.2"
+              stdDeviation="0.65"
+              floodColor="#000000"
+              floodOpacity="0.42"
+            />
+            <feDropShadow
+              dx="0"
+              dy="-0.4"
+              stdDeviation="0.25"
+              floodColor="#ffffff"
+              floodOpacity="0.18"
+            />
+          </filter>
+
+          <linearGradient
+            id={filledGradientId}
+            x1="4"
+            y1="3"
+            x2="20"
+            y2="21"
+            gradientUnits="userSpaceOnUse">
+            <stop
+              offset="0%"
+              stopColor="#FFF2A8"
+            />
+            <stop
+              offset="38%"
+              stopColor="#FFC933"
+            />
+            <stop
+              offset="100%"
+              stopColor="#C88700"
+            />
+          </linearGradient>
+
+          <linearGradient
+            id={emptyGradientId}
+            x1="5"
+            y1="4"
+            x2="19"
+            y2="20"
+            gradientUnits="userSpaceOnUse">
+            <stop
+              offset="0%"
+              stopColor="#8EB6D9"
+            />
+            <stop
+              offset="55%"
+              stopColor="#5E8FB8"
+            />
+            <stop
+              offset="100%"
+              stopColor="#3D6588"
+            />
+          </linearGradient>
+
+          <linearGradient
+            id={shineGradientId}
+            x1="12"
+            y1="2"
+            x2="12"
+            y2="14"
+            gradientUnits="userSpaceOnUse">
+            <stop
+              offset="0%"
+              stopColor="#ffffff"
+            />
+            <stop
+              offset="100%"
+              stopColor="#ffffff"
+              stopOpacity="0"
+            />
+          </linearGradient>
+        </defs>
+      </svg>
+
       {Array.from({ length: totalStars }).map((_, index) => {
         let fillPercentage = 0;
         if (index < fullStars) {
@@ -77,18 +213,19 @@ const RankMeter: React.FC<StarRatingProps> = ({
         } else if (index === fullStars) {
           fillPercentage = remainder;
         }
+
         return (
           <Star
             key={index}
             fillPercentage={fillPercentage}
             size={size}
-            color={color}
-            backgroundColor={backgroundColor}
+            filterId={filterId}
+            filledGradientId={filledGradientId}
+            emptyGradientId={emptyGradientId}
+            shineGradientId={shineGradientId}
           />
         );
       })}
     </div>
   );
-};
-
-export default RankMeter;
+}

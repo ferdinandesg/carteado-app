@@ -1,12 +1,11 @@
 "use client";
 import { FormEvent, useEffect, useRef, useState } from "react";
-import classNames from "classnames";
 import { useSocket } from "@/contexts/socket.context";
 import Message from "./message";
 
 import styles from "@/styles/Chat.module.scss";
 import { useTranslation } from "react-i18next";
-import { PanelLeftClose, PanelRight, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import ActionButton from "@/components/buttons/ActionButton";
 import TextInput from "@/components/inputs/TextInput";
 
@@ -19,11 +18,7 @@ interface ChatProps {
   isCollapsed?: boolean;
   toggleCollapse?: () => void;
 }
-export default function Chat({
-  roomHash,
-  isCollapsed,
-  toggleCollapse,
-}: ChatProps) {
+export default function Chat({ roomHash }: ChatProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { t } = useTranslation();
   const tRef = useRef(t);
@@ -106,50 +101,39 @@ export default function Chat({
 
   return (
     <aside
-      className={classNames(styles.Chat, {
-        [styles.collapsed]: isCollapsed,
-      })}
+      className={styles.Chat}
       ref={chatRef}
       onFocus={setReadMessages}>
       <div
-        className={styles.header}
-        onClick={toggleCollapse}>
-        {isCollapsed ? <PanelRight /> : <PanelLeftClose />}
-      </div>
-      {!isCollapsed && (
-        <>
-          <div
-            ref={divRef}
-            className={styles.messagesContainer}>
-            {isLoading && (
-              <span className={styles.loadingMessage}>{t("loading")}</span>
-            )}
-            {!isLoading &&
-              localMessages?.map((m, i) => (
-                <Message
-                  key={`message-${i}`}
-                  {...m}
-                />
-              ))}
-          </div>
-          <form
-            className={styles.messageForm}
-            onSubmit={sendMessage}>
-            <TextInput
-              ref={inputRef}
-              type="text"
-              placeholder={t("chatPlaceholder")}
-              aria-label={t("chatPlaceholder")}
+        ref={divRef}
+        className={styles.messagesContainer}>
+        {isLoading && (
+          <span className={styles.loadingMessage}>{t("loading")}</span>
+        )}
+        {!isLoading &&
+          localMessages?.map((m, i) => (
+            <Message
+              key={`message-${i}`}
+              {...m}
             />
-            <ActionButton
-              type="submit"
-              size="sm"
-              icon={<Send size={18} />}>
-              {t("send")}
-            </ActionButton>
-          </form>
-        </>
-      )}
+          ))}
+      </div>
+      <form
+        className={styles.messageForm}
+        onSubmit={sendMessage}>
+        <TextInput
+          ref={inputRef}
+          type="text"
+          placeholder={t("chatPlaceholder")}
+          aria-label={t("chatPlaceholder")}
+        />
+        <ActionButton
+          type="submit"
+          size="sm"
+          icon={<Send size={18} />}>
+          {t("send")}
+        </ActionButton>
+      </form>
     </aside>
   );
 }

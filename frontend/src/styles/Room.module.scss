@@ -7,15 +7,15 @@
 
 .roomShell {
   display: grid;
-  grid-template-columns: var(--chat-column-width) var(--main-column-width) var(
-      --info-column-width
-    );
+  grid-template-columns:
+    var(--participants-column-width) var(--main-column-width)
+    var(--info-column-width);
   height: 100%;
   gap: $spacing-m;
   padding: $spacing-m;
   color: $color-white;
   background: rgba($color-bg, 0.98);
-  --chat-column-width: 25%;
+  --participants-column-width: 25%;
   --main-column-width: 1fr;
   --info-column-width: 25%;
   transition: grid-template-columns 0.1s ease-in-out;
@@ -28,12 +28,32 @@
 }
 
 .roomStage {
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
   overflow: hidden;
-  background-color: rgba($color-panel-deep, 0.64);
-  border: $border-width solid $color-border-subtle;
-  border-radius: $border-radius-s;
+}
+
+.roomStageContent {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.roomStageGame {
+  align-items: stretch;
+}
+
+.roomStageContent:not(.roomStageGame) {
+  align-items: center;
+  justify-content: center;
 }
 .playersHud {
   display: flex;

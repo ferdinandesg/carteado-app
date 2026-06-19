@@ -1,4 +1,17 @@
 .RankMeter {
-  display: flex;
-  gap: $spacing-m;
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--star-size, 24px) * 0.12);
+}
+
+.defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.star {
+  display: block;
+  flex-shrink: 0;
 }

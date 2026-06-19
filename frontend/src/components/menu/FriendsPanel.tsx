@@ -6,6 +6,7 @@ import { Search, Star, Users } from "lucide-react";
 import styles from "@/styles/Menu.module.scss";
 import classNames from "classnames";
 import TextInput from "@/components/inputs/TextInput";
+import { testIds } from "@/tests/testIds";
 
 export type MenuFriend = {
   name: string;
@@ -24,12 +25,11 @@ export default function FriendsPanel({
   title,
   searchPlaceholder,
 }: FriendsPanelProps) {
-  console.log({
-    friends,
-  });
   return (
     <aside
+      id="menu-friends-panel"
       className={styles.friendsPanel}
+      data-testid={testIds.menu.friendsPanel}
       aria-labelledby="friends-title">
       <h2 id="friends-title">
         <Users

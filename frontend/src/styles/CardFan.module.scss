@@ -1,16 +1,24 @@
 .cardFanContainer {
   display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
   justify-content: center;
-  align-items: center;
-  position: relative;
+  width: max-content;
+  min-width: 100%;
+  min-height: 190px;
+  margin: 0 auto;
+  padding: 0 $spacing-xs;
 }
 
 .cardWrapper {
-  transition: transform 0.25s ease-out;
+  transition:
+    transform $transition-normal,
+    filter $transition-normal;
   cursor: pointer;
 
   &:hover {
-    transform: translateX(var(--translate-x)) translateY(-40px);
+    transform: translateX(var(--translate-x)) translateY(-28px);
+    filter: drop-shadow(0 8px 12px rgba($color-black, 0.35));
     z-index: 10;
   }
 }

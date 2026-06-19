@@ -1,10 +1,11 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { History } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import classNames from "classnames";
 
 import styles from "@/styles/Menu.module.scss";
 import FriendsPanel, { MenuFriend } from "@/components/menu/FriendsPanel";
@@ -12,6 +13,7 @@ import MenuContentCard from "@/components/menu/MenuContentCard";
 import MenuTopBar from "@/components/menu/MenuTopBar";
 import UserPanel from "@/components/menu/UserPanel";
 import ActionButton from "../buttons/ActionButton";
+import { testIds } from "@/tests/testIds";
 
 type MenuShellProps = {
   activeTabLabel: string;
@@ -27,10 +29,8 @@ export default function MenuShell({
   const { t } = useTranslation();
   const router = useRouter();
   const { data } = useSession();
+  const [isFriendsOpen, setIsFriendsOpen] = useState(false);
   const user = data?.user;
-  console.log({
-    data,
-  });
   const playerLevel = user?.xp || 0;
   const playerXp = user?.xp || 0;
   const playerGold = user?.cash || 0;
@@ -42,7 +42,11 @@ export default function MenuShell({
   ];
 
   return (
-    <main className={styles.Menu}>
+    <main
+      className={classNames(styles.Menu, {
+        [styles.friendsOpen]: isFriendsOpen,
+      })}
+      data-testid={testIds.menu.shell}>
       <UserPanel
         userName={userName}
         userRank={userRank}
@@ -54,7 +58,9 @@ export default function MenuShell({
         onOpenRules={() => router.push("/rules")}
       />
 
-      <section className={styles.mainPanel}>
+      <section
+        className={styles.mainPanel}
+        data-testid={testIds.menu.content}>
         <MenuTopBar
           playerLevel={playerLevel}
           playerXp={playerXp}
@@ -63,6 +69,9 @@ export default function MenuShell({
           goldAriaLabel={t("Menu.gold")}
           shopLabel={t("Menu.shop")}
           settingsAriaLabel="Settings"
+          friendsLabel={t("Menu.friends")}
+          isFriendsOpen={isFriendsOpen}
+          onToggleFriends={() => setIsFriendsOpen((open) => !open)}
         />
 
         <MenuContentCard

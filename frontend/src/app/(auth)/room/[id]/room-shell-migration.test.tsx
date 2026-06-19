@@ -53,6 +53,7 @@ jest.mock("@/components/buttons/withSound", () => ({
 
 jest.mock("next/navigation", () => ({
   useParams: jest.fn(),
+  useRouter: jest.fn(() => ({ push: jest.fn() })),
 }));
 
 jest.mock("@/contexts/socket.context", () => ({
@@ -86,16 +87,16 @@ describe("Room shell migration", () => {
     });
   });
 
-  it("renders the shell with chat, center content and room info", () => {
+  it("renders the shell with participants, center content and room info", () => {
     render(
       <RoomShell
-        chat={<aside>chat</aside>}
+        participants={<aside>participants</aside>}
         info={<aside>info</aside>}>
         <section>center</section>
       </RoomShell>
     );
 
-    expect(screen.getByText("chat")).toBeInTheDocument();
+    expect(screen.getByText("participants")).toBeInTheDocument();
     expect(screen.getByText("center")).toBeInTheDocument();
     expect(screen.getByText("info")).toBeInTheDocument();
   });
