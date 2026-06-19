@@ -52,7 +52,9 @@
     "rule5Title": "How to draw cards",
     "rule5Text": "You never draw cards directly, but you must always keep at least 3 cards in hand while there are cards available to draw.",
     "rule6Title": "End of the game",
-    "rule6Text": "When there are no more cards to draw, you must play the face-up cards you still have. When those are gone, you randomly choose one of the face-down cards to play."
+    "rule6Text": "When there are no more cards to draw, you must play the face-up cards you still have. When those are gone, you randomly choose one of the face-down cards to play.",
+    "previous": "Previous",
+    "next": "Next"
   },
   "Menu": {
     "play": "Play",

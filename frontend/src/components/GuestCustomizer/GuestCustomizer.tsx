@@ -16,7 +16,7 @@ interface GuestCustomizerProps {
 }
 export default function GuestCustomizer({ onBack }: GuestCustomizerProps) {
   const [name, setName] = useState("");
-  const [avatar, setAvatar] = useState<string | null>(null);
+  const [avatar, setAvatar] = useState<string>("");
   const [skin, setSkin] = useState<SkinOption>(skinOptions[0].value);
   const [isLoadingGuest, setIsLoadingGuest] = useState(false);
   const isNameValid = Boolean(name.trim());
@@ -39,7 +39,7 @@ export default function GuestCustomizer({ onBack }: GuestCustomizerProps) {
 
   const handleResetCustomization = () => {
     setName("");
-    setAvatar(null);
+    setAvatar("");
     setSkin(skinOptions[0].value);
   };
 

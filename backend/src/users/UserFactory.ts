@@ -39,6 +39,8 @@ const resolvers = {
     const role = normalizeRegisteredRole(user.role);
     return {
       ...user,
+      cash: user.cash ?? 0,
+      xp: user.xp ?? 0,
       isRegistered: true,
       role,
       room: "",
@@ -51,6 +53,8 @@ const resolvers = {
     const role = normalizeRegisteredRole(user.role);
     return {
       ...user,
+      cash: user.cash ?? 0,
+      xp: user.xp ?? 0,
       isRegistered: true,
       role,
       room: "",
@@ -81,6 +85,8 @@ export class UserFactory {
       name: username,
       role: "guest",
       rank: 0,
+      cash: 0,
+      xp: 0,
       skin,
       image: avatar,
       isRegistered: false,

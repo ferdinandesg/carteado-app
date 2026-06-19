@@ -1,140 +1,99 @@
-// Home — landing/login (identidade cartoon)
+@use "design-system/tokens" as tokens;
+
 .Home {
-  height: 100vh;
   width: 100vw;
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      90deg,
+      rgba($color-bg, 0.95) 0%,
+      rgba($color-bg, 0.78) 30%,
+      rgba($color-bg, 0.18) 58%,
+      rgba($color-bg, 0) 100%
+    ),
+    url("/assets/logo/background-main.png") center / cover no-repeat;
+}
+
+.hero {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: $spacing-l;
+  width: min(52vw, 680px);
+  min-height: 100vh;
+  padding: $spacing-xl;
+}
 
-  .container {
-    width: 30%;
-    position: relative;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    padding: $spacing-l;
-    justify-content: space-around;
-    background-color: rgba($color-bg-secondary, 0.6);
-    align-items: center;
-    border-radius: $border-radius-l;
-    border: $border-width solid $color-outline-light;
-    box-shadow: $shadow-card;
+.logo {
+  width: min(100%, 620px);
+  height: auto;
+  margin-bottom: $spacing-l;
+  filter: drop-shadow(0 6px 0 rgba($color-black, 0.35));
+}
+
+.authMethods {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
+  width: min(100%, 360px);
+}
+
+.actionButton {
+  width: 100%;
+  min-height: 68px;
+}
+
+.googleIcon {
+  border-radius: $border-radius-full;
+  background-color: $color-white;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 1024px) {
+  .Home {
+    background:
+      linear-gradient(
+        180deg,
+        rgba($color-bg, 0.92) 0%,
+        rgba($color-bg, 0.7) 42%,
+        rgba($color-bg, 0.16) 100%
+      ),
+      url("/assets/logo/background-main.png") 62% center / cover no-repeat;
   }
 
-  .banner {
-    height: 100%;
-    position: relative;
-    width: 30%;
-    border-radius: $border-radius-l;
-    overflow: hidden;
-    border: $border-width solid $color-outline-light;
+  .hero {
+    width: 100%;
+    justify-content: flex-start;
+    padding-top: $spacing-xl;
   }
 
-  .authMethods {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: $spacing-m;
-
-    .google {
-      display: flex;
-      align-items: center;
-      border-radius: $border-radius-full;
-      overflow: hidden;
-      background-color: $color-white;
-      justify-content: space-around;
-      padding: $spacing-m;
-      gap: $spacing-s;
-      font-size: $font-size-s;
-      font-weight: $font-weight-bold;
-      text-transform: uppercase;
-      letter-spacing: $letter-spacing-wide;
-      transition: opacity $transition-normal, box-shadow $transition-normal;
-      border: $border-width solid $color-outline;
-      box-shadow: $shadow-button;
-
-      &:hover:not(:disabled) {
-        cursor: pointer;
-        opacity: 0.95;
-        box-shadow: 0 2px 0 rgba($color-black, 0.3);
-      }
-
-      &:disabled {
-        cursor: not-allowed;
-        opacity: 0.8;
-      }
-    }
-
-    .guest {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: $spacing-m;
-      border-radius: $border-radius-m;
-      color: $color-white;
-      background-color: $color-bg-secondary;
-      border: $border-width solid $color-outline-light;
-      font-weight: $font-weight-bold;
-      text-transform: uppercase;
-      letter-spacing: $letter-spacing-wide;
-      transition: background-color $transition-normal, box-shadow $transition-normal;
-      box-shadow: $shadow-button;
-
-      &:hover {
-        background-color: lighten($color-bg-secondary, 5%);
-        box-shadow: 0 2px 0 rgba($color-black, 0.3);
-      }
-    }
-  }
-
-  .title {
-    color: $color-primary;
-    font-size: $font-size-4xl;
-    font-weight: $font-weight-bold;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: $letter-spacing-wide;
-    text-shadow: $border-width $border-width 0 rgba($color-black, 0.3);
-  }
-
-  .rulesLink {
-    cursor: pointer;
-    color: $color-white;
-    font-size: $font-size-s;
-    font-weight: $font-weight-semibold;
-    text-transform: uppercase;
-    background: none;
-    border: none;
-    font: inherit;
-    padding: $spacing-s;
-
-    &:hover {
-      text-decoration: underline;
-      color: $color-primary;
-    }
-
-    &:focus-visible {
-      outline: 2px solid $color-primary;
-      outline-offset: 2px;
-    }
+  .logo {
+    width: min(88vw, 520px);
   }
 }
 
-@media (max-width: 768px) {
-  .Home {
-    .container {
-      width: 90%;
-      height: 80%;
+@media (max-width: 640px) {
+  .hero {
+    padding: $spacing-m;
+    padding-top: $spacing-l;
+  }
 
-      .authMethods {
-        width: 80%;
+  .authMethods {
+    width: min(100%, 320px);
+  }
 
-        .google {
-          padding: $spacing-m;
-          font-size: $font-size-m;
-        }
-      }
-    }
+  .actionButton {
+    min-height: 58px;
   }
 }

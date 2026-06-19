@@ -9,7 +9,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Carteado",
   icons: {
-    icon: [{ url: "/favicon.webp", type: "image/webp" }],
+    icon: [{ url: "/assets/logo/favicon.png", type: "image/png" }],
+    shortcut: [{ url: "/assets/logo/favicon.png", type: "image/png" }],
+    apple: [{ url: "/assets/logo/favicon.png", type: "image/png" }],
   },
 };
 

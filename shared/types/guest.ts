@@ -9,6 +9,9 @@ export type User = {
   name: string;
   role: UserRole;
   image: string;
+  rank: number;
+  cash: number;
+  xp: number;
 };
 
 type UserMeta = {
@@ -16,6 +19,8 @@ type UserMeta = {
   email: string;
   name: string;
   rank: number;
+  cash: number;
+  xp: number;
   room: string;
   status: PlayerStatus;
   isRegistered: boolean;

@@ -7,8 +7,8 @@ import styles from "@/styles/GuestCustomizer.module.scss";
 import { avatarOptions } from "./constants";
 
 interface AvatarSectionProps {
-  avatar: string | null;
-  onSelectAvatar: (avatar: string | null) => void;
+  avatar: string;
+  onSelectAvatar: (avatar: string) => void;
 }
 
 export default function AvatarSection({
@@ -29,10 +29,10 @@ export default function AvatarSection({
         <button
           type="button"
           className={classNames(styles.optionButton, styles.avatarOption, {
-            [styles.selected]: avatar === null,
+            [styles.selected]: avatar === "",
           })}
-          onClick={() => onSelectAvatar(null)}
-          aria-pressed={avatar === null}
+          onClick={() => onSelectAvatar("")}
+          aria-pressed={avatar === ""}
           aria-label={t("Home.noAvatar")}
           data-testid="avatar-option-none">
           <CircleX size={40} />

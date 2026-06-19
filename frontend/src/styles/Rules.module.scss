@@ -1,57 +1,230 @@
 .Rules {
-  height: 100vh;
   width: 100vw;
+  min-height: 100vh;
   overflow: hidden;
+  color: $color-white;
+  background:
+    linear-gradient(
+      90deg,
+      rgba($color-bg, 0.96) 0%,
+      rgba($color-bg, 0.86) 42%,
+      rgba($color-bg, 0.34) 72%,
+      rgba($color-bg, 0.12) 100%
+    ),
+    url("/assets/logo/background-main.png") center / cover no-repeat;
+}
+
+.rulesContainer {
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto;
+  gap: $spacing-l;
+  width: min(1120px, calc(100vw - 48px));
+  min-height: calc(100vh - 48px);
+  margin: 24px auto;
+  padding: $spacing-l;
+  background-color: rgba($color-bg, 0.84);
+  border: $border-width solid rgba($color-outline-light, 0.78);
+  border-radius: $border-radius-l;
+}
+
+.header {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 120px 1fr 120px;
+  align-items: start;
+  gap: $spacing-m;
+}
+
+.header > div {
+  text-align: center;
+}
+
+.rulesTitle {
+  margin: 0;
+  color: $color-primary;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: $font-weight-bold;
+  letter-spacing: $letter-spacing-wide;
+  line-height: 0.9;
+  text-transform: uppercase;
+  text-shadow: 3px 3px 0 rgba($color-black, 0.42);
+}
+
+.introText {
+  max-width: 640px;
+  margin: $spacing-s auto 0;
+  color: $color-gray-300;
+  font-size: $font-size-l;
+  line-height: 1.5;
+}
+
+.stepper {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-s;
+  align-self: stretch;
+}
+
+.step {
+  width: 100%;
+  padding: $spacing-s $spacing-m;
+  color: $color-white;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: 1.25rem;
+  letter-spacing: 1px;
+  text-align: left;
+  text-transform: uppercase;
+  background-color: rgba($color-bg-secondary, 0.7);
+  border: $border-width solid rgba($color-outline-light, 0.38);
+  border-radius: $border-radius-s;
+  cursor: pointer;
+  transition:
+    background-color $transition-normal,
+    border-color $transition-normal,
+    color $transition-normal,
+    transform $transition-normal;
+
+  &:hover {
+    color: $color-primary;
+    background-color: rgba($color-bg-secondary, 0.92);
+    transform: translateX(3px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
+}
+
+.activeStep {
+  color: $color-bg;
+  background-color: $color-primary;
+  border-color: $color-outline;
+}
+
+.ruleCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 360px;
+  padding: clamp($spacing-m, 4vw, $spacing-xl);
+  background-color: rgba($color-bg-input, 0.96);
+  border: $border-width solid $color-outline;
+  border-radius: $border-radius-l;
+  box-shadow: $shadow-card;
+}
+
+.ruleTitle {
+  margin: 0 0 $spacing-m;
+  color: $color-bg;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.ruleText {
+  max-width: 760px;
+  margin: 0;
+  color: $color-gray-800;
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  line-height: 1.6;
+}
+
+.specialCardsList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $spacing-m;
+  padding: 0;
+  margin: $spacing-l 0 0;
+  list-style: none;
+}
+
+.specialCard {
+  display: flex;
+  align-items: center;
+  gap: $spacing-m;
+  min-height: 200px;
+  padding: $spacing-m;
+  color: $color-gray-800;
+  font-weight: $font-weight-semibold;
+  background-color: rgba($color-white, 0.7);
+  border: $border-width solid rgba($color-outline, 0.42);
+  border-radius: $border-radius-m;
+}
+
+.controls {
+  grid-column: 2;
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-m;
+}
+
+@media (max-width: 900px) {
+  .Rules {
+    overflow-y: auto;
+    background:
+      linear-gradient(
+        180deg,
+        rgba($color-bg, 0.95) 0%,
+        rgba($color-bg, 0.82) 48%,
+        rgba($color-bg, 0.28) 100%
+      ),
+      url("/assets/logo/background-main.png") 62% center / cover no-repeat;
+  }
+
   .rulesContainer {
-    color: white;
-    height: 100%;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    gap: $spacing-s;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 1.5rem;
-    background-color: $primary-color;
-    scrollbar-width: none;
+    width: min(100%, calc(100vw - 24px));
+    min-height: auto;
+    margin: 12px auto;
+    padding: $spacing-m;
   }
 
-  .rulesTitle {
+  .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .stepper {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: $spacing-xs;
+  }
+
+  .step {
+    flex: 0 0 auto;
+    width: min(70vw, 260px);
     text-align: center;
-    font-size: 2rem;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
   }
 
-  .introText {
-    font-size: 1.5rem;
-    color: #34495e;
-    text-align: center;
+  .ruleCard {
+    min-height: 320px;
   }
 
-  .ruleTitle {
-    font-size: 1.5rem;
-    color: white;
-  }
+  .controls {
+    justify-content: stretch;
 
-  .ruleText {
-    color: #34495e;
-    font-size: 1.05rem;
-    line-height: 1.6;
+    > * {
+      flex: 1;
+    }
   }
+}
 
+@media (max-width: 640px) {
   .specialCardsList {
-    list-style-type: disc;
-    padding-left: 20px;
+    grid-template-columns: 1fr;
   }
 
   .specialCard {
-    display: flex;
-    color: #34495e;
-    align-items: center;
-    gap: $spacing-s;
-  }
-}
-@media (max-width: 768px) {
-  .rulesContainer {
-    padding: 1rem;
+    align-items: flex-start;
   }
 }

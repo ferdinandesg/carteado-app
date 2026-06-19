@@ -1,6 +1,7 @@
 import { User } from "@prisma/client";
 import prisma from "../prisma";
 import {
+  AuthenticatedUser,
   EmptyGuestType,
   RegisteredUserRole,
   normalizeRegisteredRole,
@@ -8,14 +9,26 @@ import {
 import { logger } from "@/utils/logger";
 import { UserFactory } from "@/users/UserFactory";
 
-type UserLogin = Omit<User, "id" | "role" | "skin">;
-
-export type RegisteredAuthProfile = {
-  id: string;
+type UserLogin = {
   email: string;
   name: string;
   image: string;
+};
+
+export type AuthProfile = {
+  id: string;
+  email: string;
+  name: string;
+  image?: string | null;
   rank: number;
+  cash: number;
+  xp: number;
+  role: AuthenticatedUser["role"];
+  skin?: string | null;
+};
+
+export type RegisteredAuthProfile = AuthProfile & {
+  image: string;
   role: RegisteredUserRole;
   skin: string | null;
 };
@@ -27,6 +40,8 @@ function toRegisteredProfile(user: User): RegisteredAuthProfile {
     name: user.name,
     image: user.image,
     rank: user.rank,
+    cash: user.cash ?? 0,
+    xp: user.xp ?? 0,
     role: normalizeRegisteredRole(user.role),
     skin: user.skin,
   };
@@ -45,11 +60,27 @@ export async function validateUser(
         name: user.name,
         image: user.image,
         rank: 0,
+        cash: 0,
+        xp: 0,
       },
     });
     return toRegisteredProfile(newUser);
   }
   return toRegisteredProfile(foundUser);
+}
+
+export function toAuthProfile(user: AuthenticatedUser): AuthProfile {
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    image: user.image,
+    rank: user.rank,
+    cash: user.cash,
+    xp: user.xp,
+    role: user.role,
+    skin: user.skin,
+  };
 }
 
 export async function validateGuestUser(

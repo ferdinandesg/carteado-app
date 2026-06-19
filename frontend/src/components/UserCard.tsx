@@ -21,7 +21,9 @@ type UserCardProps = {
 export default function UserCard({ user, size = "large" }: UserCardProps) {
   const isUserReady = user?.status === PlayerStatus.READY;
   const userRank = user?.rank || 0;
-
+  console.log({
+    user,
+  });
   return (
     <div className={styles.UserCard}>
       <div

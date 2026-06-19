@@ -1,20 +1,14 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useTranslation } from "react-i18next";
 import Image from "next/image";
-import { Pixelify_Sans } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
+import ActionButton from "@/components/buttons/ActionButton";
 import GuestCustomizer from "@/components/GuestCustomizer/GuestCustomizer";
 import styles from "@/styles/Home.module.scss";
-import classNames from "classnames";
-
-const pixelify = Pixelify_Sans({
-  weight: ["400"],
-  subsets: ["latin"],
-});
 
 export default function Home() {
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
@@ -41,73 +35,75 @@ export default function Home() {
 
   return (
     <main
-      className={classNames(styles.Home, "app-background", pixelify.className)}
+      className={styles.Home}
       role="main">
-      <div className={styles.container}>
-        <h1 className={styles.title}>Carteado</h1>
+      <section
+        className={styles.hero}
+        aria-labelledby="home-logo-title">
+        <Image
+          className={styles.logo}
+          src="/assets/logo/main-logo.png"
+          alt="Carteado"
+          width={690}
+          height={388}
+          priority
+        />
+        <h1
+          id="home-logo-title"
+          className={styles.visuallyHidden}>
+          Carteado
+        </h1>
 
         <div
           className={styles.authMethods}
           role="group"
           aria-label={t("authMethods")}
           data-testid="auth-methods-section">
-          <button
+          <ActionButton
             type="button"
-            className={styles.google}
+            className={styles.actionButton}
+            variant="primary"
+            size="lg"
             data-testid="google-signin-button"
-            disabled={isLoadingGoogle}
-            aria-busy={isLoadingGoogle}
+            isLoading={isLoadingGoogle}
             aria-label={isLoadingGoogle ? t("loading") : t("googleAuth")}
-            onClick={handleGoogleSignIn}>
-            {isLoadingGoogle ? (
-              <span
-                className="spinner"
-                aria-hidden
-              />
-            ) : (
+            onClick={handleGoogleSignIn}
+            icon={
               <Image
+                className={styles.googleIcon}
                 src="https://developers.google.com/identity/images/g-logo.png"
                 alt=""
                 width={25}
                 height={25}
                 aria-hidden
               />
-            )}
+            }>
             {isLoadingGoogle ? t("loading") : t("googleAuth")}
-          </button>
+          </ActionButton>
 
-          <button
+          <ActionButton
             type="button"
-            className={styles.guest}
+            className={styles.actionButton}
+            variant="secondary"
+            size="lg"
             data-testid="guest-signin-button"
             onClick={() => setView("guestSetup")}
             aria-label={t("joinAsGuest")}>
             {t("joinAsGuest")}
-          </button>
+          </ActionButton>
+
+          <ActionButton
+            type="button"
+            className={styles.actionButton}
+            variant="accent"
+            size="lg"
+            data-testid="rules-button"
+            onClick={handleGoToRules}
+            aria-label={t("seeRules")}>
+            {t("seeRules")}
+          </ActionButton>
         </div>
-
-        <button
-          type="button"
-          className={styles.rulesLink}
-          data-testid="rules-button"
-          onClick={handleGoToRules}
-          aria-label={t("seeRules")}>
-          {t("seeRules")}
-        </button>
-      </div>
-
-      <figure
-        className={styles.banner}
-        aria-hidden>
-        <Image
-          src="/assets/banner.png"
-          alt=""
-          fill
-          style={{ objectFit: "cover" }}
-          sizes="(max-width: 768px) 90vw, 30vw"
-          priority
-        />
-      </figure>
+      </section>
     </main>
   );
 }

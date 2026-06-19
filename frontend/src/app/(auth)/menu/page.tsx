@@ -17,6 +17,9 @@ export default function Menu() {
 
   const router = useRouter();
   const { data } = useSession();
+  console.log({
+    data,
+  });
   return (
     <>
       <div className={classNames(styles.Menu, "app-background")}>

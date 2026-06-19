@@ -6,6 +6,8 @@ export type UserSession = {
   name: string;
   image: string;
   rank?: number;
+  cash?: number;
+  xp?: number;
   role?: string;
 };
 

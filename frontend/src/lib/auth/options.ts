@@ -5,24 +5,44 @@ import type { User } from "next-auth";
 import { UserRole } from "shared/types";
 import type { UserSession } from "@/models/Users";
 import {
+  fetchCurrentAuthProfile,
   registerGoogleUser,
   registerGuestUser,
 } from "@/lib/auth/backend-client";
-import type { AuthApiResponse } from "@/lib/auth/types";
+import type { AuthApiResponse, AuthProfileResponse } from "@/lib/auth/types";
 import logger from "@/lib/logger";
 
 const THIRTY_DAYS_SEC = 30 * 24 * 60 * 60;
+const PROFILE_REFRESH_INTERVAL_MS = 60 * 1000;
 
-function mapAuthToJwt(auth: AuthApiResponse) {
+function mapAuthToJwt(
+  auth: AuthApiResponse | AuthProfileResponse,
+  accessToken?: string
+) {
+  const resolvedAccessToken = (
+    "accessToken" in auth ? auth.accessToken : accessToken
+  ) as string;
+
   return {
     id: auth.id,
     role: auth.role,
-    skin: auth.skin,
+    skin: auth.skin ?? undefined,
     name: auth.name,
     email: auth.email,
     image: auth.image,
-    accessToken: auth.accessToken,
+    rank: auth.rank,
+    cash: auth.cash,
+    xp: auth.xp,
+    accessToken: resolvedAccessToken,
+    profileSyncedAt: Date.now(),
   };
+}
+
+function shouldRefreshProfile(profileSyncedAt: unknown) {
+  return (
+    typeof profileSyncedAt !== "number" ||
+    Date.now() - profileSyncedAt > PROFILE_REFRESH_INTERVAL_MS
+  );
 }
 
 async function resolveAuthProfile(
@@ -77,6 +97,26 @@ export const authOptions: NextAuthOptions = {
           return { ...token, error: "UserValidationError" };
         }
       }
+
+      if (
+        typeof token.accessToken === "string" &&
+        shouldRefreshProfile(token.profileSyncedAt)
+      ) {
+        try {
+          const profile = await fetchCurrentAuthProfile(token.accessToken);
+          return {
+            ...token,
+            ...mapAuthToJwt(profile, token.accessToken),
+            error: undefined,
+          };
+        } catch (error) {
+          logger.error(
+            { err: error },
+            "Falha ao atualizar perfil do usuário no callback JWT"
+          );
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
@@ -90,6 +130,9 @@ export const authOptions: NextAuthOptions = {
       session.user.email = token.email;
       session.user.role = token.role as UserRole;
       session.user.skin = token.skin as string | undefined;
+      session.user.rank = token.rank as number;
+      session.user.cash = token.cash as number;
+      session.user.xp = token.xp as number;
       session.user.accessToken = token.accessToken as string;
 
       return session;

@@ -19,7 +19,9 @@ model User {
   email  String
   skin   String?  @default("8bit")
   Player Player[]
-  rank   Int
+  rank   Int      @default(0)
+  cash   Int?     @default(0)
+  xp     Int?     @default(0)
   role   String?  @default("user")
   rooms  Room[]   @relation("owner")
 }

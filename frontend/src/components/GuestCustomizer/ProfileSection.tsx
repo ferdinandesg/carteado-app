@@ -24,7 +24,7 @@ export default function ProfileSection({
       aria-label={t("Home.guestNickname")}>
       <div className={styles.selectedAvatar}>
         <Image
-          src={avatar ?? DEFAULT_AVATAR}
+          src={avatar || DEFAULT_AVATAR}
           alt={t("Home.selectedAvatar")}
           width={150}
           height={150}

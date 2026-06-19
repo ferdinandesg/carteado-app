@@ -6,6 +6,11 @@ export type AuthApiResponse = {
   email: string;
   name: string;
   image?: string | null;
-  skin?: string;
+  skin?: string | null;
+  rank: number;
+  cash: number;
+  xp: number;
   accessToken: string;
 };
+
+export type AuthProfileResponse = Omit<AuthApiResponse, "accessToken">;

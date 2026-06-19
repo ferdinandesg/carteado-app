@@ -52,7 +52,9 @@
     "rule5Title": "Como comprar cartas",
     "rule5Text": "Você nunca compra cartas diretamente, mas sempre deve manter pelo menos 3 cartas na mão enquanto houver cartas disponíveis para comprar.",
     "rule6Title": "Final do jogo",
-    "rule6Text": "Quando não houver mais cartas para comprar, você deve subir as cartas viradas para cima que ainda possui. Quando essas cartas acabarem, você escolhe aleatoriamente uma das cartas viradas para baixo para jogar."
+    "rule6Text": "Quando não houver mais cartas para comprar, você deve subir as cartas viradas para cima que ainda possui. Quando essas cartas acabarem, você escolhe aleatoriamente uma das cartas viradas para baixo para jogar.",
+    "previous": "Anterior",
+    "next": "Próxima"
   },
   "Menu": {
     "play": "Jogar",
