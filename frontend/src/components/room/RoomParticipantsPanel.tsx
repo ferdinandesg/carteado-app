@@ -16,7 +16,9 @@ export default function RoomParticipantsPanel() {
   const { room } = useRoomContext();
 
   if (!room) return null;
-
+  console.log({
+    room,
+  });
   return (
     <aside
       className={styles.panel}

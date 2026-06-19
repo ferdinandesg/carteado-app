@@ -82,7 +82,7 @@ export default function Rooms() {
   return (
     <MenuShell
       activeTabLabel={t("Menu.createdRooms")}
-      contentSize="wide">
+      contentSize="default">
       <div className={styles.roomsCardContent}>
         <header className={styles.roomsToolbar}>
           <BackButton

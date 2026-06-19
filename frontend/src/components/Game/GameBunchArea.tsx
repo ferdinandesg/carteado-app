@@ -1,17 +1,18 @@
 import CardBunch from "@/components/CardBunch";
+import { type CardSize } from "@/lib/cards/cardSizing";
 import styles from "@/styles/Game.module.scss";
 import { Card } from "shared/cards";
 
 type GameBunchAreaProps = {
   cards: Card[];
-  cardHeight?: number;
+  size?: CardSize;
   canHover?: boolean;
   direction?: "left" | "right";
 };
 
 export default function GameBunchArea({
   cards,
-  cardHeight = 180,
+  size = "lg",
   canHover = false,
   direction,
 }: GameBunchAreaProps) {
@@ -19,7 +20,7 @@ export default function GameBunchArea({
     <div className={styles.playedCards}>
       <CardBunch
         cards={cards}
-        cardHeight={cardHeight}
+        size={size}
         canHover={canHover}
         direction={direction}
       />

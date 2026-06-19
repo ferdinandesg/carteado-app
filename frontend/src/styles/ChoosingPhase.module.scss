@@ -19,11 +19,11 @@
 }
 
 .cardPlaceholder {
-  width: 105px;
-  height: 150px;
+  height: 126px;
+  aspect-ratio: 5 / 7;
   background-color: rgba($color-black, 0.18);
   border: $border-width dashed rgba($color-outline-light, 0.35);
-  border-radius: $border-radius-m;
+  border-radius: $border-radius-s;
 }
 
 .confirmButtonContainer {

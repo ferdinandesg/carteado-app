@@ -36,7 +36,8 @@ export default function ChoosingPhase() {
         {availableCards.map((card) => (
           <CardComponent
             card={card}
-            height={150}
+            size="md"
+            canHover
             key={`available-${card.toString}`}
             onClick={() => toggleCard(card)}
           />
@@ -48,7 +49,7 @@ export default function ChoosingPhase() {
       <div className={styles.cardArea}>
         {selectedCards.map((card) => (
           <CardComponent
-            height={150}
+            size="md"
             card={card}
             key={`selected-${card.toString}`}
             onClick={() => toggleCard(card)}

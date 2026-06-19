@@ -15,7 +15,7 @@ export default function TrucoDeckArea() {
       {game.vira && (
         <div className={styles.deckItem}>
           <Card
-            height={150}
+            size="md"
             card={game.vira}
           />
           <span className={styles.deckLabel}>{t("Game.vira")}</span>

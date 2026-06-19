@@ -5,20 +5,31 @@
   justify-content: center;
   width: max-content;
   min-width: 100%;
-  min-height: 190px;
+  min-height: calc(var(--card-height, 182px) + #{$spacing-m});
   margin: 0 auto;
   padding: 0 $spacing-xs;
+  background: transparent;
 }
 
 .cardWrapper {
+  flex: 0 0 var(--card-width, 130px);
+  width: var(--card-width, 130px);
+  overflow: visible;
+  line-height: 0;
+  background: transparent;
   transition:
     transform $transition-normal,
     filter $transition-normal;
+
   cursor: pointer;
 
   &:hover {
-    transform: translateX(var(--translate-x)) translateY(-28px);
-    filter: drop-shadow(0 8px 12px rgba($color-black, 0.35));
+    transform: translateX(var(--translate-x)) translateY(-24px);
+    filter: drop-shadow(0 10px 14px rgba($color-black, 0.38));
     z-index: 10;
   }
+}
+
+.cardWrapper:not(:hover) {
+  transform: translateX(var(--translate-x));
 }

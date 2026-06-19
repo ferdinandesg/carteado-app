@@ -1,14 +1,18 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { Card } from "shared/cards";
 
 import CardComponent from "./Card";
+import {
+  CARD_SIZES,
+  getCardWidth,
+  type CardSize,
+} from "@/lib/cards/cardSizing";
 import styles from "@styles/CardFan.module.scss";
-
-const APPROX_CARD_WIDTH = 132;
 
 type CardFanProps = {
   cards: Card[];
   onClick?: (card: Card) => void;
+  size?: CardSize;
   spacing?: number;
   testId?: string;
 };
@@ -16,11 +20,14 @@ type CardFanProps = {
 export default function CardFan({
   cards,
   onClick = () => {},
-  spacing: maxSpacing = 60,
+  size = "xl",
+  spacing: maxSpacing = 56,
   testId,
 }: CardFanProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [spacing, setSpacing] = useState(maxSpacing);
+  const cardHeight = CARD_SIZES[size];
+  const cardWidth = getCardWidth(cardHeight);
   const numCards = cards.length;
   const fanWidth = (numCards - 1) * spacing;
   const initialOffset = -fanWidth / 2;
@@ -33,16 +40,16 @@ export default function CardFan({
     }
 
     const updateSpacing = () => {
-      const availableWidth = container.clientWidth - APPROX_CARD_WIDTH;
+      const availableWidth = container.clientWidth - cardWidth;
       const fitSpacing = Math.floor(availableWidth / Math.max(numCards - 1, 1));
-      setSpacing(Math.min(maxSpacing, Math.max(28, fitSpacing)));
+      setSpacing(Math.min(maxSpacing, Math.max(24, fitSpacing)));
     };
 
     updateSpacing();
     const observer = new ResizeObserver(updateSpacing);
     observer.observe(container);
     return () => observer.disconnect();
-  }, [maxSpacing, numCards]);
+  }, [cardWidth, maxSpacing, numCards]);
 
   return (
     <div
@@ -52,19 +59,20 @@ export default function CardFan({
       {cards.map((card, index) => {
         const translateX = (initialOffset + index * spacing) / 5;
 
-        const cardStyle = {
-          "--translate-x": `${translateX}px`,
-        } as React.CSSProperties;
-
         return (
           <div
             key={card.toString}
             className={styles.cardWrapper}
-            style={cardStyle}
+            style={
+              {
+                "--translate-x": `${translateX}px`,
+                "--card-width": `${cardWidth}px`,
+              } as React.CSSProperties
+            }
             onClick={() => onClick(card)}>
             <CardComponent
               card={card}
-              height={180}
+              size={size}
             />
           </div>
         );

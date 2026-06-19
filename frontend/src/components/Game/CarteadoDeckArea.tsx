@@ -18,8 +18,8 @@ export default function CarteadoDeckArea() {
         <CardBunch
           isHidden
           spacing="compact"
+          size="md"
           cards={deck.slice(0, 10)}
-          cardHeight={150}
         />
         <span
           className={styles.deckCount}

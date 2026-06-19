@@ -1,64 +1,75 @@
-import { HtmlHTMLAttributes } from "react";
-
-import styles from "@/styles/Card.module.scss";
+import { HTMLAttributes } from "react";
 import classNames from "classnames";
-import { Card } from "shared/cards";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-interface CardComponentProps extends HtmlHTMLAttributes<HTMLDivElement> {
+import { Card } from "shared/cards";
+
+import {
+  getCardWidth,
+  resolveCardHeight,
+  type CardSize,
+} from "@/lib/cards/cardSizing";
+
+import styles from "@/styles/Card.module.scss";
+
+type AvailableSkins = "basics/white" | "basics/black" | "poker" | "8bit";
+
+type CardComponentProps = {
   card: Card;
+  size?: CardSize;
   height?: number;
   canHover?: boolean;
   isHidden?: boolean;
-}
+} & HTMLAttributes<HTMLDivElement>;
 
-type AvailableSkins = "basics/white" | "basics/black" | "poker" | "8bit";
 const ROOT_PATH = "/assets/skins";
-const handleSkinPath = (skin: AvailableSkins, card: Card, isHidden: boolean) => {
-  const cardPath = `${card.suit}/${card.rank}${card.suit}.png`;
 
-  if (card.isHidden || isHidden) {
+function getSkinPath(skin: AvailableSkins, card: Card, hidden: boolean) {
+  if (card.isHidden || hidden) {
     return `${ROOT_PATH}/${skin}/backs/back_blue_1.png`;
   }
 
-  return `${ROOT_PATH}/${skin}/${cardPath}`;
-};
-
-const CARD_RATIO = 63 / 88; // ~0.72
+  return `${ROOT_PATH}/${skin}/${card.suit}/${card.rank}${card.suit}.png`;
+}
 
 export default function CardComponent({
   card,
-  height = 70,
+  size = "md",
+  height,
   isHidden = false,
   canHover = false,
+  className,
+  style,
   ...rest
 }: CardComponentProps) {
   const { data } = useSession();
   const userSkin = (data?.user?.skin as AvailableSkins) || "8bit";
-  const cardURL = handleSkinPath(userSkin, card, isHidden);
+  const resolvedHeight = resolveCardHeight(size, height);
+  const resolvedWidth = getCardWidth(resolvedHeight);
+  const cardURL = getSkinPath(userSkin, card, isHidden);
 
-  const width = height * CARD_RATIO;
-
-  if (!height || !width) return null;
   return (
     <div
       {...rest}
-      className={classNames(styles.Card,
+      className={classNames(styles.Card, className, {
+        [styles.canHover]: canHover,
+      })}
+      style={
         {
-          [styles.canHover]: canHover,
-        }
-      )}
-      style={{
-        width: `${width}px`,
-        height: `${height}px`,
-      }}>
+          ...style,
+          "--card-height": `${resolvedHeight}px`,
+        } as React.CSSProperties
+      }>
       <Image
         src={cardURL}
-        alt="Carta"
-        width={100}
-        height={100}
-        priority
+        alt={card.toString}
+        fill
+        sizes={`${resolvedWidth}px`}
+        className={styles.image}
+        draggable={false}
       />
     </div>
   );
 }
+
+export type { CardSize };
