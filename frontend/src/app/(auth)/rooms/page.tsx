@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import useFetchRooms from "@/hooks/rooms/useFetchRooms";
 import { RoomInterface } from "@/models/room";
 import RoomItem from "@/components/RoomItem";
+import MenuShell from "@/components/menu/MenuShell";
 
 import styles from "@/styles/Rooms.module.scss";
 import BackButton from "@/components/buttons/BackButton";
@@ -79,42 +80,17 @@ export default function Rooms() {
   };
 
   return (
-    <main className={styles.Rooms}>
-      <aside
-        className={styles.roomsSidebar}
-        aria-label={t("Menu.play")}>
-        <BackButton
-          data-testid="back-button"
-          onClick={goToMenu}
-          size={24}
-          color="white"
-        />
-
-        <ActionButton
-          type="button"
-          variant="primary"
-          size="lg"
-          icon={<Play size={28} />}
-          disabled={!selectedRoom}
-          onClick={() => selectedRoom && goToRoom(selectedRoom.hash)}
-          fullWidth>
-          {t("Menu.play")}
-        </ActionButton>
-
-        <ActionButton
-          type="button"
-          variant="accent"
-          size="lg"
-          icon={<ListPlus size={28} />}
-          onClick={() => router.push("/room/create")}
-          fullWidth>
-          {t("Menu.createRoom")}
-        </ActionButton>
-      </aside>
-
-      <section className={styles.roomsContent}>
-        <header className={styles.roomsHeader}>
-          <h1>{t("Menu.createdRooms")}</h1>
+    <MenuShell
+      activeTabLabel={t("Menu.createdRooms")}
+      contentSize="wide">
+      <div className={styles.roomsCardContent}>
+        <header className={styles.roomsToolbar}>
+          <BackButton
+            data-testid="back-button"
+            onClick={goToMenu}
+            size={24}
+            color="white"
+          />
           <SearchComponent
             value={search}
             onChange={setSearch}
@@ -135,7 +111,30 @@ export default function Rooms() {
             />
           )}
         </div>
-      </section>
-    </main>
+
+        <div className={styles.roomsActions}>
+          <ActionButton
+            type="button"
+            variant="primary"
+            size="lg"
+            icon={<Play size={28} />}
+            disabled={!selectedRoom}
+            onClick={() => selectedRoom && goToRoom(selectedRoom.hash)}
+            fullWidth>
+            {t("Menu.play")}
+          </ActionButton>
+
+          <ActionButton
+            type="button"
+            variant="accent"
+            size="lg"
+            icon={<ListPlus size={28} />}
+            onClick={() => router.push("/room/create")}
+            fullWidth>
+            {t("Menu.createRoom")}
+          </ActionButton>
+        </div>
+      </div>
+    </MenuShell>
   );
 }

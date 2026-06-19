@@ -38,6 +38,7 @@ $color-outline: tokens.$color-outline;
 $color-outline-light: tokens.$color-outline-light;
 $color-border-subtle: tokens.$color-border-subtle;
 $border-width: tokens.$border-width;
+$border-width-bold: tokens.$border-width-bold;
 $shadow-card: tokens.$shadow-card;
 $shadow-button: tokens.$shadow-button;
 $z-modal: tokens.$z-modal;
@@ -53,6 +54,8 @@ $background-color: tokens.$color-bg;
 $primary-color: tokens.$color-primary;
 $secondary-color: tokens.$color-secondary;
 $success-color: tokens.$color-success;
+$color-online: tokens.$color-online;
+$color-offline: tokens.$color-offline;
 $color-bg-secondary: tokens.$color-bg-secondary;
 
 @function generate-gradient($color) {

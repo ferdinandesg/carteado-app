@@ -57,6 +57,7 @@
     "next": "Próxima"
   },
   "Menu": {
+    "addGold": "Adicionar",
     "play": "Jogar",
     "createRoom": "Criar sala",
     "createdRooms": "Salas criadas",

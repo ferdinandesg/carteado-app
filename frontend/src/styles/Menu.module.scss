@@ -33,7 +33,7 @@
   letter-spacing: 1px;
   text-transform: uppercase;
   background-color: $color-accent-pink;
-  border: $border-width solid $color-outline;
+  border: $border-width-bold solid $color-outline;
   border-radius: $border-radius-s;
   box-shadow: $shadow-button;
   cursor: pointer;
@@ -67,27 +67,34 @@
 .wallet {
   display: flex;
   align-items: center;
-  gap: $spacing-s;
+  width: 30%;
 }
 
 .hexBadge {
+  z-index: 2;
   display: grid;
   place-items: center;
   width: 48px;
   height: 42px;
   color: $color-bg;
   font-weight: $font-weight-bold;
+  font-size: 1.5rem;
+
   background-color: $color-accent-teal;
-  clip-path: polygon(24% 0, 76% 0, 100% 50%, 76% 100%, 24% 100%, 0 50%);
+  border: $border-width-bold solid $color-outline;
+  border-radius: $border-radius-full;
+  box-shadow: $shadow-card;
 }
 
 .xpTrack {
+  z-index: 1;
+  position: relative;
   flex: 1;
-  height: 28px;
-  overflow: hidden;
+  height: 32px;
+  left: -15px;
   background-color: rgba($color-black, 0.35);
-  border: $border-width solid $color-outline;
-  border-radius: $border-radius-full;
+  border: 4px solid $color-outline;
+  border-radius: $border-radius-s;
 
   span {
     display: block;
@@ -99,24 +106,20 @@
 .wallet {
   padding: $spacing-xs $spacing-s;
   background-color: rgba($color-black, 0.32);
-  border: $border-width solid $color-border-subtle;
+  border: $border-width-bold solid $color-outline;
   border-radius: $border-radius-s;
-
-  svg {
-    color: $color-primary;
+  display: flex;
+  align-items: center;
+  gap: $spacing-s;
+  justify-content: space-between;
+  span {
+    display: flex;
+    align-items: center;
+    gap: $spacing-s;
   }
 
   button {
-    display: grid;
-    place-items: center;
-    width: 24px;
-    height: 24px;
-    color: $color-bg;
-    font-weight: $font-weight-bold;
-    background-color: $color-bg-input;
-    border: $border-width solid $color-outline;
-    border-radius: $border-radius-s;
-    cursor: pointer;
+    min-width: 0;
   }
 }
 
@@ -132,7 +135,7 @@
   letter-spacing: 1px;
   text-transform: uppercase;
   background-color: $color-primary;
-  border: $border-width solid $color-outline;
+  border: $border-width-bold solid $color-outline;
   border-radius: $border-radius-s;
   box-shadow: $shadow-button;
   cursor: pointer;
@@ -155,14 +158,18 @@
   width: 80%;
   padding: $spacing-xl $spacing-l $spacing-l;
   background-color: darken($color-bg, 10%);
-  border: $border-width solid $color-border-subtle;
+  border: $border-width-bold solid $color-outline;
   border-radius: $border-radius-s;
+}
+
+.wideCard {
+  width: min(100%, 760px);
 }
 
 .cardTabs {
   position: absolute;
   top: -50px;
-  left: -2px;
+  left: -3px;
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr;
   width: 100%;
@@ -177,11 +184,11 @@
     font-size: 2rem;
     text-transform: uppercase;
     background-color: darken($color-bg, 20%);
-    border-bottom: $border-width solid $color-border-subtle;
+    border-bottom: $border-width-bold solid $color-outline;
 
     &.activeTab {
       background-color: darken($color-bg, 10%);
-      border: $border-width solid $color-border-subtle;
+      border: $border-width-bold solid $color-outline;
 
       border-bottom: none;
     }
@@ -222,7 +229,7 @@
     letter-spacing: 1px;
     text-transform: uppercase;
     background-color: rgba($color-bg-input, 0.12);
-    border: $border-width solid rgba($color-outline-light, 0.28);
+    border: $border-width-bold solid rgba($color-outline-light, 0.28);
     border-radius: $border-radius-s;
     cursor: pointer;
   }
@@ -231,16 +238,17 @@
 .friendsPanel {
   align-self: center;
   min-height: min(74vh, 520px);
-  padding: $spacing-l;
-  background-color: rgba($color-panel-deep, 0.9);
-  border: $border-width solid $color-border-subtle;
-  border-radius: $border-radius-s;
+  padding: $spacing-m;
+  margin: 0 $spacing-m;
+  background-color: darken($color-bg, 10%);
+  border: $border-width-bold solid $color-outline;
 
   h2 {
     display: inline-flex;
     align-items: center;
     gap: $spacing-s;
     margin: 0 0 $spacing-m;
+    width: 100%;
     padding: $spacing-s $spacing-l;
     color: $color-white;
     font-family: var(--font-mouse-memoirs), sans-serif;
@@ -248,7 +256,7 @@
     letter-spacing: 1px;
     text-transform: uppercase;
     background-color: $color-accent-pink;
-    border: $border-width solid $color-outline;
+    border: $border-width-bold solid $color-outline;
     border-radius: $border-radius-s;
     box-shadow: $shadow-button;
   }
@@ -260,7 +268,7 @@
   gap: $spacing-s;
   padding: $spacing-xs $spacing-s;
   background-color: $color-bg-input;
-  border: $border-width solid rgba($color-outline, 0.5);
+  border: $border-width-bold solid rgba($color-outline, 0.5);
 
   svg {
     color: tokens.$color-gray-600;
@@ -291,8 +299,7 @@
     align-items: center;
     gap: $spacing-m;
     padding: $spacing-s;
-    background-color: rgba($color-bg, 0.72);
-    border: $border-width solid rgba($color-outline-light, 0.08);
+    background-color: $color-panel-deep;
   }
 
   strong,
@@ -307,8 +314,17 @@
   }
 
   span {
-    color: $color-accent-teal;
+    letter-spacing: 3px;
     font-size: $font-size-s;
+  }
+}
+
+.friendName {
+  & .online {
+    color: $color-online;
+  }
+  & .offline {
+    color: $color-offline;
   }
 }
 
@@ -320,13 +336,20 @@
   overflow: hidden;
   color: $color-primary;
   background-color: rgba($color-bg-input, 0.14);
-  border: $border-width solid $color-border-subtle;
+  border: $border-width-bold solid $color-outline;
   border-radius: $border-radius-full;
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  &.online {
+    background-color: $color-online;
+  }
+  &.offline {
+    background-color: $color-offline;
   }
 }
 

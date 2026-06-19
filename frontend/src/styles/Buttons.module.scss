@@ -74,6 +74,11 @@
   }
 }
 
+.sm {
+  padding: $spacing-xs $spacing-s;
+  font-size: 1rem;
+}
+
 .md {
   padding: $spacing-s $spacing-l;
   font-size: 1.25rem;

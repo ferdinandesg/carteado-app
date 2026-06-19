@@ -32,6 +32,25 @@
   gap: $spacing-l;
 }
 
+.roomsCardContent {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-m;
+}
+
+.roomsToolbar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: $spacing-m;
+}
+
+.roomsActions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $spacing-m;
+}
+
 .roomsHeader {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
@@ -266,6 +285,8 @@
   }
 
   .roomsHeader,
+  .roomsToolbar,
+  .roomsActions,
   .RoomItem,
   .roomData {
     grid-template-columns: 1fr;

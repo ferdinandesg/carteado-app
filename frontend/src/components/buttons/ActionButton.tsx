@@ -6,7 +6,7 @@ import { withSound } from "./withSound";
 import styles from "@/styles/Buttons.module.scss";
 
 type ActionButtonVariant = "primary" | "secondary" | "accent" | "ghost";
-type ActionButtonSize = "md" | "lg";
+type ActionButtonSize = "sm" | "md" | "lg";
 
 type ActionButtonProps = {
   children: ReactNode;
