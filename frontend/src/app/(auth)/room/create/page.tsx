@@ -1,6 +1,8 @@
 "use client";
 import BackButton from "@/components/buttons/BackButton";
 import ActionButton from "@/components/buttons/ActionButton";
+import TextInput from "@/components/inputs/TextInput";
+import MenuShell from "@/components/menu/MenuShell";
 import usePostRoom from "@/hooks/rooms/usePostRoom";
 import { ArrowRightCircle, Users } from "lucide-react";
 import { useState } from "react";
@@ -61,19 +63,16 @@ export default function CreateRoom() {
     roomPayload.rule === "CarteadoGameRules" ? players.carteado : players.truco;
 
   return (
-    <main className={styles.CreateRoom}>
-      <section className={styles.createRoomPanel}>
-        <header className={styles.createRoomHeader}>
-          <BackButton
-            data-testid="back-button"
-            color="white"
-            onClick={() => window.history.back()}
-            size={24}
-          />
-          <h1>{t("CreateRoom.createRoom")}</h1>
-          <span aria-hidden />
-        </header>
-
+    <MenuShell
+      activeTabLabel={t("CreateRoom.createRoom")}
+      contentSize="default">
+      <div className={styles.createRoomContent}>
+        <BackButton
+          data-testid="back-button"
+          color="white"
+          onClick={() => window.history.back()}
+          size={24}
+        />
         <form
           className={styles.formContent}
           onSubmit={(event) => {
@@ -82,12 +81,12 @@ export default function CreateRoom() {
           }}>
           <label className={styles.fieldGroup}>
             <span>{t("CreateRoom.roomName")}</span>
-            <input
+            <TextInput
               type="text"
               data-testid="room-name-input"
               id="room-name"
               placeholder={t("CreateRoom.roomName")}
-              className={styles.input}
+              inputSize="lg"
               value={roomPayload.name}
               onChange={(event) =>
                 handleUpdateRoomPayload("name")(event.target.value)
@@ -149,7 +148,7 @@ export default function CreateRoom() {
             {t("CreateRoom.create")}
           </ActionButton>
         </form>
-      </section>
-    </main>
+      </div>
+    </MenuShell>
   );
 }

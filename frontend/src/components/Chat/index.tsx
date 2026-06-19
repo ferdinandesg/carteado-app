@@ -1,11 +1,14 @@
 "use client";
 import { FormEvent, useEffect, useRef, useState } from "react";
+import classNames from "classnames";
 import { useSocket } from "@/contexts/socket.context";
 import Message from "./message";
 
 import styles from "@/styles/Chat.module.scss";
 import { useTranslation } from "react-i18next";
-import { PanelLeftClose, PanelRight } from "lucide-react";
+import { PanelLeftClose, PanelRight, Send } from "lucide-react";
+import ActionButton from "@/components/buttons/ActionButton";
+import TextInput from "@/components/inputs/TextInput";
 
 type MessageType = {
   message: string;
@@ -23,6 +26,7 @@ export default function Chat({
 }: ChatProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { t } = useTranslation();
+  const tRef = useRef(t);
   const divRef = useRef<HTMLDivElement | null>(null);
   const chatRef = useRef<HTMLDivElement | null>(null);
 
@@ -31,6 +35,10 @@ export default function Chat({
   const [useAutoScroll] = useState<boolean>(true);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [, setUnreadMessages] = useState<number>(0);
+
+  useEffect(() => {
+    tRef.current = t;
+  }, [t]);
 
   const updateMessages = (messages: MessageType | MessageType[]) => {
     setMessages((m) => [
@@ -49,7 +57,7 @@ export default function Chat({
       join_chat: (message: MessageType) => {
         updateMessages({
           name: "system",
-          message: t("ServerMessages.infos.PLAYER_JOINED", {
+          message: tRef.current("ServerMessages.infos.PLAYER_JOINED", {
             player: message.message,
           }),
         });
@@ -66,18 +74,22 @@ export default function Chat({
     });
 
     return () => {
-      Object.keys(events).forEach((event) => {
-        socket.off(event);
+      Object.entries(events).forEach(([event, handler]) => {
+        socket.off(event, handler);
       });
     };
-  }, [socket]);
+  }, [socket, roomHash]);
 
   useEffect(() => {
     if (!useAutoScroll || !divRef.current) return;
-    divRef.current.scroll({
-      behavior: "smooth",
-      top: divRef.current.scrollHeight,
-    });
+    if (typeof divRef.current.scroll === "function") {
+      divRef.current.scroll({
+        behavior: "smooth",
+        top: divRef.current.scrollHeight,
+      });
+    } else {
+      divRef.current.scrollTop = divRef.current.scrollHeight;
+    }
   }, [localMessages, useAutoScroll]);
 
   const sendMessage = (e: FormEvent) => {
@@ -94,7 +106,9 @@ export default function Chat({
 
   return (
     <aside
-      className={styles.Chat}
+      className={classNames(styles.Chat, {
+        [styles.collapsed]: isCollapsed,
+      })}
       ref={chatRef}
       onFocus={setReadMessages}>
       <div
@@ -118,15 +132,21 @@ export default function Chat({
                 />
               ))}
           </div>
-          <form className={styles.messageForm}>
-            <div className={styles.messageBox}>
-              <input
-                ref={inputRef}
-                placeholder={t("chatPlaceholder")}
-                type="text"
-              />
-            </div>
-            <button onClick={(e) => sendMessage(e)}>{t("send")}</button>
+          <form
+            className={styles.messageForm}
+            onSubmit={sendMessage}>
+            <TextInput
+              ref={inputRef}
+              type="text"
+              placeholder={t("chatPlaceholder")}
+              aria-label={t("chatPlaceholder")}
+            />
+            <ActionButton
+              type="submit"
+              size="sm"
+              icon={<Send size={18} />}>
+              {t("send")}
+            </ActionButton>
           </form>
         </>
       )}

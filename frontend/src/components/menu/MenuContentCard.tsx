@@ -23,8 +23,8 @@ export default function MenuContentCard({
       })}>
       <div className={styles.cardTabs}>
         <span className={styles.activeTab}>{activeTabLabel}</span>
-        <span aria-hidden />
-        <span aria-hidden />
+        {/* <span aria-hidden />
+        <span aria-hidden /> */}
       </div>
 
       {children}

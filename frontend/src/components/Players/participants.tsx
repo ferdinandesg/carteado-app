@@ -14,51 +14,62 @@ export default function Participants() {
   const { t } = useTranslation();
   const { room } = useRoomContext();
 
-  return room?.participants.map((participant, i) => {
-    const isReady = participant.status === PlayerStatus.READY;
-    const isOwner = room.ownerId === participant.userId;
+  if (!room) return null;
 
-    return (
-      <div
-        className={styles.participant}
-        key={`player-pos-${i}`}>
-        <div
-          className={classNames(
-            styles.avatar,
-            isReady ? styles.yourTurn : styles.waiting
-          )}>
-          {participant?.image ? (
-            <Image
-              alt={participant.name || ""}
-              src={participant.image}
-              objectFit="contain"
-              width={100}
-              height={100}
-            />
-          ) : (
-            <UserPlaceholder />
-          )}
-        </div>
-        <div className={styles.metadata}>
-          <span className={styles.username}>
-            {participant.name}
-            {isOwner && <Crown />}
-          </span>
-          <RankMeter
-            currentValue={0}
-            size={25}
-          />
-          <span
+  return (
+    <div
+      className={styles.participantsList}
+      aria-label={t("RoomItem.participants")}>
+      {room.participants.map((participant, i) => {
+        const isReady = participant.status === PlayerStatus.READY;
+        const isOwner = room.ownerId === participant.userId;
+
+        return (
+          <article
             className={classNames(
-              styles.playerStatus,
-              isReady ? styles.ready : styles.notReady
-            )}>
-            {isReady
-              ? t("Participants.status.ready")
-              : t("Participants.status.notReady")}
-          </span>
-        </div>
-      </div>
-    );
-  });
+              styles.participant,
+              isReady ? styles.readyCard : styles.waitingCard
+            )}
+            key={`player-pos-${i}`}>
+            <div className={styles.avatar}>
+              {participant?.image ? (
+                <Image
+                  alt={participant.name || ""}
+                  src={participant.image}
+                  width={80}
+                  height={80}
+                />
+              ) : (
+                <UserPlaceholder />
+              )}
+            </div>
+            <div className={styles.metadata}>
+              <span className={styles.username}>
+                {participant.name}
+                {isOwner && (
+                  <Crown
+                    size={18}
+                    aria-label={t("RoomInfo.owner")}
+                  />
+                )}
+              </span>
+              <RankMeter
+                currentValue={0}
+                size={25}
+              />
+              <span
+                className={classNames(
+                  styles.playerStatus,
+                  isReady ? styles.ready : styles.notReady
+                )}>
+                {isReady
+                  ? t("Participants.status.ready")
+                  : t("Participants.status.notReady")}
+              </span>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  );
 }

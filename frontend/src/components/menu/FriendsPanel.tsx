@@ -5,6 +5,7 @@ import { Search, Star, Users } from "lucide-react";
 
 import styles from "@/styles/Menu.module.scss";
 import classNames from "classnames";
+import TextInput from "@/components/inputs/TextInput";
 
 export type MenuFriend = {
   name: string;
@@ -38,16 +39,17 @@ export default function FriendsPanel({
         {title}
       </h2>
 
-      <label className={styles.searchBox}>
-        <Search
-          size={18}
-          aria-hidden
-        />
-        <input
-          type="search"
-          placeholder={searchPlaceholder}
-        />
-      </label>
+      <TextInput
+        type="search"
+        placeholder={searchPlaceholder}
+        aria-label={searchPlaceholder}
+        icon={
+          <Search
+            size={18}
+            aria-hidden
+          />
+        }
+      />
 
       <ul className={styles.friendsList}>
         {friends.map((friend) => (

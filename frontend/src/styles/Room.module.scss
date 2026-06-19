@@ -5,20 +5,35 @@
   padding-top: $spacing-l;
 }
 
-.roomContainer {
+.roomShell {
   display: grid;
-  height: 100%;
-  gap: $spacing-m;
-  --chat-column-width: 25%;
-  --main-column-width: 1fr;
-  --info-column-width: 25%;
-
   grid-template-columns: var(--chat-column-width) var(--main-column-width) var(
       --info-column-width
     );
-
+  height: 100%;
+  gap: $spacing-m;
+  padding: $spacing-m;
+  color: $color-white;
+  background: rgba($color-bg, 0.98);
+  --chat-column-width: 25%;
+  --main-column-width: 1fr;
+  --info-column-width: 25%;
   transition: grid-template-columns 0.1s ease-in-out;
-  padding: 0 $spacing-m;
+}
+
+.roomSidePanel,
+.roomStage {
+  min-width: 0;
+  min-height: 0;
+}
+
+.roomStage {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background-color: rgba($color-panel-deep, 0.64);
+  border: $border-width solid $color-border-subtle;
+  border-radius: $border-radius-s;
 }
 .playersHud {
   display: flex;
@@ -66,8 +81,12 @@
 }
 
 @media (max-width: 768px) {
-  .roomContainer {
-    flex-direction: column-reverse;
+  .roomShell {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(420px, 1fr) auto;
+    height: auto;
+    min-height: 100%;
+
     .playersHud {
       flex-grow: 1;
       overflow-y: auto;

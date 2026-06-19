@@ -1,5 +1,5 @@
 import { Search } from "lucide-react";
-import styles from "@/styles/Rooms.module.scss";
+import TextInput from "@/components/inputs/TextInput";
 
 type SearchComponentProps = {
   value?: string;
@@ -13,18 +13,19 @@ export default function SearchComponent({
   onChange,
 }: SearchComponentProps) {
   return (
-    <label className={styles.searchBox}>
-      <input
-        type="search"
-        className={styles.searchInput}
-        value={value}
-        placeholder={placeholder}
-        onChange={(event) => onChange?.(event.target.value)}
-      />
-      <Search
-        size={24}
-        aria-hidden
-      />
-    </label>
+    <TextInput
+      type="search"
+      value={value}
+      placeholder={placeholder}
+      aria-label={placeholder}
+      icon={
+        <Search
+          size={24}
+          aria-hidden
+        />
+      }
+      iconPosition="right"
+      onChange={(event) => onChange?.(event.target.value)}
+    />
   );
 }

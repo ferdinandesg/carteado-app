@@ -1,0 +1,66 @@
+.TextInput {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-s;
+  min-width: 0;
+  color: $color-gray-800;
+  background-color: $color-bg-input;
+  border: $border-width-bold solid $color-outline;
+  border-radius: $border-radius-s;
+  box-shadow: $shadow-button;
+  transition:
+    border-color $transition-normal,
+    box-shadow $transition-normal,
+    transform $transition-normal;
+
+  &:focus-within {
+    border-color: $color-primary;
+    box-shadow:
+      $shadow-button,
+      0 0 0 2px rgba($color-primary, 0.35);
+  }
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.md {
+  padding: $spacing-s $spacing-m;
+  font-size: 1.25rem;
+}
+
+.lg {
+  padding: $spacing-s $spacing-m;
+  font-size: 1.6rem;
+  letter-spacing: 1px;
+}
+
+.icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  color: $color-panel-blue;
+
+  svg {
+    width: 1.1em;
+    height: 1.1em;
+  }
+}
+
+.input {
+  width: 100%;
+  min-width: 0;
+  color: inherit;
+  font: inherit;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-weight: $font-weight-semibold;
+  letter-spacing: inherit;
+  text-transform: uppercase;
+  background: none;
+  border: 0;
+  outline: 0;
+
+  &::placeholder {
+    color: $color-gray-400;
+  }
+}

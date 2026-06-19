@@ -12,6 +12,7 @@ import Chat from "@/components/Chat";
 import { useTranslation } from "react-i18next";
 import useTitle from "@/hooks/useTitle";
 import RoomInfo from "@/components/Players/roomInfo";
+import RoomShell from "@/components/room/RoomShell";
 
 const RenderScreen = ({ status }: { status?: RoomStatus }) => {
   const { t } = useTranslation();
@@ -45,7 +46,7 @@ export default function Room() {
     if (isLoading) return;
     socket.emit("join_room", { roomHash: id });
     return () => {
-      socket.emit("leave_room", { roomHash: id });
+      socket.emit("quit", { roomHash: id });
     };
   }, [isLoading, socket, id]);
 
@@ -53,27 +54,25 @@ export default function Room() {
   if (!room)
     return <h1 className={styles.loadingState}>{t("Room.notFound")}</h1>;
 
-  const lobbyContainerStyle = {
-    "--chat-column-width": isChatCollapsed ? "40px" : "25%", // Mude de '1fr' para '25%'
-    "--main-column-width": "1fr", // Mude de '2fr' para '1fr'
-    "--info-column-width": isInfoCollapsed ? "40px" : "25%", // Mude de '1fr' para '25%'
-  } as React.CSSProperties;
-
   return (
-    <div
-      className={styles.roomContainer}
-      style={lobbyContainerStyle}>
-      <Chat
-        toggleCollapse={toggleChatCollapse}
-        roomHash={room.hash}
-        isCollapsed={isChatCollapsed}
-      />
+    <RoomShell
+      isChatCollapsed={isChatCollapsed}
+      isInfoCollapsed={isInfoCollapsed}
+      chat={
+        <Chat
+          toggleCollapse={toggleChatCollapse}
+          roomHash={room.hash}
+          isCollapsed={isChatCollapsed}
+        />
+      }
+      info={
+        <RoomInfo
+          toggleCollapse={toggleInfoCollapse}
+          isCollapsed={isInfoCollapsed}
+          room={room}
+        />
+      }>
       <RenderScreen status={room.status} />
-      <RoomInfo
-        toggleCollapse={toggleInfoCollapse}
-        isCollapsed={isInfoCollapsed}
-        room={room}
-      />
-    </div>
+    </RoomShell>
   );
 }

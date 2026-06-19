@@ -1,43 +1,83 @@
-.participant {
-  padding: $spacing-s $spacing-m;
-  background-color: rgba($color-white, 0.1);
-  border-radius: 0 25px 25px 0;
-  display: flex;
-  width: 100%;
+.participantsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: $spacing-m;
+  width: 100%;
+}
+
+.participant {
+  display: flex;
+  align-items: center;
+  gap: $spacing-m;
+  width: 100%;
+  padding: $spacing-s;
+  background-color: rgba($color-bg, 0.72);
+  border: $border-width solid $color-border-subtle;
+  border-radius: $border-radius-s;
+
+  &.readyCard {
+    border-color: rgba($color-ready, 0.7);
+  }
+
+  &.waitingCard {
+    border-color: rgba($color-primary, 0.45);
+  }
+
   .avatar {
-    height: 80px;
-    width: 80px;
-    border: 4px solid lightgray;
-    position: relative;
-    border-radius: 25px;
-    overflow: hidden;
     display: flex;
+    position: relative;
     align-items: center;
     justify-content: center;
-    background-color: transparent;
-    transition: all 0.3s ease;
+    width: 80px;
+    height: 80px;
     overflow: hidden;
+    background-color: rgba($color-bg-input, 0.92);
+    border: $border-width solid $color-outline-light;
+    border-radius: $border-radius-full;
+    transition: all 0.3s ease;
+
+    img,
+    svg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
 
   .metadata {
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    gap: $spacing-xs;
+
     .username {
+      display: inline-flex;
+      align-items: center;
+      gap: $spacing-xs;
+      overflow: hidden;
       color: $primary-color;
-      font-size: 1.05rem;
+      font-family: var(--font-mouse-memoirs), sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 1px;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      white-space: nowrap;
+
+      svg {
+        flex-shrink: 0;
+      }
     }
 
     .playerStatus {
-      font-size: 2rem;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: end;
+      font-size: $font-size-s;
+      font-weight: $font-weight-bold;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
 
       &.ready {
-        color: $success-color;
+        color: $color-ready;
       }
+
       &.notReady {
         color: $primary-color;
       }

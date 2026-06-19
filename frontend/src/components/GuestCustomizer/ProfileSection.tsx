@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 
+import TextInput from "@/components/inputs/TextInput";
 import styles from "@/styles/GuestCustomizer.module.scss";
 
 import { DEFAULT_AVATAR } from "./constants";
@@ -33,14 +34,14 @@ export default function ProfileSection({
       </div>
 
       <div className={styles.nicknameField}>
-        <input
+        <TextInput
           type="text"
           data-testid="guest-name-input"
           id="guestname"
           placeholder={t("Home.guestNicknamePlaceholder")}
           aria-label={t("Home.guestNickname")}
           autoComplete="nickname"
-          className={styles.input}
+          inputSize="lg"
           value={name}
           onChange={(event) => onChangeName(event.target.value)}
         />

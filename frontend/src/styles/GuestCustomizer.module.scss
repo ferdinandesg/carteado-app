@@ -122,28 +122,6 @@
   font-weight: $font-weight-semibold;
 }
 
-.input {
-  width: 100%;
-  padding: $spacing-m $spacing-m;
-  color: $color-gray-800;
-  font-family: var(--font-mouse-memoirs), sans-serif;
-  font-size: tokens.$font-size-2xl;
-  letter-spacing: $letter-spacing-wide;
-  text-transform: uppercase;
-  background-color: $color-bg-input;
-  border: $border-width solid $color-outline;
-  border-radius: 0;
-
-  &::placeholder {
-    color: $color-gray-400;
-  }
-
-  &:focus-visible {
-    outline: 2px solid $color-primary;
-    outline-offset: 1px;
-  }
-}
-
 .avatarList {
   display: flex;
   justify-content: space-between;

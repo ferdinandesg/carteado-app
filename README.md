@@ -16,7 +16,7 @@ nvm use              # Node 24.14.0 (.nvmrc)
 
 **Requisitos:** Node **24+**, Docker para MongoDB e Redis.
 
-No **Windows**, se `npm` falhar por política de execução do PowerShell, veja [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md#windows-erro-ao-rodar-npm-i-no-powershell).
+No **Windows**, se `npm` falhar por política de execução do PowerShell, use `npm.cmd` ou ajuste a ExecutionPolicy do usuário.
 
 ---
 
@@ -51,8 +51,9 @@ npm run deploy:prod:local   # stack Docker simulando prod
 
 ## Documentação
 
-- [Começando / re-rodar o projeto](docs/GETTING_STARTED.md)
-- [Deploy e ambientes](docs/DEPLOY.md)
+- [Guias para agents](docs/AGENTS.md)
+- [Frontend Agent Guide](docs/FRONTEND_AGENT_GUIDE.md)
+- [Backend Agent Guide](docs/BACKEND_AGENT_GUIDE.md)
 
 ---
 

@@ -1,5 +1,3 @@
-@use "design-system/tokens" as tokens;
-
 .RootLayout {
   position: relative;
   width: 100vw;
@@ -259,30 +257,6 @@
     border: $border-width-bold solid $color-outline;
     border-radius: $border-radius-s;
     box-shadow: $shadow-button;
-  }
-}
-
-.searchBox {
-  display: flex;
-  align-items: center;
-  gap: $spacing-s;
-  padding: $spacing-xs $spacing-s;
-  background-color: $color-bg-input;
-  border: $border-width-bold solid rgba($color-outline, 0.5);
-
-  svg {
-    color: tokens.$color-gray-600;
-  }
-
-  input {
-    min-width: 0;
-    width: 100%;
-    color: $color-gray-800;
-    font-weight: $font-weight-semibold;
-    text-transform: uppercase;
-    background: none;
-    border: 0;
-    outline: 0;
   }
 }
 

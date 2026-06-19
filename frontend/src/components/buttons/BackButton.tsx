@@ -1,6 +1,6 @@
 import { ArrowLeftCircle } from "lucide-react";
-import { withSound } from "./withSound";
 
+import ActionButton from "@/components/buttons/ActionButton";
 import styles from "@/styles/Buttons.module.scss";
 import { ButtonHTMLAttributes } from "react";
 import classNames from "classnames";
@@ -11,18 +11,24 @@ type BackButtonType = {
   color?: "light" | "dark" | "white";
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
-const BackButton = ({ size, color = "light", ...props }: BackButtonType) => {
-  const { t } = useTranslation()
+const BackButton = ({
+  size,
+  color = "light",
+  className,
+  ...props
+}: BackButtonType) => {
+  const { t } = useTranslation();
+
   return (
-    <button
-      className={classNames(styles.BackButton, styles[color])}
+    <ActionButton
+      variant="ghost"
+      size="sm"
+      icon={<ArrowLeftCircle size={size} />}
+      className={classNames(styles.BackButton, styles[color], className)}
       {...props}>
-      <ArrowLeftCircle size={size} />
-      <span>{t("back")}</span>
-    </button>
+      {t("back")}
+    </ActionButton>
   );
 };
 
-export default withSound(BackButton, {
-  clickSrc: "/assets/sfx/button-hover.mp3",
-});
+export default BackButton;

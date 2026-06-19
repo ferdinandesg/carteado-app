@@ -2,6 +2,7 @@ import { RoomInterface } from "@/models/room";
 import styles from "@/styles/RoomInfo.module.scss";
 import { PanelLeftClose, PanelRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import classNames from "classnames";
 
 export default function RoomInfo({
   room,
@@ -13,31 +14,48 @@ export default function RoomInfo({
   toggleCollapse?: () => void;
 }) {
   const { t } = useTranslation();
+  const ownerName = room.owner?.name ?? room.ownerId ?? "-";
+
   return (
-    <div className={styles.roomInfo}>
-      <div
+    <aside
+      className={classNames(styles.roomInfo, {
+        [styles.collapsed]: isCollapsed,
+      })}>
+      <button
+        type="button"
         className={styles.header}
         onClick={toggleCollapse}>
         {!isCollapsed ? <PanelRight /> : <PanelLeftClose />}
-      </div>
+      </button>
       {!isCollapsed && (
-        <div>
+        <div className={styles.content}>
           <h2 className={styles.roomTitle}>{t("RoomInfo.title")}</h2>
-          <p className={styles.roomStatus}>
-            {t("RoomInfo.status", { status: t(room.status) })}
-          </p>
-          <p className={styles.roomParticipants}>
-            {t("RoomInfo.participants")} ({room.participants.length}/{room.size}
-            )
-          </p>
-          <p className={styles.roomHash}>
-            {t("RoomInfo.hash")}: <span> {room.hash}</span>
-          </p>
-          <p className={styles.roomModality}>
-            {t("RoomInfo.modality", { rule: t(`RoomItem.${room.rule}`) })}
-          </p>
+          <dl className={styles.infoList}>
+            <div className={styles.infoRow}>
+              <dt>{t("RoomItem.status")}</dt>
+              <dd>{t(`RoomItem.${room.status}`)}</dd>
+            </div>
+            <div className={styles.infoRow}>
+              <dt>{t("RoomInfo.participants")}</dt>
+              <dd>
+                {room.participants.length}/{room.size}
+              </dd>
+            </div>
+            <div className={styles.infoRow}>
+              <dt>{t("RoomInfo.hash")}</dt>
+              <dd>{room.hash}</dd>
+            </div>
+            <div className={styles.infoRow}>
+              <dt>{t("RoomItem.rule")}</dt>
+              <dd>{t(`RoomItem.${room.rule}`)}</dd>
+            </div>
+            <div className={styles.infoRow}>
+              <dt>{t("RoomInfo.owner")}</dt>
+              <dd>{ownerName}</dd>
+            </div>
+          </dl>
         </div>
       )}
-    </div>
+    </aside>
   );
 }

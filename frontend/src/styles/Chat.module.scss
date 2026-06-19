@@ -2,16 +2,32 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 80vh;
-  border-radius: $border-radius;
-  margin: auto 0;
+  height: 100%;
+  min-height: 0;
+  padding: $spacing-m;
+  overflow: hidden;
+  background-color: rgba($color-panel-deep, 0.9);
+  border: $border-width solid $color-border-subtle;
+  border-radius: $border-radius-s;
+
+  &.collapsed {
+    align-items: center;
+    padding: $spacing-s;
+  }
+
   .header {
     width: 100%;
     display: flex;
-    padding-bottom: $spacing-m;
+    padding-bottom: $spacing-s;
     justify-content: end;
     color: $color-white;
+    cursor: pointer;
+
+    svg {
+      color: $color-accent-teal;
+    }
   }
+
   .loadingMessage {
     color: $color-white;
   }
@@ -21,10 +37,11 @@
     flex-direction: column;
     padding: $spacing-s;
     overflow-y: auto;
+    flex: 1;
     gap: $spacing-m;
 
     scrollbar-width: thin;
-    scrollbar-color: #bcbcbc transparent;
+    scrollbar-color: $color-accent-teal transparent;
 
     ::-webkit-scrollbar {
       width: 8px;
@@ -39,12 +56,12 @@
     }
 
     ::-webkit-scrollbar-thumb {
-      background-color: #bcbcbc;
+      background-color: $color-accent-teal;
       border-radius: 4px;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-      background-color: #999999;
+      background-color: $color-primary-hover;
     }
   }
 
@@ -52,61 +69,7 @@
     display: flex;
     align-items: center;
     width: 100%;
-    max-height: 30%;
-
-    .messageBox {
-      overflow-y: auto;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: none;
-
-      .autoScroll {
-        padding: $spacing-s;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: 200ms;
-
-        &:hover,
-        &.active {
-          background-color: lightgray;
-        }
-      }
-
-      input {
-        background-color: $color-white;
-        border-radius: 5px 0 0 5px;
-        padding: $spacing-s $spacing-m;
-        border: 1px solid gray;
-        transition: 200ms;
-        width: 100%;
-
-        &:focus-within {
-          border-color: $color-black;
-        }
-        &:focus-visible {
-          outline: none;
-        }
-      }
-    }
-
-    button {
-      padding: $spacing-s;
-      height: 42px;
-      color: $color-black;
-      border-radius: 0 5px 5px 0;
-      font-weight: bold;
-      letter-spacing: 2px;
-      background-color: $primary-color;
-      &:hover {
-        background-color: lighten($primary-color, 10);
-      }
-
-      &:active {
-        background-color: darken(lightgray, 10);
-        color: lighten($color: $color-black, $amount: 20);
-      }
-    }
+    gap: $spacing-s;
+    padding-top: $spacing-s;
   }
 }
