@@ -1,6 +1,6 @@
 .participant {
   padding: $spacing-s $spacing-m;
-  background-color: rgba(white, 0.1);
+  background-color: rgba($color-white, 0.1);
   border-radius: 0 25px 25px 0;
   display: flex;
   width: 100%;
@@ -44,7 +44,7 @@
     }
 
     .teamInfo {
-      color: white;
+      color: $color-white;
     }
   }
   .history {

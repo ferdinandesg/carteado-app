@@ -25,13 +25,23 @@ $color-secondary: #397bb5;
 $color-success: #3ced01;
 $color-error: #e53e3e;
 $color-warning: #ed8936;
+$color-ready: #32cd32;
 
 $color-white: #ffffff;
 $color-black: #000000;
+$color-overlay: rgba($color-black, 0.75);
 
 // Accent colors (scrollbar, botões secundários, highlights)
 $color-accent-pink: #e25b8c;
 $color-accent-teal: #72e1ef;
+
+// Panel surfaces (menu, lobby, rooms)
+$color-panel-blue: #3f87bd;
+$color-panel-blue-hover: #4a97cb;
+$color-panel-hover: #394b7a;
+$color-panel-deep: #171833;
+$color-panel-text-dark: #23304f;
+$color-panel-text-darker: #1f2a46;
 
 $color-gray-100: #f7fafc;
 $color-gray-200: #edf2f7;
@@ -48,15 +58,16 @@ $color-text-primary: $color-primary;
 $color-text-muted: $color-gray-500;
 
 // Outline (estilo cartoon)
-$color-outline: darken(#3f87bd, 35%);
+$color-outline: darken($color-panel-blue, 35%);
 $color-outline-light: rgba($color-white, 0.9);
+$color-border-subtle: rgba($color-outline-light, 0.18);
 
 // --- Typography ---
 $font-family-base:
   system-ui,
   -apple-system,
   sans-serif;
-$font-family-display: "Pixelify Sans", $font-family-base;
+$font-family-display: "Mouse Memoirs", $font-family-base;
 
 $font-size-xs: 0.75rem;
 $font-size-s: 0.875rem;

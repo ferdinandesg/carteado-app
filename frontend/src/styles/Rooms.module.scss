@@ -8,8 +8,8 @@
   color: $color-white;
   background: linear-gradient(
     90deg,
-    rgba(#3f87bd, 0.96) 0%,
-    rgba(#3f87bd, 0.96) 27%,
+    rgba($color-panel-blue, 0.96) 0%,
+    rgba($color-panel-blue, 0.96) 27%,
     rgba($color-bg, 0.98) 27.2%,
     rgba($color-bg, 0.98) 100%
   );
@@ -108,7 +108,7 @@
   padding: $spacing-s $spacing-m;
   color: $color-white;
   text-align: left;
-  background-color: rgba(#3f87bd, 0.78);
+  background-color: rgba($color-panel-blue, 0.78);
   border: $border-width solid rgba($color-outline-light, 0.75);
   border-radius: $border-radius-l;
   box-shadow:
@@ -121,7 +121,7 @@
     transform $transition-normal;
 
   &:hover {
-    background-color: rgba(#4a97cb, 0.88);
+    background-color: rgba($color-panel-blue-hover, 0.88);
     transform: translateY(-1px);
   }
 
@@ -132,7 +132,7 @@
 }
 
 .selectedRoom {
-  background-color: rgba(#4a97cb, 0.96);
+  background-color: rgba($color-panel-blue-hover, 0.96);
   border-color: $color-primary;
   box-shadow:
     0 3px 0 rgba($color-black, 0.38),
@@ -184,7 +184,7 @@
 }
 
 .label {
-  color: rgba(#23304f, 0.8);
+  color: rgba($color-panel-text-dark, 0.8);
   font-size: $font-size-s;
   font-weight: $font-weight-bold;
   letter-spacing: 0.8px;

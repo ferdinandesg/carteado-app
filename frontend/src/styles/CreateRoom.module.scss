@@ -7,8 +7,8 @@
   color: $color-white;
   background: linear-gradient(
     90deg,
-    rgba(#3f87bd, 0.96) 0%,
-    rgba(#3f87bd, 0.96) 27%,
+    rgba($color-panel-blue, 0.96) 0%,
+    rgba($color-panel-blue, 0.96) 27%,
     rgba($color-bg, 0.98) 27.2%,
     rgba($color-bg, 0.98) 100%
   );
@@ -17,7 +17,7 @@
 .createRoomPanel {
   width: min(760px, 100%);
   padding: $spacing-l;
-  background-color: rgba(#3f87bd, 0.82);
+  background-color: rgba($color-panel-blue, 0.82);
   border: 3px solid rgba($color-outline-light, 0.72);
   border-radius: $border-radius-l;
   box-shadow:
@@ -62,7 +62,7 @@
   span,
   legend {
     padding: 0;
-    color: #1f2a46;
+    color: $color-panel-text-darker;
     font-family: var(--font-mouse-memoirs), sans-serif;
     font-size: 1.25rem;
     font-weight: $font-weight-semibold;
@@ -117,7 +117,7 @@
     cursor: pointer;
 
     &:hover {
-      background-color: #394b7a;
+      background-color: $color-panel-hover;
     }
 
     &:focus-visible {

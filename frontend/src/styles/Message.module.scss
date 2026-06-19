@@ -24,7 +24,7 @@
 
     .content {
       .background {
-        background-color: white;
+        background-color: $color-white;
       }
     }
   }
@@ -37,7 +37,7 @@
 
       .background {
         background-color: transparent;
-        color: white;
+        color: $color-white;
         font-size: 0.95rem;
       }
     }

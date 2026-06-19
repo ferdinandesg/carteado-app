@@ -5,15 +5,13 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 
 import ActionButton from "@/components/buttons/ActionButton";
-import RankMeter from "@/components/RankMeter";
 import styles from "@/styles/Menu.module.scss";
-import UserPlaceholder from "@/components/UserPlaceholder";
+import UserPanel from "@/components/menu/UserPanel";
 import {
   Coins,
   History,
   List,
   ListPlus,
-  Pencil,
   Play,
   Search,
   Settings,
@@ -44,53 +42,16 @@ export default function Menu() {
 
   return (
     <main className={styles.Menu}>
-      <aside
-        className={styles.sidebar}
-        aria-label={userName}>
-        <div className={styles.profileAvatar}>
-          {user?.image ? (
-            <Image
-              src={user.image}
-              alt={userName}
-              width={112}
-              height={112}
-            />
-          ) : (
-            <UserPlaceholder />
-          )}
-        </div>
-
-        <div className={styles.profileName}>
-          <h1>{userName}</h1>
-          <Pencil
-            size={24}
-            aria-hidden
-          />
-        </div>
-
-        <span className={styles.levelBadge}>
-          {t("Menu.level", { level: playerLevel })}
-        </span>
-
-        <RankMeter
-          currentValue={userRank}
-          size={34}
-        />
-
-        <button
-          type="button"
-          className={styles.statsButton}>
-          {">"} {t("Menu.statistics")}
-        </button>
-
-        <button
-          type="button"
-          className={styles.helpButton}
-          aria-label={t("seeRules")}
-          onClick={() => router.push("/rules")}>
-          ?
-        </button>
-      </aside>
+      <UserPanel
+        userName={userName}
+        userRank={userRank}
+        playerLevel={playerLevel}
+        userImage={user?.image}
+        levelLabel={t("Menu.level", { level: playerLevel })}
+        statisticsLabel={t("Menu.statistics")}
+        rulesAriaLabel={t("seeRules")}
+        onOpenRules={() => router.push("/rules")}
+      />
 
       <section className={styles.mainPanel}>
         <header className={styles.topBar}>
@@ -139,7 +100,7 @@ export default function Menu() {
 
         <div className={styles.gameplayCard}>
           <div className={styles.cardTabs}>
-            <span>{t("Menu.gameplay")}</span>
+            <span className={styles.activeTab}>{t("Menu.gameplay")}</span>
             <span aria-hidden />
             <span aria-hidden />
           </div>

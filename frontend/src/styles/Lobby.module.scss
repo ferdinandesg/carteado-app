@@ -7,25 +7,25 @@
   height: 100%;
   margin: 0 auto;
   align-items: center;
-  background-color: rgba(black, 0.2);
+  background-color: rgba($color-black, 0.2);
 
   .waiting {
     text-align: center;
     font-size: 3rem;
-    color: white;
+    color: $color-white;
   }
   .startGame {
     font-size: 1.5rem;
     padding: $spacing-s;
-    color: white;
+    color: $color-white;
     font-weight: bold;
-    background-color: #32cd32;
+    background-color: $color-ready;
     border-radius: 6px;
     &:hover {
-      background-color: lighten($color: #32cd32, $amount: 10);
+      background-color: lighten($color: $color-ready, $amount: 10);
     }
     &:active {
-      background-color: darken($color: #32cd32, $amount: 10);
+      background-color: darken($color: $color-ready, $amount: 10);
     }
   }
 
@@ -36,20 +36,20 @@
     padding: $spacing-s;
 
     &.notReady {
-      background-color: white;
-      color: darken(#32cd32, 20);
+      background-color: $color-white;
+      color: darken($color-ready, 20);
 
       &:hover {
-        background-color: lighten($color: #32cd32, $amount: 30);
+        background-color: lighten($color: $color-ready, $amount: 30);
       }
     }
 
     &.ready {
-      background-color: #32cd32;
-      color: white;
+      background-color: $color-ready;
+      color: $color-white;
 
       &:hover {
-        background-color: lighten($color: #32cd32, $amount: 10);
+        background-color: lighten($color: $color-ready, $amount: 10);
       }
     }
   }

@@ -16,7 +16,7 @@
   padding: $spacing-l tokens.$spacing-2xl;
   overflow: auto;
   color: $color-white;
-  background-color: #3f87bd;
+  background-color: $color-panel-blue;
   border: 5px solid $color-outline;
   border-bottom: none;
   border-radius: $border-radius-l $border-radius-l 0 0;
@@ -116,7 +116,7 @@
 }
 
 .formGroup label {
-  color: darken(#23304f, 4%);
+  color: darken($color-panel-text-dark, 4%);
   font-family: var(--font-mouse-memoirs), sans-serif;
   font-size: $font-size-l;
   font-weight: $font-weight-semibold;

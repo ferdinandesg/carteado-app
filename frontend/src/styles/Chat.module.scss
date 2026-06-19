@@ -10,10 +10,10 @@
     display: flex;
     padding-bottom: $spacing-m;
     justify-content: end;
-    color: white;
+    color: $color-white;
   }
   .loadingMessage {
-    color: white;
+    color: $color-white;
   }
 
   .messagesContainer {
@@ -75,7 +75,7 @@
       }
 
       input {
-        background-color: white;
+        background-color: $color-white;
         border-radius: 5px 0 0 5px;
         padding: $spacing-s $spacing-m;
         border: 1px solid gray;
@@ -83,7 +83,7 @@
         width: 100%;
 
         &:focus-within {
-          border-color: black;
+          border-color: $color-black;
         }
         &:focus-visible {
           outline: none;
@@ -94,7 +94,7 @@
     button {
       padding: $spacing-s;
       height: 42px;
-      color: black;
+      color: $color-black;
       border-radius: 0 5px 5px 0;
       font-weight: bold;
       letter-spacing: 2px;
@@ -105,7 +105,7 @@
 
       &:active {
         background-color: darken(lightgray, 10);
-        color: lighten($color: black, $amount: 20);
+        color: lighten($color: $color-black, $amount: 20);
       }
     }
   }

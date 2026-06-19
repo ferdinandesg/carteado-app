@@ -7,12 +7,12 @@
 
 .line {
   height: 1px;
-  background-color: white;
+  background-color: $color-white;
   flex: 1;
 }
 
 .text {
   text-align: center;
   width: 100%;
-  color: white;
+  color: $color-white;
 }

@@ -20,10 +20,10 @@
   }
 
   .deckLabel {
-    color: white;
+    color: $color-white;
     font-weight: bold;
     font-size: 1.5rem;
-    text-shadow: 1px 1px 2px black;
+    text-shadow: 1px 1px 2px $color-black;
   }
   .actionsArea {
     display: flex;
@@ -37,7 +37,7 @@
       padding: $spacing-s $spacing-s;
       border-radius: $border-radius;
       transition: background-color 0.3s;
-      color: white;
+      color: $color-white;
       &:disabled {
         background-color: gray;
         opacity: 0.5;
@@ -66,7 +66,7 @@
     justify-content: space-between;
     align-items: center;
     font-size: 1.5rem;
-    color: white;
+    color: $color-white;
     width: 100%;
     .currentBet {
       display: flex;

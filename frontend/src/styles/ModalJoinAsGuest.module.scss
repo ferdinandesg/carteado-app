@@ -1,7 +1,7 @@
 .Overlay {
   position: absolute;
   z-index: 25;
-  background-color: rgba(black, 0.75);
+  background-color: $color-overlay;
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -10,7 +10,7 @@
   flex-direction: column;
 
   .ModalJoinAsGuest {
-    background-color: white;
+    background-color: $color-white;
     width: 40%;
     padding: $spacing-l;
     display: flex;
@@ -42,7 +42,7 @@
 
       .confirmButton {
         background-color: $success-color;
-        color: white;
+        color: $color-white;
         display: flex;
         cursor: pointer;
 

@@ -1,7 +1,7 @@
 .Overlay {
   position: absolute;
   z-index: 25;
-  background-color: rgba(black, 0.75);
+  background-color: $color-overlay;
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -36,12 +36,12 @@
       font-size: 1.75rem;
       &:disabled {
         background-color: gray;
-        color: white;
+        color: $color-white;
       }
       &:enabled {
         cursor: pointer;
         background-color: $success-color;
-        color: white;
+        color: $color-white;
         &:hover {
           background-color: lighten($success-color, 5);
         }
