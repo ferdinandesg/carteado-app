@@ -12,7 +12,12 @@ import {
 
 import styles from "@/styles/Card.module.scss";
 
-type AvailableSkins = "basics/white" | "basics/black" | "poker" | "8bit";
+type AvailableSkins =
+  | "basics/white"
+  | "basics/black"
+  | "poker"
+  | "8bit"
+  | "baralho01";
 
 type CardComponentProps = {
   card: Card;
@@ -43,7 +48,7 @@ export default function CardComponent({
   ...rest
 }: CardComponentProps) {
   const { data } = useSession();
-  const userSkin = (data?.user?.skin as AvailableSkins) || "8bit";
+  const userSkin = (data?.user?.skin as AvailableSkins) || "baralho01";
   const resolvedHeight = resolveCardHeight(size, height);
   const resolvedWidth = getCardWidth(resolvedHeight);
   const cardURL = getSkinPath(userSkin, card, isHidden);

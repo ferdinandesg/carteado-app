@@ -1,9 +1,11 @@
 import { atomicallyUpdateRoomState } from "@/lib/redis/room";
 import { SocketContext } from "@/@types/socket";
 import emitToRoom from "@/socket/utils/emitToRoom";
+import emitToUser from "@/socket/utils/emitToUser";
 import ErrorHandler from "@/utils/error.handler";
-import { PlayerStatus, createParticipantObject } from "shared/game";
+import { GameStatus, PlayerStatus, createParticipantObject } from "shared/game";
 import { storeSession } from "@/lib/redis/userSession";
+import { getGameInstance } from "@/services/game.service";
 import { JoinRoomPayload } from "../payloads";
 import { logger } from "@/utils/logger";
 import { CHANNEL } from "@/socket/channels";
@@ -20,8 +22,8 @@ export async function JoinRoomEventHandler(
   try {
     if (!roomHash || !socket.user) return;
     let shouldBroadcastUserJoined = false;
+    let isRejoin = false;
 
-    // Atomic update for joining a room
     const updatedRoom = await atomicallyUpdateRoomState(roomHash, (room) => {
       const existingParticipant = room.participants.find(
         (player) => player.userId === socket.user.id
@@ -30,10 +32,11 @@ export async function JoinRoomEventHandler(
       if (existingParticipant) {
         existingParticipant.isOnline = true;
         socket.user.status = existingParticipant.status;
+        isRejoin = true;
         return room;
       }
 
-      if (room.status === "playing") {
+      if (room.status === GameStatus.PLAYING) {
         throw "ROOM_IS_PLAYING";
       }
 
@@ -51,20 +54,38 @@ export async function JoinRoomEventHandler(
     if (!updatedRoom) {
       return;
     }
+
     await socket.join(roomHash);
     socket.user.room = roomHash;
 
     await storeSession(socket, roomHash);
 
     emitToRoom(channel, roomHash, CHANNEL.SERVER.ROOM_UPDATED, updatedRoom);
+    emitToUser(socket, CHANNEL.SERVER.ROOM_JOINED, { room: updatedRoom });
+
+    if (
+      isRejoin &&
+      (updatedRoom.status === GameStatus.PLAYING ||
+        updatedRoom.status === GameStatus.FINISHED)
+    ) {
+      try {
+        const game = await getGameInstance(roomHash);
+        emitToUser(socket, CHANNEL.SERVER.GAME_UPDATED, game);
+      } catch {
+        logger.warn({ userId, roomHash }, "No game state on rejoin.");
+      }
+    }
+
     if (shouldBroadcastUserJoined) {
       emitToRoom(socket, roomHash, CHANNEL.SERVER.USER_JOINED, {
         message: `O usuário ${socket.user.name} entrou na sala.`,
-        players: { user: socket.user, isOnline: true },
       });
     }
 
-    logger.info({ userId, roomHash }, "User successfully joined room.");
+    logger.info(
+      { userId, roomHash, isRejoin },
+      "User successfully joined room."
+    );
   } catch (error) {
     logger.error({ userId, roomHash, error }, "Failed to join room.");
     ErrorHandler(error, socket);

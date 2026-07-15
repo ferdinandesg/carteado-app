@@ -12,7 +12,7 @@ export default function useRoomByHash(hash: string) {
     queryFn: () => axiosAuth.get(`/rooms/${hash}`).then((res) => res.data),
     enabled: !!hash && authReady,
     retry: 1,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 30_000,
   });
   const updateRoom = useCallback(
     (updatedRoom: RoomInterface) => {

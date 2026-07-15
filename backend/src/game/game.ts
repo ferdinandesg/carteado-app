@@ -1,6 +1,11 @@
 import Deck, { Card } from "shared/cards";
 import { IGameRules } from "./IGameRules";
-import { BasePlayer, GameRuleNames, GameStatus } from "shared/game";
+import {
+  BasePlayer,
+  GameRuleNames,
+  GameStatus,
+  PlayerStatus,
+} from "shared/game";
 
 export class Game<
   G extends Game<G, R, P>,
@@ -54,6 +59,8 @@ export class Game<
     if (idx < 0) throw new Error("PLAYER_NOT_FOUND");
     const nextIndex = (idx + times) % this.players.length;
     this.playerTurn = this.players[nextIndex].userId;
+    this.players.forEach((p) => (p.status = PlayerStatus.WAITING));
+    this.players[nextIndex].status = PlayerStatus.PLAYING;
   }
 
   public serialize(): string {

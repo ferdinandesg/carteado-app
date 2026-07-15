@@ -1,7 +1,5 @@
 "use client";
-import { useEffect } from "react";
 import Game from "@/components/Game/game";
-import { useSocket } from "@/contexts/socket.context";
 import { useRoomContext } from "@/contexts/room.context";
 import Lobby from "@/components/Lobby";
 import { RoomStatus } from "@/models/room";
@@ -37,16 +35,7 @@ export default function Room() {
       hash: String(id),
     }),
   });
-  const { socket } = useSocket();
   const { room, isLoading } = useRoomContext();
-
-  useEffect(() => {
-    if (isLoading) return;
-    socket.emit("join_room", { roomHash: id });
-    return () => {
-      socket.emit("quit", { roomHash: id });
-    };
-  }, [isLoading, socket, id]);
 
   if (isLoading) {
     return (

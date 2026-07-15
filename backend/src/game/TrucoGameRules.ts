@@ -11,7 +11,6 @@ import { GameStatus, PlayerStatus, BasePlayer } from "shared/game";
 import { GameError } from "@/errors/GameError";
 
 // A classe TrucoGame permanece focada no estado do jogo.
-// A lógica foi movida para a classe de regras.
 export class TrucoGame extends Game<TrucoGame, ITrucoGameRules, BasePlayer> {
   public vira: Card | null = null;
   public manilha: string = "";
@@ -97,7 +96,7 @@ export class TrucoGameRules implements ITrucoGameRules {
   private distributeHands(game: TrucoGame) {
     const allowedRanks = Object.keys(TRUCO_RANK_ORDER);
     game.players.forEach((player) => {
-      player.status = PlayerStatus.PLAYING;
+      player.status = PlayerStatus.WAITING;
       player.playedCards = [];
       player.hand = Array.from({ length: 3 }, () =>
         this.drawValidCard(game.deck, allowedRanks)
@@ -276,7 +275,6 @@ export class TrucoGameRules implements ITrucoGameRules {
     game.playerTurn = isTie
       ? game.playerTurn
       : (nextPlayer?.userId ?? game.playerTurn);
-
     this.checkRoundEnding(game);
   }
 

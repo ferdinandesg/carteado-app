@@ -2,16 +2,11 @@ import { Namespace, Socket } from "socket.io";
 import { CHANNEL } from "@/socket/channels";
 import { JoinRoomEventHandler } from "./JoinRoomEventHandler";
 import { LeaveRoomEventHandler } from "./LeaveRoomEventHandler";
-import { PlayerReconnectedEventHandler } from "./PlayerReconnectedEventHandler";
 import { SetPlayerStatusEventHandler } from "./SetPlayerReadyEventHandler";
 import { StartGameEventHandler } from "./StartGameEventHandler";
 import { SocketContext } from "@/@types/socket";
 import { registerSafeSocketEvent } from "../registerSafeSocketEvent";
-import {
-  JoinRoomPayload,
-  PlayerReconnectedPayload,
-  SetPlayerStatusPayload,
-} from "../payloads";
+import { JoinRoomPayload, SetPlayerStatusPayload } from "../payloads";
 
 export function registerRoomEvents(socket: Socket, channel: Namespace): void {
   const context: Omit<SocketContext, "payload"> = { socket, channel };
@@ -24,12 +19,6 @@ export function registerRoomEvents(socket: Socket, channel: Namespace): void {
 
   registerSafeSocketEvent(socket, CHANNEL.CLIENT.LEAVE_ROOM, (payload) =>
     LeaveRoomEventHandler({ ...context, payload })
-  );
-
-  registerSafeSocketEvent<PlayerReconnectedPayload>(
-    socket,
-    CHANNEL.CLIENT.PLAYER_RECONNECTED,
-    (payload) => PlayerReconnectedEventHandler({ ...context, payload })
   );
 
   registerSafeSocketEvent<SetPlayerStatusPayload>(

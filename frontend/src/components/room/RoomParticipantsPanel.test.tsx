@@ -4,10 +4,12 @@ import { PlayerStatus } from "shared/game";
 
 import RoomParticipantsPanel from "@/components/room/RoomParticipantsPanel";
 import { useRoomContext } from "@/contexts/room.context";
+import { useSocket } from "@/contexts/socket.context";
 import { RoomInterface } from "@/models/room";
 import { testIds } from "@/tests/testIds";
 
 const mockPush = jest.fn();
+const mockEmit = jest.fn();
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
@@ -19,6 +21,14 @@ jest.mock("@/components/buttons/withSound", () => ({
 
 jest.mock("@/contexts/room.context", () => ({
   useRoomContext: jest.fn(),
+}));
+
+jest.mock("@/contexts/socket.context", () => ({
+  useSocket: jest.fn(),
+}));
+
+jest.mock("@/contexts/game.store", () => ({
+  useGameStore: jest.fn(() => ({ game: null })),
 }));
 
 const mockRoom: RoomInterface = {
@@ -54,9 +64,13 @@ describe("RoomParticipantsPanel", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (useRoomContext as jest.Mock).mockReturnValue({ room: mockRoom });
+    (useSocket as jest.Mock).mockReturnValue({
+      socket: { emit: mockEmit },
+      isConnected: true,
+    });
   });
 
-  it("renders participants and navigates back to menu", async () => {
+  it("renders participants and leaves room when navigating back", async () => {
     const user = userEvent.setup();
     render(<RoomParticipantsPanel />);
 
@@ -67,6 +81,8 @@ describe("RoomParticipantsPanel", () => {
     expect(screen.getByText("Guest")).toBeInTheDocument();
 
     await user.click(screen.getByTestId(testIds.room.backButton));
+
+    expect(mockEmit).toHaveBeenCalledWith("quit", { roomHash: mockRoom.hash });
     expect(mockPush).toHaveBeenCalledWith("/menu");
   });
 });

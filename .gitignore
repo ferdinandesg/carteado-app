@@ -22,6 +22,9 @@ backend/build/
 github_actions_key.*
 github_actions_key
 
+# Integration test runtime artifacts
+backend/src/tests/integration/setup/.integration-env.json
+
 # Logs
 frontend/npm-debug.log*
 backend/npm-debug.log*

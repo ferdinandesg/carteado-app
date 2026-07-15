@@ -3,7 +3,6 @@
 import Image from "next/image";
 import classNames from "classnames";
 import { useTranslation } from "react-i18next";
-import { Crown } from "lucide-react";
 import { Participant } from "shared/types";
 
 import RankMeter from "@/components/RankMeter";
@@ -11,18 +10,19 @@ import UserPlaceholder from "@/components/UserPlaceholder";
 import { getParticipantBadgeStatus } from "@/lib/room/participantDisplayStatus";
 
 import styles from "@/styles/RoomParticipantsPanel.module.scss";
+import { BasePlayer } from "shared/game";
 
 type ParticipantListItemProps = {
   participant: Participant;
-  isOwner?: boolean;
+  player?: BasePlayer;
 };
 
 export default function ParticipantListItem({
   participant,
-  isOwner = false,
+  player,
 }: ParticipantListItemProps) {
   const { t } = useTranslation();
-  const badgeStatus = getParticipantBadgeStatus(participant);
+  const badgeStatus = getParticipantBadgeStatus(participant, player);
 
   return (
     <li className={styles.participantItem}>

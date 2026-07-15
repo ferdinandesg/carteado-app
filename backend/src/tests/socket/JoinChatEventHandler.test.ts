@@ -40,10 +40,13 @@ describe("JoinChatEventHandler - integration", () => {
     const port = getPort();
     const socketA = createTestChatSocket("userA-valid-token", port);
     const socketB = createTestChatSocket("userB-valid-token", port);
+    let socketAReady = false;
+    let socketBReady = false;
 
-    socketA.on("connect", () => {
-      socketA.emit(CHANNEL.CLIENT.JOIN_CHAT, { roomHash: "room-test" });
-    });
+    const joinAsB = () => {
+      if (!socketAReady || !socketBReady) return;
+      socketB.emit(CHANNEL.CLIENT.JOIN_CHAT, { roomHash: "room-test" });
+    };
 
     socketA.on("join_chat", (payload) => {
       try {
@@ -60,22 +63,35 @@ describe("JoinChatEventHandler - integration", () => {
       }
     });
 
+    socketA.on("connect", () => {
+      socketA.emit(CHANNEL.CLIENT.JOIN_CHAT, { roomHash: "room-test" });
+    });
+
+    socketA.once("load_messages", () => {
+      socketAReady = true;
+      joinAsB();
+    });
+
     socketB.on("connect", () => {
-      socketB.emit(CHANNEL.CLIENT.JOIN_CHAT, { roomHash: "room-test" });
+      socketBReady = true;
+      joinAsB();
     });
   });
   it("should be able to send and receive messages", (done) => {
     const port = getPort();
     const socketA = createTestChatSocket("userA-valid-token", port);
     const socketB = createTestChatSocket("userB-valid-token", port);
+    let socketAReady = false;
+    let socketBReady = false;
 
-    socketA.on("connect", () => {
-      socketA.emit(CHANNEL.CLIENT.JOIN_CHAT, { roomHash: "room-test" });
-    });
+    const sendMessage = () => {
+      if (!socketAReady || !socketBReady) return;
+      socketB.emit("send_message", {
+        roomHash: "room-test",
+        message: "Message",
+      });
+    };
 
-    socketB.on("connect", () => {
-      socketB.emit(CHANNEL.CLIENT.JOIN_CHAT, { roomHash: "room-test" });
-    });
     socketA.on("receive_message", (payload) => {
       try {
         expect(payload).toMatchObject({
@@ -91,6 +107,22 @@ describe("JoinChatEventHandler - integration", () => {
       }
     });
 
-    socketB.emit("send_message", { roomHash: "room-test", message: "Message" });
+    socketA.on("connect", () => {
+      socketA.emit(CHANNEL.CLIENT.JOIN_CHAT, { roomHash: "room-test" });
+    });
+
+    socketA.once("load_messages", () => {
+      socketAReady = true;
+      sendMessage();
+    });
+
+    socketB.on("connect", () => {
+      socketB.emit(CHANNEL.CLIENT.JOIN_CHAT, { roomHash: "room-test" });
+    });
+
+    socketB.once("load_messages", () => {
+      socketBReady = true;
+      sendMessage();
+    });
   });
 });

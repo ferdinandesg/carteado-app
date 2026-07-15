@@ -335,7 +335,7 @@ describe("CarteadoGameRules", () => {
       expect(player1.hand.map((c) => c.rank)).toEqual(["A", "K", "Q"]);
       expect(player1.table).toHaveLength(3);
       expect(player1.table.map((c) => c.rank)).toEqual(["J", "10", "9"]);
-      expect(player1.status).toBe(PlayerStatus.PLAYING);
+      expect(player1.status).toBe(PlayerStatus.WAITING);
     });
 
     it("should move visible table cards to hand when deck is empty and hand is empty", () => {

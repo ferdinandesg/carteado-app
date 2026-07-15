@@ -27,8 +27,11 @@ export interface IBaseGameState<P extends BasePlayer, R extends GameRuleNames> {
 }
 
 // Truco-specific state
-export interface ITrucoGameState
-  extends IBaseGameState<BasePlayer, "TrucoGameRules"> {
+export interface ITrucoGameState extends IBaseGameState<
+  BasePlayer,
+  "TrucoGameRules"
+> {
+  id: string;
   type: GameType.TRUCO;
   vira: Card | null;
   manilha: string;
@@ -41,8 +44,11 @@ export interface ITrucoGameState
 }
 
 // Carteado-specific state
-export interface ICarteadoGameState
-  extends IBaseGameState<CarteadoPlayer, "CarteadoGameRules"> {
+export interface ICarteadoGameState extends IBaseGameState<
+  CarteadoPlayer,
+  "CarteadoGameRules"
+> {
+  id: string;
   type: GameType.CARTEADO;
   // No extra properties for now
 }

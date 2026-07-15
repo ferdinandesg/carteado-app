@@ -8,6 +8,7 @@ import Chat from "@/components/Chat";
 import Lobby from "@/components/Lobby";
 import RoomInfo from "@/components/Players/roomInfo";
 import RoomShell from "@/components/room/RoomShell";
+import RoomParticipantsPanel from "@/components/room/RoomParticipantsPanel";
 import { useRoomContext } from "@/contexts/room.context";
 import { useSocket } from "@/contexts/socket.context";
 import { RoomInterface } from "@/models/room";
@@ -18,6 +19,7 @@ const mockSocket = {
   emit: jest.fn(),
   on: jest.fn(),
   off: jest.fn(),
+  connected: true,
 };
 
 const mockRoom: RoomInterface = {
@@ -75,7 +77,10 @@ jest.mock(
 describe("Room shell migration", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useSocket as jest.Mock).mockReturnValue({ socket: mockSocket });
+    (useSocket as jest.Mock).mockReturnValue({
+      socket: mockSocket,
+      isConnected: true,
+    });
     (useRoomContext as jest.Mock).mockReturnValue({
       room: mockRoom,
       isLoading: false,
@@ -101,25 +106,54 @@ describe("Room shell migration", () => {
     expect(screen.getByText("info")).toBeInTheDocument();
   });
 
-  it("joins and leaves the socket room using the backend event contract", () => {
-    const { unmount } = render(<RoomPage />);
+  it("renders room page without emitting join or quit directly", () => {
+    render(<RoomPage />);
 
-    expect(mockSocket.emit).toHaveBeenCalledWith("join_room", {
-      roomHash: mockRoom.hash,
+    expect(mockSocket.emit).not.toHaveBeenCalledWith(
+      "join_room",
+      expect.anything()
+    );
+    expect(mockSocket.emit).not.toHaveBeenCalledWith("quit", expect.anything());
+  });
+});
+
+describe("Room participants panel", () => {
+  const mockPush = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    const { useRouter } = jest.requireMock("next/navigation");
+    useRouter.mockReturnValue({ push: mockPush });
+    (useSocket as jest.Mock).mockReturnValue({
+      socket: mockSocket,
+      isConnected: true,
     });
+    (useRoomContext as jest.Mock).mockReturnValue({
+      room: mockRoom,
+      isLoading: false,
+    });
+  });
 
-    unmount();
+  it("leaves the room only when navigating back explicitly", async () => {
+    const user = userEvent.setup();
+    render(<RoomParticipantsPanel />);
+
+    await user.click(screen.getByTestId("room-back-button"));
 
     expect(mockSocket.emit).toHaveBeenCalledWith("quit", {
       roomHash: mockRoom.hash,
     });
+    expect(mockPush).toHaveBeenCalledWith("/menu");
   });
 });
 
 describe("Chat migration", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useSocket as jest.Mock).mockReturnValue({ socket: mockSocket });
+    (useSocket as jest.Mock).mockReturnValue({
+      socket: mockSocket,
+      isConnected: true,
+    });
   });
 
   it("submits messages and unregisters only its own socket handlers", async () => {
@@ -168,7 +202,10 @@ describe("RoomInfo migration", () => {
 describe("Lobby migration", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (useSocket as jest.Mock).mockReturnValue({ socket: mockSocket });
+    (useSocket as jest.Mock).mockReturnValue({
+      socket: mockSocket,
+      isConnected: true,
+    });
     (useRoomContext as jest.Mock).mockReturnValue({
       room: mockRoom,
       isLoading: false,

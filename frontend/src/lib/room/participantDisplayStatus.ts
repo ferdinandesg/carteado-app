@@ -1,23 +1,24 @@
-import { PlayerStatus } from "shared/game";
+import { BasePlayer, PlayerStatus } from "shared/game";
 import { Participant } from "shared/types";
 
 export type ParticipantBadgeStatus = "ready" | "waiting" | "away" | "playing";
 
+/** Lobby uses participant.status; in-game prefers game player.status when available. */
 export function getParticipantBadgeStatus(
-  participant: Participant
+  participant: Participant,
+  player?: BasePlayer
 ): ParticipantBadgeStatus {
   if (!participant.isOnline) {
     return "away";
   }
 
-  if (participant.status === PlayerStatus.READY) {
+  const status = player?.status ?? participant.status;
+
+  if (status === PlayerStatus.READY) {
     return "ready";
   }
 
-  if (
-    participant.status === PlayerStatus.PLAYING ||
-    participant.status === PlayerStatus.CHOOSING
-  ) {
+  if (status === PlayerStatus.PLAYING || status === PlayerStatus.CHOOSING) {
     return "playing";
   }
 

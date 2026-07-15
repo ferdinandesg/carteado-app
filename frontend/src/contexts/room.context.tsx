@@ -1,30 +1,36 @@
-import { useContext, createContext, ReactNode, useEffect } from "react";
-import { useSocket } from "./socket.context";
-import { RoomInterface } from "@/models/room";
+import { useContext, createContext, ReactNode } from "react";
 import { useParams } from "next/navigation";
 import useRoomByHash from "@/hooks/rooms/useRoomByHash";
+import { useRoomSocket } from "@/hooks/rooms/useRoomSocket";
+import { useAuthQueryEnabled } from "@/hooks/useAuthAxios";
+import { useSocket } from "./socket.context";
+import { RoomInterface } from "@/models/room";
 
 type RoomContextProps = {
   room: RoomInterface | undefined;
   isLoading: boolean;
   updateRoom: (updatedRoom: RoomInterface) => void;
 };
+
 const RoomContext = createContext<RoomContextProps | null>(null);
 
 export function RoomProvider({ children }: { children: ReactNode }) {
   const { id } = useParams();
-  const { socket } = useSocket();
+
+  const { socket, isConnected } = useSocket();
+  const authReady = useAuthQueryEnabled();
+
   const roomHash = typeof id === "string" ? id : "";
   const { updateRoom, room, isLoading } = useRoomByHash(roomHash);
 
-  useEffect(() => {
-    if (!roomHash) return;
-    socket.on("room_updated", updateRoom);
+  useRoomSocket({
+    roomHash,
+    socket,
+    isConnected,
+    authReady,
+    updateRoom,
+  });
 
-    return () => {
-      socket.off("room_updated", updateRoom);
-    };
-  }, [roomHash, socket, updateRoom]);
   return (
     <RoomContext.Provider
       value={{

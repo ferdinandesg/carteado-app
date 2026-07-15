@@ -4,7 +4,6 @@ import { atomicallyUpdateRoomState, getRoomState } from "@/lib/redis/room";
 import emitToRoom from "@/socket/utils/emitToRoom";
 import ErrorHandler from "@/utils/error.handler";
 import { createPlayers } from "./utils";
-import { Participant } from "shared/types";
 import { PlayerStatus } from "shared/game";
 import {
   createGameFromRuleName,
@@ -22,10 +21,8 @@ export async function StartGameEventHandler(
   const roomHash = user.room;
 
   try {
-    // --- 1. BUSCAR DADOS DE FONTES DIFERENTES ---
     const room = await getRoomState(roomHash);
-    // Buscamos os participantes do nosso gerenciador em memória, não do socket.io
-    const participants: Participant[] = room?.participants || [];
+    const participants = room?.participants ?? [];
 
     if (!room) {
       throw "ROOM_NOT_FOUND";
@@ -40,7 +37,6 @@ export async function StartGameEventHandler(
       throw "ROOM_IS_NOT_FULL";
     }
 
-    // A verificação de status agora usa nossa lista de participantes
     const areAllParticipantsReady = participants.every(
       (p) => p.status === PlayerStatus.READY
     );
@@ -55,9 +51,8 @@ export async function StartGameEventHandler(
     }
 
     const game = await createGameFromRuleName(room.rule, players);
-    game.startGame(); // Prepara o estado inicial do jogo (dar cartas, etc.)
+    game.startGame();
 
-    // Preparamos as atualizações de estado
     const updateDbPromise = prisma.room.update({
       where: { id: room.id },
       data: { status: "playing" },
@@ -72,7 +67,6 @@ export async function StartGameEventHandler(
     );
     const saveGameRedisPromise = saveGameInstance(roomHash, game);
 
-    // Executamos todas as promessas de atualização de estado juntas
     const [, updatedRoom] = await Promise.all([
       updateDbPromise,
       updateRoomRedisPromise,
@@ -80,7 +74,6 @@ export async function StartGameEventHandler(
     ]);
 
     emitToRoom(channel, roomHash, CHANNEL.SERVER.INFO, "MATCH_STARTED");
-    // Enviamos o estado inicial completo do jogo e da sala
     emitToRoom(channel, roomHash, CHANNEL.SERVER.GAME_UPDATED, game);
     emitToRoom(
       channel,

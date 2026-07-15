@@ -9,12 +9,11 @@
   padding: $spacing-m;
   gap: $spacing-s;
   background:
-    radial-gradient(
-      ellipse at center,
-      rgba($color-panel-blue, 0.22) 0%,
-      rgba($color-panel-deep, 0.92) 72%
+    linear-gradient(
+      rgba($color-panel-deep, 0.35),
+      rgba($color-panel-deep, 0.45)
     ),
-    rgba($color-panel-deep, 0.88);
+    url("/assets/backgrounds/bg-gameplay.png") center / cover no-repeat;
   border: $border-width-bold solid $color-outline;
   border-radius: $border-radius-l;
   box-shadow:

@@ -135,7 +135,7 @@ export class CarteadoGameRules implements ICarteadoGameRules {
       this.isSpecialCard(game, player, card);
 
     if (lastCard && !hasSpecialCard) {
-      if (lastCard.value! > card.value) {
+      if (lastCard.value > card.value) {
         throw Errors.invariant("LOWER_RANK");
       }
       if (lastCard.rank !== card.rank && player.playedCards.length > 0) {
@@ -163,7 +163,7 @@ export class CarteadoGameRules implements ICarteadoGameRules {
     const isSpecial =
       this.isSpecialCard(game, player, lastCard) ||
       this.isSpecialCard(game, player, card);
-    if (lastCard && !isSpecial && lastCard.value! > card.value) {
+    if (lastCard && !isSpecial && lastCard.value > card.value) {
       throw Errors.invariant("LOWER_RANK");
     }
 
@@ -251,7 +251,7 @@ export class CarteadoGameRules implements ICarteadoGameRules {
       (c) => !cards.some((y) => c.toString === y.toString)
     );
     foundPlayer.hand = cards;
-    foundPlayer.status = PlayerStatus.PLAYING;
+    foundPlayer.status = PlayerStatus.WAITING;
   }
 
   private clearPlayersPlays(game: CarteadoGame) {

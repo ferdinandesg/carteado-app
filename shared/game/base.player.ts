@@ -3,6 +3,7 @@ import { Card } from "../cards";
 export enum PlayerStatus {
   CHOOSING = "choosing",
   PLAYING = "playing",
+  WAITING = "waiting",
   NOT_READY = "not_ready",
   READY = "ready",
 }

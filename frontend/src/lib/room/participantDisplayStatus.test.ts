@@ -1,4 +1,4 @@
-import { PlayerStatus } from "shared/game";
+import { BasePlayer, PlayerStatus } from "shared/game";
 import { Participant } from "shared/types";
 
 import { getParticipantBadgeStatus } from "./participantDisplayStatus";
@@ -15,6 +15,17 @@ const makeParticipant = (
   ...overrides,
 });
 
+const makePlayer = (overrides: Partial<BasePlayer> = {}): BasePlayer => ({
+  userId: "user-1",
+  name: "Player",
+  hand: [],
+  playedCards: [],
+  table: [],
+  teamId: "",
+  status: PlayerStatus.WAITING,
+  ...overrides,
+});
+
 describe("getParticipantBadgeStatus", () => {
   it("returns away when participant is offline", () => {
     expect(
@@ -22,21 +33,35 @@ describe("getParticipantBadgeStatus", () => {
     ).toBe("away");
   });
 
-  it("returns ready when participant is ready", () => {
+  it("uses participant status in lobby (no game player)", () => {
     expect(
       getParticipantBadgeStatus(makeParticipant({ status: PlayerStatus.READY }))
     ).toBe("ready");
+    expect(getParticipantBadgeStatus(makeParticipant())).toBe("waiting");
   });
 
-  it("returns playing when participant is in game", () => {
+  it("prefers game player status when in a match", () => {
     expect(
       getParticipantBadgeStatus(
-        makeParticipant({ status: PlayerStatus.PLAYING })
+        makeParticipant({ status: PlayerStatus.READY }),
+        makePlayer({ status: PlayerStatus.PLAYING })
       )
     ).toBe("playing");
+
+    expect(
+      getParticipantBadgeStatus(
+        makeParticipant({ status: PlayerStatus.READY }),
+        makePlayer({ status: PlayerStatus.WAITING })
+      )
+    ).toBe("waiting");
   });
 
-  it("returns waiting for not ready participants", () => {
-    expect(getParticipantBadgeStatus(makeParticipant())).toBe("waiting");
+  it("returns playing for choosing phase", () => {
+    expect(
+      getParticipantBadgeStatus(
+        makeParticipant(),
+        makePlayer({ status: PlayerStatus.CHOOSING })
+      )
+    ).toBe("playing");
   });
 });

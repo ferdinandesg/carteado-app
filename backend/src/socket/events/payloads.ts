@@ -9,11 +9,6 @@ export interface LeaveRoomPayload {
   roomHash: string;
 }
 
-export interface PlayerReconnectedPayload {
-  roomHash: string;
-  userId: string;
-}
-
 export interface SetPlayerStatusPayload {
   status: PlayerStatus;
 }

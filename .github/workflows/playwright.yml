@@ -5,9 +5,12 @@ on:
   pull_request:
     branches: [main, master]
 
+env:
+  NODE_VERSION: "24.14.0"
+
 jobs:
   e2e:
-    timeout-minutes: 15
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     services:
       redis:
@@ -28,7 +31,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
       - name: Install dependencies
         run: npm ci
@@ -37,7 +40,7 @@ jobs:
       - name: Setup database
         run: npm run prisma:db:push -w backend
         env:
-          DATABASE_URL: mongodb://localhost:27017/carteado
+          DATABASE_URL: mongodb://localhost:27017/carteado_e2e?directConnection=true
       - name: Install Playwright browsers
         run: npm exec -w frontend -- playwright install --with-deps
       - name: Start backend
@@ -46,17 +49,19 @@ jobs:
           NODE_ENV: test
           PORT: 4000
           REDIS_URL: redis://localhost:6379
-          DATABASE_URL: mongodb://localhost:27017/carteado
+          DATABASE_URL: mongodb://localhost:27017/carteado_e2e?directConnection=true
           JWT_SECRET_KEY: test-secret-for-e2e
           FRONTEND_URL: http://localhost:3000
       - name: Start frontend
         run: npm run dev -w frontend &
         env:
-          NEXT_PUBLIC_API_URL: http://localhost:4000
-          NEXTAUTH_URL: http://localhost:4000
+          NEXT_PUBLIC_API_URL: http://localhost:4000/api/v1
+          NEXT_PUBLIC_SOCKET_URL: http://localhost:4000
+          API_URL: http://localhost:4000/api/v1
+          NEXTAUTH_URL: http://localhost:3000
+          NEXTAUTH_SECRET: test-nextauth-secret-for-e2e
       - name: Wait for app
         run: |
-          sleep 5
           for i in $(seq 1 30); do
             curl -sf http://localhost:4000/api/v1/health && curl -sf http://localhost:3000 > /dev/null && echo "App ready" && exit 0
             sleep 2
@@ -64,6 +69,9 @@ jobs:
           echo "App failed to start" && exit 1
       - name: Run Playwright tests
         run: npm run test:playwright -w frontend
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:4000/api/v1
+          NEXT_PUBLIC_SOCKET_URL: http://localhost:4000
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:

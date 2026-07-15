@@ -1,19 +1,39 @@
 "use client";
 
-import { ReactNode, createContext, useContext, useEffect } from "react";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useSyncExternalStore,
+} from "react";
 import type { Socket } from "socket.io-client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { gameSocket } from "@/lib/socket/client";
-import logger from "@/lib/logger";
 
 type SocketContextValue = {
   socket: Socket;
+  isConnected: boolean;
 };
 
 const SocketContext = createContext<SocketContextValue | null>(null);
+
+function subscribeToSocketConnection(onStoreChange: () => void) {
+  gameSocket.on("connect", onStoreChange);
+  gameSocket.on("disconnect", onStoreChange);
+  return () => {
+    gameSocket.off("connect", onStoreChange);
+    gameSocket.off("disconnect", onStoreChange);
+  };
+}
+
+function getSocketConnectedSnapshot() {
+  return gameSocket.connected;
+}
 
 function bindSocketListeners(
   socket: Socket,
@@ -34,10 +54,6 @@ function bindSocketListeners(
 
   const onConnect = () => {
     socket.auth = { token };
-    if (socket.recovered) {
-      logger.info("Reconexão bem-sucedida. A sincronizar estado...");
-      socket.emit("player_reconnected");
-    }
   };
 
   socket.on("connect_error", onConnectError);
@@ -55,9 +71,20 @@ function bindSocketListeners(
 
 export function SocketProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
+  const translateRef = useRef(t);
+
+  useEffect(() => {
+    translateRef.current = t;
+  }, [t]);
+
   const router = useRouter();
   const { status, data } = useSession();
   const token = data?.user?.accessToken;
+  const isConnected = useSyncExternalStore(
+    subscribeToSocketConnection,
+    getSocketConnectedSnapshot,
+    () => false
+  );
 
   useEffect(() => {
     if (status === "loading") return;
@@ -71,20 +98,19 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     }
 
     gameSocket.auth = { token };
-    const unbind = bindSocketListeners(gameSocket, token!, (key) => t(key));
+    const unbind = bindSocketListeners(gameSocket, token!, (key) =>
+      translateRef.current(key)
+    );
 
     if (!gameSocket.connected) {
       gameSocket.connect();
     }
 
-    return () => {
-      unbind();
-      gameSocket.disconnect();
-    };
+    return unbind;
   }, [status, token, router]);
 
   return (
-    <SocketContext.Provider value={{ socket: gameSocket }}>
+    <SocketContext.Provider value={{ socket: gameSocket, isConnected }}>
       {children}
     </SocketContext.Provider>
   );

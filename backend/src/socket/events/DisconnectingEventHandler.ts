@@ -4,7 +4,7 @@ import emitToRoom from "@/socket/utils/emitToRoom";
 import { expireSession } from "@/lib/redis/userSession";
 import { logger } from "@/utils/logger";
 import { CHANNEL } from "@/socket/channels";
-import { PlayerStatus } from "shared/game";
+import { GameStatus, PlayerStatus } from "shared/game";
 
 export async function DisconnectingEventHandler(
   context: Omit<SocketContext, "payload">
@@ -21,7 +21,10 @@ export async function DisconnectingEventHandler(
     const participant = room.participants.find((p) => p.userId === userId);
     if (participant) {
       participant.isOnline = false;
-      participant.status = PlayerStatus.NOT_READY;
+      participant.status =
+        room.status === GameStatus.PLAYING
+          ? participant.status
+          : PlayerStatus.NOT_READY;
     }
     return room;
   });

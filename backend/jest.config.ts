@@ -13,7 +13,7 @@ const config: Config.InitialOptions = {
     "^shared/(.*)$": "<rootDir>/../shared/$1",
   },
   testMatch: ["<rootDir>/src/**/*.test.ts"],
-  testPathIgnorePatterns: ["/node_modules/"],
+  testPathIgnorePatterns: ["/node_modules/", "/tests/integration/"],
 };
 
 export default config;
