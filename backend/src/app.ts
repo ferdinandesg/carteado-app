@@ -5,7 +5,7 @@ import rateLimit from "express-rate-limit";
 import PinoHttp from "pino-http";
 import routes from "./routes";
 import { checkHealth } from "./health";
-import { logger } from "./utils/logger";
+import { httpLoggerOptions } from "./utils/httpLogger";
 
 const app = express();
 
@@ -23,7 +23,7 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
-app.use(PinoHttp({ logger }));
+app.use(PinoHttp(httpLoggerOptions));
 
 // Liveness: só confirma que o processo HTTP responde (Docker/K8s); não toca em Redis/Mongo
 app.get("/api/v1/live", (_req, res) => {

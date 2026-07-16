@@ -13,7 +13,7 @@ async function bootstrap() {
   new SocketServer(httpServer);
 
   const server = httpServer.listen(env.PORT, () => {
-    logger.info(`Server running on port: ${env.PORT}`);
+    logger.info({ port: env.PORT }, "Server started.");
   });
 
   const signals = {
@@ -26,10 +26,10 @@ async function bootstrap() {
     signal: keyof typeof signals,
     value: number
   ): Promise<void> => {
-    logger.info(`signal ${signal}, value ${value}. Shutting down...`);
+    logger.info({ signal, value }, "Shutting down server.");
     server.close(async () => {
       await RedisClass.disconnect();
-      logger.info("Server stopped");
+      logger.info("Server stopped.");
       process.exit(128 + value);
     });
   };
@@ -45,12 +45,12 @@ async function bootstrap() {
 }
 
 bootstrap().catch((err) => {
-  logger.error(err, "Failed to start server");
+  logger.error({ err }, "Failed to start server.");
   process.exit(1);
 });
 
 process.on("uncaughtException", (err) => {
-  logger.error(err, "Exceção não capturada detectada:");
+  logger.error({ err }, "Uncaught exception.");
   process.exit(1);
 });
 
@@ -76,8 +76,8 @@ function extractReasonMessage(reason: unknown): string {
 process.on("unhandledRejection", (reason) => {
   const reasonMessage = extractReasonMessage(reason);
   logger.warn(
-    { reason, reasonMessage },
-    "Promise rejeitada mapeada; mantendo processo ativo."
+    { err: reason, reasonMessage },
+    "Unhandled promise rejection; keeping process alive."
   );
   return;
 });

@@ -6,7 +6,6 @@ import {
   RegisteredUserRole,
   normalizeRegisteredRole,
 } from "shared/types";
-import { logger } from "@/utils/logger";
 import { UserFactory } from "@/users/UserFactory";
 
 type UserLogin = {
@@ -89,6 +88,5 @@ export async function validateGuestUser(
   avatar?: string
 ): Promise<EmptyGuestType> {
   const guestUser = await UserFactory.createGuest({ username, skin, avatar });
-  logger.info({ guestUser }, "Criando usuário convidado:");
   return guestUser;
 }

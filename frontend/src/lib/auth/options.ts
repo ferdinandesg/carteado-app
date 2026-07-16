@@ -92,7 +92,7 @@ export const authOptions: NextAuthOptions = {
         } catch (error) {
           logger.error(
             { err: error },
-            "Falha ao validar usuário no callback JWT"
+            "Failed to validate user in JWT callback."
           );
           return { ...token, error: "UserValidationError" };
         }
@@ -112,7 +112,7 @@ export const authOptions: NextAuthOptions = {
         } catch (error) {
           logger.error(
             { err: error },
-            "Falha ao atualizar perfil do usuário no callback JWT"
+            "Failed to refresh user profile in JWT callback."
           );
         }
       }

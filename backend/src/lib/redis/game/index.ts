@@ -26,6 +26,6 @@ export async function getGameState(
     const game = GameFactory.deserialize(String(serializedGame));
     return game;
   }
-  logger.error("GAME_NOT_FOUND");
+  logger.error({ roomHash }, "Game not found.");
   throw new Error("GAME_NOT_FOUND");
 }

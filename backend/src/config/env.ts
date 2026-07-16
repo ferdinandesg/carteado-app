@@ -22,8 +22,8 @@ export function loadEnv(): Env {
   if (!parsed.success) {
     if (process.env.NODE_ENV !== "production") {
       logger.error(
-        parsed.error.flatten().fieldErrors,
-        "❌ Invalid environment variables:"
+        { fieldErrors: parsed.error.flatten().fieldErrors },
+        "Invalid environment variables."
       );
     }
     throw new Error("Environment validation failed");

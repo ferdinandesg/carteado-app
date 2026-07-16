@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { verifyAccessToken } from "@/lib/jwt";
 import { touchGuest } from "@/lib/redis/guests";
 import { UserFactory } from "@/users/UserFactory";
+import { withUser } from "@/utils/logContext";
 
 export const verifyJWTToken = async (token: string | undefined) => {
   const decoded = await verifyAccessToken(token);
@@ -30,6 +31,9 @@ export default async function authorize(
       return;
     }
     req.user = user;
+    if (req.log) {
+      req.log = withUser(req.log, user);
+    }
     next();
   } catch (error) {
     res.status(403).json({ message: "INVALID_TOKEN", error });

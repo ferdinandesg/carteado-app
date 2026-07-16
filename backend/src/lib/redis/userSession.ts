@@ -23,6 +23,6 @@ export async function clearSession(userId: string) {
 
 export async function expireSession(userId: string) {
   const redis = await RedisClass.getDataClient();
-  logger.info(`User ${userId} disconnected. Setting session TTL.`);
+  logger.info({ userId }, "User session TTL refreshed after disconnect.");
   await redis.expire(REDIS_KEYS.session(userId), REDIS_TTL.session);
 }

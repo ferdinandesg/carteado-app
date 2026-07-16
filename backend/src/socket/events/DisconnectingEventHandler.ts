@@ -2,9 +2,9 @@ import { atomicallyUpdateRoomState } from "@/lib/redis/room";
 import { SocketContext } from "@/@types/socket";
 import emitToRoom from "@/socket/utils/emitToRoom";
 import { expireSession } from "@/lib/redis/userSession";
-import { logger } from "@/utils/logger";
 import { CHANNEL } from "@/socket/channels";
 import { GameStatus, PlayerStatus } from "shared/game";
+import { socketLogger } from "@/utils/logContext";
 
 export async function DisconnectingEventHandler(
   context: Omit<SocketContext, "payload">
@@ -12,10 +12,11 @@ export async function DisconnectingEventHandler(
   const { socket, channel } = context;
   const roomHash = socket.user.room;
   const userId = socket.user.id;
+  const log = socketLogger(socket);
 
   if (!roomHash) return;
 
-  logger.info({ userId, roomHash }, "User disconnecting.");
+  log.info({ roomHash }, "User disconnecting.");
 
   const updatedRoom = await atomicallyUpdateRoomState(roomHash, (room) => {
     const participant = room.participants.find((p) => p.userId === userId);
@@ -31,7 +32,7 @@ export async function DisconnectingEventHandler(
 
   if (updatedRoom) {
     emitToRoom(channel, roomHash, CHANNEL.SERVER.ROOM_UPDATED, updatedRoom);
-    logger.info({ userId, roomHash }, "User marked as offline.");
+    log.info({ roomHash }, "User marked as offline.");
   }
 
   // Set a TTL on the user's session to allow for reconnection

@@ -6,4 +6,5 @@ export function ChatConnectionEventHandler(
   channel: Namespace
 ): void {
   registerChatEvents(socket, channel);
+  socket.log.info({ namespace: "/chat" }, "Socket connected.");
 }

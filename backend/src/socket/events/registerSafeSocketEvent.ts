@@ -1,6 +1,6 @@
 import { Socket } from "socket.io";
 import ErrorHandler from "@/utils/error.handler";
-import { logger } from "@/utils/logger";
+import { socketLogger } from "@/utils/logContext";
 
 type SocketEventHandler<TPayload> = (payload: TPayload) => void | Promise<void>;
 
@@ -14,8 +14,8 @@ export function registerSafeSocketEvent<TPayload = unknown>(
       try {
         ErrorHandler(error, socket);
       } catch (unhandledError) {
-        logger.error(
-          { error: unhandledError, eventName },
+        socketLogger(socket).error(
+          { err: unhandledError, eventName },
           "Unhandled socket event error."
         );
       }

@@ -1,5 +1,7 @@
 import { Socket } from "socket.io";
 import { verifyJWTToken } from "@/routes/middlewares/auth";
+import { logger } from "@/utils/logger";
+import { userLogBindings } from "@/utils/logContext";
 
 export async function Authentication(
   socket: Socket,
@@ -11,6 +13,11 @@ export async function Authentication(
     if (!user) return next(new Error("Unauthorized"));
 
     socket.user = user;
+    socket.log = logger.child({
+      ...userLogBindings(user),
+      socketId: socket.id,
+      source: "socket",
+    });
     socket.join(socket.user.email);
     return next();
   } catch {

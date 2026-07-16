@@ -2,7 +2,6 @@ import { atomicallyUpdateRoomState } from "@/lib/redis/room";
 import { SocketContext } from "@/@types/socket";
 import emitToRoom from "@/socket/utils/emitToRoom";
 import ErrorHandler from "@/utils/error.handler";
-import { logger } from "@/utils/logger";
 import { SetPlayerStatusPayload } from "../payloads";
 import { CHANNEL } from "@/socket/channels";
 
@@ -28,7 +27,10 @@ export async function SetPlayerStatusEventHandler(
     });
     if (!room) throw "ROOM_NOT_FOUND";
     emitToRoom(channel, roomHash, CHANNEL.SERVER.ROOM_UPDATED, room);
-    logger.info(`User ${socket.user.name} is ${updatedStatus}`);
+    socket.log.info(
+      { roomHash, status: updatedStatus },
+      "Player status updated."
+    );
   } catch (error) {
     ErrorHandler(error, socket);
   }

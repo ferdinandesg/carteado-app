@@ -16,11 +16,11 @@ class RedisClass {
       });
 
       RedisClass.dataClient.on("error", (err) => {
-        logger.error(err, "Redis error:");
+        logger.error({ err }, "Redis data client error.");
       });
 
       await RedisClass.dataClient.connect();
-      logger.info("Connected to Redis for data operations");
+      logger.info("Connected to Redis for data operations.");
 
       await RedisClass.getSubscribeClient();
     }
@@ -35,11 +35,11 @@ class RedisClass {
       });
 
       RedisClass.subscribeClient.on("error", (err) => {
-        logger.error(err, "Redis error");
+        logger.error({ err }, "Redis subscribe client error.");
       });
 
       await RedisClass.subscribeClient.connect();
-      logger.info("Connected to Redis for subscribing to events");
+      logger.info("Connected to Redis for subscribing to events.");
 
       RedisClass.subscribeClient.pSubscribe(
         "__keyevent@0__:expired",
@@ -59,13 +59,13 @@ class RedisClass {
     if (RedisClass.dataClient) {
       await RedisClass.dataClient.disconnect();
       RedisClass.dataClient = null;
-      logger.info("Disconnected from Redis for data operations");
+      logger.info("Disconnected from Redis for data operations.");
     }
 
     if (RedisClass.subscribeClient) {
       await RedisClass.subscribeClient.disconnect();
       RedisClass.subscribeClient = null;
-      logger.info("Disconnected from Redis for subscribing to events");
+      logger.info("Disconnected from Redis for subscribing to events.");
     }
   }
 }

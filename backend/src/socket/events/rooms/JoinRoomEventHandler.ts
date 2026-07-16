@@ -7,17 +7,17 @@ import { GameStatus, PlayerStatus, createParticipantObject } from "shared/game";
 import { storeSession } from "@/lib/redis/userSession";
 import { getGameInstance } from "@/services/game.service";
 import { JoinRoomPayload } from "../payloads";
-import { logger } from "@/utils/logger";
 import { CHANNEL } from "@/socket/channels";
+import { socketLogger } from "@/utils/logContext";
 
 export async function JoinRoomEventHandler(
   context: SocketContext<JoinRoomPayload>
 ): Promise<void> {
   const { payload, socket, channel } = context;
   const { roomHash } = payload;
-  const userId = socket.user?.id;
+  const log = socketLogger(socket);
 
-  logger.info({ userId, roomHash }, "User attempting to join room.");
+  log.info({ roomHash }, "User attempting to join room.");
 
   try {
     if (!roomHash || !socket.user) return;
@@ -72,7 +72,7 @@ export async function JoinRoomEventHandler(
         const game = await getGameInstance(roomHash);
         emitToUser(socket, CHANNEL.SERVER.GAME_UPDATED, game);
       } catch {
-        logger.warn({ userId, roomHash }, "No game state on rejoin.");
+        log.warn({ roomHash }, "No game state on rejoin.");
       }
     }
 
@@ -82,12 +82,9 @@ export async function JoinRoomEventHandler(
       });
     }
 
-    logger.info(
-      { userId, roomHash, isRejoin },
-      "User successfully joined room."
-    );
+    log.info({ roomHash, isRejoin }, "User successfully joined room.");
   } catch (error) {
-    logger.error({ userId, roomHash, error }, "Failed to join room.");
+    log.error({ err: error, roomHash }, "Failed to join room.");
     ErrorHandler(error, socket);
   }
 }

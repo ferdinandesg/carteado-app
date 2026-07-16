@@ -1,6 +1,5 @@
 import { Namespace, Socket } from "socket.io";
 import { DisconnectingEventHandler } from "./DisconnectingEventHandler";
-import { logger } from "@/utils/logger";
 import { registerRoomEvents } from "./rooms";
 import { registerCardEvents } from "./cards";
 import { registerChatEvents } from "./chat";
@@ -19,5 +18,5 @@ export function ConnectionEventHandler(
     DisconnectingEventHandler({ socket, channel })
   );
 
-  logger.info({ userId: socket.user?.id }, "Socket connected.");
+  socket.log.info({ namespace: "/room" }, "Socket connected.");
 }

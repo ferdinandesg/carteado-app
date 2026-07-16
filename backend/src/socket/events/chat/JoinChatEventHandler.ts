@@ -1,7 +1,6 @@
 import emitToUser from "@/socket/utils/emitToUser";
 import { getMessages } from "@/lib/redis/chat";
 import emitToRoom from "@/socket/utils/emitToRoom";
-import { logger } from "@/utils/logger";
 import { JoinChatPayload } from "../payloads";
 import { SocketContext } from "@/@types/socket";
 import { CHANNEL } from "@/socket/channels";
@@ -20,7 +19,5 @@ export async function JoinChatEventHandler(
     name: "system",
     message: socket.user.name,
   });
-  logger.info(
-    `Emitted to: ${roomHash} - load_messages for ${socket.user.name}`
-  );
+  socket.log.info({ roomHash }, "User joined chat.");
 }

@@ -15,7 +15,7 @@ export async function getGameInstance<T extends GameInstance>(
   const gameData = await gameRepository.getGameState(roomId);
 
   if (!gameData) {
-    logger.error(`Jogo não encontrado para a sala ${roomId}`);
+    logger.error({ roomHash: roomId }, "Game not found.");
     throw new GameError({
       code: "GAME_NOT_FOUND",
       message: "GAME_NOT_FOUND",

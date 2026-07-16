@@ -1,13 +1,19 @@
 import pino from "pino";
-const pinoConfig = {
+
+/**
+ * Convenção de logs (GCS Logs Explorer):
+ * - Sempre: logger.info({ campo }, "Short English sentence.")
+ * - Erros: { err } (nunca interpolar stack na msg)
+ * - User/sessão: userId, role, userName (via req.log / socket.log / customProps)
+ * - Produção: JSON no stdout (sem pino-pretty) para o Ops Agent
+ */
+const pinoConfig: pino.LoggerOptions = {
   level: process.env.LOG_LEVEL || "info",
-  transport: undefined as pino.TransportSingleOptions | undefined,
   base: {
     service: "backend",
   },
 };
 
-// Habilita o pino-pretty APENAS em ambiente de desenvolvimento
 if (process.env.NODE_ENV !== "production") {
   pinoConfig.transport = {
     target: "pino-pretty",
@@ -17,5 +23,4 @@ if (process.env.NODE_ENV !== "production") {
   };
 }
 
-// Cria o logger com a configuração condicional
 export const logger = pino(pinoConfig);
