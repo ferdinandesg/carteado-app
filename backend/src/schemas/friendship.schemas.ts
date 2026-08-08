@@ -13,3 +13,7 @@ export const friendshipIdParamSchema = z.object({
 export const friendUserIdParamSchema = z.object({
   userId: objectId,
 });
+
+export const searchUsersQuerySchema = z.object({
+  q: z.string().trim().min(2).max(50),
+});

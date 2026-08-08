@@ -6,11 +6,13 @@ import {
   listFriendRequests,
   listFriends,
   removeFriend,
+  searchUsers,
   sendFriendRequest,
 } from "@/services/friendship.service";
 import {
   friendshipIdParamSchema,
   friendUserIdParamSchema,
+  searchUsersQuerySchema,
   sendFriendRequestSchema,
 } from "@/schemas/friendship.schemas";
 import { serializeRouteError } from "@/utils/routeError";
@@ -44,6 +46,16 @@ export async function handleListFriendRequests(req: Request, res: Response) {
     res.status(200).json(requests);
   } catch (error) {
     handleError(req, res, error, "Failed to list friend requests.");
+  }
+}
+
+export async function handleSearchUsers(req: Request, res: Response) {
+  try {
+    const { q } = searchUsersQuerySchema.parse(req.query);
+    const users = await searchUsers(req.user.id, q);
+    res.status(200).json(users);
+  } catch (error) {
+    handleError(req, res, error, "Failed to search users.");
   }
 }
 

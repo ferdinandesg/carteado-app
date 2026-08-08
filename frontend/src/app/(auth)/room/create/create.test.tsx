@@ -17,6 +17,12 @@ jest.mock("next/navigation", () => ({
 // Mock do hook de criação de sala
 jest.mock("@/hooks/rooms/usePostRoom", () => jest.fn());
 
+// Painel de amigos usa react-query; fora do escopo desta página
+jest.mock("@/components/menu/FriendsPanel", () => ({
+  __esModule: true,
+  default: () => null,
+}));
+
 describe("CreateRoomPage", () => {
   it("deve permitir que o usuário preencha o formulário e crie uma sala", async () => {
     const user = userEvent.setup();

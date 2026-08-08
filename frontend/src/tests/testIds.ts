@@ -30,5 +30,8 @@ export const testIds = {
     content: "menu-content",
     friendsPanel: "menu-friends-panel",
     friendsToggle: "menu-friends-toggle",
+    friendsList: "menu-friends-list",
+    friendRequests: "menu-friend-requests",
+    friendSearchResults: "menu-friend-search-results",
   },
 } as const;

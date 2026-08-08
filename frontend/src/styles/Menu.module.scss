@@ -325,11 +325,57 @@
 }
 
 .friendName {
+  flex: 1;
+  min-width: 0;
+
   & .online {
     color: $color-online;
   }
   & .offline {
     color: $color-offline;
+  }
+}
+
+.friendsSectionTitle {
+  margin: $spacing-m 0 0;
+  color: $color-white;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.friendsHint {
+  margin: $spacing-m 0 0;
+  color: $color-white;
+  font-size: $font-size-s;
+  letter-spacing: 1px;
+}
+
+.friendActions {
+  display: flex;
+  gap: $spacing-xs;
+  margin-left: auto;
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    color: $color-white;
+    cursor: pointer;
+    background-color: rgba($color-bg-input, 0.2);
+    border: $border-width solid $color-outline;
+    border-radius: $border-radius-s;
+
+    &:hover:not(:disabled) {
+      background-color: $color-accent-pink;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
   }
 }
 

@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import classNames from "classnames";
 
 import styles from "@/styles/Menu.module.scss";
-import FriendsPanel, { MenuFriend } from "@/components/menu/FriendsPanel";
+import FriendsPanel from "@/components/menu/FriendsPanel";
 import MenuContentCard from "@/components/menu/MenuContentCard";
 import MenuTopBar from "@/components/menu/MenuTopBar";
 import UserPanel from "@/components/menu/UserPanel";
@@ -36,10 +36,6 @@ export default function MenuShell({
   const playerGold = user?.cash || 0;
   const userName = user?.name || "Player 0101";
   const userRank = user?.rank || 0;
-  const friends: MenuFriend[] = [
-    { name: userName, status: "online", image: user?.image },
-    { name: "Player 0101", status: "offline" },
-  ];
 
   return (
     <main
@@ -95,7 +91,6 @@ export default function MenuShell({
       </section>
 
       <FriendsPanel
-        friends={friends}
         title={t("Menu.friends")}
         searchPlaceholder={t("Menu.searchFriends")}
       />

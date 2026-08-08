@@ -4,13 +4,14 @@ import {
   dismissFriendRequest,
   listFriends,
   removeFriend,
+  searchUsers,
   sendFriendRequest,
 } from "./friendship.service";
 
 jest.mock("@/prisma", () => ({
   __esModule: true,
   default: {
-    user: { findUnique: jest.fn() },
+    user: { findUnique: jest.fn(), findMany: jest.fn() },
     friendship: {
       findFirst: jest.fn(),
       findUnique: jest.fn(),
@@ -24,7 +25,7 @@ jest.mock("@/prisma", () => ({
 }));
 
 const mockedPrisma = prisma as unknown as {
-  user: { findUnique: jest.Mock };
+  user: { findUnique: jest.Mock; findMany: jest.Mock };
   friendship: Record<string, jest.Mock>;
 };
 
@@ -161,6 +162,31 @@ describe("friendship.service", () => {
       await expect(removeFriend(ME, OTHER)).rejects.toBe(
         "FRIENDSHIP_NOT_FOUND"
       );
+    });
+  });
+
+  describe("searchUsers", () => {
+    it("anota a relação existente de cada resultado", async () => {
+      mockedPrisma.user.findMany.mockResolvedValue([
+        { id: OTHER, name: "Other" },
+        { id: "c".repeat(24), name: "Otter" },
+      ]);
+      mockedPrisma.friendship.findMany.mockResolvedValue([
+        { requesterId: ME, addresseeId: OTHER, status: "PENDING" },
+      ]);
+
+      const results = await searchUsers(ME, "ot");
+
+      expect(results).toEqual([
+        expect.objectContaining({ id: OTHER, relation: "PENDING" }),
+        expect.objectContaining({ id: "c".repeat(24), relation: "NONE" }),
+      ]);
+    });
+
+    it("não consulta relações quando não há resultados", async () => {
+      mockedPrisma.user.findMany.mockResolvedValue([]);
+      expect(await searchUsers(ME, "zzz")).toEqual([]);
+      expect(mockedPrisma.friendship.findMany).not.toHaveBeenCalled();
     });
   });
 

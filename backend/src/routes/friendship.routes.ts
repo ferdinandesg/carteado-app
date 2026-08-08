@@ -7,12 +7,14 @@ import {
   handleListFriendRequests,
   handleListFriends,
   handleRemoveFriend,
+  handleSearchUsers,
   handleSendFriendRequest,
 } from "@/controller/friendship.controller";
 
 export default express()
   .use(authorize, requireRegistered)
   .get("/", handleListFriends)
+  .get("/search", handleSearchUsers)
   .get("/requests", handleListFriendRequests)
   .post("/requests", handleSendFriendRequest)
   .post("/requests/:id/accept", handleAcceptFriendRequest)

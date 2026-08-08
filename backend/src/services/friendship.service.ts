@@ -114,6 +114,36 @@ export async function listFriends(userId: string) {
   }));
 }
 
+/** Busca usuários por nome para convite, anotando a relação existente. */
+export async function searchUsers(userId: string, query: string) {
+  const users = await prisma.user.findMany({
+    where: {
+      id: { not: userId },
+      name: { contains: query, mode: "insensitive" },
+    },
+    select: FRIEND_USER_SELECT,
+    take: 10,
+    orderBy: { name: "asc" },
+  });
+  if (users.length === 0) return [];
+
+  const relations = await prisma.friendship.findMany({
+    where: {
+      OR: users.flatMap((user) => [
+        { requesterId: userId, addresseeId: user.id },
+        { requesterId: user.id, addresseeId: userId },
+      ]),
+    },
+  });
+
+  return users.map((user) => {
+    const relation = relations.find(
+      (f) => f.requesterId === user.id || f.addresseeId === user.id
+    );
+    return { ...user, relation: relation?.status ?? "NONE" };
+  });
+}
+
 export async function listFriendRequests(userId: string) {
   const [incoming, outgoing] = await Promise.all([
     prisma.friendship.findMany({

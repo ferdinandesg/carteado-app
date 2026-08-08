@@ -15,6 +15,12 @@ jest.mock("@/components/Search", () => () => (
   <input placeholder="procurar sala" />
 ));
 
+// Painel de amigos usa react-query; fora do escopo desta página
+jest.mock("@/components/menu/FriendsPanel", () => ({
+  __esModule: true,
+  default: () => null,
+}));
+
 const mockRooms = [
   {
     id: "1",
