@@ -19,6 +19,8 @@ export class Game<
   public status: GameStatus;
   public playerTurn: string;
   public rules: R;
+  /** Garante que as recompensas de fim de partida sejam aplicadas uma única vez. */
+  public rewardsApplied = false;
 
   constructor(players: P[], rules: R, rulesName: GameRuleNames) {
     this.players = players;
@@ -71,6 +73,7 @@ export class Game<
       status: this.status,
       playerTurn: this.playerTurn,
       rulesName: this.rulesName,
+      rewardsApplied: this.rewardsApplied,
     });
   }
 }

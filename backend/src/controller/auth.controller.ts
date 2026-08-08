@@ -7,14 +7,14 @@ import {
 } from "../services/auth.service";
 import { withAccessToken } from "@/lib/authResponse";
 import { serializeRouteError } from "@/utils/routeError";
-import { reqLogger } from "@/utils/logContext";
+import { reqLogger, userLogBindings } from "@/utils/logContext";
 
 export async function handleValidateUser(req: Request, res: Response) {
   try {
     const { email, name, image } = loginSchema.parse(req.body);
     const profile = await validateUser({ email, name, image });
     reqLogger(req).info(
-      { userId: profile.id, role: profile.role, userName: profile.name },
+      userLogBindings(profile),
       "Registered user authenticated."
     );
     res.status(200).json(withAccessToken(profile));
@@ -31,10 +31,7 @@ export async function handleValidateGuest(req: Request, res: Response) {
   try {
     const { username, skin, avatar } = guestSchema.parse(req.body);
     const guest = await validateGuestUser(username, skin, avatar);
-    reqLogger(req).info(
-      { userId: guest.id, role: guest.role, userName: guest.name },
-      "Guest user authenticated."
-    );
+    reqLogger(req).info(userLogBindings(guest), "Guest user authenticated.");
     res.status(200).json(withAccessToken(guest));
   } catch (error) {
     reqLogger(req).error({ err: error }, "Failed to authenticate guest user.");

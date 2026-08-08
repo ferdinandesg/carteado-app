@@ -1,7 +1,6 @@
 import { atomicallyUpdateRoomState } from "@/lib/redis/room";
 import { SocketContext } from "@/@types/socket";
 import emitToRoom from "@/socket/utils/emitToRoom";
-import { expireSession } from "@/lib/redis/userSession";
 import { CHANNEL } from "@/socket/channels";
 import { GameStatus, PlayerStatus } from "shared/game";
 import { socketLogger } from "@/utils/logContext";
@@ -34,7 +33,4 @@ export async function DisconnectingEventHandler(
     emitToRoom(channel, roomHash, CHANNEL.SERVER.ROOM_UPDATED, updatedRoom);
     log.info({ roomHash }, "User marked as offline.");
   }
-
-  // Set a TTL on the user's session to allow for reconnection
-  await expireSession(socket.user.id);
 }

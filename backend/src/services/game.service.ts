@@ -6,6 +6,7 @@ import { Card } from "shared/cards";
 import { BasePlayer, GameRuleNames, GameType } from "shared/game";
 import { logger } from "@/utils/logger";
 import { GameError } from "@/errors/GameError";
+import { applyEndOfMatchRewards } from "./rewards.service";
 
 type GameInstance = TrucoGame | CarteadoGame;
 
@@ -50,6 +51,7 @@ async function getAndRun<T extends GameInstance>(
   }
 
   action(game);
+  await applyEndOfMatchRewards(game);
 
   await saveGameInstance(roomId, game);
   return game;
@@ -96,6 +98,15 @@ export async function playCard(roomId: string, userId: string, card: Card) {
   // This action is generic for all games
   const game = await getGameInstance(roomId);
   game.playCard(userId, card); // The base Game class has this method
+  await applyEndOfMatchRewards(game); // Truco pode terminar na jogada
+  await saveGameInstance(roomId, game);
+  return game;
+}
+
+export async function endTurn(roomId: string, userId: string) {
+  const game = await getGameInstance(roomId);
+  game.endTurn(userId);
+  await applyEndOfMatchRewards(game); // Carteado pode terminar no end_turn
   await saveGameInstance(roomId, game);
   return game;
 }

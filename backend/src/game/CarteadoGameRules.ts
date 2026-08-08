@@ -68,7 +68,7 @@ export class CarteadoGameRules implements ICarteadoGameRules {
       throw Errors.invariant("CANT_PLAY_HIDDEN_YET");
     }
 
-    if (game.players.some((p) => p.status !== PlayerStatus.PLAYING)) {
+    if (game.players.some((p) => p.status === PlayerStatus.CHOOSING)) {
       throw Errors.invariant("PLAYERS_NOT_READY");
     }
 
@@ -160,12 +160,7 @@ export class CarteadoGameRules implements ICarteadoGameRules {
     const player = game.getPlayer(userId)!;
     const lastCard = game.bunch.at(-1);
 
-    const isSpecial =
-      this.isSpecialCard(game, player, lastCard) ||
-      this.isSpecialCard(game, player, card);
-    if (lastCard && !isSpecial && lastCard.value > card.value) {
-      throw Errors.invariant("LOWER_RANK");
-    }
+    this.validatePlayCard(game, player, card, lastCard);
 
     // 3. Verifica se o jogador POSSUI a carta e a remove (isso resolve a Falha 2)
     const cardInHandIndex = player.hand.findIndex(
@@ -252,6 +247,15 @@ export class CarteadoGameRules implements ICarteadoGameRules {
     );
     foundPlayer.hand = cards;
     foundPlayer.status = PlayerStatus.WAITING;
+
+    // Fim da fase de escolha: quando o último jogador escolhe, todos ficam
+    // WAITING; libera então o jogador da vez para jogar.
+    const choosingPhaseDone = game.players.every(
+      (p) => p.status === PlayerStatus.WAITING
+    );
+    if (choosingPhaseDone) {
+      game.skipTurns(game.playerTurn, 0);
+    }
   }
 
   private clearPlayersPlays(game: CarteadoGame) {

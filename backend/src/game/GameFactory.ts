@@ -49,6 +49,7 @@ export class GameFactory {
       game.status = gameData.status;
       game.playerTurn = gameData.playerTurn;
       game.deck = Deck.deserialize(gameData.deck as unknown as string);
+      game.rewardsApplied = gameData.rewardsApplied ?? false;
       game.vira = gameData.vira;
       game.manilha = gameData.manilha;
       game.currentBet = gameData.currentBet;
@@ -68,6 +69,7 @@ export class GameFactory {
       game.status = gameData.status;
       game.playerTurn = gameData.playerTurn;
       game.deck = Deck.deserialize(gameData.deck as unknown as string);
+      game.rewardsApplied = gameData.rewardsApplied ?? false;
 
       return game;
     }

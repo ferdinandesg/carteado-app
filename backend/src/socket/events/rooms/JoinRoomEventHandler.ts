@@ -4,7 +4,6 @@ import emitToRoom from "@/socket/utils/emitToRoom";
 import emitToUser from "@/socket/utils/emitToUser";
 import ErrorHandler from "@/utils/error.handler";
 import { GameStatus, PlayerStatus, createParticipantObject } from "shared/game";
-import { storeSession } from "@/lib/redis/userSession";
 import { getGameInstance } from "@/services/game.service";
 import { JoinRoomPayload } from "../payloads";
 import { CHANNEL } from "@/socket/channels";
@@ -57,8 +56,6 @@ export async function JoinRoomEventHandler(
 
     await socket.join(roomHash);
     socket.user.room = roomHash;
-
-    await storeSession(socket, roomHash);
 
     emitToRoom(channel, roomHash, CHANNEL.SERVER.ROOM_UPDATED, updatedRoom);
     emitToUser(socket, CHANNEL.SERVER.ROOM_JOINED, { room: updatedRoom });

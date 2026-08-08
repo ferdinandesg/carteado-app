@@ -24,6 +24,31 @@ model User {
   xp     Int?     @default(0)
   role   String?  @default("user")
   rooms  Room[]   @relation("owner")
+
+  friendshipsSent     Friendship[] @relation("friendshipRequester")
+  friendshipsReceived Friendship[] @relation("friendshipAddressee")
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  BLOCKED
+}
+
+model Friendship {
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  requester   User             @relation("friendshipRequester", fields: [requesterId], references: [id])
+  requesterId String           @db.ObjectId
+  addressee   User             @relation("friendshipAddressee", fields: [addresseeId], references: [id])
+  addresseeId String           @db.ObjectId
+  status      FriendshipStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  respondedAt DateTime?
+
+  // Uma única relação por par (a direção indica quem convidou)
+  @@unique([requesterId, addresseeId])
+  @@index([addresseeId, status])
+  @@index([requesterId, status])
 }
 
 model Player {

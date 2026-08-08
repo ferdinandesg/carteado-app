@@ -1,0 +1,1089 @@
+{
+  "carteado": {
+    "choosing": {
+      "rulesName": "CarteadoGameRules",
+      "players": [
+        {
+          "userId": "user-a",
+          "name": "user-a",
+          "status": "choosing",
+          "hand": [
+            {
+              "rank": "3",
+              "suit": "hearts",
+              "value": 3,
+              "secondaryValue": null,
+              "toString": "3 of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "3",
+              "suit": "spades",
+              "value": 3,
+              "secondaryValue": null,
+              "toString": "3 of spades",
+              "isHidden": false
+            },
+            {
+              "rank": "3",
+              "suit": "diamonds",
+              "value": 3,
+              "secondaryValue": null,
+              "toString": "3 of diamonds",
+              "isHidden": false
+            },
+            {
+              "rank": "5",
+              "suit": "hearts",
+              "value": 5,
+              "secondaryValue": null,
+              "toString": "5 of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "5",
+              "suit": "spades",
+              "value": 5,
+              "secondaryValue": null,
+              "toString": "5 of spades",
+              "isHidden": false
+            },
+            {
+              "rank": "5",
+              "suit": "diamonds",
+              "value": 5,
+              "secondaryValue": null,
+              "toString": "5 of diamonds",
+              "isHidden": false
+            },
+            {
+              "rank": "A",
+              "suit": "hearts",
+              "value": 14,
+              "secondaryValue": 1,
+              "toString": "A of hearts",
+              "isHidden": true
+            },
+            {
+              "rank": "2",
+              "suit": "hearts",
+              "value": 14,
+              "secondaryValue": null,
+              "toString": "2 of hearts",
+              "isHidden": true
+            },
+            {
+              "rank": "10",
+              "suit": "hearts",
+              "value": 14,
+              "secondaryValue": null,
+              "toString": "10 of hearts",
+              "isHidden": true
+            }
+          ],
+          "table": [],
+          "playedCards": [],
+          "teamId": ""
+        },
+        {
+          "userId": "user-b",
+          "name": "user-b",
+          "status": "choosing",
+          "hand": [
+            {
+              "rank": "4",
+              "suit": "hearts",
+              "value": 4,
+              "secondaryValue": null,
+              "toString": "4 of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "4",
+              "suit": "spades",
+              "value": 4,
+              "secondaryValue": null,
+              "toString": "4 of spades",
+              "isHidden": false
+            },
+            {
+              "rank": "4",
+              "suit": "diamonds",
+              "value": 4,
+              "secondaryValue": null,
+              "toString": "4 of diamonds",
+              "isHidden": false
+            },
+            {
+              "rank": "6",
+              "suit": "hearts",
+              "value": 6,
+              "secondaryValue": null,
+              "toString": "6 of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "6",
+              "suit": "spades",
+              "value": 6,
+              "secondaryValue": null,
+              "toString": "6 of spades",
+              "isHidden": false
+            },
+            {
+              "rank": "6",
+              "suit": "diamonds",
+              "value": 6,
+              "secondaryValue": null,
+              "toString": "6 of diamonds",
+              "isHidden": false
+            },
+            {
+              "rank": "A",
+              "suit": "spades",
+              "value": 14,
+              "secondaryValue": 1,
+              "toString": "A of spades",
+              "isHidden": true
+            },
+            {
+              "rank": "K",
+              "suit": "spades",
+              "value": 13,
+              "secondaryValue": null,
+              "toString": "K of spades",
+              "isHidden": true
+            },
+            {
+              "rank": "Q",
+              "suit": "spades",
+              "value": 12,
+              "secondaryValue": null,
+              "toString": "Q of spades",
+              "isHidden": true
+            }
+          ],
+          "table": [],
+          "playedCards": [],
+          "teamId": ""
+        }
+      ],
+      "deck": {
+        "cards": [],
+        "numberOfFullDecks": 1
+      },
+      "bunch": [],
+      "status": "playing",
+      "playerTurn": "user-a",
+      "rules": {},
+      "rewardsApplied": false,
+      "type": "CARTEADO"
+    },
+    "handsPicked": {
+      "rulesName": "CarteadoGameRules",
+      "players": [
+        {
+          "userId": "user-a",
+          "name": "user-a",
+          "status": "playing",
+          "hand": [
+            {
+              "rank": "3",
+              "suit": "hearts",
+              "value": 3,
+              "secondaryValue": null,
+              "toString": "3 of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "3",
+              "suit": "spades",
+              "value": 3,
+              "secondaryValue": null,
+              "toString": "3 of spades",
+              "isHidden": false
+            },
+            {
+              "rank": "3",
+              "suit": "diamonds",
+              "value": 3,
+              "secondaryValue": null,
+              "toString": "3 of diamonds",
+              "isHidden": false
+            }
+          ],
+          "table": [
+            {
+              "rank": "5",
+              "suit": "hearts",
+              "value": 5,
+              "secondaryValue": null,
+              "toString": "5 of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "5",
+              "suit": "spades",
+              "value": 5,
+              "secondaryValue": null,
+              "toString": "5 of spades",
+              "isHidden": false
+            },
+            {
+              "rank": "5",
+              "suit": "diamonds",
+              "value": 5,
+              "secondaryValue": null,
+              "toString": "5 of diamonds",
+              "isHidden": false
+            },
+            {
+              "rank": "A",
+              "suit": "hearts",
+              "value": 14,
+              "secondaryValue": 1,
+              "toString": "A of hearts",
+              "isHidden": true
+            },
+            {
+              "rank": "2",
+              "suit": "hearts",
+              "value": 14,
+              "secondaryValue": null,
+              "toString": "2 of hearts",
+              "isHidden": true
+            },
+            {
+              "rank": "10",
+              "suit": "hearts",
+              "value": 14,
+              "secondaryValue": null,
+              "toString": "10 of hearts",
+              "isHidden": true
+            }
+          ],
+          "playedCards": [],
+          "teamId": ""
+        },
+        {
+          "userId": "user-b",
+          "name": "user-b",
+          "status": "waiting",
+          "hand": [
+            {
+              "rank": "4",
+              "suit": "hearts",
+              "value": 4,
+              "secondaryValue": null,
+              "toString": "4 of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "4",
+              "suit": "spades",
+              "value": 4,
+              "secondaryValue": null,
+              "toString": "4 of spades",
+              "isHidden": false
+            },
+            {
+              "rank": "4",
+              "suit": "diamonds",
+              "value": 4,
+              "secondaryValue": null,
+              "toString": "4 of diamonds",
+              "isHidden": false
+            }
+          ],
+          "table": [
+            {
+              "rank": "6",
+              "suit": "hearts",
+              "value": 6,
+              "secondaryValue": null,
+              "toString": "6 of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "6",
+              "suit": "spades",
+              "value": 6,
+              "secondaryValue": null,
+              "toString": "6 of spades",
+              "isHidden": false
+            },
+            {
+              "rank": "6",
+              "suit": "diamonds",
+              "value": 6,
+              "secondaryValue": null,
+              "toString": "6 of diamonds",
+              "isHidden": false
+            },
+            {
+              "rank": "A",
+              "suit": "spades",
+              "value": 14,
+              "secondaryValue": 1,
+              "toString": "A of spades",
+              "isHidden": true
+            },
+            {
+              "rank": "K",
+              "suit": "spades",
+              "value": 13,
+              "secondaryValue": null,
+              "toString": "K of spades",
+              "isHidden": true
+            },
+            {
+              "rank": "Q",
+              "suit": "spades",
+              "value": 12,
+              "secondaryValue": null,
+              "toString": "Q of spades",
+              "isHidden": true
+            }
+          ],
+          "playedCards": [],
+          "teamId": ""
+        }
+      ],
+      "deck": {
+        "cards": [],
+        "numberOfFullDecks": 1
+      },
+      "bunch": [],
+      "status": "playing",
+      "playerTurn": "user-a",
+      "rules": {},
+      "rewardsApplied": false,
+      "type": "CARTEADO"
+    },
+    "midgame": {
+      "rulesName": "CarteadoGameRules",
+      "players": [
+        {
+          "userId": "user-a",
+          "name": "user-a",
+          "status": "playing",
+          "hand": [
+            {
+              "rank": "5",
+              "suit": "hearts",
+              "value": 5,
+              "secondaryValue": null,
+              "toString": "5 of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "5",
+              "suit": "spades",
+              "value": 5,
+              "secondaryValue": null,
+              "toString": "5 of spades",
+              "isHidden": false
+            },
+            {
+              "rank": "5",
+              "suit": "diamonds",
+              "value": 5,
+              "secondaryValue": null,
+              "toString": "5 of diamonds",
+              "isHidden": false
+            }
+          ],
+          "table": [
+            {
+              "rank": "A",
+              "suit": "hearts",
+              "value": 14,
+              "secondaryValue": 1,
+              "toString": "A of hearts",
+              "isHidden": true
+            },
+            {
+              "rank": "2",
+              "suit": "hearts",
+              "value": 14,
+              "secondaryValue": null,
+              "toString": "2 of hearts",
+              "isHidden": true
+            },
+            {
+              "rank": "10",
+              "suit": "hearts",
+              "value": 14,
+              "secondaryValue": null,
+              "toString": "10 of hearts",
+              "isHidden": true
+            }
+          ],
+          "playedCards": [],
+          "teamId": ""
+        },
+        {
+          "userId": "user-b",
+          "name": "user-b",
+          "status": "waiting",
+          "hand": [
+            {
+              "rank": "6",
+              "suit": "hearts",
+              "value": 6,
+              "secondaryValue": null,
+              "toString": "6 of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "6",
+              "suit": "spades",
+              "value": 6,
+              "secondaryValue": null,
+              "toString": "6 of spades",
+              "isHidden": false
+            },
+            {
+              "rank": "6",
+              "suit": "diamonds",
+              "value": 6,
+              "secondaryValue": null,
+              "toString": "6 of diamonds",
+              "isHidden": false
+            }
+          ],
+          "table": [
+            {
+              "rank": "A",
+              "suit": "spades",
+              "value": 14,
+              "secondaryValue": 1,
+              "toString": "A of spades",
+              "isHidden": true
+            },
+            {
+              "rank": "K",
+              "suit": "spades",
+              "value": 13,
+              "secondaryValue": null,
+              "toString": "K of spades",
+              "isHidden": true
+            },
+            {
+              "rank": "Q",
+              "suit": "spades",
+              "value": 12,
+              "secondaryValue": null,
+              "toString": "Q of spades",
+              "isHidden": true
+            }
+          ],
+          "playedCards": [],
+          "teamId": ""
+        }
+      ],
+      "deck": {
+        "cards": [],
+        "numberOfFullDecks": 1
+      },
+      "bunch": [
+        {
+          "rank": "3",
+          "suit": "hearts",
+          "value": 3,
+          "secondaryValue": null,
+          "toString": "3 of hearts",
+          "isHidden": false
+        },
+        {
+          "rank": "3",
+          "suit": "spades",
+          "value": 3,
+          "secondaryValue": null,
+          "toString": "3 of spades",
+          "isHidden": false
+        },
+        {
+          "rank": "3",
+          "suit": "diamonds",
+          "value": 3,
+          "secondaryValue": null,
+          "toString": "3 of diamonds",
+          "isHidden": false
+        },
+        {
+          "rank": "4",
+          "suit": "hearts",
+          "value": 4,
+          "secondaryValue": null,
+          "toString": "4 of hearts",
+          "isHidden": false
+        },
+        {
+          "rank": "4",
+          "suit": "spades",
+          "value": 4,
+          "secondaryValue": null,
+          "toString": "4 of spades",
+          "isHidden": false
+        },
+        {
+          "rank": "4",
+          "suit": "diamonds",
+          "value": 4,
+          "secondaryValue": null,
+          "toString": "4 of diamonds",
+          "isHidden": false
+        }
+      ],
+      "status": "playing",
+      "playerTurn": "user-a",
+      "rules": {},
+      "rewardsApplied": false,
+      "type": "CARTEADO"
+    },
+    "finished": {
+      "rulesName": "CarteadoGameRules",
+      "players": [
+        {
+          "userId": "user-a",
+          "name": "user-a",
+          "status": "waiting",
+          "hand": [],
+          "table": [],
+          "playedCards": [],
+          "teamId": ""
+        },
+        {
+          "userId": "user-b",
+          "name": "user-b",
+          "status": "playing",
+          "hand": [],
+          "table": [
+            {
+              "rank": "K",
+              "suit": "spades",
+              "value": 13,
+              "secondaryValue": null,
+              "toString": "K of spades",
+              "isHidden": true
+            },
+            {
+              "rank": "Q",
+              "suit": "spades",
+              "value": 12,
+              "secondaryValue": null,
+              "toString": "Q of spades",
+              "isHidden": true
+            }
+          ],
+          "playedCards": [],
+          "teamId": ""
+        }
+      ],
+      "deck": {
+        "cards": [],
+        "numberOfFullDecks": 1
+      },
+      "bunch": [],
+      "status": "finished",
+      "playerTurn": "user-a",
+      "rules": {},
+      "rewardsApplied": false,
+      "type": "CARTEADO"
+    }
+  },
+  "truco": {
+    "roundStart": {
+      "rulesName": "TrucoGameRules",
+      "players": [
+        {
+          "userId": "user-a",
+          "name": "user-a",
+          "status": "waiting",
+          "hand": [
+            {
+              "rank": "K",
+              "suit": "hearts",
+              "value": 13,
+              "secondaryValue": null,
+              "toString": "K of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "A",
+              "suit": "hearts",
+              "value": 14,
+              "secondaryValue": 1,
+              "toString": "A of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "4",
+              "suit": "diamonds",
+              "value": 4,
+              "secondaryValue": null,
+              "toString": "4 of diamonds",
+              "isHidden": false
+            }
+          ],
+          "table": [],
+          "playedCards": [],
+          "teamId": ""
+        },
+        {
+          "userId": "user-b",
+          "name": "user-b",
+          "status": "waiting",
+          "hand": [
+            {
+              "rank": "J",
+              "suit": "spades",
+              "value": 11,
+              "secondaryValue": null,
+              "toString": "J of spades",
+              "isHidden": false
+            },
+            {
+              "rank": "J",
+              "suit": "diamonds",
+              "value": 11,
+              "secondaryValue": null,
+              "toString": "J of diamonds",
+              "isHidden": false
+            },
+            {
+              "rank": "5",
+              "suit": "clubs",
+              "value": 5,
+              "secondaryValue": null,
+              "toString": "5 of clubs",
+              "isHidden": false
+            }
+          ],
+          "table": [],
+          "playedCards": [],
+          "teamId": ""
+        }
+      ],
+      "deck": {
+        "cards": [],
+        "numberOfFullDecks": 1
+      },
+      "bunch": [],
+      "status": "playing",
+      "playerTurn": "user-a",
+      "rules": {},
+      "rewardsApplied": false,
+      "vira": {
+        "rank": "7",
+        "suit": "clubs",
+        "value": 7,
+        "secondaryValue": null,
+        "toString": "7 of clubs",
+        "isHidden": false
+      },
+      "manilha": "Q",
+      "currentBet": 1,
+      "type": "TRUCO",
+      "trucoState": "NONE",
+      "trucoAskerId": null,
+      "rounds": 1,
+      "teams": [
+        {
+          "id": "TEAM_A",
+          "userIds": ["user-a"],
+          "roundWins": 0,
+          "score": 0
+        },
+        {
+          "id": "TEAM_B",
+          "userIds": ["user-b"],
+          "roundWins": 0,
+          "score": 0
+        }
+      ],
+      "handsResults": []
+    },
+    "trucoPending": {
+      "rulesName": "TrucoGameRules",
+      "players": [
+        {
+          "userId": "user-a",
+          "name": "user-a",
+          "status": "waiting",
+          "hand": [
+            {
+              "rank": "K",
+              "suit": "hearts",
+              "value": 13,
+              "secondaryValue": null,
+              "toString": "K of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "A",
+              "suit": "hearts",
+              "value": 14,
+              "secondaryValue": 1,
+              "toString": "A of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "4",
+              "suit": "diamonds",
+              "value": 4,
+              "secondaryValue": null,
+              "toString": "4 of diamonds",
+              "isHidden": false
+            }
+          ],
+          "table": [],
+          "playedCards": [],
+          "teamId": ""
+        },
+        {
+          "userId": "user-b",
+          "name": "user-b",
+          "status": "waiting",
+          "hand": [
+            {
+              "rank": "J",
+              "suit": "spades",
+              "value": 11,
+              "secondaryValue": null,
+              "toString": "J of spades",
+              "isHidden": false
+            },
+            {
+              "rank": "J",
+              "suit": "diamonds",
+              "value": 11,
+              "secondaryValue": null,
+              "toString": "J of diamonds",
+              "isHidden": false
+            },
+            {
+              "rank": "5",
+              "suit": "clubs",
+              "value": 5,
+              "secondaryValue": null,
+              "toString": "5 of clubs",
+              "isHidden": false
+            }
+          ],
+          "table": [],
+          "playedCards": [],
+          "teamId": ""
+        }
+      ],
+      "deck": {
+        "cards": [],
+        "numberOfFullDecks": 1
+      },
+      "bunch": [],
+      "status": "playing",
+      "playerTurn": "user-a",
+      "rules": {},
+      "rewardsApplied": false,
+      "vira": {
+        "rank": "7",
+        "suit": "clubs",
+        "value": 7,
+        "secondaryValue": null,
+        "toString": "7 of clubs",
+        "isHidden": false
+      },
+      "manilha": "Q",
+      "currentBet": 3,
+      "type": "TRUCO",
+      "trucoState": "PENDING",
+      "trucoAskerId": "user-a",
+      "rounds": 1,
+      "teams": [
+        {
+          "id": "TEAM_A",
+          "userIds": ["user-a"],
+          "roundWins": 0,
+          "score": 0
+        },
+        {
+          "id": "TEAM_B",
+          "userIds": ["user-b"],
+          "roundWins": 0,
+          "score": 0
+        }
+      ],
+      "handsResults": []
+    },
+    "trucoAccepted": {
+      "rulesName": "TrucoGameRules",
+      "players": [
+        {
+          "userId": "user-a",
+          "name": "user-a",
+          "status": "waiting",
+          "hand": [
+            {
+              "rank": "K",
+              "suit": "hearts",
+              "value": 13,
+              "secondaryValue": null,
+              "toString": "K of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "A",
+              "suit": "hearts",
+              "value": 14,
+              "secondaryValue": 1,
+              "toString": "A of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "4",
+              "suit": "diamonds",
+              "value": 4,
+              "secondaryValue": null,
+              "toString": "4 of diamonds",
+              "isHidden": false
+            }
+          ],
+          "table": [],
+          "playedCards": [],
+          "teamId": ""
+        },
+        {
+          "userId": "user-b",
+          "name": "user-b",
+          "status": "waiting",
+          "hand": [
+            {
+              "rank": "J",
+              "suit": "spades",
+              "value": 11,
+              "secondaryValue": null,
+              "toString": "J of spades",
+              "isHidden": false
+            },
+            {
+              "rank": "J",
+              "suit": "diamonds",
+              "value": 11,
+              "secondaryValue": null,
+              "toString": "J of diamonds",
+              "isHidden": false
+            },
+            {
+              "rank": "5",
+              "suit": "clubs",
+              "value": 5,
+              "secondaryValue": null,
+              "toString": "5 of clubs",
+              "isHidden": false
+            }
+          ],
+          "table": [],
+          "playedCards": [],
+          "teamId": ""
+        }
+      ],
+      "deck": {
+        "cards": [],
+        "numberOfFullDecks": 1
+      },
+      "bunch": [],
+      "status": "playing",
+      "playerTurn": "user-a",
+      "rules": {},
+      "rewardsApplied": false,
+      "vira": {
+        "rank": "7",
+        "suit": "clubs",
+        "value": 7,
+        "secondaryValue": null,
+        "toString": "7 of clubs",
+        "isHidden": false
+      },
+      "manilha": "Q",
+      "currentBet": 3,
+      "type": "TRUCO",
+      "trucoState": "ACCEPTED",
+      "trucoAskerId": "user-a",
+      "rounds": 1,
+      "teams": [
+        {
+          "id": "TEAM_A",
+          "userIds": ["user-a"],
+          "roundWins": 0,
+          "score": 0
+        },
+        {
+          "id": "TEAM_B",
+          "userIds": ["user-b"],
+          "roundWins": 0,
+          "score": 0
+        }
+      ],
+      "handsResults": []
+    },
+    "roundScored": {
+      "rulesName": "TrucoGameRules",
+      "players": [
+        {
+          "userId": "user-a",
+          "name": "user-a",
+          "status": "waiting",
+          "hand": [
+            {
+              "rank": "K",
+              "suit": "hearts",
+              "value": 13,
+              "secondaryValue": null,
+              "toString": "K of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "A",
+              "suit": "hearts",
+              "value": 14,
+              "secondaryValue": 1,
+              "toString": "A of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "4",
+              "suit": "diamonds",
+              "value": 4,
+              "secondaryValue": null,
+              "toString": "4 of diamonds",
+              "isHidden": false
+            }
+          ],
+          "table": [],
+          "playedCards": [],
+          "teamId": ""
+        },
+        {
+          "userId": "user-b",
+          "name": "user-b",
+          "status": "waiting",
+          "hand": [
+            {
+              "rank": "J",
+              "suit": "spades",
+              "value": 11,
+              "secondaryValue": null,
+              "toString": "J of spades",
+              "isHidden": false
+            },
+            {
+              "rank": "J",
+              "suit": "diamonds",
+              "value": 11,
+              "secondaryValue": null,
+              "toString": "J of diamonds",
+              "isHidden": false
+            },
+            {
+              "rank": "5",
+              "suit": "clubs",
+              "value": 5,
+              "secondaryValue": null,
+              "toString": "5 of clubs",
+              "isHidden": false
+            }
+          ],
+          "table": [],
+          "playedCards": [],
+          "teamId": ""
+        }
+      ],
+      "deck": {
+        "cards": [],
+        "numberOfFullDecks": 1
+      },
+      "bunch": [],
+      "status": "playing",
+      "playerTurn": "user-a",
+      "rules": {},
+      "rewardsApplied": false,
+      "vira": {
+        "rank": "7",
+        "suit": "clubs",
+        "value": 7,
+        "secondaryValue": null,
+        "toString": "7 of clubs",
+        "isHidden": false
+      },
+      "manilha": "Q",
+      "currentBet": 1,
+      "type": "TRUCO",
+      "trucoState": "NONE",
+      "trucoAskerId": null,
+      "rounds": 2,
+      "teams": [
+        {
+          "id": "TEAM_A",
+          "userIds": ["user-a"],
+          "roundWins": 0,
+          "score": 3
+        },
+        {
+          "id": "TEAM_B",
+          "userIds": ["user-b"],
+          "roundWins": 0,
+          "score": 0
+        }
+      ],
+      "handsResults": [
+        {
+          "winnerTeamId": "TEAM_A",
+          "bunch": [
+            {
+              "rank": "K",
+              "suit": "hearts",
+              "value": 13,
+              "secondaryValue": null,
+              "toString": "K of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "J",
+              "suit": "spades",
+              "value": 11,
+              "secondaryValue": null,
+              "toString": "J of spades",
+              "isHidden": false
+            }
+          ],
+          "round": 1,
+          "isTie": false
+        },
+        {
+          "winnerTeamId": "TEAM_A",
+          "bunch": [
+            {
+              "rank": "A",
+              "suit": "hearts",
+              "value": 14,
+              "secondaryValue": 1,
+              "toString": "A of hearts",
+              "isHidden": false
+            },
+            {
+              "rank": "J",
+              "suit": "diamonds",
+              "value": 11,
+              "secondaryValue": null,
+              "toString": "J of diamonds",
+              "isHidden": false
+            }
+          ],
+          "round": 1,
+          "isTie": false
+        }
+      ]
+    }
+  }
+}

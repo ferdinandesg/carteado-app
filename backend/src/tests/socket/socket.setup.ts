@@ -3,12 +3,6 @@ import http from "http";
 import { Server } from "socket.io";
 import { SocketServer } from "@/socket/socket";
 
-jest.mock("@/lib/redis/userSession", () => ({
-  storeSession: jest.fn().mockResolvedValue(undefined),
-  clearSession: jest.fn().mockResolvedValue(undefined),
-  expireSession: jest.fn().mockResolvedValue(undefined),
-}));
-
 jest.mock("@/routes/middlewares/auth", () => ({
   verifyJWTToken: jest.fn().mockImplementation((token: string) => {
     if (token.includes("valid-token")) {

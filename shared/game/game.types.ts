@@ -24,6 +24,7 @@ export interface IBaseGameState<P extends BasePlayer, R extends GameRuleNames> {
   playerTurn: string;
   rulesName: R;
   deck: Deck; // Serialized deck
+  rewardsApplied?: boolean;
 }
 
 // Truco-specific state

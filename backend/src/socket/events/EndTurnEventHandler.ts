@@ -1,7 +1,7 @@
 import emitToRoom from "@/socket/utils/emitToRoom";
 import { SocketContext } from "@/@types/socket";
 import ErrorHandler from "@/utils/error.handler";
-import { getGameInstance, saveGameInstance } from "@/services/game.service";
+import { endTurn } from "@/services/game.service";
 import { CHANNEL } from "@/socket/channels";
 export async function EndTurnEventHandler(
   context: SocketContext
@@ -10,9 +10,7 @@ export async function EndTurnEventHandler(
   const { room } = socket.user;
   if (!room) return;
   try {
-    const game = await getGameInstance(room);
-    game.endTurn(socket.user.id);
-    await saveGameInstance(room, game);
+    const game = await endTurn(room, socket.user.id);
     emitToRoom(channel, room, CHANNEL.SERVER.GAME_UPDATED, game);
   } catch (error) {
     ErrorHandler(error, socket);
