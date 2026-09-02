@@ -45,7 +45,7 @@
     "deploy:prod:up": "ssh -i ~/.ssh/id_ed25519 franmlfran@34.10.106.241 \"cd /home/franmlfran/deploy && docker compose -f docker-compose-prod.yml pull && docker compose -f docker-compose-prod.yml up -d\"",
     "deploy:prod:manual": "npm run deploy:prod:env && npm run deploy:prod:send && npm run deploy:prod:up",
     "ssh": "ssh -i ~/.ssh/id_ed25519 franmlfran@34.10.106.241",
-    "ssh:tunnel": "ssh -i ~/.ssh/id_ed25519 -L 27017:localhost:27017 franmlfran@34.10.106.241"
+    "ssh:tunnel": "ssh -i ~/.ssh/id_ed25519_github_actions franmlfran@34.10.106.241"
   },
   "lint-staged": {
     "*.{json,md,yml,yaml}": "prettier --write",

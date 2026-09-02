@@ -7,6 +7,9 @@ const MAX_BOT_STEPS = 24;
 /**
  * Enquanto a vez (ou a resposta de truco) for de um bot, joga sozinho:
  * aceita truco e descarta a carta mais baixa. Sem `isBot`, não faz nada.
+ *
+ * Poderes manuais (`usePower`) o bot não dispara. Poder carimbado na carta
+ * dispara ao jogar, via `applyPlayedCardPower` (alvo aleatório).
  */
 export function playTrucoBots(game: TrucoGame): void {
   let steps = 0;

@@ -141,7 +141,11 @@ describe("Fluxo de jogo via socket — integração", () => {
   };
 
   afterEach(() => {
-    closeSockets(socketA, socketB);
+    closeSockets(
+      ...[socketA, socketB].filter((socket): socket is Socket =>
+        Boolean(socket)
+      )
+    );
     jest.restoreAllMocks();
   });
 
@@ -191,6 +195,22 @@ describe("Fluxo de jogo via socket — integração", () => {
       spy.mockRestore();
       mockGameStore.data = game.serialize();
     };
+
+    it("não inicia se só um jogador estiver na sala", async () => {
+      const port = getPort();
+      socketA = createTestSocket(USER_A, port);
+      await waitForEvent<void>(socketA, "connect");
+      const joined = waitForEvent(socketA, "room_joined");
+      socketA.emit("join_room", { roomHash: ROOM });
+      await joined;
+      const ready = waitForEvent(socketA, "room_updated");
+      socketA.emit("set_player_status", { status: PlayerStatus.READY });
+      await ready;
+
+      const error = waitForEvent<string>(socketA, "error").catch((e) => e);
+      socketA.emit("start_game");
+      expect(await error).toBe("ROOM_IS_NOT_FULL");
+    });
 
     it("deve jogar uma partida completa do start_game até a vitória", async () => {
       await connectAndPrepareRoom();
@@ -293,6 +313,25 @@ describe("Fluxo de jogo via socket — integração", () => {
       ];
       mockGameStore.data = game.serialize();
     };
+
+    it("preenche assentos vazios com bots ao iniciar", async () => {
+      const port = getPort();
+      socketA = createTestSocket(USER_A, port);
+      await waitForEvent<void>(socketA, "connect");
+      const joined = waitForEvent(socketA, "room_joined");
+      socketA.emit("join_room", { roomHash: ROOM });
+      await joined;
+      const ready = waitForEvent(socketA, "room_updated");
+      socketA.emit("set_player_status", { status: PlayerStatus.READY });
+      await ready;
+
+      const started = await emitAndWaitGame(socketA, "start_game");
+      expect(started.players).toHaveLength(2);
+      expect(started.players.some((p) => p.userId === USER_A)).toBe(true);
+      const bot = started.players.find((p) => p.isBot);
+      expect(bot?.userId).toMatch(/^bot-/);
+      expect(started.teams).toHaveLength(2);
+    });
 
     it("deve resolver truco aceito, rodada vencida e fuga via eventos", async () => {
       await connectAndPrepareRoom();

@@ -46,7 +46,7 @@ export default function RoomParticipantsPanel() {
           onClick={leaveRoom}
         />
         <span className={styles.count}>
-          {room.participants.length}/{room.size}
+          {views.length}/{room.size}
         </span>
       </header>
 

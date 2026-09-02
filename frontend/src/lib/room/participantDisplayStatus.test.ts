@@ -1,7 +1,16 @@
-import { BasePlayer, PlayerStatus } from "shared/game";
-import { Participant } from "shared/types";
+import {
+  BasePlayer,
+  GameStatus,
+  GameType,
+  IGameState,
+  PlayerStatus,
+} from "shared/game";
+import { Participant, RoomInterface } from "shared/types";
 
-import { getParticipantBadgeStatus } from "./participantDisplayStatus";
+import {
+  buildParticipantViews,
+  getParticipantBadgeStatus,
+} from "./participantDisplayStatus";
 
 const makeParticipant = (
   overrides: Partial<Participant> = {}
@@ -63,5 +72,50 @@ describe("getParticipantBadgeStatus", () => {
         makePlayer({ status: PlayerStatus.CHOOSING })
       )
     ).toBe("playing");
+  });
+});
+
+describe("buildParticipantViews", () => {
+  const room: RoomInterface = {
+    id: "r",
+    hash: "h",
+    name: "Sala",
+    status: "playing",
+    size: 2,
+    participants: [makeParticipant({ userId: "you", name: "Você" })],
+    rule: "TrucoGameRules",
+    createdAt: "",
+    ownerId: "you",
+  };
+
+  it("appends bots from the game that are not room participants", () => {
+    const views = buildParticipantViews(
+      room,
+      {
+        status: GameStatus.PLAYING,
+        playerTurn: "you",
+        type: GameType.TRUCO,
+        rulesName: "TrucoGameRules",
+        players: [
+          makePlayer({ userId: "you", name: "Você" }),
+          makePlayer({
+            userId: "bot-1",
+            name: "Bot 1",
+            isBot: true,
+            status: PlayerStatus.WAITING,
+          }),
+        ],
+        teams: [
+          { id: "TEAM_A", userIds: ["you"], roundWins: 0, score: 0 },
+          { id: "TEAM_B", userIds: ["bot-1"], roundWins: 0, score: 0 },
+        ],
+      } as IGameState,
+      "you"
+    );
+
+    expect(views).toHaveLength(2);
+    expect(views[1].participant.name).toBe("Bot 1");
+    expect(views[1].isGuest).toBe(false);
+    expect(views[1].team).toBe("rival");
   });
 });

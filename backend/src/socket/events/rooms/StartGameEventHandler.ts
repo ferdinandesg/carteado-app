@@ -5,7 +5,7 @@ import { atomicallyUpdateRoomState, getRoomState } from "@/lib/redis/room";
 import emitToRoom from "@/socket/utils/emitToRoom";
 import ErrorHandler from "@/utils/error.handler";
 import { createPlayers } from "./utils";
-import { PlayerStatus } from "shared/game";
+import { fillTrucoSeatsWithBots, PlayerStatus } from "shared/game";
 import { playTrucoBots } from "@/game/bots/playTrucoBots";
 import { TrucoGame } from "@/game/TrucoGameRules";
 import {
@@ -34,7 +34,16 @@ export async function StartGameEventHandler(
     if (user.id !== room.ownerId) {
       throw "ONLY_THE_OWNER_CAN_START_THE_GAME";
     }
-    if (participants.length < room.size) {
+    if (room.rule !== "CarteadoGameRules" && room.rule !== "TrucoGameRules") {
+      throw "INVALID_GAME_RULE";
+    }
+
+    const isTruco = room.rule === "TrucoGameRules";
+    // Truco: assentos vazios viram bots. Carteado continua exigindo mesa cheia.
+    if (
+      participants.length === 0 ||
+      (!isTruco && participants.length < room.size)
+    ) {
       throw "ROOM_IS_NOT_FULL";
     }
 
@@ -45,10 +54,9 @@ export async function StartGameEventHandler(
       throw "NOT_ALL_PLAYERS_ARE_READY";
     }
 
-    const players = await createPlayers(participants, room.id);
-
-    if (room.rule !== "CarteadoGameRules" && room.rule !== "TrucoGameRules") {
-      throw "INVALID_GAME_RULE";
+    let players = await createPlayers(participants, room.id);
+    if (isTruco && (room.size === 2 || room.size === 4)) {
+      players = fillTrucoSeatsWithBots(players, room.size);
     }
 
     const game = await createGameFromRuleName(room.rule, players);

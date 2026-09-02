@@ -1,5 +1,5 @@
 import { Card } from "shared/cards";
-import { BasePlayer, GameStatus, PlayerStatus } from "shared/game";
+import { BasePlayer, GameStatus, PlayerStatus, PowerId } from "shared/game";
 
 import { TrucoGame } from "../TrucoGameRules";
 import { playTrucoBots } from "./playTrucoBots";
@@ -55,6 +55,32 @@ describe("playTrucoBots", () => {
     playTrucoBots(game);
 
     expect(game.trucoState).toBe("ACCEPTED");
+  });
+
+  it("fires a stamped card power when the bot plays that card", () => {
+    const players = makePlayers();
+    const stamped = card("4", "spades");
+    stamped.powerId = PowerId.CHANGE_TRUMP;
+    players[1].hand = [stamped];
+
+    const game = new TrucoGame(players);
+    game.status = GameStatus.PLAYING;
+    game.manilha = "Q";
+    game.vira = card("7", "clubs");
+    game.playerTurn = "bot";
+    game.skipTurns("bot", 0);
+    game.deck.cards = [card("A", "spades")];
+
+    playTrucoBots(game);
+
+    expect(game.manilha).toBe("2");
+    expect(game.powerUsages).toEqual([
+      expect.objectContaining({
+        powerId: PowerId.CHANGE_TRUMP,
+        userId: "bot",
+        trigger: "CARD",
+      }),
+    ]);
   });
 
   it("does nothing when the current player is human", () => {
