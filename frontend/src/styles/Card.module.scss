@@ -7,10 +7,9 @@
   flex-shrink: 0;
   height: var(--card-fixed-height, var(--card-height));
   aspect-ratio: 5 / 7;
-  overflow: hidden;
+  overflow: visible;
   line-height: 0;
   border-radius: $border-radius-s;
-  box-shadow: 0 2px 8px rgba($color-black, 0.28);
   backface-visibility: hidden;
 
   &.canHover {
@@ -29,9 +28,104 @@
   }
 }
 
+.face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  box-shadow: 0 2px 8px rgba($color-black, 0.28);
+}
+
 .image {
   display: block;
   object-fit: cover;
   user-select: none;
   pointer-events: none;
+}
+
+.powerBadge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  color: $color-panel-text-dark;
+  background-color: $color-accent-teal;
+  border: $border-width solid $color-outline;
+  border-radius: $border-radius-full;
+  pointer-events: none;
+}
+
+.X_RAY {
+  background-color: #2ee9ff;
+}
+
+.SILENCER {
+  background-color: #ff3df0;
+}
+
+.CHANGE_TRUMP {
+  background-color: #ffe14a;
+}
+
+.MAGNETIC_PULL {
+  background-color: #ff4d3d;
+}
+
+.GRAVEDIGGER {
+  background-color: #6dff3a;
+}
+
+.powerHint {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: max-content;
+  max-width: 180px;
+  padding: $spacing-xs $spacing-s;
+  color: $color-white;
+  font-family: $font-family-base;
+  font-size: $font-size-xs;
+  letter-spacing: 0;
+  line-height: 1.25;
+  text-align: center;
+  text-transform: none;
+  white-space: normal;
+  background-color: rgba($color-panel-deep, 0.95);
+  border: $border-width solid $color-border-subtle;
+  border-radius: $border-radius-s;
+  box-shadow: 0 6px 16px rgba($color-black, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(4px);
+  transition:
+    opacity $transition-normal,
+    transform $transition-normal;
+
+  strong {
+    font-family: var(--font-mouse-memoirs), sans-serif;
+    font-size: $font-size-s;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+}
+
+@media (hover: hover) {
+  .Card:hover .powerHint,
+  .Card.showHint .powerHint {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.Card.showHint .powerHint {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }

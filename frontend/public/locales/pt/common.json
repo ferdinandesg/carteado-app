@@ -16,7 +16,8 @@
     "rules": "Regras do Jogo",
     "menu": "Menu",
     "rooms": "Salas",
-    "lobby": "Lobby {{hash}}"
+    "lobby": "Lobby {{hash}}",
+    "sandbox": "Sandbox — Cartas"
   },
   "Home": {
     "joinAsGuest": "Entrar como convidado",
@@ -185,7 +186,30 @@
       "roundWon": "+{{points}} pra nós!",
       "roundLost": "+{{points}} pra eles",
       "victory": "Vitória!",
-      "defeat": "Derrota"
+      "defeat": "Derrota",
+      "power": "{{name}}!"
+    }
+  },
+  "Powers": {
+    "X_RAY": {
+      "name": "Raio-X",
+      "description": "Espia uma carta aleatória da mão de um adversário."
+    },
+    "SILENCER": {
+      "name": "Silenciador",
+      "description": "Impede um adversário de pedir truco nesta rodada."
+    },
+    "CHANGE_TRUMP": {
+      "name": "Vira-Casaca",
+      "description": "Troca o vira e a manilha da rodada."
+    },
+    "MAGNETIC_PULL": {
+      "name": "Atração Magnética",
+      "description": "Obriga um adversário a jogar a carta mais alta na próxima jogada."
+    },
+    "GRAVEDIGGER": {
+      "name": "Coveiro",
+      "description": "Troca a carta jogada por uma do baralho restante de valor maior ou igual."
     }
   },
   "TableActions": {
@@ -235,5 +259,20 @@
   },
   "Chat": {
     "roomMessages": "Bate-papo da sala {{roomName}} ({{count}})"
+  },
+  "Sandbox": {
+    "title": "Sandbox de cartas",
+    "intro": "Mesa completa do Truco: jogue, peça truco e veja o bot responder. Use o painel para carimbar poderes.",
+    "rank": "Rank",
+    "suit": "Naipe",
+    "power": "Poder",
+    "noPower": "Sem poder",
+    "hidden": "Mostrar verso",
+    "addToHand": "Colocar no leque",
+    "newHand": "Nova mão",
+    "resetMatch": "Resetar partida",
+    "you": "Você",
+    "bot": "Bot",
+    "waitingBot": "Bot jogando..."
   }
 }

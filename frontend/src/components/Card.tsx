@@ -1,8 +1,10 @@
 import { HTMLAttributes } from "react";
 import classNames from "classnames";
 import Image from "next/image";
+import { Sparkles } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { motion, type HTMLMotionProps } from "motion/react";
+import { useTranslation } from "react-i18next";
 import { Card } from "shared/cards";
 
 import { getCardScale, type CardSize } from "@/lib/cards/cardSizing";
@@ -24,6 +26,8 @@ type CardComponentProps = {
   height?: number;
   canHover?: boolean;
   isHidden?: boolean;
+  /** Força o tooltip do poder (seleção por toque no leque). */
+  showPowerHint?: boolean;
   /**
    * Quando definido, a carta vira um `motion.div` com layout animation:
    * ao trocar de pai (leque → centro) com o mesmo `layoutId`, ela voa.
@@ -47,17 +51,28 @@ export default function CardComponent({
   height,
   isHidden = false,
   canHover = false,
+  showPowerHint = false,
   layoutId,
   className,
   style,
   ...rest
 }: CardComponentProps) {
+  const { t } = useTranslation();
   const { data } = useSession();
   const userSkin = (data?.user?.skin as AvailableSkins) || "baralho01";
-  const cardURL = getSkinPath(userSkin, card, isHidden);
+  const hidden = Boolean(card.isHidden || isHidden);
+  const cardURL = getSkinPath(userSkin, card, hidden);
+  const powerId = !hidden ? card.powerId : undefined;
+  const powerName = powerId
+    ? t(`Powers.${powerId}.name`, { defaultValue: "" })
+    : "";
+  const powerDescription = powerId
+    ? t(`Powers.${powerId}.description`, { defaultValue: "" })
+    : "";
 
   const mergedClassName = classNames(styles.Card, className, {
     [styles.canHover]: canHover,
+    [styles.showHint]: showPowerHint,
   });
 
   const mergedStyle = {
@@ -66,15 +81,34 @@ export default function CardComponent({
     ...(height !== undefined ? { "--card-fixed-height": `${height}px` } : {}),
   } as React.CSSProperties;
 
-  const image = (
-    <Image
-      src={cardURL}
-      alt={card.toString}
-      fill
-      sizes="(max-width: 768px) 25vw, 200px"
-      className={styles.image}
-      draggable={false}
-    />
+  const body = (
+    <>
+      <div className={styles.face}>
+        <Image
+          src={cardURL}
+          alt={card.toString}
+          fill
+          sizes="(max-width: 768px) 25vw, 200px"
+          className={styles.image}
+          draggable={false}
+        />
+      </div>
+      {powerId && (
+        <span
+          className={classNames(styles.powerBadge, styles[powerId])}
+          aria-hidden>
+          <Sparkles size={12} />
+        </span>
+      )}
+      {powerId && powerDescription && (
+        <span
+          className={styles.powerHint}
+          role="tooltip">
+          <strong>{powerName}</strong>
+          {powerDescription}
+        </span>
+      )}
+    </>
   );
 
   if (layoutId) {
@@ -85,7 +119,7 @@ export default function CardComponent({
         layout
         className={mergedClassName}
         style={mergedStyle}>
-        {image}
+        {body}
       </motion.div>
     );
   }
@@ -95,7 +129,7 @@ export default function CardComponent({
       {...rest}
       className={mergedClassName}
       style={mergedStyle}>
-      {image}
+      {body}
     </div>
   );
 }

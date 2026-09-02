@@ -13,6 +13,7 @@ export class ChangeTrumpPower implements PowerStrategy {
       game.deck,
       Object.keys(TRUCO_RANK_ORDER)
     );
+    delete vira.powerId;
     game.vira = vira;
     game.manilha = getNextRank(vira.rank);
     return {};

@@ -5,6 +5,7 @@ export const cardSchema = z.object({
   suit: z.string(),
   rank: z.string(),
   value: z.number(),
+  powerId: z.string().optional(),
 });
 
 export type CardType = z.infer<typeof cardSchema>;

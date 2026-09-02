@@ -76,6 +76,7 @@ export default function CardFan({
               card={card}
               size={size}
               layoutId={`${layoutPrefix}-${key}`}
+              showPowerHint={activeKey === key}
             />
           </div>
         );

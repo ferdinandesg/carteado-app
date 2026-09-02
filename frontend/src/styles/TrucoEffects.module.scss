@@ -96,6 +96,25 @@
     --stamp-bg: #{$color-gray-800};
     --stamp-fg: #{$color-white};
   }
+
+  &.power {
+    --stamp-bg: #{$color-accent-teal};
+    --stamp-fg: #{$color-panel-text-dark};
+  }
+}
+
+.xrayPeek {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 7;
+  margin-top: calc(var(--card-h, 70px) * -0.23);
+  margin-left: calc(var(--card-h, 70px) * -0.16);
+  pointer-events: none;
+  perspective: 520px;
+  transform-origin: center;
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 0 14px rgba(#2ee9ff, 0.85));
 }
 
 @media (max-width: $breakpoint-md) {

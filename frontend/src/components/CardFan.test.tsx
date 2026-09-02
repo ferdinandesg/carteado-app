@@ -54,4 +54,14 @@ describe("CardFan", () => {
     fireEvent.click(screen.getAllByRole("listitem")[0]);
     expect(onClick).not.toHaveBeenCalled();
   });
+
+  it("renders a power tooltip on stamped cards", () => {
+    render(
+      <CardFan cards={[{ ...card("7", "hearts"), powerId: "SILENCER" }]} />
+    );
+
+    expect(screen.getByRole("tooltip")).toHaveTextContent(
+      "Powers.SILENCER.description"
+    );
+  });
 });

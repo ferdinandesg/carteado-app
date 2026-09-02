@@ -26,4 +26,6 @@ export interface Card {
   value: Value;
   secondaryValue: Value | null;
   toString: CardAsString;
+  /** Poder carimbado no deal do Truco; some da mão ao jogar. */
+  powerId?: string;
 }

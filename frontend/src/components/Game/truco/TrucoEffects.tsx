@@ -10,14 +10,16 @@ import {
 import { useEffect, useMemo, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
+import CardComponent from "@/components/Card";
 import { seatAnchor, useSeatAnchors } from "@/hooks/game/useSeatAnchors";
-import type { TrucoEffect } from "@/hooks/game/useTrucoPresentation";
+import type { TrucoEffect, XrayPeek } from "@/hooks/game/useTrucoPresentation";
 import { testIds } from "@/tests/testIds";
 
 import styles from "@/styles/TrucoEffects.module.scss";
 
 type TrucoEffectsProps = {
   effect: TrucoEffect | null;
+  xrayPeek?: XrayPeek | null;
   children: ReactNode;
 };
 
@@ -77,6 +79,13 @@ function useStampCopy(effect: TrucoEffect | null) {
           text: t(effect.won ? "Truco.stamp.victory" : "Truco.stamp.defeat"),
           tone: effect.won ? "won" : "lost",
         };
+      case "powerUsed":
+        return {
+          text: t("Truco.stamp.power", {
+            name: t(`Powers.${effect.powerId}.name`),
+          }),
+          tone: "power",
+        };
       default:
         return null;
     }
@@ -87,7 +96,11 @@ function useStampCopy(effect: TrucoEffect | null) {
  * Overlay de efeitos do Truco em volta da mesa: shake, vinheta e selos
  * ("TRUCO!", "SEIS!", "CORREU!"...). Respeita `prefers-reduced-motion`.
  */
-export default function TrucoEffects({ effect, children }: TrucoEffectsProps) {
+export default function TrucoEffects({
+  effect,
+  xrayPeek = null,
+  children,
+}: TrucoEffectsProps) {
   const [scope, animate] = useAnimate();
   const reduceMotion = useReducedMotion();
   const anchors = useSeatAnchors();
@@ -106,7 +119,7 @@ export default function TrucoEffects({ effect, children }: TrucoEffectsProps) {
     if (reduceMotion || !scope.current) return;
 
     const controls = animate(scope.current, shakeKeyframes(level), {
-      duration: 0.35 + level * 0.1,
+      duration: 0.15 + level * 0.1,
       ease: "easeInOut",
     });
 
@@ -118,6 +131,16 @@ export default function TrucoEffects({ effect, children }: TrucoEffectsProps) {
     if (!effect || effect.kind !== "trucoAsked" || reduceMotion) return null;
     return anchors.getOffset("center", seatAnchor(effect.askerId));
   }, [anchors, effect, reduceMotion]);
+
+  const peekOrigin = useMemo(() => {
+    if (!xrayPeek) return { x: 0, y: 0 };
+    return (
+      anchors.getOffset("center", seatAnchor(xrayPeek.targetUserId)) ?? {
+        x: 0,
+        y: 0,
+      }
+    );
+  }, [anchors, xrayPeek]);
 
   return (
     <div className={styles.root}>
@@ -163,6 +186,45 @@ export default function TrucoEffects({ effect, children }: TrucoEffectsProps) {
             exit={{ opacity: 0, scale: reduceMotion ? 1 : 0.8, y: -30 }}
             transition={{ duration: 0.45, ease: [0.34, 1.56, 0.64, 1] }}>
             {stamp.text}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {xrayPeek && (
+          <motion.div
+            key={`xray-${xrayPeek.id}`}
+            className={styles.xrayPeek}
+            data-testid={testIds.game.xrayPeek}
+            initial={{
+              x: peekOrigin.x,
+              y: peekOrigin.y,
+              scale: reduceMotion ? 1 : 0.4,
+              rotateY: reduceMotion ? 0 : 90,
+              opacity: 0,
+            }}
+            animate={{
+              x: peekOrigin.x * 0.82,
+              y: peekOrigin.y * 0.82,
+              scale: 1,
+              rotateY: 0,
+              opacity: 1,
+            }}
+            exit={{
+              x: peekOrigin.x,
+              y: peekOrigin.y,
+              scale: reduceMotion ? 1 : 0.55,
+              rotateY: reduceMotion ? 0 : -80,
+              opacity: 0,
+            }}
+            transition={{
+              duration: reduceMotion ? 0.15 : 0.4,
+              ease: [0.22, 1, 0.36, 1],
+            }}>
+            <CardComponent
+              card={xrayPeek.card}
+              size="md"
+            />
           </motion.div>
         )}
       </AnimatePresence>

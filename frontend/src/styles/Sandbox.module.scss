@@ -1,0 +1,108 @@
+.Sandbox {
+  display: grid;
+  grid-template-columns: minmax(200px, 240px) minmax(0, 1fr);
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  color: $color-white;
+  background-color: $color-bg;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-s;
+  min-width: 0;
+  min-height: 0;
+  padding: $spacing-m $spacing-s;
+  overflow: auto;
+  background-color: rgba($color-panel-deep, 0.88);
+  border-right: $border-width solid $color-border-subtle;
+}
+
+.title {
+  margin: 0;
+  color: $color-primary;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: $font-weight-bold;
+  letter-spacing: $letter-spacing-wide;
+  line-height: 0.9;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0 rgba($color-black, 0.42);
+}
+
+.intro {
+  margin: 0;
+  color: $color-gray-300;
+  font-size: $font-size-xs;
+  line-height: 1.4;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  color: $color-gray-300;
+  font-size: $font-size-s;
+}
+
+.select {
+  width: 100%;
+  padding: $spacing-s;
+  color: $color-panel-text-dark;
+  font-size: $font-size-s;
+  background-color: $color-bg-input;
+  border: $border-width solid $color-outline;
+  border-radius: $border-radius-s;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: $spacing-s;
+  color: $color-white;
+  font-size: $font-size-s;
+}
+
+.preview {
+  display: flex;
+  justify-content: center;
+  padding: $spacing-s 0;
+  overflow: visible;
+}
+
+.gameStage {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  padding: $spacing-s;
+}
+
+.hint {
+  margin: 0;
+  color: $color-accent-teal;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+@media (max-width: 800px) {
+  .Sandbox {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100dvh;
+  }
+
+  .controls {
+    max-height: 38vh;
+    border-right: 0;
+    border-bottom: $border-width solid $color-border-subtle;
+  }
+
+  .gameStage {
+    min-height: 0;
+    padding: $spacing-xs;
+  }
+}

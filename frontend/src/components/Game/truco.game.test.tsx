@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { act, render, screen, waitFor } from "@testing-library/react";
-import { ITrucoGameState } from "shared/game";
+import { ITrucoGameState, PowerId } from "shared/game";
 
 import { useGameStore } from "@/contexts/game.store";
 import { testIds } from "@/tests/testIds";
@@ -40,7 +40,7 @@ describe("TrucoGame", () => {
   beforeEach(() => {
     jest.useFakeTimers();
     act(() => {
-      useGameStore.setState({ game: null, userId: "user-a" });
+      useGameStore.setState({ game: null, userId: "user-a", powerPeek: null });
     });
   });
 
@@ -82,6 +82,68 @@ describe("TrucoGame", () => {
     await waitFor(() =>
       expect(
         screen.queryByTestId(testIds.game.trucoStamp)
+      ).not.toBeInTheDocument()
+    );
+  });
+
+  it("shows a power stamp when a card power is used", () => {
+    setGame(fixtures.truco.roundStart);
+    render(<TrucoGame />);
+
+    setGame({
+      ...fixtures.truco.roundStart,
+      playerTurn: "user-b",
+      bunch: [
+        {
+          rank: "K",
+          suit: "hearts",
+          value: 13,
+          secondaryValue: null,
+          toString: "K of hearts",
+        },
+      ],
+      powerUsages: [
+        {
+          powerId: PowerId.X_RAY,
+          userId: "user-a",
+          targetUserId: "user-b",
+          round: 1,
+          trigger: "CARD",
+        },
+      ],
+    });
+    act(() => {
+      jest.advanceTimersByTime(10);
+    });
+
+    expect(screen.getByTestId(testIds.game.trucoStamp)).toHaveTextContent(
+      "Truco.stamp.power"
+    );
+  });
+
+  it("reveals the peeked card only after a private X-Ray result", async () => {
+    setGame(fixtures.truco.roundStart);
+    render(<TrucoGame />);
+
+    act(() => {
+      useGameStore.setState({
+        powerPeek: {
+          powerId: PowerId.X_RAY,
+          targetUserId: "user-b",
+          card: fixtures.truco.roundStart.players[1].hand[0],
+        },
+      });
+    });
+
+    expect(screen.getByTestId(testIds.game.xrayPeek)).toBeInTheDocument();
+    expect(screen.getByAltText("J of spades")).toBeInTheDocument();
+
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId(testIds.game.xrayPeek)
       ).not.toBeInTheDocument()
     );
   });

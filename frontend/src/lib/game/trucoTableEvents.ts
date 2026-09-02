@@ -29,7 +29,15 @@ export type TrucoTableEvent =
       points: number;
       previousRound: number;
     }
-  | { type: "matchFinished"; winnerTeamId: string | null };
+  | { type: "matchFinished"; winnerTeamId: string | null }
+  | {
+      type: "powerUsed";
+      powerId: string;
+      userId: string;
+      targetUserId?: string;
+      returnedCard?: Card;
+      replacementCard?: Card;
+    };
 
 const sameCard = (a: Card, b: Card) => a.rank === b.rank && a.suit === b.suit;
 
@@ -100,6 +108,20 @@ export function diffTrucoSnapshots(
   }
 
   const scoring = findScoringTeam(prev, next);
+
+  const newUsages = (next.powerUsages ?? []).slice(
+    (prev.powerUsages ?? []).length
+  );
+  for (const usage of newUsages) {
+    events.push({
+      type: "powerUsed",
+      powerId: usage.powerId,
+      userId: usage.userId,
+      targetUserId: usage.targetUserId,
+      returnedCard: usage.returnedCard,
+      replacementCard: usage.replacementCard,
+    });
+  }
 
   if (wasPending && roundAdvanced && !trickFinished) {
     events.push({

@@ -6,6 +6,8 @@ import emitToRoom from "@/socket/utils/emitToRoom";
 import ErrorHandler from "@/utils/error.handler";
 import { createPlayers } from "./utils";
 import { PlayerStatus } from "shared/game";
+import { playTrucoBots } from "@/game/bots/playTrucoBots";
+import { TrucoGame } from "@/game/TrucoGameRules";
 import {
   createGameFromRuleName,
   saveGameInstance,
@@ -51,6 +53,9 @@ export async function StartGameEventHandler(
 
     const game = await createGameFromRuleName(room.rule, players);
     game.startGame();
+    if (game instanceof TrucoGame) {
+      playTrucoBots(game);
+    }
 
     const updateDbPromise = prisma.room.update({
       where: { id: room.id },

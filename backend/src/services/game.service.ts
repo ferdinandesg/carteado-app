@@ -16,6 +16,7 @@ import { logger } from "@/utils/logger";
 import { GameError } from "@/errors/GameError";
 import { applyEndOfMatchRewards } from "./rewards.service";
 import { finishRoom } from "./room.service";
+import { playTrucoBots } from "@/game/bots/playTrucoBots";
 
 type GameInstance = TrucoGame | CarteadoGame;
 
@@ -73,13 +74,21 @@ async function getAndRun<T extends GameInstance>(
   }
 
   action(game);
+
+  let privateResult: PowerPrivateResult | undefined;
+  if (isTrucoGame(game)) {
+    privateResult = game.pendingPrivateResult;
+    game.pendingPrivateResult = undefined;
+    playTrucoBots(game);
+  }
+
   await applyEndOfMatchRewards(game);
   await saveGameInstance(roomId, game);
 
   const room =
     game.status === GameStatus.FINISHED ? await finishRoom(roomId) : null;
 
-  return { game, room };
+  return { game, room, privateResult };
 }
 
 // Type guards for the helper
@@ -142,11 +151,9 @@ export async function usePower(
   userId: string,
   payload: UsePowerPayload
 ): Promise<GameActionResult<TrucoGame>> {
-  let privateResult: PowerPrivateResult | undefined;
-  const result = await getAndRun(roomId, isTrucoGame, (game) => {
-    privateResult = game.rules.usePower(game, userId, payload).privateResult;
+  return getAndRun(roomId, isTrucoGame, (game) => {
+    game.rules.usePower(game, userId, payload);
   });
-  return { ...result, privateResult };
 }
 
 // ---- Carteado -------------------------------------------------------------

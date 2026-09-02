@@ -12,11 +12,14 @@ import {
   BasePlayer,
   GameStatus,
   PlayerStatus,
+  PowerPrivateResult,
   PowerUsage,
   UsePowerPayload,
 } from "shared/game";
 import { GameError } from "@/errors/GameError";
 import { executePower, PowerResult } from "./powers/PowerExecutor";
+import { applyPlayedCardPower } from "./powers/applyCardPower";
+import { stampPowersOnDeck } from "./powers/stampDeck";
 import * as powerEffects from "./powers/effects";
 
 // A classe TrucoGame permanece focada no estado do jogo.
@@ -32,6 +35,8 @@ export class TrucoGame extends Game<TrucoGame, ITrucoGameRules, BasePlayer> {
   public handsResults: HandResult[] = [];
   public activeEffects: ActiveEffect[] = [];
   public powerUsages: PowerUsage[] = [];
+  /** Peek privado da última ação; não entra no serialize. */
+  public pendingPrivateResult?: PowerPrivateResult;
 
   constructor(players: BasePlayer[]) {
     const rules = new TrucoGameRules();
@@ -99,6 +104,14 @@ export class TrucoGameRules implements ITrucoGameRules {
     this.resetRoundState(game);
     this.distributeHands(game);
     this.setupViraAndManilha(game);
+    // Só as mãos, e nunca a manilha: trunfo já é forte o bastante.
+    stampPowersOnDeck(
+      game.players.flatMap((player) => player.hand),
+      undefined,
+      {
+        excludeRanks: [game.manilha],
+      }
+    );
     // Marca o jogador da vez como PLAYING (os demais ficam WAITING).
     game.skipTurns(game.playerTurn, 0);
   }
@@ -130,6 +143,7 @@ export class TrucoGameRules implements ITrucoGameRules {
   private setupViraAndManilha(game: TrucoGame) {
     const allowedRanks = Object.keys(TRUCO_RANK_ORDER);
     game.vira = this.drawValidCard(game.deck, allowedRanks);
+    delete game.vira.powerId;
     game.manilha = getNextRank(game.vira.rank);
   }
 
@@ -235,11 +249,13 @@ export class TrucoGameRules implements ITrucoGameRules {
     );
     if (cardIndex === -1) throw new GameError({ code: "INVALID_ACTION" });
 
+    const played = player.hand[cardIndex];
     player.hand.splice(cardIndex, 1);
-    player.playedCards.push(card);
+    player.playedCards.push(played);
 
-    game.bunch.push(card);
-    powerEffects.afterPlayCard(game, userId, card);
+    game.bunch.push(played);
+    powerEffects.afterPlayCard(game, userId, played);
+    applyPlayedCardPower(game, userId, played);
     game.endTurn(userId);
   }
 

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import { useReducedMotion } from "motion/react";
 import { Card } from "shared/cards";
-import { ITrucoGameState } from "shared/game";
+import { ITrucoGameState, PowerId } from "shared/game";
 
 import { useGameStore } from "@/contexts/game.store";
 import { getCardKey } from "@/lib/cards/cardKey";
@@ -17,6 +18,8 @@ export type PlayedEntry = {
   key: string;
   /** Quem jogou (null quando não identificável). */
   playerId: string | null;
+  /** Coveiro: a substituta entra vindo do baralho. */
+  fromDeck?: boolean;
 };
 
 export type DepartTarget = "ours" | "opponent" | "tie";
@@ -32,7 +35,8 @@ export type TrucoEffect =
   | { id: number; kind: "trucoAccepted"; bet: number }
   | { id: number; kind: "trucoRejected"; won: boolean; points: number }
   | { id: number; kind: "roundFinished"; won: boolean; points: number }
-  | { id: number; kind: "matchFinished"; won: boolean };
+  | { id: number; kind: "matchFinished"; won: boolean }
+  | { id: number; kind: "powerUsed"; powerId: string; userId: string };
 
 type DistributiveOmit<T, K extends keyof T> = T extends unknown
   ? Omit<T, K>
@@ -42,13 +46,30 @@ export type TrucoEffectInput = DistributiveOmit<TrucoEffect, "id">;
 
 export const TIMINGS = {
   /** Tempo para o jogador ver a última carta antes da vaza sair. */
-  settleAfterPlay: 900,
+  settleAfterPlay: 600,
   /** Duração do voo da vaza até a pilha. */
   depart: 650,
   /** Pausa antes de limpar as pilhas ao trocar de rodada. */
-  roundClear: 1400,
-  effect: 1600,
+  roundClear: 1000,
+  effect: 1000,
+  /** Coveiro: carta jogada fica visível antes de voltar ao baralho. */
+  graveHold: 450,
+  /** Raio-X: tempo que a carta espiada fica visível ao lado do alvo. */
+  xrayPeek: 1600,
 } as const;
+
+export type GraveHold = {
+  id: number;
+  playerId: string;
+  outgoing: Card;
+  incoming: Card;
+};
+
+export type XrayPeek = {
+  id: number;
+  targetUserId: string;
+  card: Card;
+};
 
 type State = {
   gameId: string | null;
@@ -62,6 +83,8 @@ type State = {
   settledResults: number;
   displayRound: number;
   effect: TrucoEffect | null;
+  graveHold: GraveHold | null;
+  xrayPeek: XrayPeek | null;
 };
 
 type Action =
@@ -71,7 +94,11 @@ type Action =
   | { type: "settle"; id: number }
   | { type: "newRound"; round: number }
   | { type: "effect"; effect: TrucoEffect }
-  | { type: "clearEffect"; id: number };
+  | { type: "clearEffect"; id: number }
+  | { type: "graveHold"; hold: GraveHold }
+  | { type: "clearGraveHold"; id: number }
+  | { type: "xrayPeek"; peek: XrayPeek }
+  | { type: "clearXrayPeek"; id: number };
 
 const initialState: State = {
   gameId: null,
@@ -80,6 +107,8 @@ const initialState: State = {
   settledResults: 0,
   displayRound: 0,
   effect: null,
+  graveHold: null,
+  xrayPeek: null,
 };
 
 function reducer(state: State, action: Action): State {
@@ -121,6 +150,18 @@ function reducer(state: State, action: Action): State {
       return state.effect?.id === action.id
         ? { ...state, effect: null }
         : state;
+    case "graveHold":
+      return { ...state, graveHold: action.hold };
+    case "clearGraveHold":
+      return state.graveHold?.id === action.id
+        ? { ...state, graveHold: null }
+        : state;
+    case "xrayPeek":
+      return { ...state, xrayPeek: action.peek };
+    case "clearXrayPeek":
+      return state.xrayPeek?.id === action.id
+        ? { ...state, xrayPeek: null }
+        : state;
     default:
       return state;
   }
@@ -129,7 +170,15 @@ function reducer(state: State, action: Action): State {
 let sequence = 0;
 const nextId = () => ++sequence;
 
-const sameCard = (a: Card, b: Card) => a.rank === b.rank && a.suit === b.suit;
+export const sameCard = (a: Card, b: Card) =>
+  a.rank === b.rank && a.suit === b.suit;
+
+function findLastIndex<T>(arr: T[], predicate: (item: T) => boolean): number {
+  for (let i = arr.length - 1; i >= 0; i--) {
+    if (predicate(arr[i])) return i;
+  }
+  return -1;
+}
 
 /** Dono de uma carta na mesa: quem a tem em `playedCards` nesta rodada. */
 export function resolveCardOwner(
@@ -143,6 +192,56 @@ export function resolveCardOwner(
   );
 }
 
+/**
+ * O Coveiro troca com o baralho, não com o leque: a mão visual é só a mão real.
+ */
+export function visualHandForGrave(
+  hand: Card[],
+  _hold: GraveHold | null,
+  _localUserId: string | null
+): Card[] {
+  return [...hand].sort((a, b) => a.value - b.value);
+}
+
+function markGraveDeckOrigin(
+  entries: PlayedEntry[],
+  game: ITrucoGameState,
+  hold: GraveHold | null
+): PlayedEntry[] {
+  if (hold) return entries;
+  const usage = [...(game.powerUsages ?? [])]
+    .reverse()
+    .find(
+      (item) =>
+        item.powerId === PowerId.GRAVEDIGGER && Boolean(item.replacementCard)
+    );
+  if (!usage?.replacementCard) return entries;
+  return entries.map((entry) =>
+    sameCard(entry.card, usage.replacementCard!)
+      ? { ...entry, fromDeck: true }
+      : entry
+  );
+}
+
+/** Mostra a carta jogada no lugar da substituta enquanto o hold estiver ativo. */
+export function applyGraveHoldToBunch(
+  entries: PlayedEntry[],
+  hold: GraveHold | null
+): PlayedEntry[] {
+  if (!hold) return entries;
+  const idx = findLastIndex(entries, (entry) =>
+    sameCard(entry.card, hold.incoming)
+  );
+  if (idx === -1) return entries;
+  const next = [...entries];
+  next[idx] = {
+    card: hold.outgoing,
+    key: getCardKey(hold.outgoing),
+    playerId: hold.playerId,
+  };
+  return next;
+}
+
 export type TrucoPresentation = {
   /** Cartas visíveis no centro (vaza atual ou vaza fechada aguardando voo). */
   bunch: PlayedEntry[];
@@ -152,6 +251,10 @@ export type TrucoPresentation = {
   myTeamId: string | null;
   /** Jogadores que devem responder ao truco pendente. */
   respondingPlayerIds: string[];
+  /** Mão local; o Coveiro não mexe no leque (a troca é com o baralho). */
+  visualHand: Card[];
+  graveHold: GraveHold | null;
+  xrayPeek: XrayPeek | null;
 };
 
 /**
@@ -162,6 +265,9 @@ export function useTrucoPresentation(
   game: ITrucoGameState | null
 ): TrucoPresentation {
   const userId = useGameStore((state) => state.userId);
+  const powerPeek = useGameStore((state) => state.powerPeek);
+  const setPowerPeek = useGameStore((state) => state.setPowerPeek);
+  const reduceMotion = useReducedMotion();
   const [state, dispatch] = useReducer(reducer, initialState);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
@@ -196,6 +302,21 @@ export function useTrucoPresentation(
     },
     [schedule]
   );
+
+  useEffect(() => {
+    if (!powerPeek || powerPeek.powerId !== PowerId.X_RAY) return;
+    const id = nextId();
+    dispatch({
+      type: "xrayPeek",
+      peek: {
+        id,
+        targetUserId: powerPeek.targetUserId,
+        card: powerPeek.card,
+      },
+    });
+    schedule(TIMINGS.xrayPeek, () => dispatch({ type: "clearXrayPeek", id }));
+    setPowerPeek(null);
+  }, [powerPeek, schedule, setPowerPeek]);
 
   const handleEvents = useCallback(
     (events: TrucoTableEvent[], next: ITrucoGameState) => {
@@ -251,6 +372,35 @@ export function useTrucoPresentation(
             delay += TIMINGS.effect;
             break;
 
+          case "powerUsed":
+            pushEffect(0, {
+              kind: "powerUsed",
+              powerId: event.powerId,
+              userId: event.userId,
+            });
+            if (
+              !reduceMotion &&
+              event.powerId === PowerId.GRAVEDIGGER &&
+              event.returnedCard &&
+              event.replacementCard &&
+              !sameCard(event.returnedCard, event.replacementCard)
+            ) {
+              const id = nextId();
+              dispatch({
+                type: "graveHold",
+                hold: {
+                  id,
+                  playerId: event.userId,
+                  outgoing: event.returnedCard,
+                  incoming: event.replacementCard,
+                },
+              });
+              schedule(TIMINGS.graveHold, () =>
+                dispatch({ type: "clearGraveHold", id })
+              );
+            }
+            break;
+
           case "roundFinished":
             if (event.winnerTeamId) {
               pushEffect(delay, {
@@ -273,7 +423,7 @@ export function useTrucoPresentation(
         }
       }
     },
-    [myTeamId, pushEffect, schedule]
+    [myTeamId, pushEffect, reduceMotion, schedule]
   );
 
   useTrucoTableEvents(game, handleEvents);
@@ -281,12 +431,23 @@ export function useTrucoPresentation(
   const bunch = useMemo<PlayedEntry[]>(() => {
     if (!game) return [];
     const cards = state.hold?.cards ?? game.bunch;
-    return cards.map((card) => ({
+    const entries = cards.map((card) => ({
       card,
       key: getCardKey(card),
       playerId: resolveCardOwner(game, card),
     }));
-  }, [game, state.hold]);
+    return markGraveDeckOrigin(
+      applyGraveHoldToBunch(entries, state.graveHold),
+      game,
+      state.graveHold
+    );
+  }, [game, state.hold, state.graveHold]);
+
+  const visualHand = useMemo(() => {
+    const hand =
+      game?.players.find((player) => player.userId === userId)?.hand ?? [];
+    return visualHandForGrave(hand, state.graveHold, userId);
+  }, [game, userId, state.graveHold]);
 
   const piles = useMemo(
     () =>
@@ -315,5 +476,8 @@ export function useTrucoPresentation(
     effect: state.effect,
     myTeamId,
     respondingPlayerIds,
+    visualHand,
+    graveHold: state.graveHold,
+    xrayPeek: state.xrayPeek,
   };
 }

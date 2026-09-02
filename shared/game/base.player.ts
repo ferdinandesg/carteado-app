@@ -17,4 +17,6 @@ export type BasePlayer = {
   image?: string;
   table: Card[];
   teamId: string;
+  /** Jogador controlado pelo servidor (joga sozinho no turno). */
+  isBot?: boolean;
 };

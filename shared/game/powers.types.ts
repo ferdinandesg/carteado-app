@@ -9,10 +9,10 @@ export enum PowerId {
 }
 
 /**
- * Origem do disparo de um poder. Hoje apenas manual; no futuro, cartas de
- * realeza (K/Q/J) do baralho selecionado dispararão poderes com outra política.
+ * Origem do disparo. `CARD` = carta carimbada no deal; `MANUAL` = evento
+ * `use_power`; `ROYALTY_CARD` reservado para um modo futuro por rank.
  */
-export type PowerTrigger = "MANUAL" | "ROYALTY_CARD";
+export type PowerTrigger = "MANUAL" | "CARD" | "ROYALTY_CARD";
 
 /** Efeito persistente aplicado a um jogador (ex.: silenciado, atração magnética). */
 export interface ActiveEffect {
@@ -31,13 +31,17 @@ export interface PowerUsage {
   targetUserId?: string;
   round: number;
   trigger: PowerTrigger;
+  /** Coveiro: carta que volta para o baralho restante. */
+  returnedCard?: Card;
+  /** Coveiro: carta do baralho que fica na mesa. */
+  replacementCard?: Card;
 }
 
 export interface UsePowerPayload {
   powerId: PowerId;
   /** Obrigatório para poderes com alvo (X_RAY, SILENCER, MAGNETIC_PULL). */
   targetUserId?: string;
-  /** Carta da mão a ser trocada (GRAVEDIGGER). */
+  /** Carta da mão a ser trocada (GRAVEDIGGER manual, opcional). */
   card?: Card;
 }
 

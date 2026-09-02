@@ -5,6 +5,7 @@ import {
   GameType,
   ITrucoGameState,
   PlayerStatus,
+  PowerId,
 } from "shared/game";
 
 import { diffTrucoSnapshots } from "./trucoTableEvents";
@@ -163,6 +164,64 @@ describe("diffTrucoSnapshots", () => {
         previousRound: 5,
       },
       { type: "matchFinished", winnerTeamId: "TEAM_A" },
+    ]);
+  });
+
+  it("emits powerUsed when a new PowerUsage appears", () => {
+    const prev = makeGame();
+    const next = makeGame({
+      playerTurn: "p2",
+      bunch: [card("K", "hearts")],
+      powerUsages: [
+        {
+          powerId: PowerId.X_RAY,
+          userId: "p1",
+          targetUserId: "p2",
+          round: 1,
+          trigger: "CARD",
+        },
+      ],
+    });
+
+    expect(diffTrucoSnapshots(prev, next)).toEqual([
+      { type: "cardPlayed", card: card("K", "hearts"), playerId: "p1" },
+      {
+        type: "powerUsed",
+        powerId: PowerId.X_RAY,
+        userId: "p1",
+        targetUserId: "p2",
+      },
+    ]);
+  });
+
+  it("forwards Coveiro swap cards on powerUsed", () => {
+    const played = card("4", "diamonds");
+    const fromHand = card("K", "hearts");
+    const prev = makeGame({ bunch: [played] });
+    const next = makeGame({
+      playerTurn: "p2",
+      bunch: [fromHand],
+      powerUsages: [
+        {
+          powerId: PowerId.GRAVEDIGGER,
+          userId: "p1",
+          round: 1,
+          trigger: "CARD",
+          returnedCard: played,
+          replacementCard: fromHand,
+        },
+      ],
+    });
+
+    expect(diffTrucoSnapshots(prev, next)).toEqual([
+      { type: "cardPlayed", card: fromHand, playerId: "p1" },
+      {
+        type: "powerUsed",
+        powerId: PowerId.GRAVEDIGGER,
+        userId: "p1",
+        returnedCard: played,
+        replacementCard: fromHand,
+      },
     ]);
   });
 });

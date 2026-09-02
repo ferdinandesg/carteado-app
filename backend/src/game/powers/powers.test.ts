@@ -95,6 +95,7 @@ describe("Truco powers", () => {
       expect(game.getPlayer("p2")!.hand).toContainEqual(
         result.privateResult?.card
       );
+      expect(game.pendingPrivateResult).toEqual(result.privateResult);
     });
   });
 
@@ -146,26 +147,45 @@ describe("Truco powers", () => {
   });
 
   describe("GRAVEDIGGER", () => {
-    it("swaps a hand card with the last played card still on the table", () => {
+    it("swaps the last played card with a remaining deck card of equal or greater value", () => {
       game.playCard("p1", card("4", "diamonds"));
+      game.deck.cards = [card("A", "spades"), card("5", "clubs")];
+      jest.spyOn(Math, "random").mockReturnValue(0);
 
-      executePower(game, "p1", {
-        powerId: PowerId.GRAVEDIGGER,
-        card: card("K", "hearts"),
-      });
+      executePower(game, "p1", { powerId: PowerId.GRAVEDIGGER });
+      jest.restoreAllMocks();
 
       const p1 = game.getPlayer("p1")!;
-      expect(p1.hand).toEqual([card("4", "diamonds")]);
-      expect(p1.playedCards).toEqual([card("K", "hearts")]);
-      expect(game.bunch).toEqual([card("K", "hearts")]);
+      expect(p1.hand).toEqual([card("K", "hearts")]);
+      expect(p1.playedCards).toEqual([card("A", "spades")]);
+      expect(game.bunch).toEqual([card("A", "spades")]);
+      expect(game.deck.cards).toEqual([
+        card("4", "diamonds"),
+        card("5", "clubs"),
+      ]);
+      expect(game.powerUsages).toEqual([
+        expect.objectContaining({
+          powerId: PowerId.GRAVEDIGGER,
+          userId: "p1",
+          returnedCard: card("4", "diamonds"),
+          replacementCard: card("A", "spades"),
+        }),
+      ]);
+    });
+
+    it("fails when no remaining deck card is strong enough", () => {
+      game.getPlayer("p1")!.hand = [card("K", "hearts")];
+      game.playCard("p1", card("K", "hearts"));
+      game.deck.cards = [card("4", "diamonds")];
+
+      expect(() =>
+        executePower(game, "p1", { powerId: PowerId.GRAVEDIGGER })
+      ).toThrow("Não há carta restante com valor maior ou igual.");
     });
 
     it("fails when the player has not played yet", () => {
       expect(() =>
-        executePower(game, "p1", {
-          powerId: PowerId.GRAVEDIGGER,
-          card: card("K", "hearts"),
-        })
+        executePower(game, "p1", { powerId: PowerId.GRAVEDIGGER })
       ).toThrow("Você ainda não jogou nenhuma carta.");
     });
 
@@ -174,11 +194,112 @@ describe("Truco powers", () => {
       game.playCard("p2", card("5", "hearts")); // resolves the hand, clears bunch
 
       expect(() =>
-        executePower(game, "p1", {
-          powerId: PowerId.GRAVEDIGGER,
-          card: card("K", "hearts"),
-        })
+        executePower(game, "p1", { powerId: PowerId.GRAVEDIGGER })
       ).toThrow("Sua última carta já saiu da mesa.");
+    });
+  });
+
+  describe("card-stamped powers", () => {
+    it("fires CHANGE_TRUMP when the played card is stamped", () => {
+      game.deck.cards = [card("A", "spades")];
+      const stamped = card("K", "hearts");
+      stamped.powerId = PowerId.CHANGE_TRUMP;
+      game.getPlayer("p1")!.hand = [stamped];
+
+      game.playCard("p1", stamped);
+
+      expect(game.vira).toEqual(card("A", "spades"));
+      expect(game.manilha).toBe("2");
+      expect(game.powerUsages).toEqual([
+        expect.objectContaining({
+          powerId: PowerId.CHANGE_TRUMP,
+          userId: "p1",
+          trigger: "CARD",
+        }),
+      ]);
+      expect(game.bunch[0].powerId).toBeUndefined();
+    });
+
+    it("picks a random opponent for targeted powers", () => {
+      const stamped = card("K", "hearts");
+      stamped.powerId = PowerId.SILENCER;
+      game.getPlayer("p1")!.hand = [stamped];
+
+      game.playCard("p1", stamped);
+
+      expect(game.activeEffects).toEqual([
+        expect.objectContaining({
+          powerId: PowerId.SILENCER,
+          sourceUserId: "p1",
+          targetUserId: "p2",
+        }),
+      ]);
+    });
+
+    it("fires GRAVEDIGGER when the played card is stamped", () => {
+      const stamped = card("4", "diamonds");
+      stamped.powerId = PowerId.GRAVEDIGGER;
+      game.getPlayer("p1")!.hand = [stamped, card("K", "hearts")];
+      game.deck.cards = [card("A", "spades")];
+
+      game.playCard("p1", stamped);
+
+      expect(game.bunch).toEqual([card("A", "spades")]);
+      expect(game.getPlayer("p1")!.hand).toEqual([card("K", "hearts")]);
+      expect(game.deck.cards).toEqual([card("4", "diamonds")]);
+      expect(game.powerUsages).toEqual([
+        expect.objectContaining({
+          powerId: PowerId.GRAVEDIGGER,
+          userId: "p1",
+          trigger: "CARD",
+          returnedCard: card("4", "diamonds"),
+          replacementCard: card("A", "spades"),
+        }),
+      ]);
+    });
+
+    it("fires X_RAY when the played card is stamped and stores a private peek", () => {
+      const stamped = card("K", "hearts");
+      stamped.powerId = PowerId.X_RAY;
+      game.getPlayer("p1")!.hand = [stamped];
+      jest.spyOn(Math, "random").mockReturnValue(0);
+
+      game.playCard("p1", stamped);
+      jest.restoreAllMocks();
+
+      expect(game.pendingPrivateResult).toEqual({
+        powerId: PowerId.X_RAY,
+        targetUserId: "p2",
+        card: card("3", "spades"),
+      });
+    });
+
+    it("does not consume the manual-use cooldown", () => {
+      game.deck.cards = [card("A", "spades"), card("2", "hearts")];
+      executePower(game, "p1", { powerId: PowerId.CHANGE_TRUMP });
+
+      const stamped = card("4", "diamonds");
+      stamped.powerId = PowerId.CHANGE_TRUMP;
+      game.getPlayer("p1")!.hand = [stamped];
+      game.playerTurn = "p1";
+
+      expect(() => game.playCard("p1", stamped)).not.toThrow();
+      expect(
+        game.powerUsages.filter((u) => u.powerId === PowerId.CHANGE_TRUMP)
+      ).toHaveLength(2);
+    });
+
+    it("stamps powers on hands and never on the vira or manilha", () => {
+      game.rules.dealInitialHands(game);
+      expect(game.vira?.powerId).toBeUndefined();
+      const hands = game.players.flatMap((p) => p.hand);
+      expect(
+        hands.filter((c) => c.rank === game.manilha).every((c) => !c.powerId)
+      ).toBe(true);
+      const stampable = hands.filter((c) => c.rank !== game.manilha);
+      expect(
+        new Set(stampable.map((c) => c.powerId).filter(Boolean)).size
+      ).toBe(Math.min(Object.values(PowerId).length, stampable.length));
     });
   });
 

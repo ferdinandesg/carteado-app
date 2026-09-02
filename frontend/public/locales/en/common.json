@@ -16,7 +16,8 @@
     "rules": "Game Rules",
     "menu": "Menu",
     "rooms": "Rooms",
-    "lobby": "Lobby {{hash}}"
+    "lobby": "Lobby {{hash}}",
+    "sandbox": "Sandbox — Cards"
   },
   "Home": {
     "joinAsGuest": "Join as guest",
@@ -184,7 +185,30 @@
       "roundWon": "+{{points}} for us!",
       "roundLost": "+{{points}} for them",
       "victory": "Victory!",
-      "defeat": "Defeat"
+      "defeat": "Defeat",
+      "power": "{{name}}!"
+    }
+  },
+  "Powers": {
+    "X_RAY": {
+      "name": "X-Ray",
+      "description": "Peek a random card from an opponent's hand."
+    },
+    "SILENCER": {
+      "name": "Silencer",
+      "description": "Stops an opponent from calling truco this round."
+    },
+    "CHANGE_TRUMP": {
+      "name": "Trump Flip",
+      "description": "Draws a new vira and changes the manilha."
+    },
+    "MAGNETIC_PULL": {
+      "name": "Magnetic Pull",
+      "description": "Forces an opponent to play their highest card next."
+    },
+    "GRAVEDIGGER": {
+      "name": "Gravedigger",
+      "description": "Swaps the played card for a remaining deck card of equal or greater value."
     }
   },
   "TableActions": {
@@ -234,5 +258,20 @@
   },
   "Chat": {
     "roomMessages": "Room chat {{roomName}} ({{count}})"
+  },
+  "Sandbox": {
+    "title": "Card sandbox",
+    "intro": "Full Truco table: play, call truco, and watch the bot answer. Use the panel to stamp powers.",
+    "rank": "Rank",
+    "suit": "Suit",
+    "power": "Power",
+    "noPower": "No power",
+    "hidden": "Show back",
+    "addToHand": "Add to fan",
+    "newHand": "New hand",
+    "resetMatch": "Reset match",
+    "you": "You",
+    "bot": "Bot",
+    "waitingBot": "Bot is playing..."
   }
 }
