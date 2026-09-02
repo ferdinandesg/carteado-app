@@ -51,6 +51,15 @@
   transition: $properties $transition-normal;
 }
 
+// Classes `.X_RAY`, `.SILENCER`, … no seletor atual (badge, chip, stamp).
+@mixin power-tones($property: background-color) {
+  @each $id, $color in $power-colors {
+    &.#{$id} {
+      #{$property}: $color;
+    }
+  }
+}
+
 // --- Media queries ---
 @mixin mq-sm {
   @media (min-width: $breakpoint-sm) {

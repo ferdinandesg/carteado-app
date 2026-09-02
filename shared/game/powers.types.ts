@@ -12,8 +12,11 @@ export enum PowerId {
   ILLUSIONIST = "ILLUSIONIST",
 }
 
-/** Quantos carimbos entram em cada rodada de Truco (sorteados do pool). */
-export const TRUCO_POWERS_PER_ROUND = 5;
+/** Teto de carimbos por mão de Truco (cartas sorteadas do pool). */
+export const TRUCO_POWERS_PER_ROUND = 3;
+
+/** Chance de cada carta elegível receber um poder. */
+export const TRUCO_POWER_STAMP_CHANCE = 0.1;
 
 /**
  * Origem do disparo. `CARD` = carta carimbada no deal; `MANUAL` = evento

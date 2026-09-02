@@ -101,6 +101,8 @@
     --stamp-bg: #{$color-accent-teal};
     --stamp-fg: #{$color-panel-text-dark};
   }
+
+  @include power-tones(--stamp-bg);
 }
 
 .xrayPeek {

@@ -48,22 +48,34 @@ export default function TrucoDeckArea() {
           className={styles.effects}
           data-testid={testIds.game.activeEffects}
           aria-label={t("Truco.activeEffects")}>
-          {effects.map((effect) => (
-            <li
-              key={effect.id}
-              className={classNames(
-                styles.effectChip,
-                styles[effect.powerId as keyof typeof styles] ??
-                  styles.effectDefault
-              )}
-              title={t(`Powers.${effect.powerId}.description`, {
-                defaultValue: "",
-              })}>
-              {t(`Powers.${effect.powerId}.name`, {
-                defaultValue: effect.powerId,
-              })}
-            </li>
-          ))}
+          {effects.map((effect) => {
+            const name = t(`Powers.${effect.powerId}.name`, {
+              defaultValue: effect.powerId,
+            });
+            const description = t(`Powers.${effect.powerId}.description`, {
+              defaultValue: "",
+            });
+
+            return (
+              <li
+                key={effect.id}
+                className={classNames(
+                  styles.effectChip,
+                  styles[effect.powerId as keyof typeof styles] ??
+                    styles.effectDefault
+                )}>
+                <span className={styles.effectName}>{name}</span>
+                {description ? (
+                  <span
+                    className={styles.effectHint}
+                    role="tooltip">
+                    <strong>{name}</strong>
+                    {description}
+                  </span>
+                ) : null}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

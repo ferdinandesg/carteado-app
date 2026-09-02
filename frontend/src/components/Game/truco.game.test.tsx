@@ -116,9 +116,9 @@ describe("TrucoGame", () => {
       jest.advanceTimersByTime(10);
     });
 
-    expect(screen.getByTestId(testIds.game.trucoStamp)).toHaveTextContent(
-      "Truco.stamp.power"
-    );
+    const stamp = screen.getByTestId(testIds.game.trucoStamp);
+    expect(stamp).toHaveTextContent("Truco.stamp.power");
+    expect(stamp).toHaveAttribute("data-power-id", PowerId.X_RAY);
   });
 
   it("reveals the peeked card only after a private X-Ray result", async () => {
@@ -201,5 +201,10 @@ describe("TrucoGame", () => {
     const effects = screen.getByTestId(testIds.game.activeEffects);
     expect(effects).toHaveTextContent("Powers.SILENCER.name");
     expect(effects).toHaveTextContent("Powers.MERCENARY.name");
+
+    const hints = screen.getAllByRole("tooltip");
+    expect(hints).toHaveLength(2);
+    expect(hints[0]).toHaveTextContent("Powers.SILENCER.description");
+    expect(hints[1]).toHaveTextContent("Powers.MERCENARY.description");
   });
 });

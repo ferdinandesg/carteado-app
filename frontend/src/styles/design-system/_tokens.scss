@@ -41,6 +41,19 @@ $color-overlay: rgba($color-black, 0.75);
 $color-accent-pink: #e25b8c;
 $color-accent-teal: #72e1ef;
 
+// Cores dos poderes (badge, chip de efeito, anúncio)
+$power-colors: (
+  "X_RAY": #2ee9ff,
+  "SILENCER": #ff3df0,
+  "CHANGE_TRUMP": #ffe14a,
+  "MAGNETIC_PULL": #ff4d3d,
+  "GRAVEDIGGER": #6dff3a,
+  "SILVER_SHIELD": #c5cdd8,
+  "MERCENARY": #c9a227,
+  "SIXTH_SENSE": #9b59ff,
+  "ILLUSIONIST": #e040fb,
+);
+
 // Panel surfaces (menu, lobby, rooms)
 $color-panel-blue: #3f87bd;
 $color-panel-blue-hover: #4a97cb;

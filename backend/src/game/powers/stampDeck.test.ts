@@ -21,7 +21,7 @@ describe("stampPowersOnDeck", () => {
       card("8", "hearts"),
     ];
 
-    stampPowersOnDeck(cards, Object.values(PowerId));
+    stampPowersOnDeck(cards, Object.values(PowerId), { chance: 1 });
 
     const stamped = cards.filter((c) => c.powerId);
     expect(stamped).toHaveLength(TRUCO_POWERS_PER_ROUND);
@@ -47,6 +47,7 @@ describe("stampPowersOnDeck", () => {
 
     stampPowersOnDeck(cards, Object.values(PowerId), {
       excludeRanks: ["Q"],
+      chance: 1,
     });
 
     expect(cards.filter((c) => c.rank === "Q").every((c) => !c.powerId)).toBe(
@@ -57,7 +58,7 @@ describe("stampPowersOnDeck", () => {
 
   it("no-ops when there are no valid cards", () => {
     const cards = [card("8", "hearts"), card("9", "spades")];
-    stampPowersOnDeck(cards);
+    stampPowersOnDeck(cards, Object.values(PowerId), { chance: 1 });
     expect(cards.every((c) => !c.powerId)).toBe(true);
   });
 
@@ -67,7 +68,39 @@ describe("stampPowersOnDeck", () => {
       card("5", "spades"),
       card("6", "clubs"),
     ];
-    stampPowersOnDeck(cards, [PowerId.X_RAY, PowerId.SILENCER]);
+    stampPowersOnDeck(cards, [PowerId.X_RAY, PowerId.SILENCER], { chance: 1 });
     expect(cards.filter((c) => c.powerId)).toHaveLength(2);
+  });
+
+  it("gives each card an independent chance and never exceeds the cap", () => {
+    const cards = [
+      card("4", "hearts"),
+      card("5", "spades"),
+      card("6", "clubs"),
+      card("7", "diamonds"),
+      card("Q", "hearts"),
+      card("K", "spades"),
+    ];
+    const rolls = [0.99, 0.05, 0.2, 0.01, 0.5, 0.02];
+    let index = 0;
+
+    stampPowersOnDeck(cards, Object.values(PowerId), {
+      chance: 0.1,
+      random: () => rolls[index++] ?? 1,
+    });
+
+    const stamped = cards.filter((c) => c.powerId);
+    expect(stamped.length).toBeLessThanOrEqual(TRUCO_POWERS_PER_ROUND);
+    expect(stamped).toHaveLength(3);
+  });
+
+  it("stamps no powers when every roll misses", () => {
+    const cards = [
+      card("4", "hearts"),
+      card("5", "spades"),
+      card("6", "clubs"),
+    ];
+    stampPowersOnDeck(cards, Object.values(PowerId), { random: () => 0.5 });
+    expect(cards.every((c) => !c.powerId)).toBe(true);
   });
 });

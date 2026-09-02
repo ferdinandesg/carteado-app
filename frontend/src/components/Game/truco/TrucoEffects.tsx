@@ -90,6 +90,7 @@ function useStampCopy(effect: TrucoEffect | null) {
             name: t(`Powers.${effect.powerId}.name`),
           }),
           tone: "power",
+          powerId: effect.powerId,
         };
       default:
         return null;
@@ -184,8 +185,14 @@ export default function TrucoEffects({
         {effect && stamp && (
           <motion.div
             key={`stamp-${effect.id}`}
-            className={classNames(styles.stamp, styles[stamp.tone])}
+            className={classNames(
+              styles.stamp,
+              styles[stamp.tone],
+              stamp.powerId &&
+                (styles[stamp.powerId as keyof typeof styles] ?? undefined)
+            )}
             data-testid={testIds.game.trucoStamp}
+            data-power-id={stamp.powerId}
             initial={{
               x: stampOrigin?.x ?? 0,
               y: stampOrigin?.y ?? 0,

@@ -15,6 +15,7 @@ import {
   PlayerStatus,
   PowerId,
   TRUCO_POWERS_PER_ROUND,
+  TRUCO_POWER_STAMP_CHANCE,
   type PowerPrivateResult,
   type PowerUsage,
 } from "shared/game";
@@ -87,10 +88,13 @@ function stampHands(hands: Card[][], manilha: string): void {
     0,
     TRUCO_POWERS_PER_ROUND
   );
-  const count = Math.min(powers.length, candidates.length);
-  const picked = shuffle(candidates).slice(0, count);
-  for (let i = 0; i < count; i++) {
-    picked[i].powerId = powers[i];
+  const picked = shuffle(candidates);
+  let stamped = 0;
+  for (const card of picked) {
+    if (stamped >= powers.length) break;
+    if (Math.random() >= TRUCO_POWER_STAMP_CHANCE) continue;
+    card.powerId = powers[stamped];
+    stamped++;
   }
 }
 

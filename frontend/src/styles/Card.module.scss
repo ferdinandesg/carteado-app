@@ -57,42 +57,8 @@
   border: $border-width solid $color-outline;
   border-radius: $border-radius-full;
   pointer-events: none;
-}
 
-.X_RAY {
-  background-color: #2ee9ff;
-}
-
-.SILENCER {
-  background-color: #ff3df0;
-}
-
-.CHANGE_TRUMP {
-  background-color: #ffe14a;
-}
-
-.MAGNETIC_PULL {
-  background-color: #ff4d3d;
-}
-
-.GRAVEDIGGER {
-  background-color: #6dff3a;
-}
-
-.SILVER_SHIELD {
-  background-color: #c5cdd8;
-}
-
-.MERCENARY {
-  background-color: #c9a227;
-}
-
-.SIXTH_SENSE {
-  background-color: #9b59ff;
-}
-
-.ILLUSIONIST {
-  background-color: #e040fb;
+  @include power-tones;
 }
 
 .illusion {

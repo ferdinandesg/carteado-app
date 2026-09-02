@@ -109,10 +109,7 @@ export class TrucoGameRules implements ITrucoGameRules {
     stampPowersOnDeck(
       game.players.flatMap((player) => player.hand),
       undefined,
-      {
-        excludeRanks: [game.manilha],
-        limit: 5,
-      }
+      { excludeRanks: [game.manilha] }
     );
     // Marca o jogador da vez como PLAYING (os demais ficam WAITING).
     game.skipTurns(game.playerTurn, 0);
