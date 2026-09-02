@@ -38,13 +38,14 @@ export default function ModalGameFinished({ isOpen }: ModalGameFinishedProps) {
   };
 
   const winningTeam = game?.teams?.find((team) => team.score >= 12);
-  const winner = winningTeam
-    ? game.players
-        .filter((entry) => winningTeam.userIds.includes(entry.userId))
-        .map((entry) => entry.name)
-        .filter(Boolean)
-        .join(" & ") || winningTeam.id
-    : player?.name;
+  const winner =
+    winningTeam && game
+      ? game.players
+          .filter((entry) => winningTeam.userIds.includes(entry.userId))
+          .map((entry) => entry.name)
+          .filter(Boolean)
+          .join(" & ") || winningTeam.id
+      : player?.name;
 
   return (
     <div
