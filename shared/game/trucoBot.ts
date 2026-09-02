@@ -4,6 +4,9 @@ import { BasePlayer, PlayerStatus } from "./base.player";
 
 export type TrucoBotPickMode = "lowest" | "highest";
 
+/** Pausa entre cada ação do bot (aceitar truco ou jogar carta). */
+export const TRUCO_BOT_DELAY_MS = 800;
+
 /** Heurística mínima: joga a carta de menor (ou maior) valor, incluindo manilha. */
 export function chooseTrucoBotCard(
   hand: Card[],

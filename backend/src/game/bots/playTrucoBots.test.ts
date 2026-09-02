@@ -2,7 +2,7 @@ import { Card } from "shared/cards";
 import { BasePlayer, GameStatus, PlayerStatus, PowerId } from "shared/game";
 
 import { TrucoGame } from "../TrucoGameRules";
-import { playTrucoBots } from "./playTrucoBots";
+import { needsTrucoBotAction, playTrucoBots } from "./playTrucoBots";
 
 const card = (rank: string, suit: string): Card =>
   ({ rank, suit, toString: `${rank} of ${suit}` }) as unknown as Card;
@@ -81,6 +81,20 @@ describe("playTrucoBots", () => {
         trigger: "CARD",
       }),
     ]);
+  });
+
+  it("reports when a bot still has to act", () => {
+    const game = new TrucoGame(makePlayers());
+    game.status = GameStatus.PLAYING;
+    game.playerTurn = "bot";
+    expect(needsTrucoBotAction(game)).toBe(true);
+
+    game.playerTurn = "human";
+    expect(needsTrucoBotAction(game)).toBe(false);
+
+    game.trucoState = "PENDING";
+    game.trucoAskerId = "human";
+    expect(needsTrucoBotAction(game)).toBe(true);
   });
 
   it("does nothing when the current player is human", () => {

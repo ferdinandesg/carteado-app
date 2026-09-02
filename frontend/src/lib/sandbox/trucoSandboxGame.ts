@@ -14,6 +14,7 @@ import {
   ITrucoGameState,
   PlayerStatus,
   PowerId,
+  TRUCO_BOT_DELAY_MS,
   TRUCO_POWERS_PER_ROUND,
   TRUCO_POWER_STAMP_CHANCE,
   type PowerPrivateResult,
@@ -22,7 +23,7 @@ import {
 
 export const SANDBOX_YOU_ID = "sandbox-you";
 export const SANDBOX_BOT_ID = "sandbox-bot";
-export const SANDBOX_BOT_DELAY_MS = 800;
+export const SANDBOX_BOT_DELAY_MS = TRUCO_BOT_DELAY_MS;
 
 const TRUCO_RANKS = new Set(Object.keys(TRUCO_RANK_ORDER));
 

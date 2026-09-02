@@ -16,7 +16,6 @@ import { logger } from "@/utils/logger";
 import { GameError } from "@/errors/GameError";
 import { applyEndOfMatchRewards } from "./rewards.service";
 import { finishRoom } from "./room.service";
-import { playTrucoBots } from "@/game/bots/playTrucoBots";
 
 type GameInstance = TrucoGame | CarteadoGame;
 
@@ -79,7 +78,6 @@ async function getAndRun<T extends GameInstance>(
   if (isTrucoGame(game)) {
     privateResult = game.pendingPrivateResult;
     game.pendingPrivateResult = undefined;
-    playTrucoBots(game);
   }
 
   await applyEndOfMatchRewards(game);

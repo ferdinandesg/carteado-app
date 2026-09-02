@@ -7,6 +7,7 @@ import { CHANNEL } from "@/socket/channels";
 import emitToRoom from "@/socket/utils/emitToRoom";
 import emitToUser from "@/socket/utils/emitToUser";
 import ErrorHandler from "@/utils/error.handler";
+import { queueTrucoBotsIfNeeded } from "@/game/bots/scheduleTrucoBots";
 
 /** Sala atual do socket; erro padronizado quando o usuário não está em nenhuma. */
 export function requireRoom(socket: Socket): string {
@@ -57,6 +58,7 @@ export async function handleGameAction(
     if (privateResult) {
       emitToUser(socket, CHANNEL.SERVER.POWER_RESULT, privateResult);
     }
+    queueTrucoBotsIfNeeded(game, roomHash, channel);
   } catch (error) {
     ErrorHandler(error, socket);
   }
