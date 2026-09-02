@@ -24,6 +24,10 @@ export interface PowerContext {
 export interface PowerResult {
   /** Informação visível apenas para quem usou o poder (ex.: carta espiada). */
   privateResult?: PowerPrivateResult;
+  /** Coveiro: carta que volta para o baralho restante. */
+  returnedCard?: Card;
+  /** Coveiro: carta do baralho que fica na mesa. */
+  replacementCard?: Card;
 }
 
 /**

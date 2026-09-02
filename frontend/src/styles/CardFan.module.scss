@@ -40,6 +40,7 @@
 
   grid-area: 1 / 1;
   line-height: 0;
+  overflow: visible;
   cursor: pointer;
   transform-origin: 50% 120%;
   transform: translateX(calc(var(--k) * var(--fan-spacing)))

@@ -54,34 +54,45 @@ function PlayedCard({
   // Carta do jogador local voa via layoutId (leque → centro). Carta de
   // oponente entra a partir do assento dele.
   const origin = useMemo(() => {
-    if (isMine || !entry.playerId || reduceMotion) return null;
+    if (reduceMotion) return null;
+    if (entry.fromDeck) return anchors.getOffset("center", "deck");
+    if (isMine || !entry.playerId) return null;
     return anchors.getOffset("center", seatAnchor(entry.playerId));
-  }, [anchors, entry.playerId, isMine, reduceMotion]);
+  }, [anchors, entry.fromDeck, entry.playerId, isMine, reduceMotion]);
+
+  const enter = origin
+    ? { x: origin.x, y: origin.y, scale: 0.7, opacity: 0.6 }
+    : { scale: 0.9, opacity: 0 };
+  const leave = origin
+    ? { x: origin.x, y: origin.y, scale: 0.7, opacity: 0 }
+    : { scale: 0.85, opacity: 0 };
+
+  const useLayoutFly = isMine && !entry.fromDeck;
 
   return (
     <div
       className={styles.playedCard}
       style={pileVars(index, count)}>
-      {isMine ? (
+      {useLayoutFly ? (
         <CardComponent
           card={entry.card}
           size="lg"
           layoutId={`${layoutPrefix}-${entry.key}`}
         />
       ) : (
-        <motion.div
-          initial={
-            origin
-              ? { x: origin.x, y: origin.y, scale: 0.7, opacity: 0.6 }
-              : { scale: 0.9, opacity: 0 }
-          }
-          animate={{ x: 0, y: 0, scale: 1, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 260, damping: 26 }}>
-          <CardComponent
-            card={entry.card}
-            size="lg"
-          />
-        </motion.div>
+        <AnimatePresence>
+          <motion.div
+            key={entry.key}
+            initial={enter}
+            animate={{ x: 0, y: 0, scale: 1, opacity: 1 }}
+            exit={leave}
+            transition={{ type: "spring", stiffness: 260, damping: 26 }}>
+            <CardComponent
+              card={entry.card}
+              size="lg"
+            />
+          </motion.div>
+        </AnimatePresence>
       )}
     </div>
   );

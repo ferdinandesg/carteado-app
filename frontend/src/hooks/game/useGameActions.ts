@@ -1,13 +1,43 @@
-import { useMemo } from "react";
+import {
+  createContext,
+  createElement,
+  useContext,
+  useMemo,
+  type ReactNode,
+} from "react";
 import type { Card } from "shared/cards";
 
 import { useSocketEmit } from "@/hooks/socket/useSocketEmit";
 
-/** Ações de jogo (Carteado e Truco) que o cliente emite para o servidor. */
-export function useGameActions() {
+export type GameActions = {
+  playCard: (card: Card) => void;
+  handlePickCards: (cards: Card[]) => void;
+  undoPlay: () => void;
+  endTurn: () => void;
+  pickUpBunch: () => void;
+  askTruco: () => void;
+  acceptTruco: () => void;
+  rejectTruco: () => void;
+};
+
+const GameActionsContext = createContext<GameActions | null>(null);
+
+export function GameActionsProvider({
+  value,
+  children,
+}: {
+  value: GameActions;
+  children: ReactNode;
+}) {
+  return createElement(GameActionsContext.Provider, { value }, children);
+}
+
+/** Ações de jogo. No sandbox, um `GameActionsProvider` substitui o socket. */
+export function useGameActions(): GameActions {
+  const override = useContext(GameActionsContext);
   const emit = useSocketEmit();
 
-  return useMemo(
+  const socketActions = useMemo<GameActions>(
     () => ({
       playCard: (card: Card) => emit("play_card", { card }),
       handlePickCards: (cards: Card[]) => emit("pick_hand", { cards }),
@@ -20,4 +50,6 @@ export function useGameActions() {
     }),
     [emit]
   );
+
+  return override ?? socketActions;
 }

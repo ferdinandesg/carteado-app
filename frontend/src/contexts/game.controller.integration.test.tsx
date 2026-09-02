@@ -7,7 +7,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { act, render, renderHook } from "@testing-library/react";
 import { useSession } from "next-auth/react";
-import { IGameState, PlayerStatus, GameStatus } from "shared/game";
+import { IGameState, PlayerStatus, GameStatus, PowerId } from "shared/game";
 
 import { GameController } from "./game.controller";
 import { useGameStore, selectCurrentPlayer } from "./game.store";
@@ -75,7 +75,7 @@ describe("GameController — integração com payloads reais do backend", () => 
   beforeEach(() => {
     mockSocketInstance = new FakeSocket();
     act(() => {
-      useGameStore.setState({ game: null, userId: null });
+      useGameStore.setState({ game: null, userId: null, powerPeek: null });
     });
   });
 
@@ -150,5 +150,32 @@ describe("GameController — integração com payloads reais do backend", () => 
     expect(game.trucoState).toBe("NONE");
     const me = selectCurrentPlayer(useGameStore.getState())!;
     expect(me.hand).toHaveLength(3);
+  });
+
+  it("guarda o peek privado do Raio-X só neste cliente", () => {
+    setSessionUser(USER_A);
+    render(<GameController />);
+
+    const peeked = {
+      rank: "J" as const,
+      suit: "spades" as const,
+      value: 11 as const,
+      secondaryValue: null,
+      toString: "J of spades" as const,
+    };
+
+    act(() => {
+      mockSocketInstance.serverEmit("power_result", {
+        powerId: PowerId.X_RAY,
+        targetUserId: USER_B,
+        card: peeked,
+      });
+    });
+
+    expect(useGameStore.getState().powerPeek).toEqual({
+      powerId: PowerId.X_RAY,
+      targetUserId: USER_B,
+      card: peeked,
+    });
   });
 });

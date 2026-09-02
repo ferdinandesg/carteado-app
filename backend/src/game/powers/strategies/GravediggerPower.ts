@@ -1,3 +1,4 @@
+import { Card, getCardValue, TRUCO_RANK_ORDER } from "shared/cards";
 import { PowerId } from "shared/game";
 import { GameError } from "@/errors/GameError";
 import type { TrucoGame } from "../../TrucoGameRules";
@@ -9,31 +10,16 @@ import {
 } from "../PowerStrategy";
 
 /**
- * Segunda Chance: troca uma carta da mão pela última carta que o jogador
- * jogou, desde que ela ainda esteja na mesa (mão atual não resolvida).
- * Atualiza `hand`, `playedCards` e `bunch` para manter `resolveHand` coerente.
+ * Coveiro: devolve a última carta jogada ao baralho e traz do restante uma
+ * carta de valor de truco maior ou igual. Só vale se a jogada ainda está na
+ * mesa. Atualiza `playedCards` e `bunch` para manter `resolveHand` coerente.
  */
 export class GravediggerPower implements PowerStrategy {
   readonly id = PowerId.GRAVEDIGGER;
   readonly targeting = "NONE" as const;
 
   execute(game: TrucoGame, ctx: PowerContext): PowerResult {
-    const { card } = ctx.payload;
-    if (!card) {
-      throw new GameError({
-        code: "VALIDATION",
-        message: "Informe a carta da mão a ser trocada.",
-      });
-    }
-
     const player = game.getPlayer(ctx.userId)!;
-    const handIndex = player.hand.findIndex((c) => isSameCard(c, card));
-    if (handIndex === -1) {
-      throw new GameError({
-        code: "INVALID_ACTION",
-        message: "Essa carta não está na sua mão.",
-      });
-    }
 
     const lastPlayed = player.playedCards[player.playedCards.length - 1];
     if (!lastPlayed) {
@@ -53,13 +39,43 @@ export class GravediggerPower implements PowerStrategy {
       });
     }
 
-    const fromHand = player.hand[handIndex];
-    player.hand[handIndex] = lastPlayed;
-    player.playedCards[player.playedCards.length - 1] = fromHand;
-    game.bunch[bunchIndex] = fromHand;
+    const picked = pickDeckCardAtLeast(game, lastPlayed);
+    if (!picked) {
+      throw new GameError({
+        code: "INVALID_ACTION",
+        message: "Não há carta restante com valor maior ou igual.",
+      });
+    }
 
-    return {};
+    const { card: replacement, index } = picked;
+    delete replacement.powerId;
+    game.deck.cards.splice(index, 1);
+    game.deck.cards.unshift(lastPlayed);
+
+    player.playedCards[player.playedCards.length - 1] = replacement;
+    game.bunch[bunchIndex] = replacement;
+
+    return { returnedCard: lastPlayed, replacementCard: replacement };
   }
+}
+
+function pickDeckCardAtLeast(
+  game: TrucoGame,
+  played: Card
+): { card: Card; index: number } | null {
+  const minValue = getCardValue(played, game.manilha);
+  const allowed = new Set(Object.keys(TRUCO_RANK_ORDER));
+  const candidates: { card: Card; index: number }[] = [];
+
+  game.deck.cards.forEach((card, index) => {
+    if (!allowed.has(card.rank)) return;
+    if (getCardValue(card, game.manilha) >= minValue) {
+      candidates.push({ card, index });
+    }
+  });
+
+  if (candidates.length === 0) return null;
+  return candidates[Math.floor(Math.random() * candidates.length)];
 }
 
 function findLastIndex<T>(arr: T[], predicate: (item: T) => boolean): number {

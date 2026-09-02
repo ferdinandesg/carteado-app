@@ -25,7 +25,7 @@ export class XRayPower implements PowerStrategy {
       privateResult: {
         powerId: PowerId.X_RAY,
         targetUserId: target.userId,
-        card,
+        card: { ...card },
       },
     };
   }

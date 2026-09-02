@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { BasePlayer, IGameState } from "shared/game";
+import { BasePlayer, IGameState, PowerPrivateResult } from "shared/game";
 
 const EMPTY_PLAYERS: BasePlayer[] = [];
 
@@ -10,17 +10,22 @@ const EMPTY_PLAYERS: BasePlayer[] = [];
 interface GameStore {
   game: IGameState | null;
   userId: string | null;
+  /** Resultado privado do último poder (Raio-X). Só quem usou recebe. */
+  powerPeek: PowerPrivateResult | null;
 
   setGame: (game: IGameState) => void;
   setUserId: (userId: string | null) => void;
+  setPowerPeek: (peek: PowerPrivateResult | null) => void;
 }
 
 export const useGameStore = create<GameStore>((set) => ({
   game: null,
   userId: null,
+  powerPeek: null,
 
   setGame: (game) => set({ game }),
   setUserId: (userId) => set({ userId }),
+  setPowerPeek: (powerPeek) => set({ powerPeek }),
 }));
 
 export const selectPlayers = (state: GameStore) =>

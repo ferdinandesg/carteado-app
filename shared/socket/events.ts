@@ -1,4 +1,4 @@
-import { IGameState } from "shared/game";
+import { IGameState, PowerPrivateResult } from "shared/game";
 import { RoomInterface } from "../types/room";
 import {
   ChatMessage,
@@ -24,6 +24,8 @@ export interface ServerToClientEvents {
   join_chat: (payload: ChatMessage) => void;
   load_messages: (messages: ChatMessage[]) => void;
   receive_message: (message: ChatMessage) => void;
+  /** Só o jogador que usou o poder (ex.: carta espiada no Raio-X). */
+  power_result: (result: PowerPrivateResult) => void;
 }
 
 /** Eventos que o cliente emite e o servidor escuta (namespace `/room`). */

@@ -1,12 +1,12 @@
 import { renderHook } from "@testing-library/react";
 import { Card } from "shared/cards";
 
-import { useSocket } from "@/contexts/socket.context";
+import { useOptionalSocket } from "@/contexts/socket.context";
 
 import { useGameActions } from "./useGameActions";
 
 jest.mock("@/contexts/socket.context", () => ({
-  useSocket: jest.fn(),
+  useOptionalSocket: jest.fn(),
 }));
 
 describe("useGameActions", () => {
@@ -14,7 +14,10 @@ describe("useGameActions", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (useSocket as jest.Mock).mockReturnValue({ socket, isConnected: true });
+    (useOptionalSocket as jest.Mock).mockReturnValue({
+      socket,
+      isConnected: true,
+    });
   });
 
   it.each([

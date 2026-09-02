@@ -92,6 +92,7 @@ export function executePower(
   const target = resolveTarget(game, strategy, userId, payload);
 
   const result = strategy.execute(game, { userId, payload, target });
+  game.pendingPrivateResult = result.privateResult;
 
   game.powerUsages.push({
     powerId: strategy.id,
@@ -99,6 +100,8 @@ export function executePower(
     targetUserId: target?.userId,
     round: game.rounds,
     trigger,
+    returnedCard: result.returnedCard,
+    replacementCard: result.replacementCard,
   });
 
   return result;

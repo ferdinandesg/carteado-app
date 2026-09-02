@@ -4,7 +4,6 @@ import { isTrucoGame } from "shared/game";
 
 import { useGameStore } from "@/contexts/game.store";
 import { useGameActions } from "@/hooks/game/useGameActions";
-import { usePlayerHand } from "@/hooks/game/usePlayerHand";
 import { SeatAnchorProvider } from "@/hooks/game/useSeatAnchors";
 import { useTrucoPresentation } from "@/hooks/game/useTrucoPresentation";
 import { useTypedGame } from "@/hooks/useTypedGame";
@@ -26,18 +25,20 @@ export default function TrucoGame() {
   const game = useTypedGame(isTrucoGame);
   const userId = useGameStore((state) => state.userId);
   const { playCard } = useGameActions();
-  const playerHand = usePlayerHand();
   const presentation = useTrucoPresentation(game);
 
   const isMyTurn = game?.playerTurn === userId;
   const isTrucoPending = game?.trucoState === "PENDING";
+  const isGraveHolding = presentation.graveHold !== null;
 
   return (
     <div className={styles.Game}>
       <TrucoHud />
 
       <SeatAnchorProvider>
-        <TrucoEffects effect={presentation.effect}>
+        <TrucoEffects
+          effect={presentation.effect}
+          xrayPeek={presentation.xrayPeek}>
           <Table
             game={game}
             deckArea={<TrucoDeckArea />}
@@ -69,9 +70,9 @@ export default function TrucoGame() {
             highlightedPlayerIds={presentation.respondingPlayerIds}
             handArea={
               <CardFan
-                cards={playerHand}
+                cards={presentation.visualHand}
                 onClick={playCard}
-                disabled={!isMyTurn || isTrucoPending}
+                disabled={!isMyTurn || isTrucoPending || isGraveHolding}
                 layoutPrefix={HAND_LAYOUT_PREFIX}
                 testId={testIds.game.cardFan}
               />

@@ -11,8 +11,10 @@ export function GameController() {
   const { data } = useSession();
   const setGame = useGameStore((state) => state.setGame);
   const setUserId = useGameStore((state) => state.setUserId);
+  const setPowerPeek = useGameStore((state) => state.setPowerPeek);
 
   useSocketEvent("game_updated", setGame);
+  useSocketEvent("power_result", setPowerPeek);
 
   useEffect(() => {
     if (!data?.user.id) return;

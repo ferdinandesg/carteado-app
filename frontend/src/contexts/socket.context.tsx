@@ -154,3 +154,7 @@ export function useSocket(): SocketContextValue {
   }
   return context;
 }
+
+export function useOptionalSocket(): SocketContextValue | null {
+  return useContext(SocketContext);
+}

@@ -15,5 +15,5 @@ export function useTypedGame<T extends IGameState>(
   };
 
   // O hook garante que o componente só re-renderiza quando o valor retornado por getSnapshot muda.
-  return useSyncExternalStore(subscribe, getSnapshot);
+  return useSyncExternalStore(subscribe, getSnapshot, () => null);
 }
