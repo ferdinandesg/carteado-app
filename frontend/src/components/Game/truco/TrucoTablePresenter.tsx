@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useMemo } from "react";
+import { Card } from "shared/cards";
 
 import CardComponent from "@/components/Card";
 import {
@@ -15,6 +16,7 @@ import type {
 } from "@/hooks/game/useTrucoPresentation";
 import { TIMINGS } from "@/hooks/game/useTrucoPresentation";
 import { getPileTransform } from "@/lib/cards/pileLayout";
+import { testIds } from "@/tests/testIds";
 
 import styles from "@/styles/TrucoTable.module.scss";
 
@@ -34,6 +36,57 @@ const pileVars = (index: number, count: number) => {
     "--rot": `${rotate}deg`,
   } as React.CSSProperties;
 };
+
+function IllusionFlip({
+  from,
+  to,
+  layoutId,
+}: {
+  from: Card;
+  to: Card;
+  layoutId?: string;
+}) {
+  const reduceMotion = useReducedMotion();
+
+  if (reduceMotion) {
+    return (
+      <CardComponent
+        card={to}
+        size="lg"
+        layoutId={layoutId}
+      />
+    );
+  }
+
+  return (
+    <div
+      className={styles.flip}
+      data-testid={testIds.game.illusionReveal}>
+      <motion.div
+        className={styles.flipInner}
+        initial={{ rotateY: 0 }}
+        animate={{ rotateY: 180 }}
+        transition={{
+          duration: TIMINGS.illusionReveal / 1000,
+          ease: [0.4, 0, 0.2, 1],
+        }}>
+        <div className={styles.flipFace}>
+          <CardComponent
+            card={from}
+            size="lg"
+          />
+        </div>
+        <div className={styles.flipBack}>
+          <CardComponent
+            card={to}
+            size="lg"
+            layoutId={layoutId}
+          />
+        </div>
+      </motion.div>
+    </div>
+  );
+}
 
 function PlayedCard({
   entry,
@@ -67,18 +120,28 @@ function PlayedCard({
     ? { x: origin.x, y: origin.y, scale: 0.7, opacity: 0 }
     : { scale: 0.85, opacity: 0 };
 
-  const useLayoutFly = isMine && !entry.fromDeck;
+  const useLayoutFly = isMine && !entry.fromDeck && !entry.revealFrom;
+  const layoutId = useLayoutFly ? `${layoutPrefix}-${entry.key}` : undefined;
+  const face = entry.revealFrom ? (
+    <IllusionFlip
+      from={entry.revealFrom}
+      to={entry.card}
+      layoutId={layoutId}
+    />
+  ) : (
+    <CardComponent
+      card={entry.card}
+      size="lg"
+      layoutId={layoutId}
+    />
+  );
 
   return (
     <div
       className={styles.playedCard}
       style={pileVars(index, count)}>
       {useLayoutFly ? (
-        <CardComponent
-          card={entry.card}
-          size="lg"
-          layoutId={`${layoutPrefix}-${entry.key}`}
-        />
+        face
       ) : (
         <AnimatePresence>
           <motion.div
@@ -87,10 +150,7 @@ function PlayedCard({
             animate={{ x: 0, y: 0, scale: 1, opacity: 1 }}
             exit={leave}
             transition={{ type: "spring", stiffness: 260, damping: 26 }}>
-            <CardComponent
-              card={entry.card}
-              size="lg"
-            />
+            {face}
           </motion.div>
         </AnimatePresence>
       )}

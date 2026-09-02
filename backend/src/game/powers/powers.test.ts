@@ -1,5 +1,11 @@
 import { Card } from "shared/cards";
-import { BasePlayer, GameStatus, PlayerStatus, PowerId } from "shared/game";
+import {
+  BasePlayer,
+  GameStatus,
+  PlayerStatus,
+  PowerId,
+  TRUCO_POWERS_PER_ROUND,
+} from "shared/game";
 import { TrucoGame } from "../TrucoGameRules";
 import { executePower } from "./PowerExecutor";
 
@@ -299,7 +305,7 @@ describe("Truco powers", () => {
       const stampable = hands.filter((c) => c.rank !== game.manilha);
       expect(
         new Set(stampable.map((c) => c.powerId).filter(Boolean)).size
-      ).toBe(Math.min(Object.values(PowerId).length, stampable.length));
+      ).toBe(Math.min(TRUCO_POWERS_PER_ROUND, stampable.length));
     });
   });
 
@@ -311,5 +317,136 @@ describe("Truco powers", () => {
     const data = JSON.parse(game.serialize());
     expect(data.activeEffects).toHaveLength(1);
     expect(data.powerUsages).toHaveLength(1);
+  });
+
+  describe("SILVER_SHIELD", () => {
+    it("runs from a raised bet paying only 1 point", () => {
+      game.rules.askTruco(game, "p1");
+      game.trucoState = "ACCEPTED";
+      game.rules.askTruco(game, "p2");
+      expect(game.currentBet).toBe(6);
+
+      const teamB = game.rules.findTeamByUserId(game, "p2")!;
+      game.rules.dealInitialHands = jest.fn();
+      game.rules.usePower(game, "p1", { powerId: PowerId.SILVER_SHIELD });
+
+      expect(teamB.score).toBe(1);
+      expect(game.rules.dealInitialHands).toHaveBeenCalled();
+    });
+
+    it("caps a later reject at 1 after the shield is armed", () => {
+      executePower(game, "p1", { powerId: PowerId.SILVER_SHIELD });
+      game.rules.askTruco(game, "p1");
+      game.trucoState = "ACCEPTED";
+      game.rules.askTruco(game, "p2");
+      expect(game.currentBet).toBe(6);
+
+      const teamB = game.rules.findTeamByUserId(game, "p2")!;
+      game.rules.dealInitialHands = jest.fn();
+      game.rules.rejectTruco(game);
+
+      expect(teamB.score).toBe(1);
+    });
+
+    it("rejects using the shield on your own truco call", () => {
+      game.rules.askTruco(game, "p1");
+      expect(() =>
+        executePower(game, "p1", { powerId: PowerId.SILVER_SHIELD })
+      ).toThrow("Você não pode usar o Escudo de Prata no próprio pedido.");
+    });
+  });
+
+  describe("MERCENARY", () => {
+    it("steals 1 point from the loser when the round is won", () => {
+      executePower(game, "p1", { powerId: PowerId.MERCENARY });
+      const teamA = game.rules.findTeamByUserId(game, "p1")!;
+      const teamB = game.rules.findTeamByUserId(game, "p2")!;
+      teamB.score = 4;
+      game.rules.dealInitialHands = jest.fn();
+
+      game.rules.finishRound(game, teamA, 3);
+
+      expect(teamA.score).toBe(4);
+      expect(teamB.score).toBe(3);
+    });
+
+    it("does not steal when the mercenary team loses", () => {
+      executePower(game, "p1", { powerId: PowerId.MERCENARY });
+      const teamA = game.rules.findTeamByUserId(game, "p1")!;
+      const teamB = game.rules.findTeamByUserId(game, "p2")!;
+      game.rules.dealInitialHands = jest.fn();
+
+      game.rules.finishRound(game, teamB, 3);
+
+      expect(teamA.score).toBe(0);
+      expect(teamB.score).toBe(3);
+    });
+  });
+
+  describe("SIXTH_SENSE", () => {
+    it("reports whether the target holds a manilha", () => {
+      const withManilha = executePower(game, "p1", {
+        powerId: PowerId.SIXTH_SENSE,
+        targetUserId: "p2",
+      });
+      expect(withManilha.privateResult).toEqual({
+        powerId: PowerId.SIXTH_SENSE,
+        targetUserId: "p2",
+        hasManilha: true,
+      });
+
+      game.rounds = 2;
+      game.getPlayer("p2")!.hand = [card("4", "hearts")];
+      const without = executePower(game, "p1", {
+        powerId: PowerId.SIXTH_SENSE,
+        targetUserId: "p2",
+      });
+      expect(without.privateResult).toEqual({
+        powerId: PowerId.SIXTH_SENSE,
+        targetUserId: "p2",
+        hasManilha: false,
+      });
+    });
+  });
+
+  describe("ILLUSIONIST", () => {
+    it("shows a fake zap until the trick is resolved, then scores the real card", () => {
+      game.playCard("p1", card("4", "diamonds"));
+      executePower(game, "p1", { powerId: PowerId.ILLUSIONIST });
+
+      expect(game.bunch[0]).toEqual(
+        expect.objectContaining({
+          rank: "Q",
+          suit: "clubs",
+          illusionReal: expect.objectContaining({
+            rank: "4",
+            suit: "diamonds",
+          }),
+        })
+      );
+
+      game.playCard("p2", card("5", "hearts"));
+
+      expect(game.handsResults[0].bunch[0]).toEqual(
+        expect.objectContaining({ rank: "4", suit: "diamonds" })
+      );
+      expect(game.handsResults[0].bunch[0].illusionReal).toBeUndefined();
+      expect(game.handsResults[0].winnerTeamId).toBe("TEAM_B");
+    });
+
+    it("fires when the played card is stamped", () => {
+      const stamped = card("4", "diamonds");
+      stamped.powerId = PowerId.ILLUSIONIST;
+      game.getPlayer("p1")!.hand = [stamped];
+
+      game.playCard("p1", stamped);
+
+      expect(game.bunch[0]).toEqual(
+        expect.objectContaining({ rank: "Q", suit: "clubs" })
+      );
+      expect(game.bunch[0].illusionReal).toEqual(
+        expect.objectContaining({ rank: "4", suit: "diamonds" })
+      );
+    });
   });
 });

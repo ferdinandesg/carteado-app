@@ -73,6 +73,7 @@ export default function CardComponent({
   const mergedClassName = classNames(styles.Card, className, {
     [styles.canHover]: canHover,
     [styles.showHint]: showPowerHint,
+    [styles.illusion]: Boolean(card.illusionReal),
   });
 
   const mergedStyle = {

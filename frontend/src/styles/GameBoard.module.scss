@@ -29,7 +29,7 @@
   box-shadow:
     inset 0 0 0 2px rgba($color-outline-light, 0.08),
     $shadow-card;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .gridCell {

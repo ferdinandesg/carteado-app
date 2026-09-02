@@ -9,7 +9,7 @@ import { HandResult } from "shared/types";
  */
 export type TrucoTableEvent =
   | { type: "cardPlayed"; card: Card; playerId: string }
-  | { type: "trickFinished"; result: HandResult }
+  | { type: "trickFinished"; result: HandResult; disguisedBunch?: Card[] }
   | {
       type: "trucoAsked";
       askerId: string;
@@ -41,6 +41,16 @@ export type TrucoTableEvent =
 
 const sameCard = (a: Card, b: Card) => a.rank === b.rank && a.suit === b.suit;
 
+function alreadyOnTable(prevBunch: Card[], card: Card): boolean {
+  return prevBunch.some(
+    (played) =>
+      sameCard(played, card) ||
+      (played.illusionReal !== undefined &&
+        played.illusionReal.rank === card.rank &&
+        played.illusionReal.suit === card.suit)
+  );
+}
+
 function findScoringTeam(prev: ITrucoGameState, next: ITrucoGameState) {
   for (const team of next.teams) {
     const before = prev.teams.find((t) => t.id === team.id);
@@ -66,15 +76,22 @@ export function diffTrucoSnapshots(
   const playedNow: Card[] = trickFinished
     ? newResults
         .flatMap((r) => r.bunch)
-        .filter((card) => !prev.bunch.some((c) => sameCard(c, card)))
-    : next.bunch.filter((card) => !prev.bunch.some((c) => sameCard(c, card)));
+        .filter((card) => !alreadyOnTable(prev.bunch, card))
+    : next.bunch.filter((card) => !alreadyOnTable(prev.bunch, card));
 
   for (const card of playedNow) {
     events.push({ type: "cardPlayed", card, playerId: prev.playerTurn });
   }
 
+  const disguisedBunch = prev.bunch.some((card) => card.illusionReal)
+    ? prev.bunch
+    : undefined;
   for (const result of newResults) {
-    events.push({ type: "trickFinished", result });
+    events.push(
+      disguisedBunch
+        ? { type: "trickFinished", result, disguisedBunch }
+        : { type: "trickFinished", result }
+    );
   }
 
   const wasPending = prev.trucoState === "PENDING";

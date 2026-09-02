@@ -10,7 +10,7 @@ const EMPTY_PLAYERS: BasePlayer[] = [];
 interface GameStore {
   game: IGameState | null;
   userId: string | null;
-  /** Resultado privado do último poder (Raio-X). Só quem usou recebe. */
+  /** Resultado privado do último poder (Raio-X / Sexto Sentido). Só quem usou recebe. */
   powerPeek: PowerPrivateResult | null;
 
   setGame: (game: IGameState) => void;

@@ -176,6 +176,7 @@
     "us": "Nós",
     "them": "Eles",
     "pendingHint": "Truco pendente: respondam!",
+    "activeEffects": "Efeitos da rodada",
     "stamp": {
       "truco": "Truco!",
       "six": "Seis!",
@@ -210,6 +211,24 @@
     "GRAVEDIGGER": {
       "name": "Coveiro",
       "description": "Troca a carta jogada por uma do baralho restante de valor maior ou igual."
+    },
+    "SILVER_SHIELD": {
+      "name": "Escudo de Prata",
+      "description": "Corre da rodada perdendo só 1 ponto, mesmo se a aposta for Seis, Nove ou Doze."
+    },
+    "MERCENARY": {
+      "name": "O Mercenário",
+      "description": "Se vencer a mão, rouba 1 ponto do placar adversário (você +1, eles −1)."
+    },
+    "SIXTH_SENSE": {
+      "name": "Sexto Sentido",
+      "description": "Revela só se o adversário tem alguma manilha — sim ou não.",
+      "yes": "Sim — tem manilha",
+      "no": "Não — sem manilha"
+    },
+    "ILLUSIONIST": {
+      "name": "O Ilusionista",
+      "description": "Sua carta aparece como Zap até o adversário jogar; o valor real só vale na revelação."
     }
   },
   "TableActions": {

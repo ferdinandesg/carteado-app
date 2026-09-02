@@ -10,12 +10,14 @@ import { testIds } from "@/tests/testIds";
 import gameStyles from "@/styles/Game.module.scss";
 import styles from "@/styles/TrucoTable.module.scss";
 
-/** Slot 1: vira + chip da aposta atual. */
+/** Slot 1: vira + chip da aposta + efeitos ativos da rodada. */
 export default function TrucoDeckArea() {
   const { t } = useTranslation();
   const game = useTypedGame(isTrucoGame);
 
   if (!game) return null;
+
+  const effects = game.activeEffects ?? [];
 
   return (
     <div className={styles.deckArea}>
@@ -40,6 +42,30 @@ export default function TrucoDeckArea() {
           <span className={styles.betValue}>{game.currentBet}</span>
         </div>
       </Shaky>
+
+      {effects.length > 0 && (
+        <ul
+          className={styles.effects}
+          data-testid={testIds.game.activeEffects}
+          aria-label={t("Truco.activeEffects")}>
+          {effects.map((effect) => (
+            <li
+              key={effect.id}
+              className={classNames(
+                styles.effectChip,
+                styles[effect.powerId as keyof typeof styles] ??
+                  styles.effectDefault
+              )}
+              title={t(`Powers.${effect.powerId}.description`, {
+                defaultValue: "",
+              })}>
+              {t(`Powers.${effect.powerId}.name`, {
+                defaultValue: effect.powerId,
+              })}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

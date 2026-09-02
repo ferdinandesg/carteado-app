@@ -1,4 +1,4 @@
-export type PileVariant = "spread" | "stack";
+export type PileVariant = "spread" | "stack" | "fan-up" | "fan-down";
 
 export type PileTransform = {
   /** Deslocamento horizontal em % da largura da própria carta. */
@@ -19,6 +19,7 @@ export function pileNoise(index: number, salt = 0): number {
  * Posição de cada carta numa pilha.
  * - `spread`: cartas da vaza lado a lado no centro, levemente tortas.
  * - `stack`: monte compacto (vazas ganhas, baralho), só ruído leve.
+ * - `fan-up` / `fan-down`: peek no hover das pilhas de vaza.
  */
 export function getPileTransform(
   index: number,
@@ -31,6 +32,16 @@ export function getPileTransform(
       x: k * 55 + pileNoise(index, 1) * 4,
       y: pileNoise(index, 2) * 4,
       rotate: pileNoise(index, 3) * 8,
+    };
+  }
+
+  if (variant === "fan-up" || variant === "fan-down") {
+    const k = index - (count - 1) / 2;
+    const dir = variant === "fan-up" ? -1 : 1;
+    return {
+      x: k * 30,
+      y: dir * (8 + index * 16),
+      rotate: k * 5,
     };
   }
 

@@ -99,6 +99,39 @@ describe("diffTrucoSnapshots", () => {
     ]);
   });
 
+  it("forwards the disguised bunch when an illusionist card is revealed", () => {
+    const zap = {
+      ...card("Q", "clubs"),
+      illusionReal: {
+        rank: "4" as const,
+        suit: "hearts" as const,
+        toString: "4 of hearts" as const,
+      },
+    };
+    const real = card("4", "hearts");
+    const closer = card("5", "spades");
+    const result = {
+      round: 1,
+      bunch: [real, closer],
+      isTie: false,
+      winnerTeamId: "TEAM_B",
+    };
+    const prev = makeGame({
+      playerTurn: "p2",
+      bunch: [zap],
+    });
+    const next = makeGame({
+      playerTurn: "p2",
+      bunch: [],
+      handsResults: [result],
+    });
+
+    expect(diffTrucoSnapshots(prev, next)).toEqual([
+      { type: "cardPlayed", card: closer, playerId: "p2" },
+      { type: "trickFinished", result, disguisedBunch: [zap] },
+    ]);
+  });
+
   it("detects truco asked and accepted", () => {
     const idle = makeGame();
     const pending = makeGame({

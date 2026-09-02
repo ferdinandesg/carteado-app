@@ -38,6 +38,7 @@
   --pile-color: #{$color-accent-pink};
 
   position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -45,9 +46,18 @@
   gap: $spacing-xs;
   min-width: calc(var(--card-w, 110px) * 0.7);
   min-height: calc(var(--card-h, 154px) * 0.7);
+  cursor: default;
 
   &.ours {
     --pile-color: #{$color-accent-teal};
+  }
+
+  &.hasCards {
+    cursor: pointer;
+  }
+
+  &.peek {
+    z-index: 12;
   }
 }
 
@@ -79,6 +89,7 @@
 
 .deckArea {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   gap: $spacing-s;
   width: 100%;
@@ -122,6 +133,91 @@
   font-family: var(--font-mouse-memoirs), sans-serif;
   font-size: clamp(1.4rem, 3vw, 2rem);
   line-height: 1;
+}
+
+.effects {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2xs;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.effectChip {
+  max-width: 9.5rem;
+  padding: 2px $spacing-xs;
+  overflow: hidden;
+  color: $color-panel-text-dark;
+  font-size: 0.65rem;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.3px;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background-color: $color-accent-teal;
+  border: $border-width solid $color-outline;
+  border-radius: $border-radius-s;
+}
+
+.effectDefault,
+.X_RAY {
+  background-color: #2ee9ff;
+}
+
+.SILENCER {
+  background-color: #ff3df0;
+}
+
+.CHANGE_TRUMP {
+  background-color: #ffe14a;
+}
+
+.MAGNETIC_PULL {
+  background-color: #ff4d3d;
+}
+
+.GRAVEDIGGER {
+  background-color: #6dff3a;
+}
+
+.SILVER_SHIELD {
+  background-color: #c5cdd8;
+}
+
+.MERCENARY {
+  background-color: #c9a227;
+}
+
+.SIXTH_SENSE {
+  background-color: #9b59ff;
+}
+
+.ILLUSIONIST {
+  background-color: #e040fb;
+}
+
+.flip {
+  position: relative;
+  line-height: 0;
+  perspective: 720px;
+}
+
+.flipInner {
+  position: relative;
+  display: grid;
+  transform-style: preserve-3d;
+}
+
+.flipFace,
+.flipBack {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+}
+
+.flipBack {
+  transform: rotateY(180deg);
 }
 
 @media (max-width: $breakpoint-md) {

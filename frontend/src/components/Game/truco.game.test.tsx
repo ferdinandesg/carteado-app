@@ -147,4 +147,59 @@ describe("TrucoGame", () => {
       ).not.toBeInTheDocument()
     );
   });
+
+  it("shows a yes/no radar stamp after a private Sixth Sense result", async () => {
+    setGame(fixtures.truco.roundStart);
+    render(<TrucoGame />);
+
+    act(() => {
+      useGameStore.setState({
+        powerPeek: {
+          powerId: PowerId.SIXTH_SENSE,
+          targetUserId: "user-b",
+          hasManilha: true,
+        },
+      });
+    });
+
+    expect(screen.getByTestId(testIds.game.radarPeek)).toHaveTextContent(
+      "Powers.SIXTH_SENSE.yes"
+    );
+
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId(testIds.game.radarPeek)
+      ).not.toBeInTheDocument()
+    );
+  });
+
+  it("lists active round effects next to the vira in slot 1", () => {
+    setGame({
+      ...fixtures.truco.roundStart,
+      activeEffects: [
+        {
+          id: "fx-1",
+          powerId: PowerId.SILENCER,
+          sourceUserId: "user-a",
+          targetUserId: "user-b",
+          round: 1,
+        },
+        {
+          id: "fx-2",
+          powerId: PowerId.MERCENARY,
+          sourceUserId: "user-a",
+          targetUserId: "user-a",
+          round: 1,
+        },
+      ],
+    });
+    render(<TrucoGame />);
+
+    const effects = screen.getByTestId(testIds.game.activeEffects);
+    expect(effects).toHaveTextContent("Powers.SILENCER.name");
+    expect(effects).toHaveTextContent("Powers.MERCENARY.name");
+  });
 });

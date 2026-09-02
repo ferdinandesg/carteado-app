@@ -1,4 +1,5 @@
 import type { Card } from "shared/cards";
+import type { Team } from "shared/types";
 import type {
   ActiveEffect,
   BasePlayer,
@@ -28,6 +29,11 @@ export interface PowerResult {
   returnedCard?: Card;
   /** Coveiro: carta do baralho que fica na mesa. */
   replacementCard?: Card;
+  /**
+   * Escudo de Prata: ao ativar com truco pendente, corre a rodada por
+   * este valor (em vez da aposta anterior).
+   */
+  rejectPoints?: number;
 }
 
 /**
@@ -57,6 +63,18 @@ export interface PowerStrategy {
     effect: ActiveEffect,
     userId: string,
     card: Card
+  ): void;
+  /** Escudo de Prata: pode reduzir os pontos pagos ao correr. */
+  onRejectTrucoPoints?(
+    game: TrucoGame,
+    effect: ActiveEffect,
+    points: number
+  ): number;
+  /** Mercenário: aplica o roubo depois de somar a aposta da rodada. */
+  onAfterFinishRound?(
+    game: TrucoGame,
+    effect: ActiveEffect,
+    winningTeam: Team
   ): void;
 }
 

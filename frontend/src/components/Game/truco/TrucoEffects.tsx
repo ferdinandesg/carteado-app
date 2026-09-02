@@ -12,7 +12,11 @@ import { useTranslation } from "react-i18next";
 
 import CardComponent from "@/components/Card";
 import { seatAnchor, useSeatAnchors } from "@/hooks/game/useSeatAnchors";
-import type { TrucoEffect, XrayPeek } from "@/hooks/game/useTrucoPresentation";
+import type {
+  RadarPeek,
+  TrucoEffect,
+  XrayPeek,
+} from "@/hooks/game/useTrucoPresentation";
 import { testIds } from "@/tests/testIds";
 
 import styles from "@/styles/TrucoEffects.module.scss";
@@ -20,6 +24,7 @@ import styles from "@/styles/TrucoEffects.module.scss";
 type TrucoEffectsProps = {
   effect: TrucoEffect | null;
   xrayPeek?: XrayPeek | null;
+  radarPeek?: RadarPeek | null;
   children: ReactNode;
 };
 
@@ -99,12 +104,14 @@ function useStampCopy(effect: TrucoEffect | null) {
 export default function TrucoEffects({
   effect,
   xrayPeek = null,
+  radarPeek = null,
   children,
 }: TrucoEffectsProps) {
   const [scope, animate] = useAnimate();
   const reduceMotion = useReducedMotion();
   const anchors = useSeatAnchors();
   const stamp = useStampCopy(effect);
+  const { t } = useTranslation();
 
   const isAsk = effect?.kind === "trucoAsked";
   const level = isAsk ? getBetLevel(effect.bet) : 0;
@@ -141,6 +148,16 @@ export default function TrucoEffects({
       }
     );
   }, [anchors, xrayPeek]);
+
+  const radarOrigin = useMemo(() => {
+    if (!radarPeek) return { x: 0, y: 0 };
+    return (
+      anchors.getOffset("center", seatAnchor(radarPeek.targetUserId)) ?? {
+        x: 0,
+        y: 0,
+      }
+    );
+  }, [anchors, radarPeek]);
 
   return (
     <div className={styles.root}>
@@ -225,6 +242,46 @@ export default function TrucoEffects({
               card={xrayPeek.card}
               size="md"
             />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {radarPeek && (
+          <motion.div
+            key={`radar-${radarPeek.id}`}
+            className={classNames(
+              styles.radarPeek,
+              radarPeek.hasManilha ? styles.radarYes : styles.radarNo
+            )}
+            data-testid={testIds.game.radarPeek}
+            initial={{
+              x: radarOrigin.x,
+              y: radarOrigin.y,
+              scale: reduceMotion ? 1 : 0.4,
+              opacity: 0,
+            }}
+            animate={{
+              x: radarOrigin.x * 0.82,
+              y: radarOrigin.y * 0.82,
+              scale: 1,
+              opacity: 1,
+            }}
+            exit={{
+              x: radarOrigin.x,
+              y: radarOrigin.y,
+              scale: reduceMotion ? 1 : 0.55,
+              opacity: 0,
+            }}
+            transition={{
+              duration: reduceMotion ? 0.15 : 0.35,
+              ease: [0.22, 1, 0.36, 1],
+            }}>
+            {t(
+              radarPeek.hasManilha
+                ? "Powers.SIXTH_SENSE.yes"
+                : "Powers.SIXTH_SENSE.no"
+            )}
           </motion.div>
         )}
       </AnimatePresence>

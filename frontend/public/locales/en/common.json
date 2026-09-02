@@ -175,6 +175,7 @@
     "us": "Us",
     "them": "Them",
     "pendingHint": "Truco pending: answer!",
+    "activeEffects": "Round effects",
     "stamp": {
       "truco": "Truco!",
       "six": "Six!",
@@ -209,6 +210,24 @@
     "GRAVEDIGGER": {
       "name": "Gravedigger",
       "description": "Swaps the played card for a remaining deck card of equal or greater value."
+    },
+    "SILVER_SHIELD": {
+      "name": "Silver Shield",
+      "description": "Run from the round losing only 1 point, even if the stake is Six, Nine or Twelve."
+    },
+    "MERCENARY": {
+      "name": "The Mercenary",
+      "description": "If you win the hand, steal 1 point from the opponent (you +1, they −1)."
+    },
+    "SIXTH_SENSE": {
+      "name": "Sixth Sense",
+      "description": "Reveals only whether an opponent holds any manilha — yes or no.",
+      "yes": "Yes — has a manilha",
+      "no": "No — no manilha"
+    },
+    "ILLUSIONIST": {
+      "name": "The Illusionist",
+      "description": "Your card appears as Zap until the opponent plays; the real value is scored on reveal."
     }
   },
   "TableActions": {

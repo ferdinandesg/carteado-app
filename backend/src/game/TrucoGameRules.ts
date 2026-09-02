@@ -21,6 +21,7 @@ import { executePower, PowerResult } from "./powers/PowerExecutor";
 import { applyPlayedCardPower } from "./powers/applyCardPower";
 import { stampPowersOnDeck } from "./powers/stampDeck";
 import * as powerEffects from "./powers/effects";
+import { restoreIllusions } from "./powers/strategies/IllusionistPower";
 
 // A classe TrucoGame permanece focada no estado do jogo.
 export class TrucoGame extends Game<TrucoGame, ITrucoGameRules, BasePlayer> {
@@ -87,7 +88,7 @@ export class TrucoGame extends Game<TrucoGame, ITrucoGameRules, BasePlayer> {
 type ITrucoGameRules = IGameRules<TrucoGame> & {
   askTruco(game: TrucoGame, userId: string): void;
   acceptTruco(game: TrucoGame, userId: string): void;
-  rejectTruco(game: TrucoGame): void;
+  rejectTruco(game: TrucoGame, pointsOverride?: number): void;
   usePower(
     game: TrucoGame,
     userId: string,
@@ -95,6 +96,7 @@ type ITrucoGameRules = IGameRules<TrucoGame> & {
   ): PowerResult;
   drawValidCard(deck: Deck, allowedRanks: string[]): Card;
   findTeamByUserId(game: TrucoGame, userId: string): Team | undefined;
+  getOpponentTeam(game: TrucoGame, userId: string): Team | undefined;
 };
 
 export class TrucoGameRules implements ITrucoGameRules {
@@ -104,12 +106,12 @@ export class TrucoGameRules implements ITrucoGameRules {
     this.resetRoundState(game);
     this.distributeHands(game);
     this.setupViraAndManilha(game);
-    // Só as mãos, e nunca a manilha: trunfo já é forte o bastante.
     stampPowersOnDeck(
       game.players.flatMap((player) => player.hand),
       undefined,
       {
         excludeRanks: [game.manilha],
+        limit: 5,
       }
     );
     // Marca o jogador da vez como PLAYING (os demais ficam WAITING).
@@ -212,7 +214,7 @@ export class TrucoGameRules implements ITrucoGameRules {
     game.trucoState = "ACCEPTED";
   }
 
-  rejectTruco(game: TrucoGame) {
+  rejectTruco(game: TrucoGame, pointsOverride?: number) {
     if (!this.isTrucoPending(game) || !game.trucoAskerId)
       throw new GameError({ code: "INVALID_ACTION" });
 
@@ -223,7 +225,14 @@ export class TrucoGameRules implements ITrucoGameRules {
     const matchingKey = Object.entries(betValues).find(
       ([, v]) => v === game.currentBet
     )?.[0];
-    const points = matchingKey ? Number(matchingKey) : 1;
+    let points = pointsOverride ?? (matchingKey ? Number(matchingKey) : 1);
+
+    if (pointsOverride === undefined) {
+      const defendingIds = game.teams
+        .filter((team) => team.id !== askingTeam.id)
+        .flatMap((team) => team.userIds);
+      points = powerEffects.adjustRejectPoints(game, defendingIds, points);
+    }
 
     this.finishRound(game, askingTeam, points);
   }
@@ -237,7 +246,11 @@ export class TrucoGameRules implements ITrucoGameRules {
   }
 
   usePower(game: TrucoGame, userId: string, payload: UsePowerPayload) {
-    return executePower(game, userId, payload);
+    const result = executePower(game, userId, payload);
+    if (result.rejectPoints !== undefined) {
+      this.rejectTruco(game, result.rejectPoints);
+    }
+    return result;
   }
 
   applyPlayCard(game: TrucoGame, userId: string, card: Card) {
@@ -286,6 +299,8 @@ export class TrucoGameRules implements ITrucoGameRules {
 
   // Lógica de resolução da mão foi extraída para um método dedicado.
   private resolveHand(game: TrucoGame) {
+    restoreIllusions(game);
+
     const currentHandCards = game.bunch
       .slice(-game.players.length)
       .map((card) => {
@@ -375,6 +390,7 @@ export class TrucoGameRules implements ITrucoGameRules {
     if (game.status === GameStatus.FINISHED) return;
 
     winningTeam.score += points;
+    powerEffects.afterFinishRound(game, winningTeam);
     if (winningTeam.score >= 12) {
       game.status = GameStatus.FINISHED;
     } else {

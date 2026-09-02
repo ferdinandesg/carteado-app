@@ -28,4 +28,9 @@ export interface Card {
   toString: CardAsString;
   /** Poder carimbado no deal do Truco; some da mão ao jogar. */
   powerId?: string;
+  /**
+   * Ilusionista: identidade real enquanto a face pública é uma manilha falsa.
+   * Removido ao resolver a vaza.
+   */
+  illusionReal?: Pick<Card, "rank" | "suit" | "toString">;
 }

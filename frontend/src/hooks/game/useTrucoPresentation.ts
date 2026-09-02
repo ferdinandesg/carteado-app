@@ -20,6 +20,8 @@ export type PlayedEntry = {
   playerId: string | null;
   /** Coveiro: a substituta entra vindo do baralho. */
   fromDeck?: boolean;
+  /** Ilusionista: face falsa a virar para `card` em `TIMINGS.illusionReveal`. */
+  revealFrom?: Card;
 };
 
 export type DepartTarget = "ours" | "opponent" | "tie";
@@ -56,6 +58,10 @@ export const TIMINGS = {
   graveHold: 450,
   /** Raio-X: tempo que a carta espiada fica visível ao lado do alvo. */
   xrayPeek: 1600,
+  /** Sexto Sentido: tempo do selo sim/não ao lado do alvo. */
+  radarPeek: 1600,
+  /** Ilusionista: virada da manilha falsa para a carta real. */
+  illusionReveal: 500,
 } as const;
 
 export type GraveHold = {
@@ -71,13 +77,24 @@ export type XrayPeek = {
   card: Card;
 };
 
+export type RadarPeek = {
+  id: number;
+  targetUserId: string;
+  hasManilha: boolean;
+};
+
 type State = {
   gameId: string | null;
   /**
    * Vaza recém-fechada mantida no centro (o servidor já limpou `bunch`,
    * mas a última carta precisa aparecer antes de voar).
    */
-  hold: { id: number; cards: Card[]; target: DepartTarget } | null;
+  hold: {
+    id: number;
+    cards: Card[];
+    target: DepartTarget;
+    revealFrom?: (Card | undefined)[];
+  } | null;
   departing: DepartingTrick | null;
   /** Quantos `handsResults` já estão nas pilhas 3/9. */
   settledResults: number;
@@ -85,11 +102,18 @@ type State = {
   effect: TrucoEffect | null;
   graveHold: GraveHold | null;
   xrayPeek: XrayPeek | null;
+  radarPeek: RadarPeek | null;
 };
 
 type Action =
   | { type: "init"; game: ITrucoGameState }
-  | { type: "hold"; id: number; cards: Card[]; target: DepartTarget }
+  | {
+      type: "hold";
+      id: number;
+      cards: Card[];
+      target: DepartTarget;
+      revealFrom?: (Card | undefined)[];
+    }
   | { type: "depart"; id: number; cards: PlayedEntry[] }
   | { type: "settle"; id: number }
   | { type: "newRound"; round: number }
@@ -98,7 +122,9 @@ type Action =
   | { type: "graveHold"; hold: GraveHold }
   | { type: "clearGraveHold"; id: number }
   | { type: "xrayPeek"; peek: XrayPeek }
-  | { type: "clearXrayPeek"; id: number };
+  | { type: "clearXrayPeek"; id: number }
+  | { type: "radarPeek"; peek: RadarPeek }
+  | { type: "clearRadarPeek"; id: number };
 
 const initialState: State = {
   gameId: null,
@@ -109,6 +135,7 @@ const initialState: State = {
   effect: null,
   graveHold: null,
   xrayPeek: null,
+  radarPeek: null,
 };
 
 function reducer(state: State, action: Action): State {
@@ -123,7 +150,12 @@ function reducer(state: State, action: Action): State {
     case "hold":
       return {
         ...state,
-        hold: { id: action.id, cards: action.cards, target: action.target },
+        hold: {
+          id: action.id,
+          cards: action.cards,
+          target: action.target,
+          revealFrom: action.revealFrom,
+        },
       };
     case "depart":
       if (!state.hold || state.hold.id !== action.id) return state;
@@ -161,6 +193,12 @@ function reducer(state: State, action: Action): State {
     case "clearXrayPeek":
       return state.xrayPeek?.id === action.id
         ? { ...state, xrayPeek: null }
+        : state;
+    case "radarPeek":
+      return { ...state, radarPeek: action.peek };
+    case "clearRadarPeek":
+      return state.radarPeek?.id === action.id
+        ? { ...state, radarPeek: null }
         : state;
     default:
       return state;
@@ -255,6 +293,7 @@ export type TrucoPresentation = {
   visualHand: Card[];
   graveHold: GraveHold | null;
   xrayPeek: XrayPeek | null;
+  radarPeek: RadarPeek | null;
 };
 
 /**
@@ -304,17 +343,33 @@ export function useTrucoPresentation(
   );
 
   useEffect(() => {
-    if (!powerPeek || powerPeek.powerId !== PowerId.X_RAY) return;
+    if (!powerPeek) return;
     const id = nextId();
-    dispatch({
-      type: "xrayPeek",
-      peek: {
-        id,
-        targetUserId: powerPeek.targetUserId,
-        card: powerPeek.card,
-      },
-    });
-    schedule(TIMINGS.xrayPeek, () => dispatch({ type: "clearXrayPeek", id }));
+
+    if (powerPeek.powerId === PowerId.X_RAY) {
+      dispatch({
+        type: "xrayPeek",
+        peek: {
+          id,
+          targetUserId: powerPeek.targetUserId,
+          card: powerPeek.card,
+        },
+      });
+      schedule(TIMINGS.xrayPeek, () => dispatch({ type: "clearXrayPeek", id }));
+    } else if (powerPeek.powerId === PowerId.SIXTH_SENSE) {
+      dispatch({
+        type: "radarPeek",
+        peek: {
+          id,
+          targetUserId: powerPeek.targetUserId,
+          hasManilha: powerPeek.hasManilha,
+        },
+      });
+      schedule(TIMINGS.radarPeek, () =>
+        dispatch({ type: "clearRadarPeek", id })
+      );
+    }
+
     setPowerPeek(null);
   }, [powerPeek, schedule, setPowerPeek]);
 
@@ -329,24 +384,39 @@ export function useTrucoPresentation(
             break;
 
           case "trickFinished": {
-            const { result } = event;
+            const { result, disguisedBunch } = event;
             const target: DepartTarget = result.isTie
               ? "tie"
               : result.winnerTeamId === myTeamId
                 ? "ours"
                 : "opponent";
             const id = nextId();
+            const revealFrom = disguisedBunch?.map((card) =>
+              card.illusionReal ? card : undefined
+            );
+            const hasReveal = Boolean(
+              revealFrom?.some((card) => Boolean(card)) && !reduceMotion
+            );
             const cards = result.bunch.map((card) => ({
               card,
               key: getCardKey(card),
               playerId: resolveCardOwner(next, card),
             }));
+            const holdMs = hasReveal
+              ? Math.max(TIMINGS.illusionReveal, TIMINGS.settleAfterPlay)
+              : TIMINGS.settleAfterPlay;
 
-            dispatch({ type: "hold", id, cards: result.bunch, target });
-            schedule(delay + TIMINGS.settleAfterPlay, () =>
+            dispatch({
+              type: "hold",
+              id,
+              cards: result.bunch,
+              target,
+              revealFrom: hasReveal ? revealFrom : undefined,
+            });
+            schedule(delay + holdMs, () =>
               dispatch({ type: "depart", id, cards })
             );
-            delay += TIMINGS.settleAfterPlay + TIMINGS.depart;
+            delay += holdMs + TIMINGS.depart;
             schedule(delay, () => dispatch({ type: "settle", id }));
             break;
           }
@@ -431,10 +501,11 @@ export function useTrucoPresentation(
   const bunch = useMemo<PlayedEntry[]>(() => {
     if (!game) return [];
     const cards = state.hold?.cards ?? game.bunch;
-    const entries = cards.map((card) => ({
+    const entries = cards.map((card, index) => ({
       card,
       key: getCardKey(card),
       playerId: resolveCardOwner(game, card),
+      revealFrom: state.hold?.revealFrom?.[index],
     }));
     return markGraveDeckOrigin(
       applyGraveHoldToBunch(entries, state.graveHold),
@@ -479,5 +550,6 @@ export function useTrucoPresentation(
     visualHand,
     graveHold: state.graveHold,
     xrayPeek: state.xrayPeek,
+    radarPeek: state.radarPeek,
   };
 }

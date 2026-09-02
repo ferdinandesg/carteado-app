@@ -36,6 +36,9 @@ export const testIds = {
     trickPileOpponent: "game-trick-pile-opponent",
     currentBet: "game-current-bet",
     xrayPeek: "game-xray-peek",
+    radarPeek: "game-radar-peek",
+    illusionReveal: "game-illusion-reveal",
+    activeEffects: "game-active-effects",
   },
   menu: {
     shell: "menu-shell",

@@ -6,7 +6,14 @@ export enum PowerId {
   CHANGE_TRUMP = "CHANGE_TRUMP",
   MAGNETIC_PULL = "MAGNETIC_PULL",
   GRAVEDIGGER = "GRAVEDIGGER",
+  SILVER_SHIELD = "SILVER_SHIELD",
+  MERCENARY = "MERCENARY",
+  SIXTH_SENSE = "SIXTH_SENSE",
+  ILLUSIONIST = "ILLUSIONIST",
 }
+
+/** Quantos carimbos entram em cada rodada de Truco (sorteados do pool). */
+export const TRUCO_POWERS_PER_ROUND = 5;
 
 /**
  * Origem do disparo. `CARD` = carta carimbada no deal; `MANUAL` = evento
@@ -39,15 +46,21 @@ export interface PowerUsage {
 
 export interface UsePowerPayload {
   powerId: PowerId;
-  /** Obrigatório para poderes com alvo (X_RAY, SILENCER, MAGNETIC_PULL). */
+  /** Obrigatório para poderes com alvo (X_RAY, SILENCER, MAGNETIC_PULL, SIXTH_SENSE). */
   targetUserId?: string;
   /** Carta da mão a ser trocada (GRAVEDIGGER manual, opcional). */
   card?: Card;
 }
 
 /** Resultado enviado apenas ao jogador que usou o poder (evento `power_result`). */
-export type PowerPrivateResult = {
-  powerId: PowerId.X_RAY;
-  targetUserId: string;
-  card: Card;
-};
+export type PowerPrivateResult =
+  | {
+      powerId: PowerId.X_RAY;
+      targetUserId: string;
+      card: Card;
+    }
+  | {
+      powerId: PowerId.SIXTH_SENSE;
+      targetUserId: string;
+      hasManilha: boolean;
+    };

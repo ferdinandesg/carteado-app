@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { Card } from "shared/cards";
 import type { ActiveEffect, PowerId } from "shared/game";
+import type { Team } from "shared/types";
 import type { TrucoGame } from "../TrucoGameRules";
 import { getPowerStrategy } from "./powerRegistry";
 
@@ -75,6 +76,35 @@ export function afterPlayCard(
       effect,
       userId,
       card
+    );
+  }
+}
+
+export function adjustRejectPoints(
+  game: TrucoGame,
+  defendingUserIds: string[],
+  points: number
+): number {
+  let next = points;
+  for (const userId of defendingUserIds) {
+    for (const effect of effectsTargeting(game, userId)) {
+      const adjusted = getPowerStrategy(effect.powerId).onRejectTrucoPoints?.(
+        game,
+        effect,
+        next
+      );
+      if (adjusted !== undefined) next = adjusted;
+    }
+  }
+  return next;
+}
+
+export function afterFinishRound(game: TrucoGame, winningTeam: Team): void {
+  for (const effect of [...game.activeEffects]) {
+    getPowerStrategy(effect.powerId).onAfterFinishRound?.(
+      game,
+      effect,
+      winningTeam
     );
   }
 }

@@ -79,6 +79,26 @@
   background-color: #6dff3a;
 }
 
+.SILVER_SHIELD {
+  background-color: #c5cdd8;
+}
+
+.MERCENARY {
+  background-color: #c9a227;
+}
+
+.SIXTH_SENSE {
+  background-color: #9b59ff;
+}
+
+.ILLUSIONIST {
+  background-color: #e040fb;
+}
+
+.illusion {
+  filter: drop-shadow(0 0 8px rgba(#e040fb, 0.7));
+}
+
 .powerHint {
   position: absolute;
   bottom: calc(100% + 8px);

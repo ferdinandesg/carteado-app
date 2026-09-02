@@ -7,6 +7,7 @@ import {
   createSandboxTrucoGame,
   pickRandomHandCard,
   playSandboxCard,
+  rejectSandboxTruco,
   SANDBOX_BOT_ID,
   SANDBOX_YOU_ID,
   makeSandboxCard,
@@ -159,5 +160,64 @@ describe("trucoSandboxGame", () => {
         targetUserId: SANDBOX_BOT_ID,
       }),
     ]);
+  });
+
+  it("reports whether the opponent holds a manilha when SIXTH_SENSE is stamped", () => {
+    const played = makeSandboxCard("4", "hearts", PowerId.SIXTH_SENSE);
+    const game = withHands([played], [makeSandboxCard("Q", "clubs")]);
+
+    const { privateResult } = playSandboxCard(game, SANDBOX_YOU_ID, played);
+
+    expect(privateResult).toEqual({
+      powerId: PowerId.SIXTH_SENSE,
+      targetUserId: SANDBOX_BOT_ID,
+      hasManilha: true,
+    });
+  });
+
+  it("disguises the played ILLUSIONIST card as zap until the trick resolves", () => {
+    const played = makeSandboxCard("4", "hearts", PowerId.ILLUSIONIST);
+    const { game: afterYou } = playSandboxCard(
+      withHands([played], [makeSandboxCard("5", "spades")]),
+      SANDBOX_YOU_ID,
+      played
+    );
+
+    expect(afterYou.bunch[0]).toEqual(
+      expect.objectContaining({
+        rank: "Q",
+        suit: "clubs",
+        illusionReal: expect.objectContaining({ rank: "4", suit: "hearts" }),
+      })
+    );
+
+    const { game: next } = playSandboxCard(
+      afterYou,
+      SANDBOX_BOT_ID,
+      makeSandboxCard("5", "spades")
+    );
+
+    expect(next.handsResults[0].bunch[0]).toEqual(
+      expect.objectContaining({ rank: "4", suit: "hearts" })
+    );
+    expect(next.handsResults[0].winnerTeamId).toBe("TEAM_B");
+  });
+
+  it("makes reject cost 1 after SILVER_SHIELD is armed, even on a raised bet", () => {
+    const played = makeSandboxCard("4", "hearts", PowerId.SILVER_SHIELD);
+    const { game: armed } = playSandboxCard(
+      withHands([played], [makeSandboxCard("3", "spades")]),
+      SANDBOX_YOU_ID,
+      played
+    );
+
+    const asked = askSandboxTruco(armed, SANDBOX_YOU_ID);
+    const accepted = acceptSandboxTruco(asked, SANDBOX_BOT_ID);
+    const raised = askSandboxTruco(accepted, SANDBOX_BOT_ID);
+    expect(raised.currentBet).toBe(6);
+
+    const rejected = rejectSandboxTruco(raised);
+    const botTeam = rejected.teams.find((team) => team.id === "TEAM_B")!;
+    expect(botTeam.score).toBe(1);
   });
 });

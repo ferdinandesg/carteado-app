@@ -117,6 +117,32 @@
   filter: drop-shadow(0 0 14px rgba(#2ee9ff, 0.85));
 }
 
+.radarPeek {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 7;
+  padding: $spacing-xs $spacing-m;
+  color: $color-panel-text-dark;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: clamp(1.1rem, 3.5vw, 1.6rem);
+  letter-spacing: 1px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background-color: #9b59ff;
+  border: $border-width-bold solid $color-outline;
+  border-radius: $border-radius-m;
+  box-shadow: 0 4px 0 rgba($color-black, 0.35);
+  pointer-events: none;
+  transform-origin: center;
+
+  &.radarNo {
+    color: $color-white;
+    background-color: $color-gray-800;
+  }
+}
+
 @media (max-width: $breakpoint-md) {
   .stamp {
     padding: $spacing-xs $spacing-m;

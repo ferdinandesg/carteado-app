@@ -33,9 +33,9 @@ function isPowerId(value: string): value is PowerId {
 
 /**
  * Dispara o poder carimbado na carta recém-jogada. Alvos (Raio-X, Silenciador,
- * Atração) escolhem um adversário ao acaso. Falhas pontuais (mão vazia, sem
- * alvo, Coveiro sem carta restante no baralho) são ignoradas para não
- * reverter a jogada.
+ * Atração, Sexto Sentido) escolhem um adversário ao acaso. Falhas pontuais
+ * (mão vazia, sem alvo, Coveiro sem carta restante no baralho) são ignoradas
+ * para não reverter a jogada. Só existe no Truco.
  */
 export function applyPlayedCardPower(
   game: TrucoGame,

@@ -38,7 +38,8 @@ export default function TrucoGame() {
       <SeatAnchorProvider>
         <TrucoEffects
           effect={presentation.effect}
-          xrayPeek={presentation.xrayPeek}>
+          xrayPeek={presentation.xrayPeek}
+          radarPeek={presentation.radarPeek}>
           <Table
             game={game}
             deckArea={<TrucoDeckArea />}
