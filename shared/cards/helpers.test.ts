@@ -42,6 +42,32 @@ describe("getCardValue", () => {
     };
     expect(getCardValue(tres, "4")).toBeGreaterThan(0);
   });
+
+  it("ordena figuras J < Q < K", () => {
+    const jack: Card = {
+      suit: "hearts",
+      rank: "J",
+      value: 11,
+      secondaryValue: null,
+      toString: "J of hearts",
+    };
+    const queen: Card = {
+      suit: "hearts",
+      rank: "Q",
+      value: 12,
+      secondaryValue: null,
+      toString: "Q of hearts",
+    };
+    const king: Card = {
+      suit: "hearts",
+      rank: "K",
+      value: 13,
+      secondaryValue: null,
+      toString: "K of hearts",
+    };
+    expect(getCardValue(jack, "4")).toBeLessThan(getCardValue(queen, "4"));
+    expect(getCardValue(queen, "4")).toBeLessThan(getCardValue(king, "4"));
+  });
 });
 
 describe("getNextRank", () => {
@@ -50,7 +76,9 @@ describe("getNextRank", () => {
     expect(getNextRank("2")).toBe("3");
     expect(getNextRank("A")).toBe("2");
     expect(getNextRank("K")).toBe("A");
-    expect(getNextRank("Q")).toBe("J");
+    expect(getNextRank("Q")).toBe("K");
+    expect(getNextRank("J")).toBe("Q");
+    expect(getNextRank("7")).toBe("J");
   });
 
   it("retorna J como default para rank desconhecido", () => {

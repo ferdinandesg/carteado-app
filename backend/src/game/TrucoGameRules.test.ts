@@ -33,7 +33,7 @@ describe("TrucoGameRules", () => {
     game.playerTurn = "p1";
 
     // Mockar o baralho para não depender da aleatoriedade
-    // Definimos o 'vira' como um 7 de Paus, então a manilha será a Dama (Q)
+    // Vira 7; manilha fixada em Q (os testes jogam J como carta comum).
     game.vira = card("7", "C");
     game.manilha = "Q";
   });

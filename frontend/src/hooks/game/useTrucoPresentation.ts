@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { useReducedMotion } from "motion/react";
 import { Card } from "shared/cards";
-import { ITrucoGameState, PowerId } from "shared/game";
+import { GameStatus, ITrucoGameState, PowerId } from "shared/game";
 
 import { useGameStore } from "@/contexts/game.store";
 import { getCardKey } from "@/lib/cards/cardKey";
@@ -479,9 +479,11 @@ export function useTrucoPresentation(
                 points: event.points,
               });
             }
-            schedule(delay + TIMINGS.roundClear, () =>
-              dispatch({ type: "newRound", round: next.rounds })
-            );
+            if (next.status !== GameStatus.FINISHED) {
+              schedule(delay + TIMINGS.roundClear, () =>
+                dispatch({ type: "newRound", round: next.rounds })
+              );
+            }
             break;
 
           case "matchFinished":

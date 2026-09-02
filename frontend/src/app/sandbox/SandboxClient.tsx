@@ -9,11 +9,17 @@ import {
   type Rank,
   type Suit,
 } from "shared/cards";
-import { isTrucoGame, PowerId, type ITrucoGameState } from "shared/game";
+import {
+  GameStatus,
+  isTrucoGame,
+  PowerId,
+  type ITrucoGameState,
+} from "shared/game";
 
 import ActionButton from "@/components/buttons/ActionButton";
 import CardComponent from "@/components/Card";
 import TrucoGame from "@/components/Game/truco.game";
+import ModalGameFinished from "@/components/Modal/ModalGameFinished/ModalGameFinished";
 import { useGameStore } from "@/contexts/game.store";
 import {
   GameActionsProvider,
@@ -81,7 +87,7 @@ export default function SandboxClient() {
   }, [t]);
 
   useEffect(() => {
-    if (!game) return;
+    if (!game || game.status === GameStatus.FINISHED) return;
 
     if (game.trucoState === "PENDING" && game.trucoAskerId === SANDBOX_YOU_ID) {
       const timer = window.setTimeout(() => {
@@ -101,6 +107,7 @@ export default function SandboxClient() {
       const current = useGameStore.getState().game;
       if (
         !isTrucoGame(current) ||
+        current.status === GameStatus.FINISHED ||
         current.playerTurn !== SANDBOX_BOT_ID ||
         current.trucoState === "PENDING"
       ) {
@@ -273,6 +280,7 @@ export default function SandboxClient() {
         <GameActionsProvider value={sandboxActions}>
           <div className={gameStyles.gameRoot}>
             <TrucoGame />
+            <ModalGameFinished isOpen={game?.status === GameStatus.FINISHED} />
           </div>
         </GameActionsProvider>
       </section>

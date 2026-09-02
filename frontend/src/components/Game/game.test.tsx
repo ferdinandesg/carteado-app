@@ -1,8 +1,11 @@
 import { render, screen } from "@testing-library/react";
+import { GameStatus } from "shared/game";
+import { RoomInterface } from "shared/types";
 
 import Game from "@/components/Game/game";
+import { useGameStore } from "@/contexts/game.store";
 import { useRoomContext } from "@/contexts/room.context";
-import { RoomInterface } from "shared/types";
+import { testIds } from "@/tests/testIds";
 
 jest.mock("@/components/buttons/withSound", () => ({
   withSound: (Component: unknown) => Component,
@@ -21,6 +24,12 @@ jest.mock("./truco.game", () => ({
   __esModule: true,
   default: () => <div>truco-game</div>,
 }));
+
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({ push: jest.fn() }),
+}));
+
+HTMLMediaElement.prototype.play = jest.fn().mockResolvedValue(undefined);
 
 const baseRoom: RoomInterface = {
   id: "room-id",
@@ -43,6 +52,7 @@ const baseRoom: RoomInterface = {
 describe("Game", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    useGameStore.setState({ game: null, userId: "user-1", powerPeek: null });
   });
 
   it("renders nothing while room is loading", () => {
@@ -73,5 +83,62 @@ describe("Game", () => {
 
     render(<Game />);
     expect(screen.getByText("truco-game")).toBeInTheDocument();
+  });
+
+  it("declares the match over when a team reaches 12 points", () => {
+    useGameStore.setState({
+      userId: "user-a",
+      game: {
+        id: "match-1",
+        type: "TRUCO",
+        status: GameStatus.FINISHED,
+        rulesName: "TrucoGameRules",
+        playerTurn: "user-a",
+        bunch: [],
+        deck: { cards: [], numberOfFullDecks: 1 },
+        players: [
+          {
+            userId: "user-a",
+            name: "Ana",
+            status: "waiting",
+            hand: [],
+            table: [],
+            playedCards: [],
+            teamId: "TEAM_A",
+          },
+          {
+            userId: "user-b",
+            name: "Beto",
+            status: "waiting",
+            hand: [],
+            table: [],
+            playedCards: [],
+            teamId: "TEAM_B",
+          },
+        ],
+        teams: [
+          { id: "TEAM_A", userIds: ["user-a"], roundWins: 0, score: 12 },
+          { id: "TEAM_B", userIds: ["user-b"], roundWins: 0, score: 3 },
+        ],
+        vira: null,
+        manilha: "Q",
+        currentBet: 1,
+        trucoState: "NONE",
+        trucoAskerId: null,
+        rounds: 4,
+        handsResults: [],
+        activeEffects: [],
+        powerUsages: [],
+      },
+    });
+    (useRoomContext as jest.Mock).mockReturnValue({
+      room: { ...baseRoom, rule: "TrucoGameRules", status: "finished" },
+      isLoading: false,
+    });
+
+    render(<Game />);
+    expect(screen.getByTestId(testIds.game.finishedModal)).toHaveTextContent(
+      "Game.gameFinished"
+    );
   });
 });

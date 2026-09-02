@@ -20,12 +20,12 @@ export function getNextRank(rank: string): string {
       return "2";
     case "K":
       return "A";
-    case "J":
-      return "K";
     case "Q":
-      return "J";
-    case "7":
+      return "K";
+    case "J":
       return "Q";
+    case "7":
+      return "J";
     case "6":
       return "7";
     case "5":

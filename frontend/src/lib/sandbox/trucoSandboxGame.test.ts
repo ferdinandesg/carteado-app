@@ -220,4 +220,23 @@ describe("trucoSandboxGame", () => {
     const botTeam = rejected.teams.find((team) => team.id === "TEAM_B")!;
     expect(botTeam.score).toBe(1);
   });
+
+  it("finishes the match when a team reaches 12 points", () => {
+    const base = withHands(
+      [makeSandboxCard("4", "hearts")],
+      [makeSandboxCard("3", "spades")]
+    );
+    const almost = {
+      ...base,
+      teams: base.teams.map((team) =>
+        team.id === "TEAM_A" ? { ...team, score: 11 } : team
+      ),
+    };
+
+    const asked = askSandboxTruco(almost, SANDBOX_YOU_ID);
+    const finished = rejectSandboxTruco(asked);
+
+    expect(finished.status).toBe(GameStatus.FINISHED);
+    expect(finished.teams.find((team) => team.id === "TEAM_A")?.score).toBe(12);
+  });
 });

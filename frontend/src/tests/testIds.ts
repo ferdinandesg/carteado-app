@@ -39,6 +39,7 @@ export const testIds = {
     radarPeek: "game-radar-peek",
     illusionReveal: "game-illusion-reveal",
     activeEffects: "game-active-effects",
+    finishedModal: "game-finished-modal",
   },
   menu: {
     shell: "menu-shell",
