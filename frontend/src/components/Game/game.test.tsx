@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 
 import Game from "@/components/Game/game";
 import { useRoomContext } from "@/contexts/room.context";
-import { RoomInterface } from "@/models/room";
+import { RoomInterface } from "shared/types";
 
 jest.mock("@/components/buttons/withSound", () => ({
   withSound: (Component: unknown) => Component,

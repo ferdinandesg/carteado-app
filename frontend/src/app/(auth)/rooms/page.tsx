@@ -2,7 +2,7 @@
 import SearchComponent from "@/components/Search";
 import { useRouter } from "next/navigation";
 import useFetchRooms from "@/hooks/rooms/useFetchRooms";
-import { RoomInterface } from "@/models/room";
+import { RoomInterface } from "shared/types";
 import RoomItem from "@/components/RoomItem";
 import MenuShell from "@/components/menu/MenuShell";
 

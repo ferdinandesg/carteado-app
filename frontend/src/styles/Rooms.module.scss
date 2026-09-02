@@ -25,154 +25,173 @@
   max-height: min(62vh, 460px);
   overflow-y: auto;
   padding-right: $spacing-s;
-  scrollbar-color: $color-accent-teal $color-accent-pink;
+  scrollbar-color: $color-accent-teal rgba($color-black, 0.2);
   scrollbar-width: thin;
 }
 
 .RoomList {
   display: flex;
   flex-direction: column;
-  gap: $spacing-s;
+  gap: $spacing-xs;
   padding: 0;
   margin: 0;
   list-style: none;
 }
 
+// Item de sala: mesmo padrão do item de participante
+// (faixa de status | avatares | nome + tags | contagem | status).
 .RoomItem {
-  position: relative;
+  --status-color: #{$color-online};
+  --avatar-size: 40px;
+
   display: grid;
-  grid-template-columns: minmax(160px, 0.9fr) minmax(0, 1.6fr) 20px;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
+  gap: $spacing-s;
   width: 100%;
-  min-height: 92px;
-  padding: $spacing-s $spacing-m;
+  min-height: 60px;
+  padding: $spacing-xs $spacing-s;
   color: $color-white;
   text-align: left;
-  background-color: rgba($color-panel-blue, 0.78);
-  border: $border-width solid rgba($color-outline-light, 0.75);
-  border-radius: $border-radius-l;
-  box-shadow:
-    0 3px 0 rgba($color-black, 0.38),
-    inset 0 0 0 2px rgba($color-outline, 0.4);
+  background-color: rgba($color-panel-deep, 0.6);
+  border: $border-width solid $color-border-subtle;
+  border-left: 4px solid var(--status-color);
+  border-radius: $border-radius-m;
   cursor: pointer;
-  gap: $spacing-m;
   transition:
     background-color $transition-normal,
-    transform $transition-normal;
+    border-color $transition-normal,
+    box-shadow $transition-normal;
+
+  &.open {
+    --status-color: #{$color-online};
+  }
+
+  &.playing {
+    --status-color: #{$color-primary};
+  }
+
+  &.finished {
+    --status-color: #{$color-gray-400};
+  }
 
   &:hover {
-    background-color: rgba($color-panel-blue-hover, 0.88);
-    transform: translateY(-1px);
+    background-color: rgba($color-panel-blue, 0.35);
   }
 
   &:focus-visible {
     outline: 2px solid $color-primary;
-    outline-offset: 3px;
+    outline-offset: 2px;
   }
 }
 
 .selectedRoom {
-  background-color: rgba($color-panel-blue-hover, 0.96);
+  background-color: rgba($color-panel-blue, 0.45);
   border-color: $color-primary;
-  box-shadow:
-    0 3px 0 rgba($color-black, 0.38),
-    0 0 0 2px rgba($color-primary, 0.28),
-    inset 0 0 0 2px rgba($color-outline, 0.4);
+  border-left-color: var(--status-color);
+  box-shadow: 0 0 14px rgba($color-primary, 0.35);
 }
 
 .participantStack {
   display: flex;
   align-items: center;
-  min-width: 0;
-  padding-left: $spacing-xs;
+  flex-shrink: 0;
 }
 
 .participantAvatar {
-  width: 58px;
-  height: 58px;
+  display: grid;
+  place-items: center;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
   object-fit: cover;
+  color: $color-white;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: $font-size-s;
   background-color: rgba($color-bg-input, 0.92);
-  border: $border-width solid $color-outline-light;
+  border: $border-width solid rgba($color-outline-light, 0.5);
   border-radius: $border-radius-full;
-  box-shadow: 2px 2px 0 rgba($color-black, 0.28);
 
   & + & {
-    margin-left: -$spacing-s;
+    margin-left: calc(var(--avatar-size) * -0.35);
+  }
+
+  &.more {
+    background-color: rgba($color-black, 0.55);
   }
 }
 
-.roomData {
-  display: grid;
-  grid-template-columns: minmax(110px, 0.9fr) minmax(90px, 0.7fr) minmax(
-      120px,
-      1fr
-    );
-  align-items: center;
-  gap: $spacing-m;
-  min-width: 0;
-}
-
-.roomInfo,
-.infoCount {
+.roomMeta {
   display: flex;
   flex-direction: column;
+  gap: 2px;
   min-width: 0;
 }
 
-.roomInfo {
-  align-items: flex-start;
-}
-
-.label {
-  color: rgba($color-panel-text-dark, 0.8);
-  font-size: $font-size-s;
-  font-weight: $font-weight-bold;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-}
-
-.count,
 .roomName {
   overflow: hidden;
-  color: $color-white;
   font-family: var(--font-mouse-memoirs), sans-serif;
-  font-size: clamp(1.5rem, 2.5vw, 2.1rem);
+  font-size: clamp(1rem, 2vw, 1.25rem);
   letter-spacing: 1px;
-  line-height: 1;
+  line-height: 1.1;
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
-.roomHash {
-  margin-top: $spacing-xs;
-  color: rgba($color-white, 0.72);
-  font-size: $font-size-s;
-  letter-spacing: 1px;
+.roomTags {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  min-width: 0;
+}
+
+.ruleTag {
+  flex-shrink: 0;
+  padding: 1px $spacing-xs;
+  color: $color-panel-text-dark;
+  font-family: $font-family-base;
+  font-size: 0.6rem;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
+  background-color: $color-accent-teal;
+  border-radius: $border-radius-full;
+}
+
+.roomHash {
+  overflow: hidden;
+  color: rgba($color-white, 0.6);
+  font-family: $font-family-base;
+  font-size: $font-size-xs;
+  letter-spacing: 1px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.playersCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px $spacing-s;
+  color: $color-white;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: $font-size-m;
+  letter-spacing: 1px;
+  line-height: 1;
+  background-color: rgba($color-black, 0.4);
+  border-radius: $border-radius-full;
+
+  svg {
+    color: $color-accent-teal;
+  }
 }
 
 .roomStatus {
-  align-self: start;
-  justify-self: end;
-  width: 16px;
-  height: 16px;
-  margin-top: $spacing-xs;
-  border: $border-width solid rgba($color-outline-light, 0.7);
+  width: 10px;
+  height: 10px;
+  background-color: var(--status-color);
+  border: $border-width solid rgba($color-black, 0.35);
   border-radius: $border-radius-full;
-  box-shadow: 0 0 0 2px rgba($color-black, 0.12);
-}
-
-.open {
-  background-color: $success-color;
-}
-
-.playing {
-  background-color: $color-gray-400;
-}
-
-.finished {
-  background-color: $color-accent-pink;
 }
 
 .feedback {
@@ -189,43 +208,43 @@
 }
 
 @media (max-width: $breakpoint-md) {
-  .roomsToolbar,
-  .roomsActions,
-  .RoomItem,
-  .roomData {
+  .roomsToolbar {
     grid-template-columns: 1fr;
+  }
+
+  .roomsCardContent {
+    gap: $spacing-s;
   }
 
   .roomsActions {
     gap: $spacing-s;
   }
 
+  // No mobile o card já é limitado pela tela: a lista só preenche e rola.
   .roomsListFrame {
-    min-height: min(240px, 36dvh);
-    max-height: min(50dvh, 420px);
+    min-height: 0;
+    max-height: none;
+    padding-right: $spacing-xs;
   }
 
   .RoomItem {
-    align-items: stretch;
-    min-height: auto;
-    padding-top: $spacing-l;
+    --avatar-size: 32px;
+
+    min-height: 52px;
+    padding: $spacing-m $spacing-s;
+    border-radius: $border-radius-s;
   }
 
-  .participantAvatar {
-    width: 48px;
-    height: 48px;
-  }
-
-  .roomStatus {
-    position: absolute;
-    top: $spacing-m;
-    right: $spacing-m;
-  }
-}
-
-@media (max-width: $breakpoint-sm) {
-  .count,
   .roomName {
-    font-size: clamp(1.1rem, 4vw, 1.5rem);
+    font-size: $font-size-m;
+  }
+
+  .roomHash {
+    display: none;
+  }
+
+  .playersCount {
+    padding: 2px $spacing-xs;
+    font-size: $font-size-s;
   }
 }

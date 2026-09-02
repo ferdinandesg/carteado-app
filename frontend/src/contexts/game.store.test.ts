@@ -1,16 +1,8 @@
 import { act } from "@testing-library/react";
 import { useGameStore, selectPlayers, selectCurrentPlayer } from "./game.store";
 import { User } from "shared/types";
-import { Card } from "shared/cards";
-import { Socket } from "socket.io-client";
 import { IGameState, PlayerStatus } from "shared/game";
 
-// Criamos um mock do objeto socket com uma função 'emit' que podemos espionar
-const mockSocket = {
-  emit: jest.fn(),
-} as unknown as Socket;
-
-// Dados de exemplo para os testes
 const mockGameState = {
   players: [
     {
@@ -38,26 +30,17 @@ const mockGameState = {
 } as unknown as IGameState;
 
 describe("useGameStore", () => {
-  // Antes de cada teste, resetamos o estado do store e limpamos o mock do socket
   beforeEach(() => {
     act(() => {
-      // Reseta para o estado inicial que definimos no store
-      useGameStore.setState({
-        game: null,
-        userId: null,
-        socket: null,
-      });
+      useGameStore.setState({ game: null, userId: null });
     });
-    jest.clearAllMocks(); // Limpa chamadas anteriores do mockSocket.emit
   });
 
-  // 1. Testes para as ações que modificam o estado diretamente (Setters)
   describe("State Setters", () => {
     it("deve ter o estado inicial correto", () => {
-      const { game, userId, socket } = useGameStore.getState();
+      const { game, userId } = useGameStore.getState();
       expect(game).toBeNull();
       expect(userId).toBeNull();
-      expect(socket).toBeNull();
     });
 
     it("deve atualizar o estado do jogo com setGame", () => {
@@ -65,8 +48,7 @@ describe("useGameStore", () => {
         useGameStore.getState().setGame(mockGameState);
       });
 
-      const { game } = useGameStore.getState();
-      expect(game).toEqual(mockGameState);
+      expect(useGameStore.getState().game).toEqual(mockGameState);
     });
 
     it("deve atualizar o userId com setUserId", () => {
@@ -76,81 +58,18 @@ describe("useGameStore", () => {
 
       expect(useGameStore.getState().userId).toBe("user-123");
     });
-
-    it("deve atualizar o socket com setSocket", () => {
-      act(() => {
-        useGameStore.getState().setSocket(mockSocket);
-      });
-
-      expect(useGameStore.getState().socket).toBe(mockSocket);
-    });
   });
 
-  // 2. Testes para as ações que emitem eventos via Socket
-  describe("Socket Emitting Actions", () => {
-    // Antes de cada teste neste grupo, garantimos que o mock do socket está no estado
-    beforeEach(() => {
-      act(() => {
-        useGameStore.getState().setSocket(mockSocket);
-      });
-    });
-
-    it('deve emitir o evento "play_card" com a carta correta ao chamar playCard', () => {
-      const card = { suit: "clubs", value: 13 } as Card;
-      act(() => {
-        useGameStore.getState().playCard(card);
-      });
-
-      expect(mockSocket.emit).toHaveBeenCalledWith("play_card", { card });
-      expect(mockSocket.emit).toHaveBeenCalledTimes(1);
-    });
-
-    it('deve emitir o evento "end_turn" ao chamar endTurn', () => {
-      act(() => {
-        useGameStore.getState().endTurn();
-      });
-
-      expect(mockSocket.emit).toHaveBeenCalledWith("end_turn");
-      expect(mockSocket.emit).toHaveBeenCalledTimes(1);
-    });
-
-    it('deve emitir o evento "ask_truco" ao chamar askTruco', () => {
-      act(() => {
-        useGameStore.getState().askTruco();
-      });
-
-      expect(mockSocket.emit).toHaveBeenCalledWith("ask_truco");
-      expect(mockSocket.emit).toHaveBeenCalledTimes(1);
-    });
-
-    it('deve emitir o evento "draw_table" ao chamar pickUpBunch', () => {
-      act(() => {
-        useGameStore.getState().pickUpBunch();
-      });
-
-      expect(mockSocket.emit).toHaveBeenCalledWith("draw_table");
-      expect(mockSocket.emit).toHaveBeenCalledTimes(1);
-    });
-
-    it('deve emitir o evento "pick_hand" com as cartas corretas ao chamar handlePickCards', () => {
-      const cards = [
-        { suit: "hearts", value: 10 },
-        { suit: "spades", value: 7 },
-      ] as Card[];
-      act(() => {
-        useGameStore.getState().handlePickCards(cards);
-      });
-
-      expect(mockSocket.emit).toHaveBeenCalledWith("pick_hand", { cards });
-      expect(mockSocket.emit).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  // 3. Testes para os seletores que derivam dados do estado
   describe("Selectors", () => {
     it("selectPlayers deve retornar um array vazio se o jogo for nulo", () => {
       const players = selectPlayers(useGameStore.getState());
       expect(players).toEqual([]);
+    });
+
+    it("selectPlayers deve retornar a mesma referência vazia entre chamadas", () => {
+      const first = selectPlayers(useGameStore.getState());
+      const second = selectPlayers(useGameStore.getState());
+      expect(first).toBe(second);
     });
 
     it("selectPlayers deve retornar os jogadores do estado do jogo", () => {

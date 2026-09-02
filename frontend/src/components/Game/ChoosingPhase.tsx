@@ -1,18 +1,23 @@
 import CardComponent from "@/components/Card";
 import Separator from "@/components/Separator";
 import ActionButton from "@/components/buttons/ActionButton";
-import { useGameStore } from "@/contexts/game.store";
 import { useCurrentPlayer } from "@/hooks/game/useCurrentPlayer";
+import { useGameActions } from "@/hooks/game/useGameActions";
 import { useCardSelection } from "@/hooks/useCardSelection";
 import styles from "@/styles/ChoosingPhase.module.scss";
 import { testIds } from "@/tests/testIds";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function ChoosingPhase() {
   const { t } = useTranslation();
-  const { handlePickCards } = useGameStore();
+  const { handlePickCards } = useGameActions();
   const player = useCurrentPlayer();
-  const initialHand = player?.hand?.filter((card) => !card.isHidden) ?? [];
+  const hand = player?.hand;
+  const initialHand = useMemo(
+    () => hand?.filter((card) => !card.isHidden) ?? [],
+    [hand]
+  );
 
   const {
     selectedCards,

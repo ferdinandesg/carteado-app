@@ -1,4 +1,4 @@
-import CardBunch from "@/components/CardBunch";
+import CardPile from "@/components/CardPile";
 import { useTypedGame } from "@/hooks/useTypedGame";
 import styles from "@/styles/Game.module.scss";
 import { isCarteadoGame } from "shared/game";
@@ -15,11 +15,12 @@ export default function CarteadoDeckArea() {
   return (
     <div className={styles.tableDeckArea}>
       <div className={styles.deckItem}>
-        <CardBunch
+        <CardPile
           isHidden
-          spacing="compact"
+          variant="stack"
           size="md"
-          cards={deck.slice(0, 10)}
+          cards={deck}
+          maxVisible={6}
         />
         <span
           className={styles.deckCount}

@@ -1,78 +1,81 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useState } from "react";
+import classNames from "classnames";
 import { Card } from "shared/cards";
 
 import CardComponent from "./Card";
-import {
-  CARD_SIZES,
-  getCardWidth,
-  type CardSize,
-} from "@/lib/cards/cardSizing";
+import { getCardKeys } from "@/lib/cards/cardKey";
+import { getCardScale, type CardSize } from "@/lib/cards/cardSizing";
+import { useCoarsePointer } from "@/hooks/useMediaQuery";
 import styles from "@styles/CardFan.module.scss";
 
 type CardFanProps = {
   cards: Card[];
   onClick?: (card: Card) => void;
   size?: CardSize;
-  spacing?: number;
+  /** Bloqueia interação (ex.: truco pendente, não é meu turno). */
+  disabled?: boolean;
+  /** Prefixo do `layoutId` para animar a carta ao sair do leque. */
+  layoutPrefix?: string;
   testId?: string;
 };
 
+/**
+ * Leque de cartas em arco. Toda a geometria é CSS (`--i`, `--n`); o espaçamento
+ * comprime automaticamente via container query quando o leque não cabe.
+ * Em toque: primeiro tap seleciona/eleva, segundo tap joga.
+ */
 export default function CardFan({
   cards,
   onClick = () => {},
-  size = "xl",
-  spacing: maxSpacing = 56,
+  size = "lg",
+  disabled = false,
+  layoutPrefix = "card",
   testId,
 }: CardFanProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [spacing, setSpacing] = useState(maxSpacing);
-  const cardHeight = CARD_SIZES[size];
-  const cardWidth = getCardWidth(cardHeight);
-  const numCards = cards.length;
-  const fanWidth = (numCards - 1) * spacing;
-  const initialOffset = -fanWidth / 2;
+  const isTouch = useCoarsePointer();
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const keys = getCardKeys(cards);
+  const activeKey =
+    selectedKey && keys.includes(selectedKey) ? selectedKey : null;
 
-  useLayoutEffect(() => {
-    const container = containerRef.current;
-    if (!container || numCards <= 1) {
-      setSpacing(maxSpacing);
+  const handleSelect = (card: Card, key: string) => {
+    if (disabled) return;
+
+    if (isTouch && activeKey !== key) {
+      setSelectedKey(key);
       return;
     }
 
-    const updateSpacing = () => {
-      const availableWidth = container.clientWidth - cardWidth;
-      const fitSpacing = Math.floor(availableWidth / Math.max(numCards - 1, 1));
-      setSpacing(Math.min(maxSpacing, Math.max(24, fitSpacing)));
-    };
-
-    updateSpacing();
-    const observer = new ResizeObserver(updateSpacing);
-    observer.observe(container);
-    return () => observer.disconnect();
-  }, [cardWidth, maxSpacing, numCards]);
+    setSelectedKey(null);
+    onClick(card);
+  };
 
   return (
     <div
-      ref={containerRef}
-      className={styles.cardFanContainer}
-      data-testid={testId}>
+      className={classNames(styles.cardFan, { [styles.disabled]: disabled })}
+      style={
+        {
+          "--n": cards.length,
+          "--fan-scale": getCardScale(size),
+        } as React.CSSProperties
+      }
+      data-testid={testId}
+      role="list">
       {cards.map((card, index) => {
-        const translateX = (initialOffset + index * spacing) / 5;
-
+        const key = keys[index];
         return (
           <div
-            key={card.toString}
-            className={styles.cardWrapper}
-            style={
-              {
-                "--translate-x": `${translateX}px`,
-                "--card-width": `${cardWidth}px`,
-              } as React.CSSProperties
-            }
-            onClick={() => onClick(card)}>
+            key={key}
+            role="listitem"
+            className={classNames(styles.cardWrapper, {
+              [styles.selected]: activeKey === key,
+            })}
+            style={{ "--i": index } as React.CSSProperties}
+            onClick={() => handleSelect(card, key)}>
             <CardComponent
               card={card}
               size={size}
+              layoutId={`${layoutPrefix}-${key}`}
             />
           </div>
         );

@@ -1,5 +1,22 @@
 // jest.setup.ts
 import "@testing-library/jest-dom";
+import { MotionGlobalConfig } from "motion";
+
+// Animações do `motion` resolvem instantaneamente nos testes.
+MotionGlobalConfig.skipAnimations = true;
+
+if (typeof window !== "undefined" && !window.matchMedia) {
+  window.matchMedia = ((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })) as typeof window.matchMedia;
+}
 
 // Mock do logger (pino usa setImmediate, não disponível em jsdom)
 jest.mock("@/tests/utils/logger", () => ({
@@ -46,6 +63,7 @@ jest.mock("react-toastify", () => ({
     error: jest.fn(),
     info: jest.fn(),
     warn: jest.fn(),
+    dismiss: jest.fn(),
   },
 }));
 

@@ -703,7 +703,9 @@
           "score": 0
         }
       ],
-      "handsResults": []
+      "handsResults": [],
+      "activeEffects": [],
+      "powerUsages": []
     },
     "trucoPending": {
       "rulesName": "TrucoGameRules",
@@ -814,7 +816,9 @@
           "score": 0
         }
       ],
-      "handsResults": []
+      "handsResults": [],
+      "activeEffects": [],
+      "powerUsages": []
     },
     "trucoAccepted": {
       "rulesName": "TrucoGameRules",
@@ -925,7 +929,9 @@
           "score": 0
         }
       ],
-      "handsResults": []
+      "handsResults": [],
+      "activeEffects": [],
+      "powerUsages": []
     },
     "roundScored": {
       "rulesName": "TrucoGameRules",
@@ -933,7 +939,7 @@
         {
           "userId": "user-a",
           "name": "user-a",
-          "status": "waiting",
+          "status": "playing",
           "hand": [
             {
               "rank": "K",
@@ -1083,7 +1089,9 @@
           "round": 1,
           "isTie": false
         }
-      ]
+      ],
+      "activeEffects": [],
+      "powerUsages": []
     }
   }
 }

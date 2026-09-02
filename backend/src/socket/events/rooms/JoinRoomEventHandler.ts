@@ -8,18 +8,26 @@ import { getGameInstance } from "@/services/game.service";
 import { JoinRoomPayload } from "../payloads";
 import { CHANNEL } from "@/socket/channels";
 import { socketLogger } from "@/utils/logContext";
+import { joinRoomSchema } from "@/schemas/socket.schemas";
+import { parsePayload } from "../handleGameAction";
+import { leaveCurrentRoom } from "./LeaveRoomEventHandler";
 
 export async function JoinRoomEventHandler(
   context: SocketContext<JoinRoomPayload>
 ): Promise<void> {
   const { payload, socket, channel } = context;
-  const { roomHash } = payload;
   const log = socketLogger(socket);
-
-  log.info({ roomHash }, "User attempting to join room.");
+  let roomHash: string | undefined;
 
   try {
-    if (!roomHash || !socket.user) return;
+    roomHash = parsePayload(joinRoomSchema, payload).roomHash;
+    log.info({ roomHash }, "User attempting to join room.");
+
+    // Um socket só pertence a uma sala por vez: sai da anterior antes de entrar.
+    if (socket.user.room && socket.user.room !== roomHash) {
+      await leaveCurrentRoom(socket, channel);
+    }
+
     let shouldBroadcastUserJoined = false;
     let isRejoin = false;
 

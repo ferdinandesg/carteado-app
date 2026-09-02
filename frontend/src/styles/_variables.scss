@@ -1,79 +1,26 @@
-// Variáveis globais — compatibilidade e extensão do design-system
-@use "design-system/tokens" as tokens;
+// ==========================================================================
+// Ponto de entrada injetado em todo .scss pelo `sassOptions.prependData`
+// (ver next.config.js). Expõe o design-system completo (tokens + mixins)
+// sem namespace, mais alguns aliases legados.
+//
+// Não re-exporte tokens individualmente aqui: adicione-os em
+// design-system/_tokens.scss e eles ficam disponíveis em todos os módulos.
+// ==========================================================================
 
-// Re-exports para backward compatibility
-$spacing-xs: tokens.$spacing-xs;
-$spacing-s: tokens.$spacing-s;
-$spacing-m: tokens.$spacing-m;
-$spacing-l: tokens.$spacing-l;
-$spacing-xl: tokens.$spacing-xl;
+@use "sass:color";
+@forward "design-system";
+@use "design-system" as ds;
 
-$border-radius: tokens.$border-radius-m;
-$border-radius-m: tokens.$border-radius-m;
-$border-radius-l: tokens.$border-radius-l;
-$border-radius-full: tokens.$border-radius-full;
-$border-radius-s: tokens.$border-radius-s;
-$transition-normal: tokens.$transition-normal;
+// --- Aliases legados (nomes antigos ainda usados em alguns módulos) ---
+$border-radius: ds.$border-radius-m;
+$background-color: ds.$color-bg;
+$primary-color: ds.$color-primary;
+$secondary-color: ds.$color-secondary;
+$success-color: ds.$color-success;
 
-$color-white: tokens.$color-white;
-$color-black: tokens.$color-black;
-$color-overlay: tokens.$color-overlay;
-$color-primary: tokens.$color-primary;
-$color-primary-hover: tokens.$color-primary-hover;
-$color-ready: tokens.$color-ready;
-$color-bg: tokens.$color-bg;
-$color-bg-input: tokens.$color-bg-input;
-$color-accent-pink: tokens.$color-accent-pink;
-$color-accent-teal: tokens.$color-accent-teal;
-$color-panel-blue: tokens.$color-panel-blue;
-$color-panel-blue-hover: tokens.$color-panel-blue-hover;
-$color-panel-hover: tokens.$color-panel-hover;
-$color-panel-deep: tokens.$color-panel-deep;
-$color-panel-text-dark: tokens.$color-panel-text-dark;
-$color-panel-text-darker: tokens.$color-panel-text-darker;
-$color-gray-300: tokens.$color-gray-300;
-$color-gray-400: tokens.$color-gray-400;
-$color-gray-800: tokens.$color-gray-800;
-$color-outline: tokens.$color-outline;
-$color-outline-light: tokens.$color-outline-light;
-$color-border-subtle: tokens.$color-border-subtle;
-$border-width: tokens.$border-width;
-$border-width-bold: tokens.$border-width-bold;
-$shadow-card: tokens.$shadow-card;
-$shadow-button: tokens.$shadow-button;
-$z-modal: tokens.$z-modal;
-$font-weight-bold: tokens.$font-weight-bold;
-$font-weight-semibold: tokens.$font-weight-semibold;
-
-$breakpoint-sm: tokens.$breakpoint-sm;
-$breakpoint-md: tokens.$breakpoint-md;
-$breakpoint-lg: tokens.$breakpoint-lg;
-$breakpoint-xl: tokens.$breakpoint-xl;
-$font-size-s: tokens.$font-size-s;
-$font-size-xs: tokens.$font-size-xs;
-$font-size-m: tokens.$font-size-m;
-$font-size-l: tokens.$font-size-l;
-$font-size-xl: tokens.$font-size-xl;
-$font-size-2xl: tokens.$font-size-2xl;
-$font-size-3xl: tokens.$font-size-3xl;
-$font-size-4xl: tokens.$font-size-4xl;
-$letter-spacing-wide: tokens.$letter-spacing-wide;
-$letter-spacing-tight: tokens.$letter-spacing-tight;
-$letter-spacing-normal: tokens.$letter-spacing-normal;
-$letter-spacing-wide: tokens.$letter-spacing-wide;
-$line-height-tight: tokens.$line-height-tight;
-$line-height-normal: tokens.$line-height-normal;
-$line-height-relaxed: tokens.$line-height-relaxed;
-$background-color: tokens.$color-bg;
-$primary-color: tokens.$color-primary;
-$secondary-color: tokens.$color-secondary;
-$success-color: tokens.$color-success;
-$color-online: tokens.$color-online;
-$color-offline: tokens.$color-offline;
-$color-bg-secondary: tokens.$color-bg-secondary;
-
+// --- Helpers ---
 @function generate-gradient($color) {
-  $darkened-color: darken($color, 30%);
+  $darkened-color: color.adjust($color, $lightness: -30%);
   @return radial-gradient(circle, $color 0%, $darkened-color 140%);
 }
 
@@ -110,10 +57,4 @@ $gradient-background: generate-gradient($background-color);
       rgba($color, 0.6) 75%,
       rgba($color, 0.6)
     );
-}
-
-.app-background {
-  width: 100%;
-  height: 100%;
-  background-color: $background-color;
 }

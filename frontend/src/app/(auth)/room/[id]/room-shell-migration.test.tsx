@@ -6,12 +6,12 @@ import { PlayerStatus } from "shared/game";
 
 import Chat from "@/components/Chat";
 import Lobby from "@/components/Lobby";
-import RoomInfo from "@/components/Players/roomInfo";
+import RoomInfo from "@/components/room/RoomInfo";
 import RoomShell from "@/components/room/RoomShell";
 import RoomParticipantsPanel from "@/components/room/RoomParticipantsPanel";
 import { useRoomContext } from "@/contexts/room.context";
 import { useSocket } from "@/contexts/socket.context";
-import { RoomInterface } from "@/models/room";
+import { RoomInterface } from "shared/types";
 
 import RoomPage from "./page";
 
@@ -200,6 +200,14 @@ describe("RoomInfo migration", () => {
 });
 
 describe("Lobby migration", () => {
+  const notReadyRoom: RoomInterface = {
+    ...mockRoom,
+    participants: mockRoom.participants.map((p) => ({
+      ...p,
+      status: PlayerStatus.NOT_READY,
+    })),
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
     (useSocket as jest.Mock).mockReturnValue({
@@ -207,7 +215,7 @@ describe("Lobby migration", () => {
       isConnected: true,
     });
     (useRoomContext as jest.Mock).mockReturnValue({
-      room: mockRoom,
+      room: notReadyRoom,
       isLoading: false,
     });
     (useSession as jest.Mock).mockReturnValue({
@@ -227,5 +235,20 @@ describe("Lobby migration", () => {
       status: PlayerStatus.READY,
     });
     expect(mockSocket.emit).toHaveBeenCalledWith("start_game");
+  });
+
+  it("derives ready state from the room and toggles back to NOT_READY", async () => {
+    (useRoomContext as jest.Mock).mockReturnValue({
+      room: mockRoom, // owner is READY on the server
+      isLoading: false,
+    });
+    const user = userEvent.setup();
+    render(<Lobby />);
+
+    await user.click(screen.getByRole("button", { name: /Lobby.imReady/i }));
+
+    expect(mockSocket.emit).toHaveBeenCalledWith("set_player_status", {
+      status: PlayerStatus.NOT_READY,
+    });
   });
 });

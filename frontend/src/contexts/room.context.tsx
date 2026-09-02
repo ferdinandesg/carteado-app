@@ -1,14 +1,16 @@
-import { useContext, createContext, ReactNode } from "react";
+import { useContext, createContext, ReactNode, useMemo } from "react";
 import { useParams } from "next/navigation";
+import type { RoomInterface } from "shared/types";
+
 import useRoomByHash from "@/hooks/rooms/useRoomByHash";
 import { useRoomSocket } from "@/hooks/rooms/useRoomSocket";
 import { useAuthQueryEnabled } from "@/hooks/useAuthAxios";
-import { useSocket } from "./socket.context";
-import { RoomInterface } from "@/models/room";
 
 type RoomContextProps = {
   room: RoomInterface | undefined;
   isLoading: boolean;
+  isError: boolean;
+  error: Error | null;
   updateRoom: (updatedRoom: RoomInterface) => void;
 };
 
@@ -16,31 +18,20 @@ const RoomContext = createContext<RoomContextProps | null>(null);
 
 export function RoomProvider({ children }: { children: ReactNode }) {
   const { id } = useParams();
-
-  const { socket, isConnected } = useSocket();
   const authReady = useAuthQueryEnabled();
 
   const roomHash = typeof id === "string" ? id : "";
-  const { updateRoom, room, isLoading } = useRoomByHash(roomHash);
+  const { updateRoom, room, isLoading, isError, error } =
+    useRoomByHash(roomHash);
 
-  useRoomSocket({
-    roomHash,
-    socket,
-    isConnected,
-    authReady,
-    updateRoom,
-  });
+  useRoomSocket({ roomHash, authReady, updateRoom });
 
-  return (
-    <RoomContext.Provider
-      value={{
-        room,
-        isLoading,
-        updateRoom,
-      }}>
-      {children}
-    </RoomContext.Provider>
+  const value = useMemo<RoomContextProps>(
+    () => ({ room, isLoading, isError, error, updateRoom }),
+    [room, isLoading, isError, error, updateRoom]
   );
+
+  return <RoomContext.Provider value={value}>{children}</RoomContext.Provider>;
 }
 
 export function useRoomContext() {

@@ -15,3 +15,6 @@ export interface SocketContext<T = unknown> {
   payload: T;
   channel: Namespace;
 }
+
+/** Contexto para eventos sem payload. */
+export type BaseSocketContext = Omit<SocketContext, "payload">;

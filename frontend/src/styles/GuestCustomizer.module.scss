@@ -1,20 +1,22 @@
-@use "design-system/tokens" as tokens;
 .customizerContainer {
   display: flex;
   justify-content: center;
-  min-height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   font-family: var(--font-big-shoulders), sans-serif;
 }
 
+// Header e ações fixos; só `.content` rola.
 .customizerBox {
   display: flex;
   flex-direction: column;
   gap: $spacing-l;
   width: min(760px, 100%);
-  min-height: 90vh;
+  max-height: 100%;
+  min-height: 0;
   margin-top: auto;
-  padding: $spacing-l tokens.$spacing-2xl;
-  overflow: auto;
+  padding: $spacing-l $spacing-2xl;
+  overflow: hidden;
   color: $color-white;
   background-color: $color-panel-blue;
   border: 5px solid $color-outline;
@@ -76,7 +78,11 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: tokens.$spacing-xl;
+  gap: $spacing-xl;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: $color-accent-teal transparent;
 }
 
 .profileSection {
@@ -199,12 +205,17 @@
 
 @media (max-width: 768px) {
   .customizerContainer {
-    padding: $spacing-m;
+    padding: $spacing-m $spacing-m 0;
   }
 
   .customizerBox {
-    min-height: auto;
+    gap: $spacing-m;
     padding: $spacing-m;
+    padding-bottom: max($spacing-m, env(safe-area-inset-bottom));
+  }
+
+  .content {
+    gap: $spacing-l;
   }
 
   .title {

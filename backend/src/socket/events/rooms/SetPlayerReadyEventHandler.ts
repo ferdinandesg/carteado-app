@@ -4,17 +4,16 @@ import emitToRoom from "@/socket/utils/emitToRoom";
 import ErrorHandler from "@/utils/error.handler";
 import { SetPlayerStatusPayload } from "../payloads";
 import { CHANNEL } from "@/socket/channels";
+import { setPlayerStatusSchema } from "@/schemas/socket.schemas";
+import { parsePayload, requireRoom } from "../handleGameAction";
 
 export async function SetPlayerStatusEventHandler(
   context: SocketContext<SetPlayerStatusPayload>
 ): Promise<void> {
   const { socket, payload, channel } = context;
   try {
-    if (!socket.user?.room || !socket.user) return;
-    const { status } = payload;
-    const roomHash = socket.user.room;
-    if (!roomHash) throw "USER_NOT_IN_ROOM";
-    let updatedStatus = status;
+    const roomHash = requireRoom(socket);
+    const { status } = parsePayload(setPlayerStatusSchema, payload);
 
     const room = await atomicallyUpdateRoomState(roomHash, (room) => {
       const participant = room.participants.find(
@@ -22,15 +21,12 @@ export async function SetPlayerStatusEventHandler(
       );
       if (!participant) throw "USER_NOT_IN_ROOM";
       participant.status = status;
-      updatedStatus = participant.status;
       return room;
     });
     if (!room) throw "ROOM_NOT_FOUND";
+
     emitToRoom(channel, roomHash, CHANNEL.SERVER.ROOM_UPDATED, room);
-    socket.log.info(
-      { roomHash, status: updatedStatus },
-      "Player status updated."
-    );
+    socket.log.info({ roomHash, status }, "Player status updated.");
   } catch (error) {
     ErrorHandler(error, socket);
   }

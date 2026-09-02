@@ -1,5 +1,6 @@
 import prisma from "../prisma";
 import {
+  atomicallyUpdateRoomState,
   getRoomState,
   RoomWithParticipants,
   saveRoomState,
@@ -80,6 +81,30 @@ export async function getRoom(hash: string): Promise<RoomWithParticipants> {
 
   if (!room) throw "Sala não encontrada";
   return { ...room, participants: [] };
+}
+
+/**
+ * Marca a sala como "finished" (Redis + Mongo) uma única vez.
+ * Retorna a sala atualizada quando houve transição; null se já estava finalizada
+ * ou não existe mais no Redis.
+ */
+export async function finishRoom(
+  hash: string
+): Promise<RoomWithParticipants | null> {
+  let transitioned = false;
+  const room = await atomicallyUpdateRoomState(hash, (current) => {
+    if (current.status === "finished") return null;
+    current.status = "finished";
+    transitioned = true;
+    return current;
+  });
+  if (!room || !transitioned) return null;
+
+  await prisma.room.update({
+    where: { id: room.id },
+    data: { status: "finished" },
+  });
+  return room;
 }
 
 export async function expireRoomByHash(hash: string) {

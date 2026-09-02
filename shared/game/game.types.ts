@@ -2,6 +2,7 @@ import Deck, { Card } from "../cards";
 import { HandResult, Team } from "../types";
 import { BasePlayer } from "./base.player";
 import { CarteadoPlayer } from "./carteadoTypes";
+import { ActiveEffect, PowerUsage } from "./powers.types";
 
 export enum GameStatus {
   OPEN = "open",
@@ -42,6 +43,8 @@ export interface ITrucoGameState extends IBaseGameState<
   rounds: number;
   teams: Team[];
   handsResults: HandResult[];
+  activeEffects: ActiveEffect[];
+  powerUsages: PowerUsage[];
 }
 
 // Carteado-specific state

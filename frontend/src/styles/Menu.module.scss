@@ -48,6 +48,7 @@
   min-width: 0;
   min-height: 0;
   gap: $spacing-xl;
+  overflow: hidden;
 }
 
 .topBar {
@@ -190,9 +191,13 @@
 }
 
 .menuCardBody {
+  display: flex;
   flex: 1;
+  flex-direction: column;
   min-height: 0;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: $color-accent-teal transparent;
 }
 
 .cardTabs {
@@ -405,16 +410,12 @@
 }
 
 @media (max-width: $breakpoint-lg) {
-  .RootLayout {
-    overflow-y: auto;
-  }
-
+  // Mesma regra do Room: a tela é fixa (100dvh) e só o card central rola.
   .Menu {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto;
-    height: auto;
-    min-height: 100%;
-    min-height: 100dvh;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    height: 100%;
+    overflow: hidden;
     background: $color-bg;
   }
 
@@ -430,6 +431,7 @@
   .mainPanel {
     order: 2;
     flex: 1;
+    gap: $spacing-xl;
     margin: $spacing-s 0;
   }
 
@@ -438,7 +440,9 @@
     display: none;
     width: auto;
     min-height: auto;
+    max-height: 40dvh;
     margin: 0 $spacing-m $spacing-m;
+    overflow-y: auto;
   }
 
   .Menu.friendsOpen .friendsPanel {
@@ -462,7 +466,13 @@
   }
 
   .gameplayCard {
+    flex: 1;
+    min-height: 0;
     margin: 0;
+  }
+
+  .panelFooter {
+    flex: 0 0 auto;
   }
 }
 
@@ -497,8 +507,14 @@
   }
 
   .panelFooter {
-    align-items: stretch;
-    flex-direction: column;
+    align-items: center;
+    gap: $spacing-s;
+    font-size: $font-size-xs;
+
+    button {
+      padding: $spacing-xs $spacing-s;
+      font-size: 1rem;
+    }
   }
 }
 

@@ -10,6 +10,8 @@ export default function CarteadoBunchArea() {
   return (
     <GameBunchArea
       cards={game.bunch ?? []}
+      variant="stack"
+      maxVisible={8}
       canHover
     />
   );

@@ -1,126 +1,96 @@
 "use client";
-import { FormEvent, useEffect, useRef, useState } from "react";
-import { useSocket } from "@/contexts/socket.context";
-import Message from "./message";
-
-import styles from "@/styles/Chat.module.scss";
+import { FormEvent, useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Send } from "lucide-react";
+
 import ActionButton from "@/components/buttons/ActionButton";
 import TextInput from "@/components/inputs/TextInput";
+import { useRoomShell } from "@/contexts/roomShell.context";
+import { useChatSocket } from "@/hooks/chat/useChatSocket";
+import styles from "@/styles/Chat.module.scss";
+import { testIds } from "@/tests/testIds";
 
-type MessageType = {
-  message: string;
-  name: string;
-};
+import Message from "./message";
+
 interface ChatProps {
   roomHash: string;
-  isCollapsed?: boolean;
-  toggleCollapse?: () => void;
 }
+
 export default function Chat({ roomHash }: ChatProps) {
-  const inputRef = useRef<HTMLInputElement | null>(null);
   const { t } = useTranslation();
-  const tRef = useRef(t);
-  const divRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const messagesRef = useRef<HTMLDivElement | null>(null);
   const chatRef = useRef<HTMLDivElement | null>(null);
 
-  const { socket } = useSocket();
-  const [localMessages, setMessages] = useState<MessageType[]>([]);
-  const [useAutoScroll] = useState<boolean>(true);
-  const [isLoading, setLoading] = useState<boolean>(true);
-  const [, setUnreadMessages] = useState<number>(0);
+  const shell = useRoomShell();
+  const isSheetOpen = shell?.isMobile && shell.activePanel === "chat";
+
+  // No mobile o chat "em foco" é o sheet aberto; no desktop, o painel focado.
+  const isSheetOpenRef = useRef(isSheetOpen);
+  useEffect(() => {
+    isSheetOpenRef.current = isSheetOpen;
+  }, [isSheetOpen]);
+
+  const isFocused = useCallback(
+    () =>
+      Boolean(isSheetOpenRef.current) ||
+      document.activeElement === chatRef.current,
+    []
+  );
+  const { messages, isLoading, sendMessage, markAsRead, unreadCount } =
+    useChatSocket(roomHash, { isFocused });
+
+  const setChatUnread = shell?.setChatUnread;
+  useEffect(() => {
+    setChatUnread?.(unreadCount);
+  }, [setChatUnread, unreadCount]);
 
   useEffect(() => {
-    tRef.current = t;
-  }, [t]);
-
-  const updateMessages = (messages: MessageType | MessageType[]) => {
-    setMessages((m) => [
-      ...m,
-      ...(Array.isArray(messages) ? messages : [messages]),
-    ]);
-    if (chatRef.current && document.activeElement !== chatRef.current) {
-      setUnreadMessages(
-        (un) => un + (Array.isArray(messages) ? messages.length : 1)
-      );
-    }
-  };
+    if (isSheetOpen) markAsRead();
+  }, [isSheetOpen, markAsRead]);
 
   useEffect(() => {
-    const events = {
-      join_chat: (message: MessageType) => {
-        updateMessages({
-          name: "system",
-          message: tRef.current("ServerMessages.infos.PLAYER_JOINED", {
-            player: message.message,
-          }),
-        });
-      },
-      receive_message: (message: MessageType) => updateMessages(message),
-      load_messages: (payload: MessageType[]) => {
-        updateMessages(payload);
-        setLoading(false);
-      },
-    };
-    socket.emit("join_chat", { roomHash });
-    Object.entries(events).forEach(([event, handler]) => {
-      socket.on(event, handler);
-    });
-
-    return () => {
-      Object.entries(events).forEach(([event, handler]) => {
-        socket.off(event, handler);
-      });
-    };
-  }, [socket, roomHash]);
-
-  useEffect(() => {
-    if (!useAutoScroll || !divRef.current) return;
-    if (typeof divRef.current.scroll === "function") {
-      divRef.current.scroll({
-        behavior: "smooth",
-        top: divRef.current.scrollHeight,
-      });
+    const container = messagesRef.current;
+    if (!container) return;
+    if (typeof container.scroll === "function") {
+      container.scroll({ behavior: "smooth", top: container.scrollHeight });
     } else {
-      divRef.current.scrollTop = divRef.current.scrollHeight;
+      container.scrollTop = container.scrollHeight;
     }
-  }, [localMessages, useAutoScroll]);
+  }, [messages]);
 
-  const sendMessage = (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    const message = inputRef.current?.value;
-    if (!message) return;
-    socket.emit("send_message", { roomHash, message });
-    inputRef.current!.value = "";
-  };
-
-  const setReadMessages = () => {
-    setUnreadMessages(0);
+    const input = inputRef.current;
+    if (!input?.value) return;
+    sendMessage(input.value);
+    input.value = "";
   };
 
   return (
     <aside
       className={styles.Chat}
       ref={chatRef}
-      onFocus={setReadMessages}>
+      data-testid={testIds.room.chat}
+      onFocus={markAsRead}>
       <div
-        ref={divRef}
+        ref={messagesRef}
         className={styles.messagesContainer}>
         {isLoading && (
           <span className={styles.loadingMessage}>{t("loading")}</span>
         )}
         {!isLoading &&
-          localMessages?.map((m, i) => (
+          messages.map((m, i) => (
             <Message
               key={`message-${i}`}
-              {...m}
+              name={m.name}
+              message={m.message}
             />
           ))}
       </div>
       <form
         className={styles.messageForm}
-        onSubmit={sendMessage}>
+        onSubmit={handleSubmit}>
         <TextInput
           ref={inputRef}
           type="text"

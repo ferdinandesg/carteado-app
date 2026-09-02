@@ -1,6 +1,6 @@
 .Rules {
-  width: 100vw;
-  min-height: 100vh;
+  width: 100%;
+  height: 100dvh;
   overflow: hidden;
   color: $color-white;
   background:
@@ -17,10 +17,10 @@
 .rulesContainer {
   display: grid;
   grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   gap: $spacing-l;
   width: min(1120px, calc(100vw - 48px));
-  min-height: calc(100vh - 48px);
+  height: calc(100% - 48px);
   margin: 24px auto;
   padding: $spacing-l;
   background-color: rgba($color-bg, 0.84);
@@ -104,12 +104,16 @@
   border-color: $color-outline;
 }
 
+// Única região com scroll da página.
 .ruleCard {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  min-height: 360px;
+  justify-content: safe center;
+  min-height: 0;
   padding: clamp($spacing-m, 4vw, $spacing-xl);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: $color-outline transparent;
   background-color: rgba($color-bg-input, 0.96);
   border: $border-width solid $color-outline;
   border-radius: $border-radius-l;
@@ -164,7 +168,6 @@
 
 @media (max-width: 900px) {
   .Rules {
-    overflow-y: auto;
     background:
       linear-gradient(
         180deg,
@@ -178,22 +181,31 @@
   .rulesContainer {
     display: flex;
     flex-direction: column;
+    gap: $spacing-m;
     width: min(100%, calc(100vw - 24px));
-    min-height: auto;
+    height: calc(100% - 24px);
     margin: 12px auto;
     padding: $spacing-m;
+    padding-bottom: max($spacing-m, env(safe-area-inset-bottom));
   }
 
   .header {
     display: flex;
     flex-direction: column;
     align-items: center;
+    flex: 0 0 auto;
+  }
+
+  .introText {
+    display: none;
   }
 
   .stepper {
+    flex: 0 0 auto;
     flex-direction: row;
     overflow-x: auto;
     padding-bottom: $spacing-xs;
+    scrollbar-width: none;
   }
 
   .step {
@@ -207,10 +219,12 @@
   }
 
   .ruleCard {
-    min-height: 320px;
+    flex: 1;
+    min-height: 0;
   }
 
   .controls {
+    flex: 0 0 auto;
     justify-content: stretch;
 
     > * {

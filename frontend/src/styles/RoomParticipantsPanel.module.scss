@@ -1,16 +1,38 @@
+// Painel de participantes: mesma linguagem visual dos assentos da mesa
+// (moldura por time, anel de turno, badge de status).
+
 .panel {
   display: flex;
   flex-direction: column;
   height: 100%;
   min-height: 0;
-  gap: $spacing-m;
-  padding: $spacing-m;
+  gap: $spacing-s;
+  padding: $spacing-s;
   overflow: hidden;
   color: $color-white;
 }
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-s;
+}
+
 .backButton {
   margin-right: auto;
 }
+
+.count {
+  padding: $spacing-2xs $spacing-s;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: $font-size-m;
+  letter-spacing: 1px;
+  background-color: rgba($color-black, 0.35);
+  border: $border-width solid $color-border-subtle;
+  border-radius: $border-radius-full;
+}
+
 .participantList {
   display: flex;
   flex: 1;
@@ -26,23 +48,147 @@
 }
 
 .participantItem {
+  --team-color: #{rgba($color-outline-light, 0.35)};
+  --avatar-size: 56px;
+
   display: flex;
-  align-self: end;
+  align-items: center;
+  gap: $spacing-s;
+  min-width: 0;
+  padding: $spacing-s;
+  background-color: rgba($color-panel-deep, 0.6);
+  border: $border-width solid $color-border-subtle;
+  border-left: 4px solid var(--team-color);
+  border-radius: $border-radius-m;
+  transition:
+    border-color $transition-normal,
+    box-shadow $transition-normal,
+    opacity $transition-normal;
+
+  &.ally {
+    --team-color: #{$color-accent-teal};
+  }
+
+  &.rival {
+    --team-color: #{$color-accent-pink};
+  }
+
+  &.isMe {
+    background-color: rgba($color-panel-blue, 0.35);
+  }
+
+  &.isTurn {
+    border-color: $color-primary;
+    border-left-color: var(--team-color);
+    box-shadow: 0 0 14px rgba($color-primary, 0.35);
+  }
+
+  &.away {
+    opacity: 0.55;
+  }
+}
+
+.avatar {
+  position: relative;
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  overflow: visible;
+  background-color: rgba($color-bg-input, 0.92);
+  border: $border-width solid var(--team-color);
+  border-radius: $border-radius-full;
+
+  img,
+  svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: $border-radius-full;
+  }
+
+  .isTurn & {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.35);
+  }
+}
+
+.handCount {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px $spacing-xs;
+  color: $color-panel-text-dark;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: $font-size-xs;
+  line-height: 1;
+  background-color: $color-primary;
+  border: $border-width solid $color-outline;
+  border-radius: $border-radius-full;
+
+  svg {
+    width: 11px;
+    height: 11px;
+  }
+}
+
+.participantMeta {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: $spacing-xs;
+  min-width: 0;
+}
+
+.participantName {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  min-width: 0;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  letter-spacing: 1px;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.nameText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ownerIcon {
+  flex-shrink: 0;
+  color: $color-primary;
+}
+
+.guestTag {
+  flex-shrink: 0;
+  padding: 1px $spacing-xs;
+  color: rgba($color-white, 0.8);
+  font-family: $font-family-base;
+  font-size: 0.6rem;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  background-color: rgba($color-black, 0.45);
+  border-radius: $border-radius-full;
 }
 
 .statusBadge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: $spacing-s;
+  align-self: flex-start;
+  padding: 2px $spacing-s;
   color: $color-panel-text-dark;
   font-family: var(--font-mouse-memoirs), sans-serif;
-  font-size: $font-size-m;
-  font-weight: $font-weight-bold;
-  letter-spacing: 1px;
-  line-height: 1.1;
-  text-align: center;
+  font-size: $font-size-s;
+  letter-spacing: 0.8px;
+  line-height: 1.2;
   text-transform: uppercase;
+  border-radius: $border-radius-s;
 
   &.ready {
     background-color: $color-online;
@@ -58,87 +204,56 @@
   }
 
   &.playing {
+    color: $color-white;
+    background-color: rgba($color-black, 0.4);
+  }
+
+  &.turn {
+    color: $color-panel-text-dark;
     background-color: $color-primary;
   }
 }
 
-.participantBody {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: $spacing-s;
-  padding: $spacing-s $spacing-s $spacing-s 0;
-}
-
-.participantMeta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: $spacing-s;
-  min-width: 0;
-}
-
-.participantName {
-  display: inline-flex;
-  align-items: center;
-  gap: $spacing-xs;
-  font-size: clamp(1rem, 2.5vw, 1.35rem);
-  letter-spacing: 1px;
-  line-height: 1;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.participantStatus {
-  display: flex;
-  align-items: center;
-  gap: $spacing-xs;
-}
-
-.levelBadge {
-  padding: $spacing-xs $spacing-m;
-  color: $color-white;
-  font-family: var(--font-mouse-memoirs), sans-serif;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-bold;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  background-color: rgba($color-black, 0.55);
-  border-radius: $border-radius-full;
-}
-
-.avatar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 72px;
-  height: 72px;
-  overflow: hidden;
-  background-color: rgba($color-bg-input, 0.92);
-  border: $border-width solid rgba($color-outline-light, 0.65);
-  border-radius: $border-radius-full;
-  flex-shrink: 0;
-
-  img,
-  svg {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-}
-
+// Mobile: faixa horizontal de chips acima da mesa.
 @media (max-width: $breakpoint-md) {
   .panel {
-    max-height: min(42dvh, 360px);
+    height: auto;
+    padding: $spacing-xs $spacing-s;
+  }
+
+  .panel.inGame .participantList {
+    display: none;
+  }
+
+  .participantList {
+    flex: 0 0 auto;
+    flex-direction: row;
+    gap: $spacing-xs;
+    padding-bottom: $spacing-2xs;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
   }
 
   .participantItem {
-    min-height: 76px;
+    --avatar-size: 40px;
+
+    flex: 0 0 auto;
+    max-width: 44vw;
+    padding: $spacing-xs $spacing-s $spacing-xs $spacing-xs;
+    border-radius: $border-radius-full;
   }
 
-  .avatar {
-    width: 60px;
-    height: 60px;
+  .participantName {
+    font-size: $font-size-s;
+  }
+
+  .guestTag {
+    display: none;
+  }
+
+  .statusBadge {
+    padding: 0 $spacing-xs;
+    font-size: 0.7rem;
   }
 }

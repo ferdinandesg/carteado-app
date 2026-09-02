@@ -8,6 +8,7 @@
     ".": "./dist/types/index.js",
     "./cards": "./dist/cards/index.js",
     "./game": "./dist/game/index.js",
+    "./socket": "./dist/socket/index.js",
     "./types": "./dist/types/index.js",
     "./types/guest": "./dist/types/guest.js",
     "./types/room": "./dist/types/room.js",

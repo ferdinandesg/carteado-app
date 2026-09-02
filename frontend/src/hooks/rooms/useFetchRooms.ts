@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import { RoomInterface } from "@/models/room";
+import { RoomInterface } from "shared/types";
 import useAxiosAuth, { useAuthQueryEnabled } from "../useAuthAxios";
 
 export default function useFetchRooms() {

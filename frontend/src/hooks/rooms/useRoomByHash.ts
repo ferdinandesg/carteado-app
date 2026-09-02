@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { RoomInterface } from "@/models/room";
+import { RoomInterface } from "shared/types";
 import useAxiosAuth, { useAuthQueryEnabled } from "../useAuthAxios";
 
 export default function useRoomByHash(hash: string) {

@@ -1,31 +1,18 @@
 "use client";
 
 import { useEffect } from "react";
-import { useSocket } from "@/contexts/socket.context"; // seu socket context
-import { useGameStore } from "./game.store";
 import { useSession } from "next-auth/react";
-import { IGameState } from "shared/game";
 
-// Este componente não renderiza nada, apenas gerencia a lógica.
+import { useSocketEvent } from "@/hooks/socket/useSocketEvent";
+import { useGameStore } from "./game.store";
+
+/** Não renderiza nada: espelha `game_updated` e o usuário logado no store. */
 export function GameController() {
-  const { socket } = useSocket();
   const { data } = useSession();
-  // Pegamos as ações do nosso store
-  const { setGame, setSocket, setUserId } = useGameStore();
+  const setGame = useGameStore((state) => state.setGame);
+  const setUserId = useGameStore((state) => state.setUserId);
 
-  useEffect(() => {
-    setSocket(socket);
-
-    const handleGameUpdate = (updatedGame: IGameState) => {
-      setGame(updatedGame);
-    };
-
-    socket.on("game_updated", handleGameUpdate);
-
-    return () => {
-      socket.off("game_updated", handleGameUpdate);
-    };
-  }, [socket, setGame, setSocket]);
+  useSocketEvent("game_updated", setGame);
 
   useEffect(() => {
     if (!data?.user.id) return;

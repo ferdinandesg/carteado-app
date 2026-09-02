@@ -125,10 +125,19 @@
     "participants": "Participantes",
     "hash": "Código",
     "status": "Status: {{status}}",
-    "modality": "Modo: {{rule}}"
+    "modality": "Modo: {{rule}}",
+    "copy": "Copiar código da sala",
+    "copied": "Copiado!"
+  },
+  "RoomShell": {
+    "panels": "Painéis da sala",
+    "chat": "Chat",
+    "info": "Sala",
+    "close": "Fechar"
   },
   "Participants": {
-    "level": "Nível {{level}}",
+    "guest": "Convidado",
+    "cards": "{{count}} cartas na mão",
     "badge": {
       "ready": "Pronto!",
       "waiting": "Em espera",
@@ -158,9 +167,26 @@
   },
   "Truco": {
     "currentBet": "Aposta atual",
+    "bet": "Vale",
     "roundsLabel": "Rodadas",
     "rounds": "{{rounds}}/12",
-    "scoreboard": "Placar"
+    "round": "Rodada {{rounds}}",
+    "scoreboard": "Placar",
+    "us": "Nós",
+    "them": "Eles",
+    "pendingHint": "Truco pendente: respondam!",
+    "stamp": {
+      "truco": "Truco!",
+      "six": "Seis!",
+      "nine": "Nove!",
+      "twelve": "Doze!",
+      "accepted": "Aceito!",
+      "rejected": "Correu!",
+      "roundWon": "+{{points}} pra nós!",
+      "roundLost": "+{{points}} pra eles",
+      "victory": "Vitória!",
+      "defeat": "Derrota"
+    }
   },
   "TableActions": {
     "pickUpBunch": "Comprar cartas",
@@ -200,6 +226,11 @@
       "WELCOME_BACK": "Bem-vindo de volta",
       "MATCH_STARTED": "O jogo começou",
       "PLAYER_JOINED": "O jogador {{player}} entrou na sala"
+    },
+    "connection": {
+      "RECONNECTING": "Conexão perdida. Reconectando...",
+      "RECONNECTED": "Conexão restabelecida",
+      "FAILED": "Não foi possível conectar ao servidor"
     }
   },
   "Chat": {

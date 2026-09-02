@@ -24,10 +24,14 @@ const nextConfig = {
   reactStrictMode: false,
   transpilePackages: ["shared"],
 
+  // Todo .scss compilado como entrada (módulos e globals) recebe automaticamente
+  // os tokens/mixins do design-system via `variables`. Partials (`_*.scss`)
+  // importados por @use não passam pelo prepend e devem declarar o próprio
+  // `@use "design-system" as *;`.
   sassOptions: {
     implementation: "sass",
-    includePaths: [path.join(__dirname, "styles")],
-    prependData: `@use 'variables' as *;`,
+    includePaths: [path.join(__dirname, "src/styles")],
+    prependData: `@use "variables" as *;`,
   },
   // Next 16 uses Turbopack by default; empty config acknowledges custom sassOptions only.
   turbopack: {},

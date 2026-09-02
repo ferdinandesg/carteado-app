@@ -75,7 +75,7 @@ describe("GameController — integração com payloads reais do backend", () => 
   beforeEach(() => {
     mockSocketInstance = new FakeSocket();
     act(() => {
-      useGameStore.setState({ game: null, userId: null, socket: null });
+      useGameStore.setState({ game: null, userId: null });
     });
   });
 

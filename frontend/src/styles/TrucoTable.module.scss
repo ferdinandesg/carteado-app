@@ -1,0 +1,136 @@
+// Centro da mesa (slot 5)
+
+.center {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.spread,
+.departing {
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+}
+
+.departing {
+  pointer-events: none;
+  z-index: 2;
+}
+
+.playedCard {
+  --dx: 0%;
+  --dy: 0%;
+  --rot: 0deg;
+
+  grid-area: 1 / 1;
+  line-height: 0;
+  transform: translate(var(--dx), var(--dy)) rotate(var(--rot));
+  transition: transform $transition-normal;
+}
+
+// Pilhas de vaza (slots 3 e 9)
+
+.trickPile {
+  --pile-color: #{$color-accent-pink};
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  min-width: calc(var(--card-w, 110px) * 0.7);
+  min-height: calc(var(--card-h, 154px) * 0.7);
+
+  &.ours {
+    --pile-color: #{$color-accent-teal};
+  }
+}
+
+.trickPileCards {
+  line-height: 0;
+}
+
+.trickCount {
+  display: flex;
+  gap: $spacing-xs;
+}
+
+.trickDot {
+  width: 10px;
+  height: 10px;
+  background-color: rgba($color-black, 0.35);
+  border: $border-width solid rgba($color-outline-light, 0.35);
+  border-radius: $border-radius-full;
+  transition: background-color $transition-normal;
+
+  &.trickDotOn {
+    background-color: var(--pile-color);
+    border-color: $color-outline-light;
+    box-shadow: 0 0 8px var(--pile-color);
+  }
+}
+
+// Slot 1: vira + aposta
+
+.deckArea {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-s;
+  width: 100%;
+  height: 100%;
+}
+
+.betChip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-2xs;
+  min-width: 3rem;
+  padding: $spacing-xs $spacing-s;
+  color: $color-white;
+  background-color: rgba($color-black, 0.55);
+  border: $border-width solid rgba($color-outline-light, 0.25);
+  border-radius: $border-radius-s;
+  transition:
+    border-color $transition-normal,
+    box-shadow $transition-normal;
+
+  &.pending {
+    border-color: $color-warning;
+    box-shadow: 0 0 12px rgba($color-warning, 0.55);
+  }
+
+  &.accepted {
+    border-color: $color-success;
+  }
+}
+
+.betLabel {
+  color: $color-accent-teal;
+  font-size: 0.65rem;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.betValue {
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  line-height: 1;
+}
+
+@media (max-width: $breakpoint-md) {
+  .trickPile {
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .betChip {
+    padding: $spacing-2xs $spacing-xs;
+  }
+}

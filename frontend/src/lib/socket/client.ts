@@ -1,6 +1,9 @@
 import { io, Socket } from "socket.io-client";
+import type { ClientToServerEvents, ServerToClientEvents } from "shared/socket";
 
-export const gameSocket: Socket = io(
+export type GameSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
+
+export const gameSocket: GameSocket = io(
   `${process.env.NEXT_PUBLIC_SOCKET_URL}/room`,
   {
     reconnectionDelayMax: 10000,

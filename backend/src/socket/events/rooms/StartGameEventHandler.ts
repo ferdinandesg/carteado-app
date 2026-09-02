@@ -1,5 +1,6 @@
-import { SocketContext } from "@/@types/socket";
+import { BaseSocketContext } from "@/@types/socket";
 import prisma from "@/prisma";
+import { requireRoom } from "../handleGameAction";
 import { atomicallyUpdateRoomState, getRoomState } from "@/lib/redis/room";
 import emitToRoom from "@/socket/utils/emitToRoom";
 import ErrorHandler from "@/utils/error.handler";
@@ -12,15 +13,13 @@ import {
 import { CHANNEL } from "@/socket/channels";
 
 export async function StartGameEventHandler(
-  context: SocketContext
+  context: BaseSocketContext
 ): Promise<void> {
   const { socket, channel } = context;
   const { user } = socket;
 
-  if (!user?.room) return;
-  const roomHash = user.room;
-
   try {
+    const roomHash = requireRoom(socket);
     const room = await getRoomState(roomHash);
     const participants = room?.participants ?? [];
 

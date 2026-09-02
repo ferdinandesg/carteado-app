@@ -133,6 +133,21 @@ describe("TrucoGameRules", () => {
       const teamA = rules.findTeamByUserId(game, "p1")!;
       expect(teamA.roundWins).toBe(1);
       expect(game.playerTurn).toBe("p1"); // Vencedor da mão começa a próxima
+      expect(game.getPlayer("p1")!.status).toBe(PlayerStatus.PLAYING);
+      expect(game.getPlayer("p4")!.status).toBe(PlayerStatus.WAITING);
+    });
+
+    it("should mark the starting player as PLAYING when hands are dealt", () => {
+      game.playerTurn = "p2";
+
+      rules.dealInitialHands(game);
+
+      expect(game.getPlayer("p2")!.status).toBe(PlayerStatus.PLAYING);
+      expect(
+        game.players
+          .filter((p) => p.userId !== "p2")
+          .every((p) => p.status === PlayerStatus.WAITING)
+      ).toBe(true);
     });
 
     it("should result in a tied hand if both teams play the highest card", () => {

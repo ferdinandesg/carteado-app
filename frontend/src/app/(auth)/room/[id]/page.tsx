@@ -2,13 +2,14 @@
 import Game from "@/components/Game/game";
 import { useRoomContext } from "@/contexts/room.context";
 import Lobby from "@/components/Lobby";
-import { RoomStatus } from "@/models/room";
+import { RoomStatus } from "shared/types";
 import { useParams } from "next/navigation";
 
 import styles from "@/styles/Room.module.scss";
 import { useTranslation } from "react-i18next";
 import useTitle from "@/hooks/useTitle";
-import RoomInfo from "@/components/Players/roomInfo";
+import Chat from "@/components/Chat";
+import RoomInfo from "@/components/room/RoomInfo";
 import RoomShell from "@/components/room/RoomShell";
 import { testIds } from "@/tests/testIds";
 import RoomParticipantsPanel from "@/components/room/RoomParticipantsPanel";
@@ -52,7 +53,8 @@ export default function Room() {
   return (
     <RoomShell
       participants={<RoomParticipantsPanel />}
-      info={<RoomInfo room={room} />}>
+      info={<RoomInfo room={room} />}
+      chat={<Chat roomHash={room.hash} />}>
       <div
         className={classNames(styles.roomStageContent, {
           [styles.roomStageGame]: room.status !== "open",

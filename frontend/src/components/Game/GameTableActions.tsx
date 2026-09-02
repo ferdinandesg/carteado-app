@@ -1,5 +1,6 @@
 import ActionButton from "@/components/buttons/ActionButton";
 import { useGameStore } from "@/contexts/game.store";
+import { useGameActions } from "@/hooks/game/useGameActions";
 import { testIds } from "@/tests/testIds";
 import { useTranslation } from "react-i18next";
 
@@ -7,9 +8,10 @@ import GameActionPanel from "./GameActionPanel";
 
 export default function GameTableActions() {
   const { t } = useTranslation();
-  const { endTurn, pickUpBunch, game } = useGameStore();
+  const gameStatus = useGameStore((state) => state.game?.status);
+  const { endTurn, pickUpBunch } = useGameActions();
 
-  if (game?.status !== "playing") return null;
+  if (gameStatus !== "playing") return null;
 
   return (
     <GameActionPanel layout="column">

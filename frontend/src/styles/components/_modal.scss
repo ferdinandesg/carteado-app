@@ -1,6 +1,5 @@
 // Modal — componentes do design-system
-@use "../design-system/tokens" as *;
-@use "../design-system/mixins" as *;
+@use "design-system" as *;
 
 .root {
   position: absolute;

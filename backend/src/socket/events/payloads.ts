@@ -1,20 +1,14 @@
-import { PlayerStatus } from "shared/game";
+import { PlayerStatus, UsePowerPayload } from "shared/game";
 import { Card } from "shared/cards";
+
+export type { UsePowerPayload };
 
 export interface JoinRoomPayload {
   roomHash: string;
 }
 
-export interface LeaveRoomPayload {
-  roomHash: string;
-}
-
 export interface SetPlayerStatusPayload {
   status: PlayerStatus;
-}
-
-export interface StartGamePayload {
-  roomHash: string;
 }
 
 export interface PlayCardPayload {
@@ -24,25 +18,6 @@ export interface PlayCardPayload {
 export interface PickHandPayload {
   cards: Card[];
 }
-
-export interface RetrieveCardPayload {
-  card: Card;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface EndTurnPayload {}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface DrawTablePayload {}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface AskTrucoPayload {}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface RejectTrucoPayload {}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface AcceptTrucoPayload {}
 
 export interface JoinChatPayload {
   roomHash: string;

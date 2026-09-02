@@ -1,22 +1,17 @@
-import emitToRoom from "@/socket/utils/emitToRoom";
+import { Card } from "shared/cards";
 import { SocketContext } from "@/@types/socket";
-import ErrorHandler from "@/utils/error.handler";
-import { PlayCardPayload } from "../payloads";
 import { playCard } from "@/services/game.service";
-import { CHANNEL } from "@/socket/channels";
+import { playCardSchema } from "@/schemas/socket.schemas";
+import { handleGameAction, parsePayload } from "../handleGameAction";
+import { PlayCardPayload } from "../payloads";
 
-export async function PlayCardEventHandler(
+export function PlayCardEventHandler(
   context: SocketContext<PlayCardPayload>
 ): Promise<void> {
-  const { payload, socket, channel } = context;
-  try {
-    const { card } = payload;
-    const roomHash = socket.user.room;
-    if (!roomHash) throw "ROOM_NOT_FOUND";
-    const game = await playCard(roomHash, socket.user.id, card);
-    socket.log.info({ roomHash, card }, "Card played.");
-    emitToRoom(channel, roomHash, CHANNEL.SERVER.GAME_UPDATED, game);
-  } catch (error) {
-    ErrorHandler(error, socket);
-  }
+  return handleGameAction(context, async (roomHash, userId) => {
+    const { card } = parsePayload(playCardSchema, context.payload);
+    const result = await playCard(roomHash, userId, card as Card);
+    context.socket.log.info({ roomHash, card }, "Card played.");
+    return result;
+  });
 }

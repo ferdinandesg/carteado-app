@@ -1,81 +1,156 @@
 .roomInfo {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  min-height: 0;
-  padding: $spacing-m;
-  overflow: hidden;
+  gap: $spacing-s;
+  padding: $spacing-s;
   color: $color-white;
-
-  &.collapsed {
-    align-items: center;
-    padding: $spacing-s;
-  }
-}
-
-.header {
-  display: flex;
-  justify-content: flex-start;
-  width: 100%;
-  padding: 0 0 $spacing-s;
-  color: $color-accent-teal;
-  background: none;
-  border: 0;
-  cursor: pointer;
-}
-
-.content {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-height: 0;
-  gap: $spacing-l;
+  background-color: rgba($color-panel-deep, 0.6);
+  border: $border-width solid $color-border-subtle;
+  border-radius: $border-radius-m;
 }
 
 .roomTitle {
   margin: 0;
-  color: $color-primary;
-  font-family: var(--font-mouse-memoirs), sans-serif;
-  font-size: clamp(2rem, 3vw, 2.5rem);
-  line-height: 1;
-  text-align: center;
+  color: $color-accent-teal;
+  font-family: $font-family-base;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 1px;
   text-transform: uppercase;
 }
 
-.infoList {
-  display: flex;
-  flex-direction: column;
+// Código da sala: elemento principal, clique copia.
+.hashButton {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
   gap: $spacing-s;
-  padding: 0;
-  margin: 0;
+  padding: $spacing-xs $spacing-s;
+  color: $color-white;
+  text-align: left;
+  background-color: rgba($color-black, 0.35);
+  border: $border-width dashed rgba($color-outline-light, 0.5);
+  border-radius: $border-radius-m;
+  cursor: pointer;
+  transition:
+    border-color $transition-normal,
+    background-color $transition-normal;
+
+  &:hover,
+  &:focus-visible {
+    border-color: $color-primary;
+  }
+
+  &.copied {
+    border-color: $color-online;
+    border-style: solid;
+  }
 }
 
-.infoRow {
+.hashLabel {
+  color: rgba($color-white, 0.7);
+  font-family: $font-family-base;
+  font-size: $font-size-xs;
+  text-transform: uppercase;
+}
+
+.hashValue {
+  overflow: hidden;
+  color: $color-primary;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: clamp(1.4rem, 2.2vw, 1.75rem);
+  letter-spacing: 3px;
+  line-height: 1;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.hashIcon {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: $spacing-s;
-  padding: $spacing-s;
+  place-items: center;
+  color: $color-accent-teal;
+
+  .copied & {
+    color: $color-online;
+  }
+}
+
+.copyFeedback {
+  position: absolute;
+  right: $spacing-s;
+  bottom: -1.1rem;
+  color: $color-online;
+  font-family: $font-family-base;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-xs;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.pill {
+  display: inline-flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: $spacing-xs $spacing-s;
+  background-color: rgba($color-black, 0.3);
+  border-left: 3px solid $color-panel-blue;
+  border-radius: $border-radius-s;
+
+  &.open {
+    border-left-color: $color-online;
+  }
+
+  &.playing {
+    border-left-color: $color-primary;
+  }
+
+  &.finished {
+    border-left-color: $color-gray-400;
+  }
+}
+
+.pillLabel {
+  display: inline-flex;
   align-items: center;
-  dt,
-  dd {
-    min-width: 0;
-    margin: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-transform: uppercase;
-    white-space: nowrap;
+  gap: 4px;
+  color: $color-accent-teal;
+  font-family: $font-family-base;
+  font-size: 0.65rem;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.pillValue {
+  overflow: hidden;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: $font-size-m;
+  letter-spacing: 1px;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@media (max-width: $breakpoint-md) {
+  .roomInfo {
+    border: 0;
+    border-radius: 0;
+    background: none;
   }
 
-  dt {
-    color: $color-accent-teal;
-    font-size: $font-size-s;
-    font-weight: $font-weight-bold;
-  }
-
-  dd {
-    color: $color-white;
-    font-family: var(--font-mouse-memoirs), sans-serif;
-    font-size: 1.25rem;
-    letter-spacing: 1px;
+  .hashValue {
+    font-size: 1.75rem;
   }
 }

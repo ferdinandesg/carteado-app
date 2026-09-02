@@ -11,6 +11,17 @@ export const CARD_SIZES = {
 
 export type CardSize = keyof typeof CARD_SIZES;
 
+/** Altura base assumida quando a carta está fora da mesa (sem `--card-h`). */
+export const CARD_BASE_HEIGHT = CARD_SIZES.lg;
+
+/**
+ * Multiplicador aplicado sobre `--card-h` (altura fluida da mesa) para cada
+ * token. Mantém a proporção dos presets fixos: `lg` é a referência (1x).
+ */
+export function getCardScale(size: CardSize = "md"): number {
+  return Number((CARD_SIZES[size] / CARD_BASE_HEIGHT).toFixed(3));
+}
+
 export function resolveCardHeight(
   size: CardSize = "md",
   height?: number

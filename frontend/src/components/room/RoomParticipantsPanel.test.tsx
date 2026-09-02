@@ -1,11 +1,12 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { PlayerStatus } from "shared/game";
+import { GameStatus, IGameState, PlayerStatus } from "shared/game";
 
 import RoomParticipantsPanel from "@/components/room/RoomParticipantsPanel";
+import { useGameStore } from "@/contexts/game.store";
 import { useRoomContext } from "@/contexts/room.context";
 import { useSocket } from "@/contexts/socket.context";
-import { RoomInterface } from "@/models/room";
+import { RoomInterface } from "shared/types";
 import { testIds } from "@/tests/testIds";
 
 const mockPush = jest.fn();
@@ -27,16 +28,12 @@ jest.mock("@/contexts/socket.context", () => ({
   useSocket: jest.fn(),
 }));
 
-jest.mock("@/contexts/game.store", () => ({
-  useGameStore: jest.fn(() => ({ game: null })),
-}));
-
 const mockRoom: RoomInterface = {
   id: "room-id",
   hash: "abcd",
   name: "Sala Teste",
   status: "open",
-  size: 2,
+  size: 4,
   participants: [
     {
       userId: "user-1",
@@ -60,9 +57,41 @@ const mockRoom: RoomInterface = {
   ownerId: "user-1",
 };
 
+const basePlayer = {
+  socketId: "",
+  status: PlayerStatus.PLAYING,
+  table: [],
+  hand: [],
+  hasStarted: false,
+  role: "user" as const,
+};
+
+const mockGame = {
+  id: "game-1",
+  status: GameStatus.PLAYING,
+  playerTurn: "user-2",
+  rulesName: "CarteadoGameRules",
+  deck: { cards: [] },
+  players: [
+    {
+      ...basePlayer,
+      userId: "user-1",
+      name: "Owner",
+      hand: [{ toString: "AS" }, { toString: "2S" }],
+    },
+    {
+      ...basePlayer,
+      userId: "user-2",
+      name: "Guest",
+      hand: [{ toString: "3S" }],
+    },
+  ],
+} as unknown as IGameState;
+
 describe("RoomParticipantsPanel", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    act(() => useGameStore.setState({ game: null, userId: null }));
     (useRoomContext as jest.Mock).mockReturnValue({ room: mockRoom });
     (useSocket as jest.Mock).mockReturnValue({
       socket: { emit: mockEmit },
@@ -70,15 +99,39 @@ describe("RoomParticipantsPanel", () => {
     });
   });
 
-  it("renders participants and leaves room when navigating back", async () => {
-    const user = userEvent.setup();
+  it("renders real participant data in the lobby", () => {
     render(<RoomParticipantsPanel />);
 
     expect(
       screen.getByTestId(testIds.room.participantsPanel)
     ).toBeInTheDocument();
+    expect(screen.getByText("2/4")).toBeInTheDocument();
     expect(screen.getByText("Owner")).toBeInTheDocument();
     expect(screen.getByText("Guest")).toBeInTheDocument();
+    expect(screen.getByLabelText("RoomInfo.owner")).toBeInTheDocument();
+    expect(screen.getByText("Participants.guest")).toBeInTheDocument();
+    expect(screen.getByText("Participants.badge.ready")).toBeInTheDocument();
+    expect(screen.getByText("Participants.badge.waiting")).toBeInTheDocument();
+    expect(screen.queryByLabelText(/Participants.cards/)).toBeNull();
+  });
+
+  it("shows hand count and turn from the game state", () => {
+    act(() => useGameStore.setState({ game: mockGame, userId: "user-2" }));
+
+    render(<RoomParticipantsPanel />);
+
+    expect(screen.getAllByLabelText("Participants.cards")).toHaveLength(2);
+    expect(screen.getByText("2")).toBeInTheDocument();
+    expect(screen.getByText("1")).toBeInTheDocument();
+    expect(
+      screen.getByText("Participants.status.yourTurn")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Participants.badge.playing")).toBeInTheDocument();
+  });
+
+  it("leaves room when navigating back", async () => {
+    const user = userEvent.setup();
+    render(<RoomParticipantsPanel />);
 
     await user.click(screen.getByTestId(testIds.room.backButton));
 

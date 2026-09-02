@@ -240,7 +240,21 @@ export class CarteadoGameRules implements ICarteadoGameRules {
 
   public pickHand(game: CarteadoGame, userId: string, cards: Card[]) {
     const foundPlayer = game.getPlayer(userId);
-    if (!foundPlayer) return;
+    if (!foundPlayer) throw Errors.playerNotInRoom({ userId });
+    if (foundPlayer.status !== PlayerStatus.CHOOSING) {
+      throw Errors.invariant("HAND_ALREADY_PICKED");
+    }
+    if (cards.length !== 3) throw Errors.validation("INVALID_HAND_SIZE");
+
+    // Só aceita cartas que o servidor realmente distribuiu a este jogador.
+    const dealt = new Set(foundPlayer.hand.map((c) => c.toString));
+    const uniquePicked = new Set(cards.map((c) => c.toString));
+    if (
+      uniquePicked.size !== cards.length ||
+      cards.some((c) => !dealt.has(c.toString))
+    ) {
+      throw Errors.validation("CARD_NOT_FOUND");
+    }
 
     foundPlayer.table = foundPlayer.hand.filter(
       (c) => !cards.some((y) => c.toString === y.toString)

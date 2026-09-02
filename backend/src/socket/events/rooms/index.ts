@@ -4,21 +4,17 @@ import { JoinRoomEventHandler } from "./JoinRoomEventHandler";
 import { LeaveRoomEventHandler } from "./LeaveRoomEventHandler";
 import { SetPlayerStatusEventHandler } from "./SetPlayerReadyEventHandler";
 import { StartGameEventHandler } from "./StartGameEventHandler";
-import { SocketContext } from "@/@types/socket";
+import { BaseSocketContext } from "@/@types/socket";
 import { registerSafeSocketEvent } from "../registerSafeSocketEvent";
 import { JoinRoomPayload, SetPlayerStatusPayload } from "../payloads";
 
 export function registerRoomEvents(socket: Socket, channel: Namespace): void {
-  const context: Omit<SocketContext, "payload"> = { socket, channel };
+  const context: BaseSocketContext = { socket, channel };
 
   registerSafeSocketEvent<JoinRoomPayload>(
     socket,
     CHANNEL.CLIENT.JOIN_ROOM,
     (payload) => JoinRoomEventHandler({ ...context, payload })
-  );
-
-  registerSafeSocketEvent(socket, CHANNEL.CLIENT.LEAVE_ROOM, (payload) =>
-    LeaveRoomEventHandler({ ...context, payload })
   );
 
   registerSafeSocketEvent<SetPlayerStatusPayload>(
@@ -27,7 +23,12 @@ export function registerRoomEvents(socket: Socket, channel: Namespace): void {
     (payload) => SetPlayerStatusEventHandler({ ...context, payload })
   );
 
-  registerSafeSocketEvent(socket, CHANNEL.CLIENT.START_GAME, (payload) =>
-    StartGameEventHandler({ ...context, payload })
+  // O cliente envia { roomHash } no quit, mas a sala vem do próprio socket.
+  registerSafeSocketEvent<void>(socket, CHANNEL.CLIENT.LEAVE_ROOM, () =>
+    LeaveRoomEventHandler(context)
+  );
+
+  registerSafeSocketEvent<void>(socket, CHANNEL.CLIENT.START_GAME, () =>
+    StartGameEventHandler(context)
   );
 }

@@ -3,6 +3,8 @@
 // Baseado na referência visual: azul escuro, outlines bold, acentos vibrantes
 // ==========================================================================
 
+@use "sass:color";
+
 // --- Spacing ---
 $spacing-2xs: 2px;
 $spacing-xs: 4px;
@@ -62,7 +64,7 @@ $color-text-primary: $color-primary;
 $color-text-muted: $color-gray-500;
 
 // Outline (estilo cartoon)
-$color-outline: darken($color-panel-blue, 35%);
+$color-outline: color.adjust($color-panel-blue, $lightness: -35%);
 $color-outline-light: rgba($color-white, 0.9);
 $color-border-subtle: rgba($color-outline-light, 0.18);
 

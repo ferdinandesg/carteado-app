@@ -1,41 +1,32 @@
 import { useEffect } from "react";
-import type { Socket } from "socket.io-client";
+import type { RoomInterface } from "shared/types";
 
-import { RoomInterface } from "@/models/room";
+import { useSocket } from "@/contexts/socket.context";
+import { useSocketEvent } from "@/hooks/socket/useSocketEvent";
 
 type UseRoomSocketOptions = {
   roomHash: string;
-  socket: Socket;
-  isConnected: boolean;
   authReady: boolean;
   updateRoom: (room: RoomInterface) => void;
 };
 
+/**
+ * Mantém a sala sincronizada com o servidor: escuta `room_updated`/`room_joined`
+ * e (re)emite `join_room` sempre que o socket conecta.
+ */
 export function useRoomSocket({
   roomHash,
-  socket,
-  isConnected,
   authReady,
   updateRoom,
 }: UseRoomSocketOptions) {
-  useEffect(() => {
-    if (!roomHash || !authReady) return;
+  const { socket, isConnected } = useSocket();
+  const enabled = Boolean(roomHash) && authReady;
 
-    const syncRoom = (room: RoomInterface) => updateRoom(room);
-    const onRoomJoined = (payload: { room: RoomInterface }) =>
-      syncRoom(payload.room);
-
-    socket.on("room_updated", syncRoom);
-    socket.on("room_joined", onRoomJoined);
-
-    return () => {
-      socket.off("room_updated", syncRoom);
-      socket.off("room_joined", onRoomJoined);
-    };
-  }, [roomHash, socket, authReady, updateRoom]);
+  useSocketEvent("room_updated", updateRoom, { enabled });
+  useSocketEvent("room_joined", ({ room }) => updateRoom(room), { enabled });
 
   useEffect(() => {
-    if (!roomHash || !authReady || !isConnected) return;
+    if (!enabled || !isConnected) return;
     socket.emit("join_room", { roomHash });
-  }, [roomHash, socket, authReady, isConnected]);
+  }, [socket, roomHash, enabled, isConnected]);
 }

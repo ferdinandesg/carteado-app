@@ -5,7 +5,12 @@
   padding-top: $spacing-l;
 }
 
+// Desktop: participantes | mesa | info + chat
 .roomShell {
+  --participants-column-width: minmax(220px, 22%);
+  --main-column-width: minmax(0, 1fr);
+  --info-column-width: minmax(260px, 26%);
+
   display: grid;
   grid-template-columns:
     var(--participants-column-width) var(--main-column-width)
@@ -15,10 +20,6 @@
   padding: $spacing-m;
   color: $color-white;
   background: rgba($color-bg, 0.98);
-  --participants-column-width: 25%;
-  --main-column-width: 1fr;
-  --info-column-width: 25%;
-  transition: grid-template-columns 0.1s ease-in-out;
 }
 
 .roomSidePanel,
@@ -55,79 +56,175 @@
   align-items: center;
   justify-content: center;
 }
-.playersHud {
+
+.aside {
   display: flex;
   flex-direction: column;
-  padding-top: 20px;
+  gap: $spacing-m;
   height: 100%;
-  overflow-y: auto;
-  scrollbar-width: none;
-  gap: $spacing-l;
-  width: 30%;
+}
 
-  .roomActions {
-    display: flex;
-    padding: $spacing-m;
-    gap: $spacing-s;
-    justify-content: space-between;
-    .actionButton {
-      color: $color-white;
-      display: flex;
-      justify-content: center;
-      border-radius: 4px;
-      padding: $spacing-m $spacing-s;
-      width: 50%;
-      &.outline {
-        background-color: transparent;
-        color: $color-white;
-        span {
-          font-size: 1.25rem;
-          color: $color-white;
-        }
-        &:hover {
-          background-color: $primary-color;
-          color: $primary-color;
-        }
-      }
-    }
+.asideInfo {
+  flex: 0 0 auto;
+}
+
+.asideChat {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: $border-radius-m;
+}
+
+// Mobile: participantes (faixa) / mesa / barra inferior. Info e chat em sheet.
+.roomShell.mobile {
+  position: relative;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: $spacing-xs;
+  padding: $spacing-xs $spacing-xs 0;
+  overflow: hidden;
+}
+
+.mobileBar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $spacing-xs;
+  padding: $spacing-xs $spacing-xs
+    calc(#{$spacing-xs} + env(safe-area-inset-bottom, 0px));
+  background-color: rgba($color-panel-deep, 0.92);
+  border-top: $border-width solid $color-border-subtle;
+}
+
+.barButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  min-height: 44px;
+  padding: $spacing-xs $spacing-s;
+  color: rgba($color-white, 0.8);
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: $font-size-m;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: none;
+  border: 0;
+  border-radius: $border-radius-m;
+  cursor: pointer;
+  transition:
+    background-color $transition-normal,
+    color $transition-normal;
+
+  svg {
+    color: $color-accent-teal;
+  }
+
+  &.active {
+    color: $color-white;
+    background-color: rgba($color-panel-blue, 0.35);
   }
 }
-.roomChat {
-  height: 500px;
-  overflow-y: auto;
-  position: fixed;
+
+.unreadBadge {
+  position: absolute;
+  top: 4px;
+  right: 12%;
+  display: grid;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  place-items: center;
+  color: $color-panel-text-dark;
+  font-size: $font-size-xs;
+  line-height: 1;
+  background-color: $color-primary;
+  border-radius: $border-radius-full;
+}
+
+.sheetBackdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  padding: 0;
+  background-color: rgba($color-black, 0.5);
+  border: 0;
+  cursor: pointer;
+}
+
+.sheet {
+  position: absolute;
+  right: 0;
   bottom: 0;
   left: 0;
+  z-index: 21;
+  display: flex;
+  flex-direction: column;
+  max-height: 78dvh;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background-color: $color-panel-deep;
+  border: $border-width solid $color-border-subtle;
+  border-bottom: 0;
+  border-radius: $border-radius-l $border-radius-l 0 0;
+  box-shadow: 0 -12px 32px rgba($color-black, 0.45);
+  // Fechado fica fora da tela (translateY 100%) e não recebe toques.
+  pointer-events: none;
+  visibility: hidden;
+  transition: visibility 0s linear 0.35s;
+
+  &.open {
+    pointer-events: auto;
+    visibility: visible;
+    transition-delay: 0s;
+  }
 }
 
-@media (max-width: 768px) {
-  .roomShell {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(420px, 1fr) auto;
-    height: auto;
-    min-height: 100%;
+.sheetChat {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
 
-    .playersHud {
-      flex-grow: 1;
-      overflow-y: auto;
-      width: 100%;
-      align-items: center;
-
-      .Player {
-        width: 100%;
-        .avatar {
-          width: 80px;
-          height: 80px;
-        }
-        .metadata {
-          .username {
-            font-size: 1rem;
-          }
-          .playerStatus {
-            font-size: 1.5rem;
-          }
-        }
-      }
-    }
+  &[hidden] {
+    display: none;
   }
+}
+
+.sheetHeader {
+  position: relative;
+  display: grid;
+  min-height: 36px;
+  place-items: center;
+}
+
+.sheetHandle {
+  width: 44px;
+  height: 4px;
+  background-color: rgba($color-white, 0.35);
+  border-radius: $border-radius-full;
+}
+
+.sheetClose {
+  position: absolute;
+  top: 6px;
+  right: $spacing-s;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  color: $color-white;
+  background: none;
+  border: 0;
+  border-radius: $border-radius-full;
+  cursor: pointer;
+}
+
+.sheetBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }

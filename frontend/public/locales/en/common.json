@@ -124,10 +124,19 @@
     "participants": "Participants",
     "hash": "Code",
     "status": "Status: {{status}}",
-    "modality": "Mode: {{rule}}"
+    "modality": "Mode: {{rule}}",
+    "copy": "Copy room code",
+    "copied": "Copied!"
+  },
+  "RoomShell": {
+    "panels": "Room panels",
+    "chat": "Chat",
+    "info": "Room",
+    "close": "Close"
   },
   "Participants": {
-    "level": "Level {{level}}",
+    "guest": "Guest",
+    "cards": "{{count}} cards in hand",
     "badge": {
       "ready": "Ready!",
       "waiting": "Waiting",
@@ -157,9 +166,26 @@
   },
   "Truco": {
     "currentBet": "Current bet",
+    "bet": "Worth",
     "roundsLabel": "Rounds",
     "rounds": "{{rounds}}/12",
-    "scoreboard": "Scoreboard"
+    "round": "Round {{rounds}}",
+    "scoreboard": "Scoreboard",
+    "us": "Us",
+    "them": "Them",
+    "pendingHint": "Truco pending: answer!",
+    "stamp": {
+      "truco": "Truco!",
+      "six": "Six!",
+      "nine": "Nine!",
+      "twelve": "Twelve!",
+      "accepted": "Accepted!",
+      "rejected": "Folded!",
+      "roundWon": "+{{points}} for us!",
+      "roundLost": "+{{points}} for them",
+      "victory": "Victory!",
+      "defeat": "Defeat"
+    }
   },
   "TableActions": {
     "pickUpBunch": "Draw cards",
@@ -199,6 +225,11 @@
       "WELCOME_BACK": "Welcome back",
       "MATCH_STARTED": "The game has started",
       "PLAYER_JOINED": "Player {{player}} joined the room"
+    },
+    "connection": {
+      "RECONNECTING": "Connection lost. Reconnecting...",
+      "RECONNECTED": "Connection restored",
+      "FAILED": "Could not connect to the server"
     }
   },
   "Chat": {

@@ -58,6 +58,9 @@ export class GameFactory {
       game.rounds = gameData.rounds;
       game.teams = gameData.teams;
       game.handsResults = gameData.handsResults;
+      // Defaults para partidas salvas no Redis antes da existência dos poderes.
+      game.activeEffects = gameData.activeEffects ?? [];
+      game.powerUsages = gameData.powerUsages ?? [];
 
       return game;
     }

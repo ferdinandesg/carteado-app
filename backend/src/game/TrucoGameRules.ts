@@ -7,8 +7,17 @@ import Deck, {
 import { IGameRules } from "./IGameRules";
 import { Game } from "./game";
 import { HandResult, Team } from "shared/types";
-import { GameStatus, PlayerStatus, BasePlayer } from "shared/game";
+import {
+  ActiveEffect,
+  BasePlayer,
+  GameStatus,
+  PlayerStatus,
+  PowerUsage,
+  UsePowerPayload,
+} from "shared/game";
 import { GameError } from "@/errors/GameError";
+import { executePower, PowerResult } from "./powers/PowerExecutor";
+import * as powerEffects from "./powers/effects";
 
 // A classe TrucoGame permanece focada no estado do jogo.
 export class TrucoGame extends Game<TrucoGame, ITrucoGameRules, BasePlayer> {
@@ -21,6 +30,8 @@ export class TrucoGame extends Game<TrucoGame, ITrucoGameRules, BasePlayer> {
   public rounds = 0;
   public teams: Team[] = [];
   public handsResults: HandResult[] = [];
+  public activeEffects: ActiveEffect[] = [];
+  public powerUsages: PowerUsage[] = [];
 
   constructor(players: BasePlayer[]) {
     const rules = new TrucoGameRules();
@@ -60,6 +71,8 @@ export class TrucoGame extends Game<TrucoGame, ITrucoGameRules, BasePlayer> {
     baseData.rounds = this.rounds;
     baseData.teams = this.teams;
     baseData.handsResults = this.handsResults;
+    baseData.activeEffects = this.activeEffects;
+    baseData.powerUsages = this.powerUsages;
 
     return JSON.stringify(baseData);
   }
@@ -70,6 +83,13 @@ type ITrucoGameRules = IGameRules<TrucoGame> & {
   askTruco(game: TrucoGame, userId: string): void;
   acceptTruco(game: TrucoGame, userId: string): void;
   rejectTruco(game: TrucoGame): void;
+  usePower(
+    game: TrucoGame,
+    userId: string,
+    payload: UsePowerPayload
+  ): PowerResult;
+  drawValidCard(deck: Deck, allowedRanks: string[]): Card;
+  findTeamByUserId(game: TrucoGame, userId: string): Team | undefined;
 };
 
 export class TrucoGameRules implements ITrucoGameRules {
@@ -79,6 +99,8 @@ export class TrucoGameRules implements ITrucoGameRules {
     this.resetRoundState(game);
     this.distributeHands(game);
     this.setupViraAndManilha(game);
+    // Marca o jogador da vez como PLAYING (os demais ficam WAITING).
+    game.skipTurns(game.playerTurn, 0);
   }
 
   private resetRoundState(game: TrucoGame) {
@@ -90,6 +112,7 @@ export class TrucoGameRules implements ITrucoGameRules {
     game.bunch = [];
     game.trucoAskerId = null;
     game.vira = null;
+    game.activeEffects = [];
     game.teams.forEach((t) => (t.roundWins = 0));
   }
 
@@ -110,7 +133,7 @@ export class TrucoGameRules implements ITrucoGameRules {
     game.manilha = getNextRank(game.vira.rank);
   }
 
-  private drawValidCard(deck: Deck, allowedRanks: string[]): Card {
+  public drawValidCard(deck: Deck, allowedRanks: string[]): Card {
     let card = deck.draw();
     // Adicionado um loop de segurança para evitar loop infinito em um baralho esgotado.
     while (
@@ -140,6 +163,8 @@ export class TrucoGameRules implements ITrucoGameRules {
   }
 
   askTruco(game: TrucoGame, userId: string) {
+    powerEffects.beforeAskTruco(game, userId);
+
     const askingTeam = this.findTeamByUserId(game, userId);
     const lastAskerTeam = game.trucoAskerId
       ? this.findTeamByUserId(game, game.trucoAskerId)
@@ -189,11 +214,16 @@ export class TrucoGameRules implements ITrucoGameRules {
     this.finishRound(game, askingTeam, points);
   }
 
-  canPlayCard(game: TrucoGame, userId: string) {
+  canPlayCard(game: TrucoGame, userId: string, card: Card) {
     if (this.isTrucoPending(game))
       throw new GameError({ code: "INVALID_ACTION" });
     if (game.playerTurn !== userId)
       throw new GameError({ code: "INVALID_ACTION" });
+    powerEffects.beforePlayCard(game, userId, card);
+  }
+
+  usePower(game: TrucoGame, userId: string, payload: UsePowerPayload) {
+    return executePower(game, userId, payload);
   }
 
   applyPlayCard(game: TrucoGame, userId: string, card: Card) {
@@ -209,6 +239,7 @@ export class TrucoGameRules implements ITrucoGameRules {
     player.playedCards.push(card);
 
     game.bunch.push(card);
+    powerEffects.afterPlayCard(game, userId, card);
     game.endTurn(userId);
   }
 
@@ -275,6 +306,7 @@ export class TrucoGameRules implements ITrucoGameRules {
     game.playerTurn = isTie
       ? game.playerTurn
       : (nextPlayer?.userId ?? game.playerTurn);
+    game.skipTurns(game.playerTurn, 0);
     this.checkRoundEnding(game);
   }
 

@@ -1,4 +1,5 @@
-@use "variables" as *;
+// Tokens/mixins chegam via prependData (`variables`); só partials com CSS
+// precisam de @use explícito.
 @use "design-system/spinner" as *;
 
 @font-face {
@@ -38,10 +39,17 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+// Regra do app: a janela nunca rola. Cada página ocupa 100dvh e só regiões
+// internas (listas, chat, cards) têm scroll próprio.
+html,
+body {
+  height: 100%;
+  height: 100dvh;
+}
+
 body {
   overflow: hidden;
   margin: 0;
-  min-height: 100vh;
 }
 
 // Utilitários de espaçamento
@@ -59,6 +67,12 @@ body {
 
 .darkBg {
   background: $gradient-background;
+}
+
+.app-background {
+  width: 100%;
+  height: 100%;
+  background-color: $background-color;
 }
 
 .font-big-shoulders {

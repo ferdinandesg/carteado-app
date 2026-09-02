@@ -1,0 +1,110 @@
+.root {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.shakeLayer {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.vignette {
+  --vignette-color: #{$color-warning};
+
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: $border-radius-l;
+  box-shadow: inset 0 0 90px 30px var(--vignette-color);
+  pointer-events: none;
+
+  &.level1 {
+    --vignette-color: #{$color-primary};
+  }
+
+  &.level2 {
+    --vignette-color: #{$color-warning};
+  }
+
+  &.level3 {
+    --vignette-color: #d9711a;
+  }
+
+  &.level4 {
+    --vignette-color: #{$color-error};
+  }
+}
+
+.stamp {
+  --stamp-bg: #{$color-primary};
+  --stamp-fg: #{$color-panel-text-darker};
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 6;
+  padding: $spacing-s $spacing-l;
+  margin: -1.4em 0 0 -3em;
+  color: var(--stamp-fg);
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: clamp(2rem, 8vw, 4.5rem);
+  letter-spacing: 3px;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background-color: var(--stamp-bg);
+  border: $border-width-bold solid $color-outline;
+  border-radius: $border-radius-m;
+  box-shadow:
+    0 6px 0 rgba($color-black, 0.4),
+    0 0 24px rgba($color-black, 0.35);
+  pointer-events: none;
+  transform-origin: center;
+
+  &.level2 {
+    --stamp-bg: #{$color-warning};
+    --stamp-fg: #{$color-white};
+  }
+
+  &.level3 {
+    --stamp-bg: #d9711a;
+    --stamp-fg: #{$color-white};
+  }
+
+  &.level4 {
+    --stamp-bg: #{$color-error};
+    --stamp-fg: #{$color-white};
+  }
+
+  &.accepted,
+  &.won {
+    --stamp-bg: #{$color-success};
+    --stamp-fg: #{$color-panel-text-darker};
+  }
+
+  &.lost {
+    --stamp-bg: #{$color-gray-800};
+    --stamp-fg: #{$color-white};
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .stamp {
+    padding: $spacing-xs $spacing-m;
+    letter-spacing: 2px;
+  }
+
+  .vignette {
+    box-shadow: inset 0 0 50px 16px var(--vignette-color);
+  }
+}

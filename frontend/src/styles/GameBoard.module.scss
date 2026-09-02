@@ -1,13 +1,23 @@
+// Mesa 3x3. Numeração dos slots (linha a linha):
+//   1 2 3
+//   4 5 6
+//   7 8 9
+// O board é um container CSS: as células derivam `--card-h` da altura da mesa,
+// então todas as cartas dentro dela escalam com o viewport.
+
 .gameBoard {
+  container-type: size;
+  container-name: board;
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr) minmax(0, 1.35fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 0.9fr) minmax(0, 1.3fr) minmax(0, 1.25fr);
   flex: 1;
   width: 100%;
   min-height: 0;
   margin: 0 auto;
-  padding: $spacing-m;
-  gap: $spacing-s;
+  padding: $spacing-s $spacing-m;
+  gap: $spacing-xs $spacing-s;
   background:
     linear-gradient(
       rgba($color-panel-deep, 0.35),
@@ -19,15 +29,21 @@
   box-shadow:
     inset 0 0 0 2px rgba($color-outline-light, 0.08),
     $shadow-card;
+  overflow: hidden;
 }
 
 .gridCell {
+  // Unidades de container só resolvem em descendentes do container,
+  // por isso a variável vive na célula e não no board.
+  --card-h: clamp(64px, 24cqh, 182px);
+  --card-w: calc(var(--card-h) * 5 / 7);
+
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   min-width: 0;
   min-height: 0;
-  position: relative;
 }
 
 .centerCell {
@@ -36,37 +52,53 @@
   border-radius: $border-radius-m;
 }
 
-.gameBoard > .gridCell:nth-child(2) {
-  align-items: flex-end;
-  justify-content: center;
-}
-
-.gameBoard > .gridCell:nth-child(4) {
-  align-items: center;
+.slot1 {
+  align-items: flex-start;
   justify-content: flex-start;
 }
 
-.gameBoard > .gridCell:nth-child(6) {
-  align-items: center;
+.slot2 {
+  align-items: flex-start;
+}
+
+.slot3 {
+  align-items: flex-start;
   justify-content: flex-end;
 }
 
-.gameBoard > .gridCell:nth-child(8) {
-  align-items: flex-start;
-  justify-content: center;
+.slot4 {
+  justify-content: flex-start;
 }
 
-.gameBoard > .gridCell:nth-child(7),
-.gameBoard > .gridCell:nth-child(9) {
-  align-items: stretch;
-  justify-content: center;
+.slot6 {
+  justify-content: flex-end;
+}
+
+.slot7 {
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.slot8 {
+  align-items: flex-end;
+}
+
+.slot9 {
+  align-items: flex-end;
+  justify-content: flex-end;
 }
 
 @media (max-width: $breakpoint-md) {
   .gameBoard {
-    width: 100%;
-    min-height: min(52dvh, 420px);
-    padding: $spacing-s;
-    gap: $spacing-xs;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr) minmax(0, 0.8fr);
+    grid-template-rows: minmax(0, 0.8fr) minmax(0, 1.2fr) minmax(0, 1.3fr);
+    padding: $spacing-xs;
+    padding-bottom: max($spacing-xs, env(safe-area-inset-bottom));
+    gap: $spacing-2xs $spacing-xs;
+    border-radius: $border-radius-m;
+  }
+
+  .gridCell {
+    --card-h: clamp(56px, 22cqh, 150px);
   }
 }
