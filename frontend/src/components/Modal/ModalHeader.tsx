@@ -3,7 +3,7 @@
 import { X } from "lucide-react";
 import { HtmlHTMLAttributes } from "react";
 
-import styles from "@styles/Modal.module.scss";
+import styles from "@/styles/Modal.module.scss";
 
 interface HeaderProps extends HtmlHTMLAttributes<HTMLDivElement> {
   title: string;

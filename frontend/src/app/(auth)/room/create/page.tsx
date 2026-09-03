@@ -32,7 +32,7 @@ export default function CreateRoom() {
   const [roomPayload, setRoomPayload] = useState<RoomForm>({
     name: "",
     size: 2,
-    rule: "CarteadoGameRules",
+    rule: "TrucoGameRules",
   });
   const { createRoom } = usePostRoom();
   const isFormValid = roomPayload.name.length > 0;
@@ -97,7 +97,7 @@ export default function CreateRoom() {
           <fieldset className={styles.fieldGroup}>
             <legend>{t("RoomItem.rule")}</legend>
             <div className={styles.optionGroup}>
-              {(["CarteadoGameRules", "TrucoGameRules"] as const).map(
+              {(["TrucoGameRules", "CarteadoGameRules"] as const).map(
                 (rule) => (
                   <button
                     type="button"

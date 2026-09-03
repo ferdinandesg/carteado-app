@@ -8,13 +8,9 @@ import { useSocket } from "@/contexts/socket.context";
 import { RoomInterface } from "shared/types";
 import { testIds } from "@/tests/testIds";
 
-jest.mock("@/contexts/socket.context", () => {
-  const useSocket = jest.fn();
-  return {
-    useSocket,
-    useOptionalSocket: useSocket,
-  };
-});
+jest.mock("@/contexts/socket.context", () => ({
+  useSocket: jest.fn(),
+}));
 
 jest.mock("next-auth/react", () => ({
   useSession: () => ({

@@ -6,7 +6,7 @@ import CardComponent from "./Card";
 import { getCardKeys } from "@/lib/cards/cardKey";
 import { getCardScale, type CardSize } from "@/lib/cards/cardSizing";
 import { useCoarsePointer } from "@/hooks/useMediaQuery";
-import styles from "@styles/CardFan.module.scss";
+import styles from "@/styles/CardFan.module.scss";
 
 type CardFanProps = {
   cards: Card[];

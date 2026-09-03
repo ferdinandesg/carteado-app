@@ -12,6 +12,10 @@ export enum PowerId {
   ILLUSIONIST = "ILLUSIONIST",
 }
 
+export function isPowerId(value: string): value is PowerId {
+  return (Object.values(PowerId) as string[]).includes(value);
+}
+
 /** Teto de carimbos por mão de Truco (cartas sorteadas do pool). */
 export const TRUCO_POWERS_PER_ROUND = 3;
 
@@ -51,8 +55,6 @@ export interface UsePowerPayload {
   powerId: PowerId;
   /** Obrigatório para poderes com alvo (X_RAY, SILENCER, MAGNETIC_PULL, SIXTH_SENSE). */
   targetUserId?: string;
-  /** Carta da mão a ser trocada (GRAVEDIGGER manual, opcional). */
-  card?: Card;
 }
 
 /** Resultado enviado apenas ao jogador que usou o poder (evento `power_result`). */

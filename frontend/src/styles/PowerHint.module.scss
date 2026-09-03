@@ -1,0 +1,63 @@
+// Tooltip de poder (carta e chip de efeito). Some por padrão e aparece
+// no hover do pai direto ou com `.visible`.
+
+.powerHint {
+  --hint-x: 0;
+  --hint-y: 4px;
+
+  position: absolute;
+  z-index: $z-tooltip;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: max-content;
+  max-width: 180px;
+  padding: $spacing-xs $spacing-s;
+  color: $color-white;
+  font-family: $font-family-base;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-normal;
+  letter-spacing: 0;
+  line-height: 1.25;
+  text-align: center;
+  text-transform: none;
+  white-space: normal;
+  background-color: rgba($color-panel-deep, 0.95);
+  border: $border-width solid $color-border-subtle;
+  border-radius: $border-radius-s;
+  box-shadow: 0 6px 16px rgba($color-black, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(var(--hint-x)) translateY(var(--hint-y));
+  transition:
+    opacity $transition-normal,
+    transform $transition-normal;
+
+  strong {
+    font-family: var(--font-mouse-memoirs), sans-serif;
+    font-size: $font-size-s;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+}
+
+.above {
+  --hint-x: -50%;
+
+  bottom: calc(100% + 8px);
+  left: 50%;
+}
+
+.below {
+  --hint-y: -4px;
+
+  top: calc(100% + 8px);
+  left: 0;
+}
+
+.visible,
+:hover > .powerHint {
+  --hint-y: 0;
+
+  opacity: 1;
+}

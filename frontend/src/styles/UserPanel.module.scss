@@ -23,23 +23,75 @@
 }
 
 .profileAvatar {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 118px;
   height: 118px;
-  overflow: hidden;
   background-color: rgba($color-bg-input, 0.92);
   border: $border-width solid $color-outline;
   border-radius: $border-radius-full;
   box-shadow: $shadow-card;
 
   img,
-  svg {
+  > svg {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: $border-radius-full;
   }
+}
+
+// Lápis de edição (avatar e baralho): abre o seletor do que já é seu.
+.editBadge {
+  @include button-reset;
+  @include focus-ring;
+
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  color: $color-white;
+  background-color: $color-primary;
+  border: $border-width solid $color-outline;
+  border-radius: $border-radius-full;
+  box-shadow: $shadow-button;
+  place-items: center;
+  transition: transform $transition-normal;
+
+  &:hover {
+    transform: scale(1.08);
+  }
+}
+
+.deckSection {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+  width: 100%;
+}
+
+.deckLabel {
+  color: darken($color-bg, 10%);
+  font-weight: $font-weight-bold;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: $font-size-s;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.deckPreview {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: $spacing-xs $spacing-s 0;
+  background-color: rgba($color-bg-input, 0.6);
+  border: $border-width solid $color-outline;
+  border-radius: $border-radius-s;
 }
 
 .profileName {
@@ -144,8 +196,25 @@
 
   .levelBadge,
   .statsButton,
-  .rankMeter {
+  .rankMeter,
+  .deckLabel {
     display: none;
+  }
+
+  // No celular o baralho vira só um atalho compacto ao lado do nome.
+  .deckSection {
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .deckPreview {
+    width: 72px;
+    padding: 2px $spacing-xs 0;
+  }
+
+  .editBadge {
+    width: 26px;
+    height: 26px;
   }
 
   .helpButton {

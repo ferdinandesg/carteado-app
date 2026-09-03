@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PRODUCT_TYPES } from "shared/types";
 
 const objectId = z
   .string()
@@ -6,4 +7,8 @@ const objectId = z
 
 export const productIdBodySchema = z.object({
   productId: objectId,
+});
+
+export const productTypeParamsSchema = z.object({
+  type: z.enum(PRODUCT_TYPES),
 });

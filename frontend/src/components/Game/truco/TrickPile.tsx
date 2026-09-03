@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Card } from "shared/cards";
 
+import { AvailableSkins, CardSize } from "@/components/Card";
 import CardPile from "@/components/CardPile";
 
 import styles from "@/styles/TrucoTable.module.scss";
@@ -11,14 +12,23 @@ type TrickPileProps = {
   cards: Card[];
   tricksWon: number;
   side: "ours" | "opponent";
+  skin?: AvailableSkins;
   testId?: string;
+  size?: CardSize;
 };
 
-/** Pilha de vazas ganhas por um time (slots 3 e 9). Hover abre o leque. */
+/**
+ * Pilha de vazas ganhas por um time (slots 3 e 9). Hover abre o leque:
+ * `fan-up` para a nossa pilha, `fan-down` para a adversária (ver
+ * `pileLayout.ts`). Não trocar por `CardFan` — o leque da mão tem geometria
+ * própria (arco + container query) e desalinha dentro do slot.
+ */
 export default function TrickPile({
   cards,
   tricksWon,
   side,
+  size,
+  skin,
   testId,
 }: TrickPileProps) {
   const [expanded, setExpanded] = useState(false);
@@ -48,11 +58,12 @@ export default function TrickPile({
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.2 }}>
             <CardPile
+              skin={skin}
               cards={cards}
               variant={
                 peek ? (side === "ours" ? "fan-up" : "fan-down") : "stack"
               }
-              size={peek ? "md" : "sm"}
+              size={size ?? (peek ? "md" : "sm")}
               maxVisible={peek ? undefined : 6}
             />
           </motion.div>

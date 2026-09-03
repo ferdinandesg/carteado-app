@@ -5,6 +5,7 @@ import { GameError } from "@/errors/GameError";
 import { GameActionResult } from "@/services/game.service";
 import { CHANNEL } from "@/socket/channels";
 import emitToRoom from "@/socket/utils/emitToRoom";
+import { emitGameToRoom } from "@/socket/utils/emitGameToRoom";
 import emitToUser from "@/socket/utils/emitToUser";
 import ErrorHandler from "@/utils/error.handler";
 import { queueTrucoBotsIfNeeded } from "@/game/bots/scheduleTrucoBots";
@@ -51,7 +52,7 @@ export async function handleGameAction(
       socket.user.id
     );
 
-    emitToRoom(channel, roomHash, CHANNEL.SERVER.GAME_UPDATED, game);
+    emitGameToRoom(channel, roomHash, game);
     if (room) {
       emitToRoom(channel, roomHash, CHANNEL.SERVER.ROOM_UPDATED, room);
     }

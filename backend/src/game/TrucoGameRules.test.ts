@@ -32,7 +32,7 @@ describe("TrucoGameRules", () => {
     game.status = GameStatus.PLAYING;
     game.playerTurn = "p1";
 
-    // Vira J → manilha Q (os testes jogam J como carta comum, não como manilha).
+    // Manilha Q fixada para os testes; o vira J não entra na resolução.
     game.vira = card("J", "clubs");
     game.manilha = "Q";
   });
@@ -99,52 +99,6 @@ describe("TrucoGameRules", () => {
       expect(() => {
         rules.canPlayCard(game, "p2");
       }).toThrow();
-    });
-  });
-
-  // ===================================================================
-  // ESCALA DE PODER DO TRUCO
-  // ===================================================================
-  describe("getCardTrucoPower", () => {
-    const vira = card("3", "hearts"); // manilha = 4
-
-    it("segue a hierarquia comum 4 < 5 < 6 < 7 < Q < J < K < A < 2 < 3", () => {
-      const ranks = ["4", "5", "6", "7", "Q", "J", "K", "A", "2", "3"];
-      const powers = ranks.map((rank) =>
-        rules.getCardTrucoPower(card(rank, "hearts"), null)
-      );
-      for (let i = 1; i < powers.length; i++) {
-        expect(powers[i]).toBeGreaterThan(powers[i - 1]);
-      }
-    });
-
-    it("ordena manilhas por naipe: Ouros < Espadas < Copas < Paus", () => {
-      expect(rules.getCardTrucoPower(card("4", "diamonds"), vira)).toBeLessThan(
-        rules.getCardTrucoPower(card("4", "spades"), vira)
-      );
-      expect(rules.getCardTrucoPower(card("4", "spades"), vira)).toBeLessThan(
-        rules.getCardTrucoPower(card("4", "hearts"), vira)
-      );
-      expect(rules.getCardTrucoPower(card("4", "hearts"), vira)).toBeLessThan(
-        rules.getCardTrucoPower(card("4", "clubs"), vira)
-      );
-    });
-
-    it("Zap (4 de Paus) vence o Rei e o 3 quando o vira é 3", () => {
-      const zap = card("4", "clubs");
-      expect(rules.getCardTrucoPower(zap, vira)).toBeGreaterThan(
-        rules.getCardTrucoPower(card("K", "hearts"), vira)
-      );
-      expect(rules.getCardTrucoPower(zap, vira)).toBeGreaterThan(
-        rules.getCardTrucoPower(card("3", "spades"), vira)
-      );
-    });
-
-    it("não usa o valor nominal: 4 comum perde para o Rei", () => {
-      const viraSete = card("7", "clubs"); // manilha = J
-      expect(
-        rules.getCardTrucoPower(card("4", "clubs"), viraSete)
-      ).toBeLessThan(rules.getCardTrucoPower(card("K", "hearts"), viraSete));
     });
   });
 

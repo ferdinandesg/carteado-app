@@ -30,6 +30,12 @@ export default function TrucoGame() {
   const isMyTurn = game?.playerTurn === userId;
   const isTrucoPending = game?.trucoState === "PENDING";
   const isGraveHolding = presentation.graveHold !== null;
+  const targetedPlayerId =
+    presentation.xrayPeek?.targetUserId ??
+    presentation.radarPeek?.targetUserId ??
+    (presentation.effect?.kind === "powerUsed"
+      ? presentation.effect.targetUserId
+      : undefined);
 
   return (
     <div className={styles.Game}>
@@ -68,7 +74,10 @@ export default function TrucoGame() {
                 testId={testIds.game.trickPileOurs}
               />
             }
-            highlightedPlayerIds={presentation.respondingPlayerIds}
+            highlightedPlayerIds={[
+              ...presentation.respondingPlayerIds,
+              ...(targetedPlayerId ? [targetedPlayerId] : []),
+            ]}
             handArea={
               <CardFan
                 cards={presentation.visualHand}

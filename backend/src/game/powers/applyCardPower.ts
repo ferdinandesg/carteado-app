@@ -1,5 +1,10 @@
 import { Card } from "shared/cards";
-import { BasePlayer, PowerId, UsePowerPayload } from "shared/game";
+import {
+  BasePlayer,
+  isPowerId,
+  pickRandom,
+  UsePowerPayload,
+} from "shared/game";
 
 import type { TrucoGame } from "../TrucoGameRules";
 import { executePower, type PowerPolicy } from "./PowerExecutor";
@@ -16,19 +21,13 @@ function pickRandomOpponent(
   game: TrucoGame,
   userId: string
 ): BasePlayer | undefined {
-  const sourceTeam = game.rules.findTeamByUserId(game, userId);
-  if (!sourceTeam) return undefined;
-
-  const opponents = game.players.filter((player) => {
-    const team = game.rules.findTeamByUserId(game, player.userId);
-    return Boolean(team && team.id !== sourceTeam.id);
-  });
-  if (opponents.length === 0) return undefined;
-  return opponents[Math.floor(Math.random() * opponents.length)];
-}
-
-function isPowerId(value: string): value is PowerId {
-  return (Object.values(PowerId) as string[]).includes(value);
+  const opponentTeam = game.rules.getOpponentTeam(game, userId);
+  if (!opponentTeam) return undefined;
+  return pickRandom(
+    game.players.filter((player) =>
+      opponentTeam.userIds.includes(player.userId)
+    )
+  );
 }
 
 /**

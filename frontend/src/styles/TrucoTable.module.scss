@@ -162,61 +162,11 @@
   @include power-tones;
 }
 
-.effectDefault {
-  background-color: $color-accent-teal;
-}
-
 .effectName {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.effectHint {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  z-index: $z-tooltip;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  width: max-content;
-  max-width: 180px;
-  padding: $spacing-xs $spacing-s;
-  color: $color-white;
-  font-family: $font-family-base;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-normal;
-  letter-spacing: 0;
-  line-height: 1.25;
-  text-align: center;
-  text-transform: none;
-  white-space: normal;
-  background-color: rgba($color-panel-deep, 0.95);
-  border: $border-width solid $color-border-subtle;
-  border-radius: $border-radius-s;
-  box-shadow: 0 6px 16px rgba($color-black, 0.4);
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-4px);
-  transition:
-    opacity $transition-normal,
-    transform $transition-normal;
-
-  strong {
-    font-family: var(--font-mouse-memoirs), sans-serif;
-    font-size: $font-size-s;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-}
-
-@media (hover: hover) {
-  .effectChip:hover .effectHint {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .flip {

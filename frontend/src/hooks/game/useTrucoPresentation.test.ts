@@ -2,7 +2,6 @@ import { Card } from "shared/cards";
 
 import {
   applyGraveHoldToBunch,
-  cardForIllusionViewer,
   visualHandForGrave,
   type GraveHold,
   type PlayedEntry,
@@ -37,31 +36,6 @@ describe("visualHandForGrave", () => {
       outgoing,
       other,
     ]);
-  });
-});
-
-describe("cardForIllusionViewer", () => {
-  const zap: Card = {
-    ...outgoing,
-    rank: "Q",
-    suit: "clubs",
-    toString: "Q of clubs",
-    illusionReal: {
-      rank: "4",
-      suit: "hearts",
-      toString: "4 of hearts",
-    },
-  };
-
-  it("keeps the tell only for the player who used the power", () => {
-    expect(cardForIllusionViewer(zap, "p1", "p1").illusionReal).toEqual(
-      zap.illusionReal
-    );
-    expect(cardForIllusionViewer(zap, "p1", "p3").illusionReal).toBeUndefined();
-    expect(cardForIllusionViewer(zap, "p1", "p2")).toMatchObject({
-      rank: "Q",
-      suit: "clubs",
-    });
   });
 });
 

@@ -11,13 +11,43 @@
   "logout": "Sair",
   "back": "Voltar",
   "confirm": "Confirmar",
+  "cancel": "Cancelar",
+  "saving": "Salvando...",
+  "Settings": {
+    "title": "Configurações",
+    "chooseSkin": "Escolha seu baralho"
+  },
   "pageTitles": {
     "home": "Carteado",
     "rules": "Regras do Jogo",
     "menu": "Menu",
     "rooms": "Salas",
     "lobby": "Lobby {{hash}}",
-    "sandbox": "Sandbox — Cartas"
+    "sandbox": "Sandbox — Cartas",
+    "shop": "Loja"
+  },
+  "Store": {
+    "categories": "Categorias",
+    "types": { "DECK": "Baralhos", "AVATAR": "Avatares" },
+    "equip": "Equipar",
+    "equipped": "Equipado",
+    "buyFor": "Comprar por {{price}} de ouro",
+    "confirmTitle": "Confirmar compra",
+    "confirmBuy": "Comprar",
+    "price": "Preço",
+    "balanceAfter": "Saldo depois",
+    "guestNotice": "Entre com uma conta para comprar e equipar itens.",
+    "goToShop": "Ir para a loja",
+    "providerPhoto": "Foto do Google",
+    "pick": { "DECK": "Seus baralhos", "AVATAR": "Seus avatares" },
+    "errors": {
+      "INSUFFICIENT_FUNDS": "Ouro insuficiente.",
+      "ALREADY_OWNED": "Você já possui este item.",
+      "ITEM_NOT_OWNED": "Você não possui este item.",
+      "PRODUCT_NOT_FOUND": "Item indisponível.",
+      "GUEST_NOT_ALLOWED": "Entre com uma conta para usar a loja.",
+      "STORE_REQUEST_FAILED": "Algo deu errado. Tente de novo."
+    }
   },
   "Home": {
     "joinAsGuest": "Entrar como convidado",
@@ -66,7 +96,10 @@
     "level": "Level {{level}}",
     "xp": "XP",
     "gold": "Gold",
-    "shop": "Shop",
+    "shop": "Loja",
+    "deck": "Baralho",
+    "editAvatar": "Trocar avatar",
+    "editDeck": "Trocar baralho",
     "friends": "Meus amigos",
     "searchFriends": "Pesquisar",
     "searchRooms": "Pesquisar",
@@ -114,6 +147,7 @@
     "choseYourHand": "Selecione sua mão",
     "gameFinished": "O jogo acabou",
     "winner": "Vencedor: {{winner}}",
+    "backToMenu": "Voltar ao menu",
     "askTruco": "Pedir Truco",
     "acceptTruco": "Aceitar Truco",
     "rejectTruco": "Rejeitar Truco",
@@ -282,6 +316,7 @@
   "Sandbox": {
     "title": "Sandbox de cartas",
     "intro": "Mesa completa do Truco: jogue, peça truco e veja o bot responder. Use o painel para carimbar poderes.",
+    "skin": "Baralho",
     "rank": "Rank",
     "suit": "Naipe",
     "power": "Poder",

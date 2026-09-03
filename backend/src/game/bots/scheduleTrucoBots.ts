@@ -7,6 +7,7 @@ import { applyEndOfMatchRewards } from "@/services/rewards.service";
 import { finishRoom } from "@/services/room.service";
 import { CHANNEL } from "@/socket/channels";
 import emitToRoom from "@/socket/utils/emitToRoom";
+import { emitGameToRoom } from "@/socket/utils/emitGameToRoom";
 import { logger } from "@/utils/logger";
 
 import { needsTrucoBotAction, playTrucoBotStep } from "./playTrucoBots";
@@ -56,7 +57,7 @@ async function runTrucoBotTick(
     const room =
       game.status === GameStatus.FINISHED ? await finishRoom(roomHash) : null;
 
-    emitToRoom(channel, roomHash, CHANNEL.SERVER.GAME_UPDATED, game);
+    emitGameToRoom(channel, roomHash, game);
     if (room) {
       emitToRoom(channel, roomHash, CHANNEL.SERVER.ROOM_UPDATED, room);
     }

@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import type { ClientToServerEvents } from "shared/socket";
 
-import { useOptionalSocket } from "@/contexts/socket.context";
+import { useSocket } from "@/contexts/socket.context";
 
 export type SocketEmit = <E extends keyof ClientToServerEvents>(
   event: E,
@@ -10,12 +10,11 @@ export type SocketEmit = <E extends keyof ClientToServerEvents>(
 
 /** Retorna um `emit` tipado e referencialmente estável para o socket da sala. */
 export function useSocketEmit(): SocketEmit {
-  const context = useOptionalSocket();
-  const socket = context?.socket;
+  const { socket } = useSocket();
 
   return useCallback<SocketEmit>(
     (event, ...args) => {
-      socket?.emit(event, ...args);
+      socket.emit(event, ...args);
     },
     [socket]
   );

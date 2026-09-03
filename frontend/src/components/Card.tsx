@@ -4,14 +4,19 @@ import Image from "next/image";
 import { Sparkles } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { motion, type HTMLMotionProps } from "motion/react";
-import { useTranslation } from "react-i18next";
 import { Card } from "shared/cards";
 
+import {
+  resolveSkin,
+  type SkinOption,
+} from "@/components/GuestCustomizer/constants";
+import PowerHint from "@/components/PowerHint";
+import { useSkinOverride } from "@/contexts/skinOverride";
 import { getCardScale, type CardSize } from "@/lib/cards/cardSizing";
 
 import styles from "@/styles/Card.module.scss";
 
-type AvailableSkins = "baralho01" | "baralho02" | "baralho03" | "baralho04";
+export type AvailableSkins = SkinOption;
 
 type CardComponentProps = {
   card: Card;
@@ -55,22 +60,19 @@ export default function CardComponent({
   style,
   ...rest
 }: CardComponentProps) {
-  const { t } = useTranslation();
   const { data } = useSession();
-  const userSkin = (data?.user?.skin || "baralho01") as AvailableSkins;
+  const skinOverride = useSkinOverride();
   const hidden = Boolean(card.isHidden || isHidden);
-  const cardURL = getSkinPath(skin ?? userSkin, card, hidden);
+  // Prop (preview pontual) > contexto (sandbox) > sessão.
+  const cardURL = getSkinPath(
+    skin ?? skinOverride ?? resolveSkin(data?.user?.skin),
+    card,
+    hidden
+  );
   const powerId = !hidden ? card.powerId : undefined;
-  const powerName = powerId
-    ? t(`Powers.${powerId}.name`, { defaultValue: "" })
-    : "";
-  const powerDescription = powerId
-    ? t(`Powers.${powerId}.description`, { defaultValue: "" })
-    : "";
 
   const mergedClassName = classNames(styles.Card, className, {
     [styles.canHover]: canHover,
-    [styles.showHint]: showPowerHint,
     [styles.illusion]: Boolean(card.illusionReal),
   });
 
@@ -84,28 +86,28 @@ export default function CardComponent({
     <>
       <div className={styles.face}>
         <Image
+          key={cardURL}
           src={cardURL}
           alt={card.toString}
           fill
+          unoptimized
           sizes="(max-width: 768px) 25vw, 200px"
           className={styles.image}
           draggable={false}
         />
       </div>
       {powerId && (
-        <span
-          className={classNames(styles.powerBadge, styles[powerId])}
-          aria-hidden>
-          <Sparkles size={12} />
-        </span>
-      )}
-      {powerId && powerDescription && (
-        <span
-          className={styles.powerHint}
-          role="tooltip">
-          <strong>{powerName}</strong>
-          {powerDescription}
-        </span>
+        <>
+          <span
+            className={classNames(styles.powerBadge, styles[powerId])}
+            aria-hidden>
+            <Sparkles size={12} />
+          </span>
+          <PowerHint
+            powerId={powerId}
+            visible={showPowerHint}
+          />
+        </>
       )}
     </>
   );

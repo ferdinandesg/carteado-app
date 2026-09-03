@@ -11,24 +11,28 @@ export const skinOptions = [
   {
     name: "Baralho 01",
     value: "baralho01",
-    path: "/assets/skins/baralho01/clubs/Kclubs.png",
   },
   {
     name: "Baralho 02",
     value: "baralho02",
-    path: "/assets/skins/baralho02/clubs/Kclubs.png",
   },
   {
     name: "Baralho 03",
     value: "baralho03",
-    path: "/assets/skins/baralho03/clubs/Kclubs.png",
   },
   {
     name: "Baralho 04",
     value: "baralho04",
-    path: "/assets/skins/baralho04/clubs/Kclubs.png",
   },
 ] as const;
 
 export type AvatarOption = (typeof avatarOptions)[number];
 export type SkinOption = (typeof skinOptions)[number]["value"];
+
+export const DEFAULT_SKIN: SkinOption = "baralho01";
+
+export function resolveSkin(skin: string | null | undefined): SkinOption {
+  return skinOptions.some((option) => option.value === skin)
+    ? (skin as SkinOption)
+    : DEFAULT_SKIN;
+}

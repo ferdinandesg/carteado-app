@@ -1,12 +1,17 @@
 import { Request, Response } from "express";
 import { ZodError } from "zod";
+import { isRegisteredUser } from "shared/types";
 import {
   StoreError,
   buyProduct,
   equipProduct,
-  listProducts,
+  listCatalog,
+  unequipSlot,
 } from "@/services/store.service";
-import { productIdBodySchema } from "@/schemas/store.schemas";
+import {
+  productIdBodySchema,
+  productTypeParamsSchema,
+} from "@/schemas/store.schemas";
 import { serializeRouteError } from "@/utils/routeError";
 import { reqLogger } from "@/utils/logContext";
 
@@ -14,8 +19,10 @@ function statusForStoreError(error: StoreError): number {
   switch (error.message) {
     case "PRODUCT_NOT_FOUND":
     case "USER_NOT_FOUND":
-    case "ITEM_NOT_OWNED":
       return 404;
+    case "ITEM_NOT_OWNED":
+    case "GUEST_NOT_ALLOWED":
+      return 403;
     case "INSUFFICIENT_FUNDS":
     case "ALREADY_OWNED":
       return 400;
@@ -37,21 +44,36 @@ function handleError(req: Request, res: Response, error: unknown, log: string) {
   res.status(500).json(serializeRouteError(error));
 }
 
-export async function handleListProducts(req: Request, res: Response) {
+/** Convidados não têm inventário/loadout persistidos: só veem a vitrine. */
+function registeredUserId(req: Request): string | null {
+  return isRegisteredUser(req.user) ? req.user.id : null;
+}
+
+function requireRegisteredUserId(req: Request): string {
+  const userId = registeredUserId(req);
+  if (!userId) throw new StoreError("GUEST_NOT_ALLOWED");
+  return userId;
+}
+
+/** Toda mutação devolve o catálogo atualizado: o front não precisa refetch. */
+async function respondWithCatalog(req: Request, res: Response) {
+  res.status(200).json(await listCatalog(registeredUserId(req)));
+}
+
+export async function handleListCatalog(req: Request, res: Response) {
   try {
-    const products = await listProducts();
-    res.status(200).json(products);
+    await respondWithCatalog(req, res);
   } catch (error) {
-    handleError(req, res, error, "Failed to list products.");
+    handleError(req, res, error, "Failed to list catalog.");
   }
 }
 
 export async function handleBuyProduct(req: Request, res: Response) {
   try {
+    const userId = requireRegisteredUserId(req);
     const { productId } = productIdBodySchema.parse(req.body);
-    const result = await buyProduct(req.user.id, productId);
-    reqLogger(req).info({ productId }, "Product purchased.");
-    res.status(200).json(result);
+    await buyProduct(userId, productId);
+    await respondWithCatalog(req, res);
   } catch (error) {
     handleError(req, res, error, "Failed to buy product.");
   }
@@ -59,11 +81,22 @@ export async function handleBuyProduct(req: Request, res: Response) {
 
 export async function handleEquipProduct(req: Request, res: Response) {
   try {
+    const userId = requireRegisteredUserId(req);
     const { productId } = productIdBodySchema.parse(req.body);
-    const user = await equipProduct(req.user.id, productId);
-    reqLogger(req).info({ productId }, "Product equipped.");
-    res.status(200).json(user);
+    await equipProduct(userId, productId);
+    await respondWithCatalog(req, res);
   } catch (error) {
     handleError(req, res, error, "Failed to equip product.");
+  }
+}
+
+export async function handleUnequipSlot(req: Request, res: Response) {
+  try {
+    const userId = requireRegisteredUserId(req);
+    const { type } = productTypeParamsSchema.parse(req.params);
+    await unequipSlot(userId, type);
+    await respondWithCatalog(req, res);
+  } catch (error) {
+    handleError(req, res, error, "Failed to clear slot.");
   }
 }

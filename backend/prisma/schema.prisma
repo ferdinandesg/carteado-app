@@ -20,9 +20,8 @@ enum ProductType {
 model User {
   id     String   @id @default(auto()) @map("_id") @db.ObjectId
   name   String
-  image  String
+  image  String // Foto do provedor (Google). O avatar equipado vive no loadout.
   email  String
-  skin   String?  @default("baralho01")
   Player Player[]
   rank   Int      @default(0)
   cash   Int?     @default(0)
@@ -33,26 +32,30 @@ model User {
   friendshipsSent     Friendship[] @relation("friendshipRequester")
   friendshipsReceived Friendship[] @relation("friendshipAddressee")
 
-  inventory        UserInventory[]
-  equippedDeckId   String?         @db.ObjectId
-  equippedAvatarId String?         @db.ObjectId
-  equippedDeck     Product?        @relation("equippedDeck", fields: [equippedDeckId], references: [id])
-  equippedAvatar   Product?        @relation("equippedAvatar", fields: [equippedAvatarId], references: [id])
+  inventory UserInventory[]
+  loadout   UserLoadout?
 }
 
+// Catálogo: o que existe para comprar/equipar.
 model Product {
   id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  type        ProductType
+  // Chave usada pelo front para resolver o asset (ex.: "baralho02").
+  assetKey    String      @unique
   name        String
   description String
   price       Int
-  type        ProductType
-  imageUrl    String
+  imageUrl    String?
+  // Todo usuário possui sem comprar (ex.: baralho01). Slot vazio resolve para ele.
+  isDefault   Boolean     @default(false)
+  // Sai da vitrine sem tirar de quem já comprou.
+  isActive    Boolean     @default(true)
+  sortOrder   Int         @default(0)
 
-  inventories      UserInventory[]
-  equippedAsDeck   User[]          @relation("equippedDeck")
-  equippedAsAvatar User[]          @relation("equippedAvatar")
+  inventories UserInventory[]
 }
 
+// Posse: o que o usuário comprou.
 model UserInventory {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   user        User     @relation(fields: [userId], references: [id])
@@ -62,6 +65,20 @@ model UserInventory {
   purchasedAt DateTime @default(now())
 
   @@unique([userId, productId])
+}
+
+// Loadout: o que está equipado, um item por tipo (invariante no service).
+model UserLoadout {
+  id        String         @id @default(auto()) @map("_id") @db.ObjectId
+  user      User           @relation(fields: [userId], references: [id])
+  userId    String         @unique @db.ObjectId
+  slots     EquippedSlot[]
+  updatedAt DateTime       @updatedAt
+}
+
+type EquippedSlot {
+  type      ProductType
+  productId String      @db.ObjectId
 }
 
 enum FriendshipStatus {

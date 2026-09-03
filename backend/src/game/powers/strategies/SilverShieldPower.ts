@@ -1,4 +1,4 @@
-import { PowerId } from "shared/game";
+import { PowerId, SILVER_SHIELD_REJECT_POINTS } from "shared/game";
 import { GameError } from "@/errors/GameError";
 import type { TrucoGame } from "../../TrucoGameRules";
 import type {
@@ -9,16 +9,18 @@ import type {
 import { addEffect } from "../effects";
 
 /**
- * Escudo de Prata: corre da rodada pagando 1 ponto, qualquer que seja a
- * aposta (Seis/Nove/Doze). Sem truco pendente, fica armado até o rejeitar.
+ * Escudo de Prata: correr custa 1 ponto, qualquer que seja a aposta.
+ * Sem truco pendente, fica armado até o time correr. Com truco pendente,
+ * arma e corre na hora — o desconto vem do mesmo `onRejectTrucoPoints`.
  */
 export class SilverShieldPower implements PowerStrategy {
   readonly id = PowerId.SILVER_SHIELD;
   readonly targeting = "NONE" as const;
 
   execute(game: TrucoGame, ctx: PowerContext): PowerResult {
-    if (game.trucoState === "PENDING" && game.trucoAskerId) {
-      const askingTeam = game.rules.findTeamByUserId(game, game.trucoAskerId);
+    const pending = game.trucoState === "PENDING" && game.trucoAskerId;
+    if (pending) {
+      const askingTeam = game.rules.findTeamByUserId(game, game.trucoAskerId!);
       const userTeam = game.rules.findTeamByUserId(game, ctx.userId);
       if (!askingTeam || !userTeam) {
         throw new GameError({
@@ -32,15 +34,13 @@ export class SilverShieldPower implements PowerStrategy {
           message: "Você não pode usar o Escudo de Prata no próprio pedido.",
         });
       }
-      addEffect(game, this.id, ctx.userId, ctx.userId);
-      return { rejectPoints: 1 };
     }
 
     addEffect(game, this.id, ctx.userId, ctx.userId);
-    return {};
+    return pending ? { runFromTruco: true } : {};
   }
 
   onRejectTrucoPoints(): number {
-    return 1;
+    return SILVER_SHIELD_REJECT_POINTS;
   }
 }

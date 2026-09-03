@@ -1,6 +1,8 @@
 import classNames from "classnames";
-import Image from "next/image";
 import { useTranslation } from "react-i18next";
+
+import SkinPreview from "@/components/SkinPreview";
+import type { CardSize } from "@/lib/cards/cardSizing";
 
 import styles from "@/styles/GuestCustomizer.module.scss";
 
@@ -9,39 +11,54 @@ import { SkinOption, skinOptions } from "./constants";
 interface SkinSectionProps {
   skin: SkinOption;
   onSelectSkin: (skin: SkinOption) => void;
+  /** Rótulo do grupo; padrão `Home.chooseCardSkin`. */
+  label?: string;
+  previewSize?: CardSize;
+  /** `dark` para superfícies escuras (modal, sandbox). */
+  tone?: "light" | "dark";
 }
 
-export default function SkinSection({ skin, onSelectSkin }: SkinSectionProps) {
+/** Seletor de baralho (radiogroup) com amostra da realeza de cada skin. */
+export default function SkinSection({
+  skin,
+  onSelectSkin,
+  label,
+  previewSize = "md",
+  tone = "light",
+}: SkinSectionProps) {
   const { t } = useTranslation();
 
   return (
     <section
-      className={styles.formGroup}
+      className={classNames(styles.formGroup, {
+        [styles.dark]: tone === "dark",
+      })}
       aria-labelledby="guest-skin-options-label">
-      <label id="guest-skin-options-label">{t("Home.chooseCardSkin")}</label>
+      <label id="guest-skin-options-label">
+        {label ?? t("Home.chooseCardSkin")}
+      </label>
       <div
         className={styles.skinGrid}
-        role="group"
+        role="radiogroup"
         aria-labelledby="guest-skin-options-label"
         data-testid="skin-section">
         {skinOptions.map((option) => (
           <button
             key={option.value}
             type="button"
+            role="radio"
             className={classNames(styles.optionButton, styles.skinOption, {
               [styles.selected]: skin === option.value,
             })}
             onClick={() => onSelectSkin(option.value)}
-            aria-pressed={skin === option.value}
+            aria-checked={skin === option.value}
             aria-label={option.name}
             data-testid={`skin-option-${option.value.replaceAll("/", "-")}`}>
-            <Image
-              src={option.path}
-              alt={option.name}
-              width={92}
-              height={138}
-              className={styles.optionItem}
+            <SkinPreview
+              skin={option.value}
+              size={previewSize}
             />
+            <span className={styles.skinName}>{option.name}</span>
           </button>
         ))}
       </div>

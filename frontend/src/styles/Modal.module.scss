@@ -1,79 +1,90 @@
+// Modal base (Root / Header / Content / Footer): painel escuro com outline
+// cartoon, minimalista. Cada modal só compõe as partes e passa `className`
+// no Root quando precisa de outra largura.
+
 .modalRoot {
-  position: absolute;
+  position: fixed;
+  inset: 0;
   z-index: $z-modal;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba($color-black, 0.75);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  padding: $spacing-m;
+  place-items: center;
+  background-color: $color-overlay;
+  backdrop-filter: blur(3px);
 }
 
 .modalPanel {
-  width: 50%;
-  height: 50%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  width: min(100%, 560px);
+  max-height: 90dvh;
+  overflow: hidden;
+  color: $color-white;
+  background-color: $color-bg;
+  border: $border-width-bold solid $color-outline;
+  border-radius: $border-radius-l;
+  box-shadow: $shadow-card;
 }
 
 .modalHeader {
-  height: 4rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: $spacing-s;
-  background-color: $color-gray-300;
-  border-radius: $border-radius-l $border-radius-l 0 0;
+  @include flex-between;
+
+  gap: $spacing-m;
+  padding: $spacing-s $spacing-m;
+  border-bottom: $border-width solid $color-border-subtle;
 }
 
 .modalHeaderTitle {
-  font-weight: $font-weight-bold;
-  font-size: $font-size-l;
-  color: $color-gray-800;
+  margin: 0;
+  color: $color-primary;
+  font-family: $font-family-display;
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-normal;
+  letter-spacing: $letter-spacing-wide;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .modalCloseButton {
-  padding: $spacing-s;
+  @include button-reset;
+  @include focus-ring;
+
+  display: grid;
+  padding: $spacing-xs;
+  color: $color-gray-300;
   border-radius: $border-radius-s;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: background-color $transition-normal;
+  place-items: center;
+  transition:
+    color $transition-normal,
+    background-color $transition-normal;
 
   &:hover {
-    background-color: $color-gray-400;
     color: $color-white;
+    background-color: $color-panel-hover;
   }
 }
 
 .modalContent {
-  padding: $spacing-s;
   flex: 1;
-  background-color: $color-white;
+  min-height: 0;
+  padding: $spacing-m;
   overflow: auto;
 }
 
 .modalFooter {
-  height: 4rem;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: $spacing-m;
-  padding: $spacing-s;
-  background-color: $color-gray-300;
-  border-radius: 0 0 $border-radius-l $border-radius-l;
+  gap: $spacing-s;
+  padding: $spacing-s $spacing-m;
+  border-top: $border-width solid $color-border-subtle;
 }
 
 .modalButton {
+  @include button-reset;
+  @include focus-ring;
+
   padding: $spacing-s;
   border-radius: $border-radius-s;
-  background: none;
-  border: none;
-  cursor: pointer;
   transition: opacity $transition-normal;
-
-  &:disabled {
-    opacity: 0.5;
-  }
 }

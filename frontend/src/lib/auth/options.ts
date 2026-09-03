@@ -84,15 +84,11 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user, account, trigger, session }) {
-      if (trigger === "update" && session?.skin) {
-        token.skin = session.skin;
-        return token;
-      }
-
+    async jwt({ token, user, account, trigger }) {
       if (account && user) {
         try {
           const auth = await resolveAuthProfile(account.provider, user);
+          console.log({ auth });
           return { ...token, ...mapAuthToJwt(auth) };
         } catch (error) {
           logger.error(
@@ -103,9 +99,11 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
+      // `update()` sem payload (ex.: após equipar na loja) força rebuscar o
+      // perfil no backend; nunca escrevemos skin/avatar no token à mão.
       if (
         typeof token.accessToken === "string" &&
-        shouldRefreshProfile(token.profileSyncedAt)
+        (trigger === "update" || shouldRefreshProfile(token.profileSyncedAt))
       ) {
         try {
           const profile = await fetchCurrentAuthProfile(token.accessToken);
@@ -135,6 +133,8 @@ export const authOptions: NextAuthOptions = {
       session.user.email = token.email;
       session.user.role = token.role as UserRole;
       session.user.skin = token.skin as string | undefined;
+      // Avatar equipado (ou foto do provedor) já resolvido pelo backend.
+      if (typeof token.image === "string") session.user.image = token.image;
       session.user.rank = token.rank as number;
       session.user.cash = token.cash as number;
       session.user.xp = token.xp as number;

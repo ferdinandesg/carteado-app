@@ -36,6 +36,10 @@ jest.mock("@/socket/utils/emitToRoom", () => ({
   default: jest.fn(),
 }));
 
+jest.mock("@/socket/utils/emitGameToRoom", () => ({
+  emitGameToRoom: jest.fn(),
+}));
+
 function makeGame(): TrucoGame {
   const players = [
     {

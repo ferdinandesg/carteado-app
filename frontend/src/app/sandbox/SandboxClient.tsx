@@ -18,9 +18,15 @@ import {
 
 import ActionButton from "@/components/buttons/ActionButton";
 import CardComponent from "@/components/Card";
+import {
+  DEFAULT_SKIN,
+  type SkinOption,
+} from "@/components/GuestCustomizer/constants";
+import SkinSection from "@/components/GuestCustomizer/SkinSection";
 import TrucoGame from "@/components/Game/truco.game";
 import ModalGameFinished from "@/components/Modal/ModalGameFinished/ModalGameFinished";
 import { useGameStore } from "@/contexts/game.store";
+import { SkinOverrideProvider } from "@/contexts/skinOverride";
 import {
   GameActionsProvider,
   type GameActions,
@@ -62,6 +68,7 @@ export default function SandboxClient() {
   const [suit, setSuit] = useState<Suit>("clubs");
   const [powerId, setPowerId] = useState<string>("");
   const [hidden, setHidden] = useState(false);
+  const [skin, setSkin] = useState<SkinOption>(DEFAULT_SKIN);
 
   const game = useTypedGame(isTrucoGame);
   const waitingBot = game?.playerTurn === SANDBOX_BOT_ID;
@@ -153,137 +160,149 @@ export default function SandboxClient() {
   );
 
   return (
-    <main className={styles.Sandbox}>
-      <aside className={styles.controls}>
-        <ActionButton
-          type="button"
-          variant="secondary"
-          size="sm"
-          onClick={() => router.back()}>
-          {t("back")}
-        </ActionButton>
-        <h1 className={styles.title}>{t("Sandbox.title")}</h1>
-        <p className={styles.intro}>{t("Sandbox.intro")}</p>
+    <SkinOverrideProvider skin={skin}>
+      <main className={styles.Sandbox}>
+        <aside className={styles.controls}>
+          <ActionButton
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={() => router.back()}>
+            {t("back")}
+          </ActionButton>
+          <h1 className={styles.title}>{t("Sandbox.title")}</h1>
+          <p className={styles.intro}>{t("Sandbox.intro")}</p>
 
-        <label className={styles.field}>
-          {t("Sandbox.rank")}
-          <select
-            className={styles.select}
-            value={rank}
-            onChange={(event) => setRank(event.target.value as Rank)}>
-            {TRUCO_RANKS.map((item) => (
-              <option
-                key={item}
-                value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={styles.field}>
-          {t("Sandbox.suit")}
-          <select
-            className={styles.select}
-            value={suit}
-            onChange={(event) => setSuit(event.target.value as Suit)}>
-            {ALL_SUITS.map((item) => (
-              <option
-                key={item}
-                value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={styles.field}>
-          {t("Sandbox.power")}
-          <select
-            className={styles.select}
-            value={powerId}
-            onChange={(event) => setPowerId(event.target.value)}>
-            <option value="">{t("Sandbox.noPower")}</option>
-            {POWERS.map((id) => (
-              <option
-                key={id}
-                value={id}>
-                {t(`Powers.${id}.name`)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={styles.checkbox}>
-          <input
-            type="checkbox"
-            checked={hidden}
-            onChange={(event) => setHidden(event.target.checked)}
+          <SkinSection
+            skin={skin}
+            onSelectSkin={setSkin}
+            label={t("Sandbox.skin")}
+            previewSize="xs"
+            tone="dark"
           />
-          {t("Sandbox.hidden")}
-        </label>
-        <div className={styles.preview}>
-          <CardComponent
-            card={preview}
-            isHidden={hidden}
-            canHover
-            height={120}
-          />
-        </div>
-        <ActionButton
-          type="button"
-          variant="primary"
-          size="sm"
-          disabled={!game}
-          onClick={() =>
-            game &&
-            patchSandbox((current) =>
-              addCardToSandboxHand(current, SANDBOX_YOU_ID, preview)
-            )
-          }>
-          {t("Sandbox.addToHand")}
-        </ActionButton>
-        <ActionButton
-          type="button"
-          variant="secondary"
-          size="sm"
-          disabled={!game}
-          onClick={() =>
-            game &&
-            patchSandbox((current) => ({
-              ...dealSandboxRound(current, {
-                you: t("Sandbox.you"),
-                bot: t("Sandbox.bot"),
-              }),
-              id: `sandbox-${Date.now()}`,
-            }))
-          }>
-          {t("Sandbox.newHand")}
-        </ActionButton>
-        <ActionButton
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() =>
-            patchSandbox(() =>
-              createSandboxTrucoGame({
-                you: t("Sandbox.you"),
-                bot: t("Sandbox.bot"),
-              })
-            )
-          }>
-          {t("Sandbox.resetMatch")}
-        </ActionButton>
-        {(waitingBot || waitingTruco) && (
-          <p className={styles.hint}>{t("Sandbox.waitingBot")}</p>
-        )}
-      </aside>
 
-      <section className={styles.gameStage}>
-        <GameActionsProvider value={sandboxActions}>
-          <div className={gameStyles.gameRoot}>
-            <TrucoGame />
-            <ModalGameFinished isOpen={game?.status === GameStatus.FINISHED} />
+          <label className={styles.field}>
+            {t("Sandbox.rank")}
+            <select
+              className={styles.select}
+              value={rank}
+              onChange={(event) => setRank(event.target.value as Rank)}>
+              {TRUCO_RANKS.map((item) => (
+                <option
+                  key={item}
+                  value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className={styles.field}>
+            {t("Sandbox.suit")}
+            <select
+              className={styles.select}
+              value={suit}
+              onChange={(event) => setSuit(event.target.value as Suit)}>
+              {ALL_SUITS.map((item) => (
+                <option
+                  key={item}
+                  value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className={styles.field}>
+            {t("Sandbox.power")}
+            <select
+              className={styles.select}
+              value={powerId}
+              onChange={(event) => setPowerId(event.target.value)}>
+              <option value="">{t("Sandbox.noPower")}</option>
+              {POWERS.map((id) => (
+                <option
+                  key={id}
+                  value={id}>
+                  {t(`Powers.${id}.name`)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className={styles.checkbox}>
+            <input
+              type="checkbox"
+              checked={hidden}
+              onChange={(event) => setHidden(event.target.checked)}
+            />
+            {t("Sandbox.hidden")}
+          </label>
+          <div className={styles.preview}>
+            <CardComponent
+              card={preview}
+              isHidden={hidden}
+              canHover
+              height={120}
+            />
           </div>
-        </GameActionsProvider>
-      </section>
-    </main>
+          <ActionButton
+            type="button"
+            variant="primary"
+            size="sm"
+            disabled={!game}
+            onClick={() =>
+              game &&
+              patchSandbox((current) =>
+                addCardToSandboxHand(current, SANDBOX_YOU_ID, preview)
+              )
+            }>
+            {t("Sandbox.addToHand")}
+          </ActionButton>
+          <ActionButton
+            type="button"
+            variant="secondary"
+            size="sm"
+            disabled={!game}
+            onClick={() =>
+              game &&
+              patchSandbox((current) => ({
+                ...dealSandboxRound(current, {
+                  you: t("Sandbox.you"),
+                  bot: t("Sandbox.bot"),
+                }),
+                id: `sandbox-${Date.now()}`,
+              }))
+            }>
+            {t("Sandbox.newHand")}
+          </ActionButton>
+          <ActionButton
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() =>
+              patchSandbox(() =>
+                createSandboxTrucoGame({
+                  you: t("Sandbox.you"),
+                  bot: t("Sandbox.bot"),
+                })
+              )
+            }>
+            {t("Sandbox.resetMatch")}
+          </ActionButton>
+          {(waitingBot || waitingTruco) && (
+            <p className={styles.hint}>{t("Sandbox.waitingBot")}</p>
+          )}
+        </aside>
+
+        <section className={styles.gameStage}>
+          <GameActionsProvider value={sandboxActions}>
+            <div className={gameStyles.gameRoot}>
+              <TrucoGame />
+              <ModalGameFinished
+                isOpen={game?.status === GameStatus.FINISHED}
+              />
+            </div>
+          </GameActionsProvider>
+        </section>
+      </main>
+    </SkinOverrideProvider>
   );
 }

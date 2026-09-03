@@ -27,17 +27,16 @@ export function GameActionsProvider({
   children,
 }: {
   value: GameActions;
-  children: ReactNode;
+  children?: ReactNode;
 }) {
   return createElement(GameActionsContext.Provider, { value }, children);
 }
 
-/** Ações de jogo. No sandbox, um `GameActionsProvider` substitui o socket. */
-export function useGameActions(): GameActions {
-  const override = useContext(GameActionsContext);
+/** Ações que viram eventos no socket da sala. */
+export function useSocketGameActions(): GameActions {
   const emit = useSocketEmit();
 
-  const socketActions = useMemo<GameActions>(
+  return useMemo<GameActions>(
     () => ({
       playCard: (card: Card) => emit("play_card", { card }),
       handlePickCards: (cards: Card[]) => emit("pick_hand", { cards }),
@@ -50,6 +49,27 @@ export function useGameActions(): GameActions {
     }),
     [emit]
   );
+}
 
-  return override ?? socketActions;
+/** Provider padrão da sala: ações via socket. O sandbox injeta as suas. */
+export function SocketGameActionsProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const actions = useSocketGameActions();
+  return createElement(
+    GameActionsContext.Provider,
+    { value: actions },
+    children
+  );
+}
+
+/** Ações de jogo do provider mais próximo (sala = socket, sandbox = local). */
+export function useGameActions(): GameActions {
+  const actions = useContext(GameActionsContext);
+  if (!actions) {
+    throw new Error("useGameActions must be used within a GameActionsProvider");
+  }
+  return actions;
 }
