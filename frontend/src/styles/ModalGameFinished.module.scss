@@ -1,44 +1,38 @@
-.Overlay {
-  position: absolute;
-  z-index: 25;
-  background-color: $color-overlay;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+// Só o que difere do Modal base: painel estreito e placar centralizado.
 
-  .ModalGameFinished {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 40%;
-    width: 50%;
-    margin: 0 auto;
-    align-items: center;
-    justify-content: center;
-    .gameWinnerInfo {
-      color: $color-white;
-      display: flex;
-      .info {
-        font-size: 2rem;
-      }
-      .winner {
-        color: $success-color;
-        font-size: 3.5rem;
-      }
-      flex-direction: column;
-      align-items: center;
-    }
-  }
+.panel {
+  width: min(100%, 420px);
+  text-align: center;
 }
 
-@media (max-width: 768px) {
-  .Overlay {
-    .ModalGameFinished {
-      height: 50%;
-      width: 90%;
-    }
-  }
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-s;
+  padding: $spacing-l $spacing-m;
+}
+
+.eyebrow {
+  margin: 0;
+  color: $color-gray-300;
+  font-size: $font-size-s;
+  letter-spacing: $letter-spacing-wide;
+  text-transform: uppercase;
+}
+
+.winner {
+  margin: 0;
+  color: $color-primary;
+  font-family: $font-family-display;
+  font-size: clamp(2rem, 6vw, $font-size-4xl);
+  font-weight: $font-weight-normal;
+  letter-spacing: $letter-spacing-wide;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0 rgba($color-black, 0.42);
+}
+
+.footer {
+  justify-content: center;
+  border-top: 0;
 }

@@ -6,7 +6,8 @@ import {
   applyEndOfMatchRewards,
   calculateRankGain,
   getMatchWinnerIds,
-  GOLD_PER_MATCH,
+  GOLD_PER_LOSS,
+  GOLD_PER_WIN,
   RANK_GAIN,
 } from "./rewards.service";
 import prisma from "@/prisma";
@@ -97,12 +98,12 @@ describe("rewards.service", () => {
       // USER_1: média (150) acima do rank (100) -> +25
       expect(mockedPrisma.user.update).toHaveBeenCalledWith({
         where: { id: USER_1 },
-        data: { rank: 125, cash: 1000 + GOLD_PER_MATCH },
+        data: { rank: 125, cash: 1000 + GOLD_PER_WIN },
       });
       // USER_2: média (150) abaixo do rank (200) -> +15
       expect(mockedPrisma.user.update).toHaveBeenCalledWith({
         where: { id: USER_2 },
-        data: { rank: 215, cash: GOLD_PER_MATCH },
+        data: { rank: 215, cash: GOLD_PER_LOSS },
       });
     });
 

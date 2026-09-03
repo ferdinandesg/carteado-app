@@ -3,10 +3,13 @@ import authorize from "@/routes/middlewares/auth";
 import {
   handleBuyProduct,
   handleEquipProduct,
-  handleListProducts,
+  handleListCatalog,
+  handleUnequipSlot,
 } from "@/controller/store.controller";
 
 export default express()
-  .get("/", handleListProducts)
-  .post("/buy", authorize, handleBuyProduct)
-  .patch("/equip", authorize, handleEquipProduct);
+  .use(authorize)
+  .get("/", handleListCatalog)
+  .post("/buy", handleBuyProduct)
+  .patch("/equip", handleEquipProduct)
+  .delete("/equip/:type", handleUnequipSlot);

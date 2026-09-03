@@ -1,106 +1,83 @@
-import { useCallback, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import useAxiosAuth from "@/hooks/useAuthAxios";
+import { useSession } from "next-auth/react";
+import type { Catalog, CatalogItem, ProductType } from "shared/types";
 
-export type ProductType = "DECK" | "AVATAR";
+import useAxiosAuth, { useAuthQueryEnabled } from "@/hooks/useAuthAxios";
 
-export interface IProduct {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  type: ProductType;
-  imageUrl: string;
-}
+export const STORE_QUERY_KEY = ["store"] as const;
 
-interface IInventoryItem {
-  id: string;
-  userId: string;
-  productId: string;
-  purchasedAt: string;
-  product: IProduct;
-}
+const EMPTY_CATALOG: Catalog = { items: [], cash: 0 };
 
-interface IPurchaseResponse {
-  inventory: IInventoryItem;
-}
-
-function getErrorMessage(error: unknown): string {
+/** Código de erro da API (`message`) ou um fallback genérico. */
+export function getStoreErrorCode(error: unknown): string {
   if (error instanceof AxiosError) {
-    const message = error.response?.data?.message;
+    const message: unknown = error.response?.data?.message;
     if (typeof message === "string") return message;
   }
-  if (error instanceof Error) return error.message;
   return "STORE_REQUEST_FAILED";
 }
 
+/**
+ * Catálogo + mutações da loja. Toda mutação devolve o catálogo já
+ * atualizado; em seguida forçamos o NextAuth a rebuscar `/auth/me` para
+ * skin/avatar da sessão refletirem o loadout.
+ */
 export default function useStore() {
   const axiosAuth = useAxiosAuth();
-  const [products, setProducts] = useState<IProduct[]>([]);
-  const [inventory, setInventory] = useState<IProduct[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const authReady = useAuthQueryEnabled();
+  const queryClient = useQueryClient();
+  const { update } = useSession();
 
-  const fetchProducts = useCallback(async (): Promise<void> => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const { data } = await axiosAuth.get<IProduct[]>("/store");
-      setProducts(data);
-    } catch (err) {
-      setError(getErrorMessage(err));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [axiosAuth]);
+  const query = useQuery<Catalog>({
+    queryKey: STORE_QUERY_KEY,
+    queryFn: () => axiosAuth.get<Catalog>("/store").then((res) => res.data),
+    enabled: authReady,
+  });
 
-  const purchaseItem = useCallback(
-    async (productId: string): Promise<IPurchaseResponse | undefined> => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const { data } = await axiosAuth.post<IPurchaseResponse>("/store/buy", {
-          productId,
-        });
-        setInventory((prev) => {
-          if (prev.some((item) => item.id === data.inventory.product.id)) {
-            return prev;
-          }
-          return [...prev, data.inventory.product];
-        });
-        return data;
-      } catch (err) {
-        setError(getErrorMessage(err));
-        return undefined;
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [axiosAuth]
-  );
+  const applyCatalog = async (catalog: Catalog) => {
+    queryClient.setQueryData(STORE_QUERY_KEY, catalog);
+    await update();
+  };
 
-  const equipItem = useCallback(
-    async (productId: string): Promise<void> => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        await axiosAuth.patch("/store/equip", { productId });
-      } catch (err) {
-        setError(getErrorMessage(err));
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [axiosAuth]
-  );
+  const buy = useMutation({
+    mutationFn: (productId: string) =>
+      axiosAuth
+        .post<Catalog>("/store/buy", { productId })
+        .then((res) => res.data),
+    onSuccess: applyCatalog,
+  });
+
+  const equip = useMutation({
+    mutationFn: (productId: string) =>
+      axiosAuth
+        .patch<Catalog>("/store/equip", { productId })
+        .then((res) => res.data),
+    onSuccess: applyCatalog,
+  });
+
+  const unequip = useMutation({
+    mutationFn: (type: ProductType) =>
+      axiosAuth.delete<Catalog>(`/store/equip/${type}`).then((res) => res.data),
+    onSuccess: applyCatalog,
+  });
+
+  const catalog = query.data ?? EMPTY_CATALOG;
+  const itemsOf = (type: ProductType): CatalogItem[] =>
+    catalog.items.filter((item) => item.type === type);
+  const equippedOf = (type: ProductType): CatalogItem | undefined =>
+    catalog.items.find((item) => item.type === type && item.equipped);
 
   return {
-    products,
-    inventory,
-    isLoading,
-    error,
-    fetchProducts,
-    purchaseItem,
-    equipItem,
+    catalog,
+    itemsOf,
+    equippedOf,
+    isLoading: query.isLoading,
+    isError: query.isError,
+    error: query.error,
+    buy,
+    equip,
+    unequip,
+    isMutating: buy.isPending || equip.isPending || unequip.isPending,
   };
 }

@@ -19,6 +19,7 @@ type MenuTopBarProps = {
   isFriendsOpen: boolean;
   onToggleFriends: () => void;
   onOpenSettings: () => void;
+  onOpenShop: () => void;
 };
 
 export default function MenuTopBar({
@@ -33,6 +34,7 @@ export default function MenuTopBar({
   isFriendsOpen,
   onToggleFriends,
   onOpenSettings,
+  onOpenShop,
 }: MenuTopBarProps) {
   const { t } = useTranslation();
 
@@ -68,7 +70,8 @@ export default function MenuTopBar({
 
       <button
         type="button"
-        className={styles.shopButton}>
+        className={styles.shopButton}
+        onClick={onOpenShop}>
         <ShoppingBag
           size={22}
           aria-hidden

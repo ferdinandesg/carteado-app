@@ -1,0 +1,65 @@
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: $spacing-s;
+  min-width: 0;
+  padding: $spacing-m $spacing-s $spacing-s;
+  background-color: rgba($color-black, 0.18);
+  border: $border-width solid transparent;
+  border-radius: $border-radius-m;
+  transition: border-color $transition-normal;
+
+  &.equipped {
+    border-color: rgba($color-primary, 0.6);
+  }
+}
+
+.avatarPreview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 112px;
+  height: 112px;
+  margin: 0 auto;
+  overflow: hidden;
+  background-color: rgba($color-white, 0.1);
+  border: $border-width solid $color-outline;
+  border-radius: $border-radius-full;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 3.2rem;
+  text-align: center;
+}
+
+.name {
+  margin: 0;
+  color: $color-white;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: $font-size-l;
+  font-weight: $font-weight-normal;
+  letter-spacing: 1px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.description {
+  margin: 0;
+  overflow: hidden;
+  color: $color-gray-300;
+  font-size: $font-size-xs;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}

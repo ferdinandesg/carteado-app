@@ -2,6 +2,7 @@ import { atomicallyUpdateRoomState } from "@/lib/redis/room";
 import { SocketContext } from "@/@types/socket";
 import emitToRoom from "@/socket/utils/emitToRoom";
 import emitToUser from "@/socket/utils/emitToUser";
+import { emitGameToUser } from "@/socket/utils/emitGameToRoom";
 import ErrorHandler from "@/utils/error.handler";
 import { GameStatus, PlayerStatus, createParticipantObject } from "shared/game";
 import { getGameInstance } from "@/services/game.service";
@@ -75,7 +76,7 @@ export async function JoinRoomEventHandler(
     ) {
       try {
         const game = await getGameInstance(roomHash);
-        emitToUser(socket, CHANNEL.SERVER.GAME_UPDATED, game);
+        emitGameToUser(socket, game);
       } catch {
         log.warn({ roomHash }, "No game state on rejoin.");
       }

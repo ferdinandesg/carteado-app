@@ -13,7 +13,7 @@ export async function authenticateGuest(
 ): Promise<GuestAuthResult> {
   const response = await request(httpServer)
     .post("/api/v1/auth/guest")
-    .send({ username, skin: "8bit", avatar: "/avatar.png" });
+    .send({ username, skin: "baralho01", avatar: "/avatar.png" });
 
   expect(response.status).toBe(200);
   expect(response.body.accessToken).toEqual(expect.any(String));

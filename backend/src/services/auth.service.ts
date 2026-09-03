@@ -7,6 +7,7 @@ import {
   normalizeRegisteredRole,
 } from "shared/types";
 import { UserFactory } from "@/users/UserFactory";
+import { resolveCosmetics } from "@/services/cosmetics.service";
 
 type UserLogin = {
   email: string;
@@ -29,20 +30,21 @@ export type AuthProfile = {
 export type RegisteredAuthProfile = AuthProfile & {
   image: string;
   role: RegisteredUserRole;
-  skin: string | null;
+  skin: string;
 };
 
-function toRegisteredProfile(user: User): RegisteredAuthProfile {
+async function toRegisteredProfile(user: User): Promise<RegisteredAuthProfile> {
+  const cosmetics = await resolveCosmetics(user.id);
   return {
     id: user.id,
     email: user.email,
     name: user.name,
-    image: user.image,
+    image: cosmetics.avatar ?? user.image,
     rank: user.rank,
     cash: user.cash ?? 0,
     xp: user.xp ?? 0,
     role: normalizeRegisteredRole(user.role),
-    skin: user.skin,
+    skin: cosmetics.skin,
   };
 }
 

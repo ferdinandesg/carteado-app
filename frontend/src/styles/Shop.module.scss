@@ -1,0 +1,136 @@
+.shop {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: $spacing-m;
+  min-height: 0;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-s;
+}
+
+.tabs {
+  display: inline-flex;
+  gap: $spacing-xs;
+  padding: $spacing-xs;
+  background-color: rgba($color-black, 0.25);
+  border-radius: $border-radius-m;
+}
+
+.tab {
+  @include button-reset;
+  @include focus-ring;
+
+  padding: $spacing-xs $spacing-m;
+  color: $color-gray-300;
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: $font-size-l;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: $border-radius-s;
+  transition:
+    color $transition-normal,
+    background-color $transition-normal;
+
+  &:hover {
+    color: $color-white;
+  }
+
+  &.activeTab {
+    color: $color-white;
+    background-color: $color-primary;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: $spacing-m;
+  align-content: start;
+  padding-bottom: $spacing-m;
+}
+
+.notice {
+  margin: 0;
+  color: $color-gray-300;
+  text-align: center;
+}
+
+// Confirmação de compra
+
+.confirmPanel {
+  width: min(100%, 380px);
+}
+
+.confirmBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-m;
+}
+
+.confirmName {
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: $font-size-xl;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.confirmSummary {
+  display: flex;
+  gap: $spacing-l;
+  margin: 0;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  dt {
+    color: $color-gray-300;
+    font-size: $font-size-xs;
+    text-transform: uppercase;
+  }
+
+  dd {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+    margin: 0;
+    font-weight: $font-weight-bold;
+  }
+}
+
+.negative {
+  color: $color-error;
+}
+
+.error {
+  margin: 0;
+  color: $color-error;
+  font-size: $font-size-s;
+  text-align: center;
+}
+
+@media (max-width: $breakpoint-md) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $spacing-s;
+  }
+
+  .tabs {
+    width: 100%;
+  }
+
+  .tab {
+    flex: 1;
+    text-align: center;
+  }
+}

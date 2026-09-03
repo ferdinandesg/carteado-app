@@ -131,6 +131,21 @@ describe("Truco powers", () => {
       expect(game.vira).toEqual(card("A", "spades"));
       expect(game.manilha).toBe("2");
     });
+
+    it("applies the new manilha in the current round", () => {
+      game.deck.cards = [card("3", "hearts")];
+      executePower(game, "p1", { powerId: PowerId.CHANGE_TRUMP });
+
+      expect(game.rounds).toBe(1);
+      expect(game.manilha).toBe("4");
+
+      game.getPlayer("p1")!.hand = [card("4", "clubs")];
+      game.getPlayer("p2")!.hand = [card("3", "spades")];
+      game.playCard("p1", card("4", "clubs"));
+      game.playCard("p2", card("3", "spades"));
+
+      expect(game.rules.findTeamByUserId(game, "p1")!.roundWins).toBe(1);
+    });
   });
 
   describe("MAGNETIC_PULL", () => {

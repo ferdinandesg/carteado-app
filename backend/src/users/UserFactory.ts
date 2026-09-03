@@ -1,5 +1,6 @@
 import prisma from "@/prisma";
 import { getGuest, saveGuest } from "@/lib/redis/guests";
+import { resolveCosmetics } from "@/services/cosmetics.service";
 import {
   AuthenticatedUser,
   EmptyGuestType,
@@ -33,35 +34,29 @@ const resolvers = {
       status: guest.status ?? PlayerStatus.NOT_READY,
     };
   },
-  user: async (id: string): Promise<RegisteredSocketUser | null> => {
-    const user = await prisma.user.findUnique({ where: { id } });
-    if (!user) return null;
-    const role = normalizeRegisteredRole(user.role);
-    return {
-      ...user,
-      cash: user.cash ?? 0,
-      xp: user.xp ?? 0,
-      isRegistered: true,
-      role,
-      room: "",
-      status: PlayerStatus.NOT_READY,
-    };
-  },
-  admin: async (id: string): Promise<RegisteredSocketUser | null> => {
-    const user = await prisma.user.findUnique({ where: { id } });
-    if (!user) return null;
-    const role = normalizeRegisteredRole(user.role);
-    return {
-      ...user,
-      cash: user.cash ?? 0,
-      xp: user.xp ?? 0,
-      isRegistered: true,
-      role,
-      room: "",
-      status: PlayerStatus.NOT_READY,
-    };
-  },
+  user: resolveRegistered,
+  admin: resolveRegistered,
 } as const;
+
+/** Usuário do banco + cosméticos equipados (skin e avatar vindos do loadout). */
+async function resolveRegistered(
+  id: string
+): Promise<RegisteredSocketUser | null> {
+  const user = await prisma.user.findUnique({ where: { id } });
+  if (!user) return null;
+  const cosmetics = await resolveCosmetics(id);
+  return {
+    ...user,
+    image: cosmetics.avatar ?? user.image,
+    skin: cosmetics.skin,
+    cash: user.cash ?? 0,
+    xp: user.xp ?? 0,
+    isRegistered: true,
+    role: normalizeRegisteredRole(user.role),
+    room: "",
+    status: PlayerStatus.NOT_READY,
+  };
+}
 
 export class UserFactory {
   static async fromJwtPayload(

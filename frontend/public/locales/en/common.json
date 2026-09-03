@@ -11,13 +11,43 @@
   "logout": "Logout",
   "back": "Back",
   "confirm": "Confirm",
+  "cancel": "Cancel",
+  "saving": "Saving...",
+  "Settings": {
+    "title": "Settings",
+    "chooseSkin": "Choose your deck"
+  },
   "pageTitles": {
     "home": "Carteado",
     "rules": "Game Rules",
     "menu": "Menu",
     "rooms": "Rooms",
     "lobby": "Lobby {{hash}}",
-    "sandbox": "Sandbox — Cards"
+    "sandbox": "Sandbox — Cards",
+    "shop": "Shop"
+  },
+  "Store": {
+    "categories": "Categories",
+    "types": { "DECK": "Decks", "AVATAR": "Avatars" },
+    "equip": "Equip",
+    "equipped": "Equipped",
+    "buyFor": "Buy for {{price}} gold",
+    "confirmTitle": "Confirm purchase",
+    "confirmBuy": "Buy",
+    "price": "Price",
+    "balanceAfter": "Balance after",
+    "guestNotice": "Sign in with an account to buy and equip items.",
+    "goToShop": "Go to shop",
+    "providerPhoto": "Google photo",
+    "pick": { "DECK": "Your decks", "AVATAR": "Your avatars" },
+    "errors": {
+      "INSUFFICIENT_FUNDS": "Not enough gold.",
+      "ALREADY_OWNED": "You already own this item.",
+      "ITEM_NOT_OWNED": "You don't own this item.",
+      "PRODUCT_NOT_FOUND": "Item not available.",
+      "GUEST_NOT_ALLOWED": "Sign in with an account to use the shop.",
+      "STORE_REQUEST_FAILED": "Something went wrong. Try again."
+    }
   },
   "Home": {
     "joinAsGuest": "Join as guest",
@@ -66,6 +96,9 @@
     "xp": "XP",
     "gold": "Gold",
     "shop": "Shop",
+    "deck": "Deck",
+    "editAvatar": "Change avatar",
+    "editDeck": "Change deck",
     "friends": "My friends",
     "searchFriends": "Search",
     "searchRooms": "Search",
@@ -113,6 +146,7 @@
     "choseYourHand": "Select your hand",
     "gameFinished": "The game is over",
     "winner": "Winner: {{winner}}",
+    "backToMenu": "Back to menu",
     "askTruco": "Call Truco",
     "acceptTruco": "Accept Truco",
     "rejectTruco": "Reject Truco",
@@ -281,6 +315,7 @@
   "Sandbox": {
     "title": "Card sandbox",
     "intro": "Full Truco table: play, call truco, and watch the bot answer. Use the panel to stamp powers.",
+    "skin": "Deck",
     "rank": "Rank",
     "suit": "Suit",
     "power": "Power",

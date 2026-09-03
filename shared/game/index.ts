@@ -5,3 +5,4 @@ export * from "./utils";
 export * from "./game.types";
 export * from "./powers.types";
 export * from "./trucoBot";
+export * from "./truco";

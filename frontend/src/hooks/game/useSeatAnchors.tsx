@@ -4,8 +4,10 @@ import {
   createContext,
   useCallback,
   useContext,
+  useLayoutEffect,
   useMemo,
   useRef,
+  useState,
   type ReactNode,
 } from "react";
 
@@ -87,3 +89,30 @@ export function useAnchorRef(id: AnchorId) {
 }
 
 export const seatAnchor = (userId: string): AnchorId => `seat:${userId}`;
+
+/**
+ * Offset do centro da mesa até o assento. `null` até medir (evita o overlay
+ * nascer no centro e depois pular para a esquerda/direita).
+ */
+export function useCenterOffsetToSeat(
+  userId: string | undefined | null
+): AnchorOffset | null {
+  const { getOffset } = useSeatAnchors();
+  const [measured, setMeasured] = useState<{
+    userId: string;
+    offset: AnchorOffset;
+  } | null>(null);
+
+  // Mede antes do paint: os assentos já estão no DOM quando o overlay monta.
+  useLayoutEffect(() => {
+    if (!userId) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMeasured({
+      userId,
+      offset: getOffset("center", seatAnchor(userId)) ?? { x: 0, y: 0 },
+    });
+  }, [getOffset, userId]);
+
+  if (!userId || measured?.userId !== userId) return null;
+  return measured.offset;
+}

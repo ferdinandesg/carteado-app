@@ -1,4 +1,4 @@
-import { Card } from "shared/cards";
+import { Card, sameCard } from "shared/cards";
 import { GameStatus, ITrucoGameState } from "shared/game";
 import { HandResult } from "shared/types";
 
@@ -9,7 +9,12 @@ import { HandResult } from "shared/types";
  */
 export type TrucoTableEvent =
   | { type: "cardPlayed"; card: Card; playerId: string }
-  | { type: "trickFinished"; result: HandResult; disguisedBunch?: Card[] }
+  | {
+      type: "trickFinished";
+      result: HandResult;
+      /** Mesa como estava antes da revelação (Ilusionista): face falsa por posição. */
+      disguisedBunch?: Card[];
+    }
   | {
       type: "trucoAsked";
       askerId: string;
@@ -39,18 +44,6 @@ export type TrucoTableEvent =
       replacementCard?: Card;
     };
 
-const sameCard = (a: Card, b: Card) => a.rank === b.rank && a.suit === b.suit;
-
-function alreadyOnTable(prevBunch: Card[], card: Card): boolean {
-  return prevBunch.some(
-    (played) =>
-      sameCard(played, card) ||
-      (played.illusionReal !== undefined &&
-        played.illusionReal.rank === card.rank &&
-        played.illusionReal.suit === card.suit)
-  );
-}
-
 function findScoringTeam(prev: ITrucoGameState, next: ITrucoGameState) {
   for (const team of next.teams) {
     const before = prev.teams.find((t) => t.id === team.id);
@@ -71,28 +64,29 @@ export function diffTrucoSnapshots(
   const newResults = next.handsResults.slice(prev.handsResults.length);
   const trickFinished = newResults.length > 0;
 
-  // Cartas que entraram na mesa neste update. Se a vaza fechou, a última
-  // carta nunca aparece em `bunch` — só dentro do HandResult.
+  // Cartas que entraram na mesa neste update. Dentro da vaza comparamos por
+  // identidade (o Coveiro troca uma carta já jogada). Quando a vaza fecha, a
+  // última carta só aparece no HandResult, e o Ilusionista revela a face real
+  // das anteriores — por isso ali só contamos as posições novas.
   const playedNow: Card[] = trickFinished
-    ? newResults
-        .flatMap((r) => r.bunch)
-        .filter((card) => !alreadyOnTable(prev.bunch, card))
-    : next.bunch.filter((card) => !alreadyOnTable(prev.bunch, card));
-
+    ? newResults.flatMap((r) => r.bunch).slice(prev.bunch.length)
+    : next.bunch.filter((card) => !prev.bunch.some((c) => sameCard(c, card)));
   for (const card of playedNow) {
     events.push({ type: "cardPlayed", card, playerId: prev.playerTurn });
   }
 
-  const disguisedBunch = prev.bunch.some((card) => card.illusionReal)
-    ? prev.bunch
-    : undefined;
-  for (const result of newResults) {
+  newResults.forEach((result, index) => {
+    const wasDisguised =
+      index === 0 &&
+      prev.bunch.some(
+        (card, i) => result.bunch[i] && !sameCard(card, result.bunch[i])
+      );
     events.push(
-      disguisedBunch
-        ? { type: "trickFinished", result, disguisedBunch }
+      wasDisguised
+        ? { type: "trickFinished", result, disguisedBunch: prev.bunch }
         : { type: "trickFinished", result }
     );
-  }
+  });
 
   const wasPending = prev.trucoState === "PENDING";
   const isPending = next.trucoState === "PENDING";

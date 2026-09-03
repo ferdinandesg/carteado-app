@@ -28,13 +28,14 @@ export function calculateRankGain(
   return RANK_GAIN.LOBBY_AT_PLAYER;
 }
 
-export const GOLD_PER_MATCH = 200;
-
 /**
- * Ponto único para regras de gold por jogador. Hoje é um valor fixo por
- * partida; para variar por resultado, basta usar o contexto (ex.:
- * `ctx.isWinner ? 300 : 100`) ou injetar outra policy.
+ * Gold por partida. Calibrado com o preço de um baralho na loja (400):
+ * 2 vitórias ou 4 derrotas compram uma skin.
  */
+export const GOLD_PER_WIN = 200;
+export const GOLD_PER_LOSS = 100;
+
+/** Ponto único para regras de gold por jogador; injete outra policy para variar. */
 export interface GoldRewardContext {
   userId: string;
   isWinner: boolean;
@@ -42,7 +43,8 @@ export interface GoldRewardContext {
 }
 export type GoldRewardPolicy = (context: GoldRewardContext) => number;
 
-export const defaultGoldRewardPolicy: GoldRewardPolicy = () => GOLD_PER_MATCH;
+export const defaultGoldRewardPolicy: GoldRewardPolicy = ({ isWinner }) =>
+  isWinner ? GOLD_PER_WIN : GOLD_PER_LOSS;
 
 /** Vencedores da partida: time com 12+ no truco; `playerTurn` no carteado. */
 export function getMatchWinnerIds(game: GameInstance): string[] {

@@ -3,7 +3,7 @@
 import { HtmlHTMLAttributes, ReactNode } from "react";
 import classNames from "classnames";
 
-import styles from "@styles/Modal.module.scss";
+import styles from "@/styles/Modal.module.scss";
 
 interface ModalRootProps extends HtmlHTMLAttributes<HTMLDivElement> {
   children: ReactNode;

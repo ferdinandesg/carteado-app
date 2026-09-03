@@ -1,4 +1,4 @@
-import { PowerId } from "shared/game";
+import { applyMercenarySteal, PowerId } from "shared/game";
 import type { ActiveEffect } from "shared/game";
 import type { Team } from "shared/types";
 import type { TrucoGame } from "../../TrucoGameRules";
@@ -28,11 +28,6 @@ export class MercenaryPower implements PowerStrategy {
     winningTeam: Team
   ): void {
     if (!winningTeam.userIds.includes(effect.sourceUserId)) return;
-
-    winningTeam.score += 1;
-    const loser = game.teams.find((team) => team.id !== winningTeam.id);
-    if (loser) {
-      loser.score = Math.max(0, loser.score - 1);
-    }
+    applyMercenarySteal(game.teams, winningTeam);
   }
 }

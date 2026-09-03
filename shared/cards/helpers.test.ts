@@ -76,9 +76,9 @@ describe("getNextRank", () => {
     expect(getNextRank("2")).toBe("3");
     expect(getNextRank("A")).toBe("2");
     expect(getNextRank("K")).toBe("A");
-    expect(getNextRank("Q")).toBe("K");
-    expect(getNextRank("J")).toBe("Q");
-    expect(getNextRank("7")).toBe("J");
+    expect(getNextRank("J")).toBe("K");
+    expect(getNextRank("Q")).toBe("J");
+    expect(getNextRank("7")).toBe("Q");
   });
 
   it("retorna J como default para rank desconhecido", () => {

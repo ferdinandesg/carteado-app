@@ -1,0 +1,73 @@
+.panel {
+  width: min(100%, 640px);
+}
+
+.grid {
+  display: grid;
+  gap: $spacing-s;
+
+  &.DECK {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+
+  &.AVATAR {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+}
+
+.option {
+  @include button-reset;
+  @include focus-ring;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-xs;
+  min-width: 0;
+  padding: $spacing-s $spacing-xs;
+  color: $color-white;
+  border: $border-width solid transparent;
+  border-radius: $border-radius-s;
+  transition:
+    box-shadow $transition-normal,
+    transform $transition-normal;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    cursor: progress;
+  }
+}
+
+.selected {
+  border-color: $color-primary;
+  box-shadow: 0 0 0 2px rgba($color-primary, 0.35);
+}
+
+.optionName {
+  font-family: var(--font-mouse-memoirs), sans-serif;
+  font-size: $font-size-s;
+  letter-spacing: 1px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.providerPhoto {
+  display: grid;
+  width: 112px;
+  height: 112px;
+  color: $color-gray-300;
+  background-color: rgba($color-white, 0.1);
+  border: $border-width dashed $color-outline;
+  border-radius: $border-radius-full;
+  place-items: center;
+}
+
+@media (max-width: $breakpoint-md) {
+  .grid.DECK,
+  .grid.AVATAR {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

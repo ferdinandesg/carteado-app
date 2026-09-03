@@ -58,13 +58,9 @@ jest.mock("next/navigation", () => ({
   useRouter: jest.fn(() => ({ push: jest.fn() })),
 }));
 
-jest.mock("@/contexts/socket.context", () => {
-  const useSocket = jest.fn();
-  return {
-    useSocket,
-    useOptionalSocket: useSocket,
-  };
-});
+jest.mock("@/contexts/socket.context", () => ({
+  useSocket: jest.fn(),
+}));
 
 jest.mock("@/contexts/room.context", () => ({
   useRoomContext: jest.fn(),

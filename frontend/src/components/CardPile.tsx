@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { Card } from "shared/cards";
 
-import CardComponent from "./Card";
+import CardComponent, { AvailableSkins } from "./Card";
 import { getCardKeys } from "@/lib/cards/cardKey";
 import { type CardSize } from "@/lib/cards/cardSizing";
 import { getPileTransform, type PileVariant } from "@/lib/cards/pileLayout";
@@ -19,6 +19,7 @@ type CardPileProps = {
   maxVisible?: number;
   /** Prefixo de `layoutId`; quando definido, as cartas animam ao entrar. */
   layoutPrefix?: string;
+  skin?: AvailableSkins;
   className?: string;
   testId?: string;
 };
@@ -37,6 +38,7 @@ export default function CardPile({
   maxVisible,
   layoutPrefix,
   className,
+  skin,
   testId,
 }: CardPileProps) {
   const visible =
@@ -70,6 +72,7 @@ export default function CardPile({
             <CardComponent
               card={card}
               size={size}
+              skin={skin}
               isHidden={isHidden}
               canHover={canHover}
               layoutId={
