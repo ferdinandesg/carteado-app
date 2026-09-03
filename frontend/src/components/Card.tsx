@@ -12,11 +12,11 @@ import { getCardScale, type CardSize } from "@/lib/cards/cardSizing";
 import styles from "@/styles/Card.module.scss";
 
 type AvailableSkins =
+  | "baralho01"
+  | "baralho02"
+  | "baralho03"
   | "basics/white"
-  | "basics/black"
-  | "poker"
-  | "8bit"
-  | "baralho01";
+  | "basics/black";
 
 type CardComponentProps = {
   card: Card;
@@ -33,13 +33,15 @@ type CardComponentProps = {
    * ao trocar de pai (leque → centro) com o mesmo `layoutId`, ela voa.
    */
   layoutId?: string;
+  /** Skin do baralho; se omitida, usa a da sessão. */
+  skin?: string;
 } & HTMLAttributes<HTMLDivElement>;
 
 const ROOT_PATH = "/assets/skins";
 
-function getSkinPath(skin: AvailableSkins, card: Card, hidden: boolean) {
+function getSkinPath(skin: string, card: Card, hidden: boolean) {
   if (card.isHidden || hidden) {
-    return `${ROOT_PATH}/${skin}/backs/back_blue_1.png`;
+    return `${ROOT_PATH}/${skin}/backs/back_1.png`;
   }
 
   return `${ROOT_PATH}/${skin}/${card.suit}/${card.rank}${card.suit}.png`;
@@ -53,15 +55,16 @@ export default function CardComponent({
   canHover = false,
   showPowerHint = false,
   layoutId,
+  skin,
   className,
   style,
   ...rest
 }: CardComponentProps) {
   const { t } = useTranslation();
   const { data } = useSession();
-  const userSkin = (data?.user?.skin as AvailableSkins) || "baralho01";
+  const userSkin = (data?.user?.skin || "baralho01") as AvailableSkins;
   const hidden = Boolean(card.isHidden || isHidden);
-  const cardURL = getSkinPath(userSkin, card, hidden);
+  const cardURL = getSkinPath(skin ?? userSkin, card, hidden);
   const powerId = !hidden ? card.powerId : undefined;
   const powerName = powerId
     ? t(`Powers.${powerId}.name`, { defaultValue: "" })

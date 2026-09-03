@@ -16,6 +16,10 @@ type CardFanProps = {
   disabled?: boolean;
   /** Prefixo do `layoutId` para animar a carta ao sair do leque. */
   layoutPrefix?: string;
+  /** Skin do baralho; se omitida, cada carta usa a da sessão. */
+  skin?: string;
+  /** Desliga `layoutId` (preview estático, ex.: loja). */
+  enableLayout?: boolean;
   testId?: string;
 };
 
@@ -30,6 +34,8 @@ export default function CardFan({
   size = "lg",
   disabled = false,
   layoutPrefix = "card",
+  skin,
+  enableLayout = true,
   testId,
 }: CardFanProps) {
   const isTouch = useCoarsePointer();
@@ -75,7 +81,8 @@ export default function CardFan({
             <CardComponent
               card={card}
               size={size}
-              layoutId={`${layoutPrefix}-${key}`}
+              skin={skin}
+              layoutId={enableLayout ? `${layoutPrefix}-${key}` : undefined}
               showPowerHint={activeKey === key}
             />
           </div>

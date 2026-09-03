@@ -18,6 +18,7 @@ type MenuTopBarProps = {
   friendsLabel: string;
   isFriendsOpen: boolean;
   onToggleFriends: () => void;
+  onOpenSettings: () => void;
 };
 
 export default function MenuTopBar({
@@ -31,6 +32,7 @@ export default function MenuTopBar({
   friendsLabel,
   isFriendsOpen,
   onToggleFriends,
+  onOpenSettings,
 }: MenuTopBarProps) {
   const { t } = useTranslation();
 
@@ -77,7 +79,8 @@ export default function MenuTopBar({
       <button
         type="button"
         className={styles.settingsButton}
-        aria-label={settingsAriaLabel}>
+        aria-label={settingsAriaLabel}
+        onClick={onOpenSettings}>
         <Settings
           size={30}
           aria-hidden

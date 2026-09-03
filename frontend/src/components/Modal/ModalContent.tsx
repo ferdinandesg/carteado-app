@@ -3,7 +3,7 @@
 import { HtmlHTMLAttributes } from "react";
 import classNames from "classnames";
 
-import styles from "./Modal.module.scss";
+import styles from "@styles/Modal.module.scss";
 
 export default function Content({
   className,

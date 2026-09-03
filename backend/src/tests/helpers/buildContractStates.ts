@@ -4,7 +4,7 @@
 
 import { CarteadoGame } from "@/game/CarteadoGameRules";
 import { TrucoGame } from "@/game/TrucoGameRules";
-import { Card } from "shared/cards";
+import { Card, getNextRank } from "shared/cards";
 import {
   card,
   forceHidden,
@@ -100,8 +100,8 @@ function buildTrucoStates() {
   // Estado de rodada fixado manualmente (sem deal aleatório)
   const normalizeRound = () => {
     rigDeck(game.deck, []);
-    game.vira = card("7", "clubs");
-    game.manilha = "Q";
+    game.vira = card("6", "clubs");
+    game.manilha = getNextRank("6");
     game.playerTurn = USER_A;
     game.getPlayer(USER_A)!.hand = [
       card("K", "hearts"),
@@ -127,7 +127,7 @@ function buildTrucoStates() {
   game.rules.acceptTruco(game, USER_B);
   const trucoAccepted = snapshot(game);
 
-  // user-a vence duas mãos e fecha a rodada valendo 3;
+  // user-a vence duas mãos (K > J, A > J) e fecha a rodada valendo 3;
   // a nova rodada (deal aleatório) é normalizada para manter o determinismo.
   game.playCard(USER_A, card("K", "hearts"));
   game.playCard(USER_B, card("J", "spades"));

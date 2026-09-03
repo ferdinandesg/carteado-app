@@ -12,6 +12,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ProductType {
+  DECK
+  AVATAR
+}
+
 model User {
   id     String   @id @default(auto()) @map("_id") @db.ObjectId
   name   String
@@ -27,6 +32,36 @@ model User {
 
   friendshipsSent     Friendship[] @relation("friendshipRequester")
   friendshipsReceived Friendship[] @relation("friendshipAddressee")
+
+  inventory        UserInventory[]
+  equippedDeckId   String?         @db.ObjectId
+  equippedAvatarId String?         @db.ObjectId
+  equippedDeck     Product?        @relation("equippedDeck", fields: [equippedDeckId], references: [id])
+  equippedAvatar   Product?        @relation("equippedAvatar", fields: [equippedAvatarId], references: [id])
+}
+
+model Product {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  price       Int
+  type        ProductType
+  imageUrl    String
+
+  inventories      UserInventory[]
+  equippedAsDeck   User[]          @relation("equippedDeck")
+  equippedAsAvatar User[]          @relation("equippedAvatar")
+}
+
+model UserInventory {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String   @db.ObjectId
+  product     Product  @relation(fields: [productId], references: [id])
+  productId   String   @db.ObjectId
+  purchasedAt DateTime @default(now())
+
+  @@unique([userId, productId])
 }
 
 enum FriendshipStatus {

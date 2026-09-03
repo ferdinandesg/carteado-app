@@ -84,7 +84,12 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger, session }) {
+      if (trigger === "update" && session?.skin) {
+        token.skin = session.skin;
+        return token;
+      }
+
       if (account && user) {
         try {
           const auth = await resolveAuthProfile(account.provider, user);

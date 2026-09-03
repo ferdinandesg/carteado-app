@@ -13,6 +13,7 @@ import MenuContentCard from "@/components/menu/MenuContentCard";
 import MenuTopBar from "@/components/menu/MenuTopBar";
 import UserPanel from "@/components/menu/UserPanel";
 import ActionButton from "../buttons/ActionButton";
+import SkinSettingsModal from "@/components/Modal/SkinSettingsModal/SkinSettingsModal";
 import { testIds } from "@/tests/testIds";
 
 type MenuShellProps = {
@@ -30,6 +31,7 @@ export default function MenuShell({
   const router = useRouter();
   const { data } = useSession();
   const [isFriendsOpen, setIsFriendsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const user = data?.user;
   const playerLevel = user?.xp || 0;
   const playerXp = user?.xp || 0;
@@ -68,6 +70,7 @@ export default function MenuShell({
           friendsLabel={t("Menu.friends")}
           isFriendsOpen={isFriendsOpen}
           onToggleFriends={() => setIsFriendsOpen((open) => !open)}
+          onOpenSettings={() => setIsSettingsOpen(true)}
         />
 
         <MenuContentCard
@@ -93,6 +96,11 @@ export default function MenuShell({
       <FriendsPanel
         title={t("Menu.friends")}
         searchPlaceholder={t("Menu.searchFriends")}
+      />
+
+      <SkinSettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
       />
     </main>
   );

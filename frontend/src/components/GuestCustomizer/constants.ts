@@ -11,22 +11,17 @@ export const skinOptions = [
   {
     name: "Baralho 01",
     value: "baralho01",
-    path: "/assets/skins/baralho01/clubs/2clubs.png",
+    path: "/assets/skins/baralho01/clubs/Kclubs.png",
   },
   {
-    name: "8-bit Blue",
-    value: "8bit",
-    path: "/assets/skins/8bit/clubs/2clubs.png",
+    name: "Baralho 02",
+    value: "baralho02",
+    path: "/assets/skins/baralho02/clubs/Kclubs.png",
   },
   {
-    name: "Basics White",
-    value: "basics/white",
-    path: "/assets/skins/basics/white/clubs/2clubs.png",
-  },
-  {
-    name: "Basics Black",
-    value: "basics/black",
-    path: "/assets/skins/basics/black/clubs/2clubs.png",
+    name: "Baralho 03",
+    value: "baralho03",
+    path: "/assets/skins/baralho03/clubs/Kclubs.png",
   },
 ] as const;
 
