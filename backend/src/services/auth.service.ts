@@ -29,7 +29,6 @@ export type AuthProfile = {
 export type RegisteredAuthProfile = AuthProfile & {
   image: string;
   role: RegisteredUserRole;
-  skin: string | null;
 };
 
 function toRegisteredProfile(user: User): RegisteredAuthProfile {
@@ -42,7 +41,6 @@ function toRegisteredProfile(user: User): RegisteredAuthProfile {
     cash: user.cash ?? 0,
     xp: user.xp ?? 0,
     role: normalizeRegisteredRole(user.role),
-    skin: user.skin,
   };
 }
 
