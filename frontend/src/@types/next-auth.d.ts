@@ -32,6 +32,7 @@ declare module "next-auth/jwt" {
     role: UserRole;
     accessToken: string;
     skin?: string | null;
+    image?: string | null;
     rank: number;
     cash: number;
     xp: number;

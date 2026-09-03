@@ -3,7 +3,7 @@
 import { HtmlHTMLAttributes, ReactNode } from "react";
 import classNames from "classnames";
 
-import styles from "@styles/Modal.module.scss";
+import styles from "@/styles/Modal.module.scss";
 
 interface FooterProps extends HtmlHTMLAttributes<HTMLDivElement> {
   onClose?: () => void;

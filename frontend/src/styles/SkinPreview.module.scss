@@ -1,0 +1,6 @@
+// Reserva a altura da carta mais o levante do hover para o leque não cortar.
+.skinPreview {
+  width: 100%;
+  height: calc(var(--card-h) + $spacing-l);
+  overflow: visible;
+}

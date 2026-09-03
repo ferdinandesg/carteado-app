@@ -1,31 +1,58 @@
 import Deck, {
   Card,
-  getCardValue,
   getNextRank,
+  isTrucoRank,
   RANK_TO_VALUE,
-  TRUCO_RANK_ORDER,
+  sameCard,
   type Rank,
   type Suit,
 } from "shared/cards";
 import {
+  applyMercenarySteal,
   BasePlayer,
+  disguiseAsZap,
+  findGravediggerCandidates,
+  findTeamByUserId,
   GameStatus,
   GameType,
+  getOpponentTeam,
+  isPowerId,
   ITrucoGameState,
+  nextTrucoBet,
+  pickRandom,
   PlayerStatus,
   PowerId,
+  resolveRoundOutcome,
+  resolveTrickWinner,
+  restoreIllusions,
+  SILVER_SHIELD_REJECT_POINTS,
+  stampPowersOnDeck,
   TRUCO_BOT_DELAY_MS,
-  TRUCO_POWERS_PER_ROUND,
-  TRUCO_POWER_STAMP_CHANCE,
+  TRUCO_MAX_BET,
+  TRUCO_WINNING_SCORE,
+  trucoRejectPoints,
   type PowerPrivateResult,
   type PowerUsage,
 } from "shared/game";
+import type { Team } from "shared/types";
+
+/**
+ * Motor local do Truco para a sandbox (você × bot, sem servidor). As regras
+ * vêm de `shared/game/truco`; aqui só existe a orquestração do estado.
+ * Cada ação clona o snapshot e muta a cópia, devolvendo um objeto novo para
+ * o store.
+ */
 
 export const SANDBOX_YOU_ID = "sandbox-you";
 export const SANDBOX_BOT_ID = "sandbox-bot";
 export const SANDBOX_BOT_DELAY_MS = TRUCO_BOT_DELAY_MS;
 
-const TRUCO_RANKS = new Set(Object.keys(TRUCO_RANK_ORDER));
+type SandboxNames = { you: string; bot: string };
+
+export type SandboxPlayResult = {
+  game: ITrucoGameState;
+  privateResult?: PowerPrivateResult;
+};
 
 export function makeSandboxCard(
   rank: Rank,
@@ -43,11 +70,11 @@ export function makeSandboxCard(
   };
 }
 
-function makePlayer(
-  userId: string,
-  name: string,
-  extras: Partial<BasePlayer> = {}
-): BasePlayer {
+function clone<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
+function makePlayer(userId: string, name: string, teamId: string): BasePlayer {
   return {
     userId,
     name,
@@ -55,142 +82,105 @@ function makePlayer(
     hand: [],
     playedCards: [],
     table: [],
-    teamId: extras.teamId ?? "",
-    isBot: extras.isBot,
-    ...extras,
+    teamId,
+    isBot: userId === SANDBOX_BOT_ID,
   };
 }
 
 function drawTrucoCard(deck: Deck): Card {
   let card = deck.draw();
-  while (card && !TRUCO_RANKS.has(card.rank) && deck.getCards().length > 0) {
+  while (card && !isTrucoRank(card.rank) && deck.getCards().length > 0) {
     card = deck.draw();
   }
-  if (!card || !TRUCO_RANKS.has(card.rank)) {
-    throw new Error("SANDBOX_DECK_EMPTY");
-  }
-  return { ...card };
+  if (!card || !isTrucoRank(card.rank)) throw new Error("SANDBOX_DECK_EMPTY");
+  return card;
 }
 
-function shuffle<T>(items: T[]): T[] {
-  const next = [...items];
-  for (let i = next.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [next[i], next[j]] = [next[j], next[i]];
-  }
+function asStateDeck(cards: Card[]): ITrucoGameState["deck"] {
+  return { cards, numberOfFullDecks: 1 } as unknown as ITrucoGameState["deck"];
+}
+
+function setTurn(game: ITrucoGameState, userId: string): void {
+  game.playerTurn = userId;
+  game.players.forEach((player) => {
+    player.status =
+      player.userId === userId ? PlayerStatus.PLAYING : PlayerStatus.WAITING;
+  });
+}
+
+function getPlayer(game: ITrucoGameState, userId: string): BasePlayer {
+  const player = game.players.find((item) => item.userId === userId);
+  if (!player) throw new Error("SANDBOX_PLAYER_NOT_FOUND");
+  return player;
+}
+
+function ownerOf(game: ITrucoGameState, card: Card): string {
+  return (
+    game.players.find((player) =>
+      player.playedCards.some((played) => sameCard(played, card))
+    )?.userId ?? game.playerTurn
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Rodadas
+// ---------------------------------------------------------------------------
+
+/** Nova mão: baralho novo, 3 cartas por jogador, vira, manilha e carimbos. */
+export function dealSandboxRound(
+  game: ITrucoGameState,
+  names?: SandboxNames
+): ITrucoGameState {
+  const next = clone(game);
+  const deck = new Deck();
+
+  next.rounds += 1;
+  next.currentBet = 1;
+  next.status = GameStatus.PLAYING;
+  next.trucoState = "NONE";
+  next.trucoAskerId = null;
+  next.bunch = [];
+  next.activeEffects = [];
+  next.teams.forEach((team) => (team.roundWins = 0));
+
+  next.players.forEach((player) => {
+    if (names) {
+      player.name = player.userId === SANDBOX_YOU_ID ? names.you : names.bot;
+    }
+    player.hand = Array.from({ length: 3 }, () => drawTrucoCard(deck));
+    player.playedCards = [];
+    player.table = [];
+  });
+
+  const vira = drawTrucoCard(deck);
+  delete vira.powerId;
+  next.vira = vira;
+  next.manilha = getNextRank(vira.rank);
+  stampPowersOnDeck(
+    next.players.flatMap((player) => player.hand),
+    undefined,
+    { excludeRanks: [next.manilha] }
+  );
+  next.deck = asStateDeck(deck.getCards().filter((c) => isTrucoRank(c.rank)));
+
+  setTurn(next, SANDBOX_YOU_ID);
   return next;
 }
 
-function stampHands(hands: Card[][], manilha: string): void {
-  const candidates = hands
-    .flat()
-    .filter((card) => card.rank !== manilha && TRUCO_RANKS.has(card.rank));
-  const powers = shuffle(Object.values(PowerId)).slice(
-    0,
-    TRUCO_POWERS_PER_ROUND
-  );
-  const picked = shuffle(candidates);
-  let stamped = 0;
-  for (const card of picked) {
-    if (stamped >= powers.length) break;
-    if (Math.random() >= TRUCO_POWER_STAMP_CHANCE) continue;
-    card.powerId = powers[stamped];
-    stamped++;
-  }
-}
-
-function setTurn(game: ITrucoGameState, userId: string): ITrucoGameState {
-  return {
-    ...game,
-    playerTurn: userId,
-    players: game.players.map((player) => ({
-      ...player,
-      status:
-        player.userId === userId ? PlayerStatus.PLAYING : PlayerStatus.WAITING,
-    })),
-  };
-}
-
-function leftoverDeck(deck: Deck): ITrucoGameState["deck"] {
-  return {
-    cards: deck.getCards().filter((card) => TRUCO_RANKS.has(card.rank)),
-    numberOfFullDecks: 1,
-  } as unknown as ITrucoGameState["deck"];
-}
-
-function emptyDeck(): ITrucoGameState["deck"] {
-  return leftoverDeck({ getCards: () => [] } as unknown as Deck);
-}
-
-export function dealSandboxRound(
-  game: ITrucoGameState,
-  names?: { you: string; bot: string }
-): ITrucoGameState {
-  const deck = new Deck();
-  const yourHand = [
-    drawTrucoCard(deck),
-    drawTrucoCard(deck),
-    drawTrucoCard(deck),
-  ];
-  const botHand = [
-    drawTrucoCard(deck),
-    drawTrucoCard(deck),
-    drawTrucoCard(deck),
-  ];
-  const vira = drawTrucoCard(deck);
-  delete vira.powerId;
-  const manilha = getNextRank(vira.rank);
-  stampHands([yourHand, botHand], manilha);
-
-  return setTurn(
-    {
-      ...game,
-      rounds: game.rounds + 1,
-      currentBet: 1,
-      status: GameStatus.PLAYING,
-      trucoState: "NONE",
-      trucoAskerId: null,
-      bunch: [],
-      vira,
-      manilha,
-      deck: leftoverDeck(deck),
-      activeEffects: [],
-      players: game.players.map((player) => ({
-        ...player,
-        name:
-          player.userId === SANDBOX_YOU_ID
-            ? (names?.you ?? player.name)
-            : (names?.bot ?? player.name),
-        hand: player.userId === SANDBOX_YOU_ID ? yourHand : botHand,
-        playedCards: [],
-        table: [],
-      })),
-      teams: game.teams.map((team) => ({ ...team, roundWins: 0 })),
-    },
-    SANDBOX_YOU_ID
-  );
-}
-
-export function createSandboxTrucoGame(names: {
-  you: string;
-  bot: string;
-}): ITrucoGameState {
-  const you = makePlayer(SANDBOX_YOU_ID, names.you, { teamId: "TEAM_A" });
-  const bot = makePlayer(SANDBOX_BOT_ID, names.bot, {
-    teamId: "TEAM_B",
-    isBot: true,
-  });
-
+export function createSandboxTrucoGame(names: SandboxNames): ITrucoGameState {
   return dealSandboxRound(
     {
       id: `sandbox-${Date.now()}`,
       type: GameType.TRUCO,
       rulesName: "TrucoGameRules",
-      players: [you, bot],
+      players: [
+        makePlayer(SANDBOX_YOU_ID, names.you, "TEAM_A"),
+        makePlayer(SANDBOX_BOT_ID, names.bot, "TEAM_B"),
+      ],
       bunch: [],
       status: GameStatus.PLAYING,
       playerTurn: SANDBOX_YOU_ID,
-      deck: emptyDeck(),
+      deck: asStateDeck([]),
       rewardsApplied: false,
       vira: null,
       manilha: "",
@@ -210,260 +200,168 @@ export function createSandboxTrucoGame(names: {
   );
 }
 
-function sameCard(a: Card, b: Card) {
-  return a.rank === b.rank && a.suit === b.suit;
-}
-
-function ownerId(game: ITrucoGameState, card: Card): string | null {
-  return (
-    game.players.find((player) =>
-      player.playedCards.some((played) => sameCard(played, card))
-    )?.userId ?? null
-  );
-}
-
-function isPowerId(value: string): value is PowerId {
-  return (Object.values(PowerId) as string[]).includes(value);
-}
-
-function applySandboxGravedigger(
-  players: BasePlayer[],
-  bunch: Card[],
-  deckCards: Card[],
-  manilha: string,
-  userId: string
-): {
-  players: BasePlayer[];
-  bunch: Card[];
-  deckCards: Card[];
-  returnedCard: Card;
-  replacementCard: Card;
-} | null {
-  const actor = players.find((player) => player.userId === userId);
-  const returnedCard = actor?.playedCards[actor.playedCards.length - 1];
-  if (!actor || !returnedCard) return null;
-
-  const minValue = getCardValue(returnedCard, manilha);
-  const candidates = deckCards
-    .map((card, index) => ({ card, index }))
+/** Soma os pontos (com Mercenário) e encerra a partida ou abre outra mão. Muta `game`. */
+function finishRound(
+  game: ITrucoGameState,
+  winner: Team,
+  points: number
+): ITrucoGameState {
+  winner.score += points;
+  game.activeEffects
     .filter(
-      ({ card }) =>
-        TRUCO_RANKS.has(card.rank) && getCardValue(card, manilha) >= minValue
-    );
-  if (candidates.length === 0) return null;
-
-  const picked = candidates[Math.floor(Math.random() * candidates.length)];
-  const replacementCard = { ...picked.card };
-  delete replacementCard.powerId;
-
-  const nextDeck = [...deckCards];
-  nextDeck.splice(picked.index, 1);
-  nextDeck.unshift({ ...returnedCard });
-
-  const bunchIndex = bunch.length - 1;
-
-  return {
-    players: players.map((player) => {
-      if (player.userId !== userId) return player;
-      const playedCards = [...player.playedCards];
-      playedCards[playedCards.length - 1] = replacementCard;
-      return { ...player, playedCards };
-    }),
-    bunch: bunch.map((card, i) => (i === bunchIndex ? replacementCard : card)),
-    deckCards: nextDeck,
-    returnedCard,
-    replacementCard,
-  };
-}
-
-function applySandboxXRay(
-  players: BasePlayer[],
-  teams: ITrucoGameState["teams"],
-  userId: string
-): PowerPrivateResult | null {
-  const target = pickSandboxOpponent(players, teams, userId);
-  if (!target) return null;
-  const card = target.hand[Math.floor(Math.random() * target.hand.length)];
-  if (!card) return null;
-
-  return {
-    powerId: PowerId.X_RAY,
-    targetUserId: target.userId,
-    card: { ...card },
-  };
-}
-
-function applySandboxSixthSense(
-  players: BasePlayer[],
-  teams: ITrucoGameState["teams"],
-  userId: string,
-  manilha: string
-): PowerPrivateResult | null {
-  const target = pickSandboxOpponent(players, teams, userId);
-  if (!target) return null;
-
-  return {
-    powerId: PowerId.SIXTH_SENSE,
-    targetUserId: target.userId,
-    hasManilha: target.hand.some((card) => card.rank === manilha),
-  };
-}
-
-function pickSandboxOpponent(
-  players: BasePlayer[],
-  teams: ITrucoGameState["teams"],
-  userId: string
-): BasePlayer | undefined {
-  const sourceTeam = teams.find((team) => team.userIds.includes(userId));
-  if (!sourceTeam) return undefined;
-
-  const opponents = players.filter((player) => {
-    const team = teams.find((item) => item.userIds.includes(player.userId));
-    return Boolean(team && team.id !== sourceTeam.id && player.hand.length > 0);
-  });
-  if (opponents.length === 0) return undefined;
-  return opponents[Math.floor(Math.random() * opponents.length)];
-}
-
-function disguiseSandboxCard(card: Card, manilha: string): Card {
-  if (card.illusionReal || !manilha) return card;
-  return {
-    ...card,
-    illusionReal: {
-      rank: card.rank,
-      suit: card.suit,
-      toString: card.toString,
-    },
-    rank: manilha as Card["rank"],
-    suit: "clubs",
-    toString: `${manilha} of clubs` as Card["toString"],
-  };
-}
-
-function revealSandboxCard(card: Card): Card {
-  if (!card.illusionReal) return card;
-  const { illusionReal, ...rest } = card;
-  return {
-    ...rest,
-    rank: illusionReal.rank,
-    suit: illusionReal.suit,
-    toString: illusionReal.toString,
-  };
-}
-
-function roundShouldEnd(game: ITrucoGameState): boolean {
-  const [teamA, teamB] = game.teams;
-  const tricks = game.handsResults.filter(
-    (result) => result.round === game.rounds
-  ).length;
-  if (tricks < 2) return false;
-  if (teamA.roundWins >= 2 && teamA.roundWins > teamB.roundWins) return true;
-  if (teamB.roundWins >= 2 && teamB.roundWins > teamA.roundWins) return true;
-  return tricks >= 3;
-}
-
-function finishSandboxRound(game: ITrucoGameState): ITrucoGameState {
-  const [teamA, teamB] = game.teams;
-  const firstTrick = game.handsResults.find(
-    (result) => result.round === game.rounds && result.winnerTeamId
-  );
-  const winner =
-    teamA.roundWins > teamB.roundWins
-      ? teamA
-      : teamB.roundWins > teamA.roundWins
-        ? teamB
-        : (game.teams.find((team) => team.id === firstTrick?.winnerTeamId) ??
-          null);
-
-  const mercenarySteals = Boolean(
-    winner &&
-    game.activeEffects.some(
       (effect) =>
         effect.powerId === PowerId.MERCENARY &&
         winner.userIds.includes(effect.sourceUserId)
     )
-  );
+    .forEach(() => applyMercenarySteal(game.teams, winner));
 
-  const teams = game.teams.map((team) => {
-    const won = Boolean(winner && team.id === winner.id);
-    let score = team.score + (won ? game.currentBet : 0);
-    if (mercenarySteals) {
-      score = won ? score + 1 : Math.max(0, score - 1);
-    }
-    return { ...team, roundWins: 0, score };
-  });
-
-  const scored: ITrucoGameState = {
-    ...game,
-    teams,
-    currentBet: 1,
-    trucoState: "NONE",
-    trucoAskerId: null,
-  };
-
-  if (teams.some((team) => team.score >= 12)) {
-    return { ...scored, status: GameStatus.FINISHED };
+  if (winner.score >= TRUCO_WINNING_SCORE) {
+    game.status = GameStatus.FINISHED;
+    return game;
   }
-
-  return dealSandboxRound(scored);
+  return dealSandboxRound(game);
 }
 
 function resolveTrick(game: ITrucoGameState): ITrucoGameState {
-  const revealedBunch = game.bunch.map(revealSandboxCard);
-  const players = game.players.map((player) => ({
-    ...player,
-    playedCards: player.playedCards.map(revealSandboxCard),
+  restoreIllusions(game);
+
+  const entries = game.bunch.map((card) => ({
+    card,
+    userId: ownerOf(game, card),
   }));
-  const revealed: ITrucoGameState = {
-    ...game,
-    bunch: revealedBunch,
-    players,
-  };
+  const outcome = resolveTrickWinner(entries, game.manilha, game.teams);
 
-  const [first, second] = revealed.bunch;
-  const firstValue = getCardValue(first, revealed.manilha);
-  const secondValue = getCardValue(second, revealed.manilha);
-  const isTie = firstValue === secondValue;
-  const winnerUserId = isTie
-    ? null
-    : ownerId(revealed, firstValue > secondValue ? first : second);
+  game.teams.forEach((team) => {
+    if (outcome.isTie || team.id === outcome.winnerTeamId) team.roundWins += 1;
+  });
+  game.handsResults.push({
+    winnerTeamId: outcome.winnerTeamId,
+    bunch: game.bunch,
+    isTie: outcome.isTie,
+    round: game.rounds,
+  });
+  game.bunch = [];
 
-  const winnerTeamId = winnerUserId
-    ? (revealed.teams.find((team) => team.userIds.includes(winnerUserId))?.id ??
-      null)
-    : null;
+  const roundResults = game.handsResults.filter(
+    (result) => result.round === game.rounds
+  );
+  const round = resolveRoundOutcome(game.teams, roundResults);
+  if (round.kind === "won")
+    return finishRound(game, round.team, game.currentBet);
+  if (round.kind === "void") return dealSandboxRound(game);
 
-  const teams = revealed.teams.map((team) => ({
-    ...team,
-    roundWins: team.roundWins + (isTie || team.id === winnerTeamId ? 1 : 0),
-  }));
-
-  const resolved: ITrucoGameState = {
-    ...revealed,
-    teams,
-    bunch: [],
-    handsResults: [
-      ...revealed.handsResults,
-      {
-        winnerTeamId,
-        bunch: revealed.bunch,
-        isTie,
-        round: revealed.rounds,
-      },
-    ],
-  };
-
-  if (roundShouldEnd(resolved)) {
-    return finishSandboxRound(resolved);
-  }
-
-  return setTurn(resolved, SANDBOX_YOU_ID);
+  setTurn(game, outcome.winnerUserId ?? game.playerTurn);
+  return game;
 }
 
-export type SandboxPlayResult = {
-  game: ITrucoGameState;
-  privateResult?: PowerPrivateResult;
-};
+// ---------------------------------------------------------------------------
+// Poderes carimbados (espelha `applyPlayedCardPower` + strategies do backend)
+// ---------------------------------------------------------------------------
+
+function pickOpponent(
+  game: ITrucoGameState,
+  userId: string
+): BasePlayer | undefined {
+  const opponents = getOpponentTeam(game.teams, userId)?.userIds ?? [];
+  return pickRandom(
+    game.players.filter(
+      (player) => opponents.includes(player.userId) && player.hand.length > 0
+    )
+  );
+}
+
+function applyCardPower(
+  game: ITrucoGameState,
+  userId: string,
+  played: Card
+): PowerPrivateResult | undefined {
+  const powerId = played.powerId;
+  if (!powerId || !isPowerId(powerId)) return undefined;
+  delete played.powerId;
+
+  const usage: PowerUsage = {
+    powerId,
+    userId,
+    round: game.rounds,
+    trigger: "CARD",
+  };
+  let privateResult: PowerPrivateResult | undefined;
+
+  switch (powerId) {
+    case PowerId.GRAVEDIGGER: {
+      const deckIndex = pickRandom(
+        findGravediggerCandidates(game.deck.cards, played, game.manilha)
+      );
+      if (deckIndex === undefined) return undefined;
+      const [replacement] = game.deck.cards.splice(deckIndex, 1);
+      delete replacement.powerId;
+      game.deck.cards.unshift({ ...played });
+
+      const player = getPlayer(game, userId);
+      player.playedCards[player.playedCards.length - 1] = replacement;
+      game.bunch[game.bunch.length - 1] = replacement;
+      usage.returnedCard = { ...played };
+      usage.replacementCard = replacement;
+      break;
+    }
+    case PowerId.X_RAY: {
+      const target = pickOpponent(game, userId);
+      const card = target && pickRandom(target.hand);
+      if (!target || !card) return undefined;
+      usage.targetUserId = target.userId;
+      privateResult = {
+        powerId,
+        targetUserId: target.userId,
+        card: { ...card },
+      };
+      break;
+    }
+    case PowerId.SIXTH_SENSE: {
+      const target = pickOpponent(game, userId);
+      if (!target) return undefined;
+      usage.targetUserId = target.userId;
+      privateResult = {
+        powerId,
+        targetUserId: target.userId,
+        hasManilha: target.hand.some((card) => card.rank === game.manilha),
+      };
+      break;
+    }
+    case PowerId.ILLUSIONIST:
+      // `played` é a mesma referência em `playedCards` e `bunch`.
+      disguiseAsZap(played, game.manilha);
+      break;
+    case PowerId.CHANGE_TRUMP: {
+      let vira = game.deck.cards.pop();
+      while (vira && !isTrucoRank(vira.rank)) vira = game.deck.cards.pop();
+      if (!vira) return undefined;
+      delete vira.powerId;
+      game.vira = vira;
+      game.manilha = getNextRank(vira.rank);
+      break;
+    }
+    case PowerId.SILVER_SHIELD:
+    case PowerId.MERCENARY:
+      game.activeEffects.push({
+        id: `sandbox-${powerId}-${userId}-${game.rounds}`,
+        powerId,
+        sourceUserId: userId,
+        targetUserId: userId,
+        round: game.rounds,
+      });
+      break;
+    default:
+      // Silenciador / Atração Magnética: sem hooks na sandbox.
+      break;
+  }
+
+  game.powerUsages.push(usage);
+  return privateResult;
+}
+
+// ---------------------------------------------------------------------------
+// Ações
+// ---------------------------------------------------------------------------
 
 export function playSandboxCard(
   game: ITrucoGameState,
@@ -474,126 +372,29 @@ export function playSandboxCard(
   if (game.trucoState === "PENDING") return { game };
   if (game.playerTurn !== userId) return { game };
 
-  const player = game.players.find((item) => item.userId === userId);
-  if (!player) return { game };
-
+  const next = clone(game);
+  const player = getPlayer(next, userId);
   const index = player.hand.findIndex((item) => sameCard(item, card));
   if (index < 0) return { game };
 
-  const played = { ...player.hand[index] };
-  const powerId = played.powerId;
-  delete played.powerId;
+  const [played] = player.hand.splice(index, 1);
+  player.playedCards.push(played);
+  next.bunch.push(played);
+  player.status = PlayerStatus.WAITING;
 
-  let players = game.players.map((item) => {
-    if (item.userId !== userId) return item;
-    return {
-      ...item,
-      hand: item.hand.filter((_, i) => i !== index),
-      playedCards: [...item.playedCards, played],
-      status: PlayerStatus.WAITING,
-    };
-  });
-  let bunch = [...game.bunch, played];
-  let deckCards = [...(game.deck.cards ?? [])];
-  let privateResult: PowerPrivateResult | undefined;
+  const privateResult = applyCardPower(next, userId, played);
 
-  const usages: PowerUsage[] = [...game.powerUsages];
-  let activeEffects = [...game.activeEffects];
-  if (powerId && isPowerId(powerId)) {
-    const usage: PowerUsage = {
-      powerId,
-      userId,
-      round: game.rounds,
-      trigger: "CARD",
-    };
-
-    if (powerId === PowerId.GRAVEDIGGER) {
-      const swap = applySandboxGravedigger(
-        players,
-        bunch,
-        deckCards,
-        game.manilha,
-        userId
-      );
-      if (swap) {
-        players = swap.players;
-        bunch = swap.bunch;
-        deckCards = swap.deckCards;
-        usage.returnedCard = swap.returnedCard;
-        usage.replacementCard = swap.replacementCard;
-        usages.push(usage);
-      }
-    } else {
-      if (powerId === PowerId.X_RAY) {
-        const peek = applySandboxXRay(players, game.teams, userId);
-        if (peek) {
-          usage.targetUserId = peek.targetUserId;
-          privateResult = peek;
-        }
-      } else if (powerId === PowerId.SIXTH_SENSE) {
-        const radar = applySandboxSixthSense(
-          players,
-          game.teams,
-          userId,
-          game.manilha
-        );
-        if (radar) {
-          usage.targetUserId = radar.targetUserId;
-          privateResult = radar;
-        }
-      } else if (powerId === PowerId.ILLUSIONIST) {
-        const disguised = disguiseSandboxCard(played, game.manilha);
-        bunch = bunch.map((item, i) =>
-          i === bunch.length - 1 ? disguised : item
-        );
-        players = players.map((player) => {
-          if (player.userId !== userId) return player;
-          const playedCards = [...player.playedCards];
-          playedCards[playedCards.length - 1] = disguised;
-          return { ...player, playedCards };
-        });
-      } else if (
-        powerId === PowerId.SILVER_SHIELD ||
-        powerId === PowerId.MERCENARY
-      ) {
-        activeEffects = [
-          ...activeEffects,
-          {
-            id: `sandbox-${powerId}-${userId}`,
-            powerId,
-            sourceUserId: userId,
-            targetUserId: userId,
-            round: game.rounds,
-          },
-        ];
-      }
-      usages.push(usage);
-    }
-  }
-
-  const next: ITrucoGameState = {
-    ...game,
-    players,
-    bunch,
-    deck: { ...game.deck, cards: deckCards } as ITrucoGameState["deck"],
-    powerUsages: usages,
-    activeEffects,
-  };
-
-  if (next.bunch.length >= 2) {
+  if (next.bunch.length >= next.players.length) {
     return { game: resolveTrick(next), privateResult };
   }
 
   const other = next.players.find((item) => item.userId !== userId);
-  return {
-    game: other ? setTurn(next, other.userId) : next,
-    privateResult,
-  };
+  if (other) setTurn(next, other.userId);
+  return { game: next, privateResult };
 }
 
 export function pickRandomHandCard(hand: Card[]): Card | null {
-  if (hand.length === 0) return null;
-  return hand[Math.floor(Math.random() * hand.length)] ?? null;
+  return pickRandom(hand) ?? null;
 }
 
 export function addCardToSandboxHand(
@@ -601,20 +402,9 @@ export function addCardToSandboxHand(
   userId: string,
   card: Card
 ): ITrucoGameState {
-  return {
-    ...game,
-    players: game.players.map((player) =>
-      player.userId === userId
-        ? { ...player, hand: [...player.hand, { ...card }] }
-        : player
-    ),
-  };
-}
-
-const TRUCO_BETS: Record<number, number> = { 1: 3, 3: 6, 6: 9, 9: 12 };
-
-function teamOf(game: ITrucoGameState, userId: string) {
-  return game.teams.find((team) => team.userIds.includes(userId));
+  const next = clone(game);
+  getPlayer(next, userId).hand.push({ ...card });
+  return next;
 }
 
 export function askSandboxTruco(
@@ -622,22 +412,21 @@ export function askSandboxTruco(
   userId: string
 ): ITrucoGameState {
   if (game.status !== GameStatus.PLAYING) return game;
-  if (game.currentBet >= 12) return game;
+  if (game.currentBet >= TRUCO_MAX_BET) return game;
 
-  const askingTeam = teamOf(game, userId);
+  const askingTeam = findTeamByUserId(game.teams, userId);
   const lastAskerTeam = game.trucoAskerId
-    ? teamOf(game, game.trucoAskerId)
-    : null;
+    ? findTeamByUserId(game.teams, game.trucoAskerId)
+    : undefined;
   if (askingTeam && lastAskerTeam && askingTeam.id === lastAskerTeam.id) {
     return game;
   }
 
-  return {
-    ...game,
-    currentBet: TRUCO_BETS[game.currentBet] ?? 3,
-    trucoState: "PENDING",
-    trucoAskerId: userId,
-  };
+  const next = clone(game);
+  next.currentBet = nextTrucoBet(next.currentBet);
+  next.trucoState = "PENDING";
+  next.trucoAskerId = userId;
+  return next;
 }
 
 export function acceptSandboxTruco(
@@ -645,50 +434,29 @@ export function acceptSandboxTruco(
   userId: string
 ): ITrucoGameState {
   if (game.trucoState !== "PENDING" || !game.trucoAskerId) return game;
-  const acceptingTeam = teamOf(game, userId);
-  const askingTeam = teamOf(game, game.trucoAskerId);
+  const acceptingTeam = findTeamByUserId(game.teams, userId);
+  const askingTeam = findTeamByUserId(game.teams, game.trucoAskerId);
   if (!acceptingTeam || acceptingTeam.id === askingTeam?.id) return game;
 
   return { ...game, trucoState: "ACCEPTED" };
 }
 
+/** O time que não pediu corre; quem pediu leva a aposta anterior (ou 1 com Escudo). */
 export function rejectSandboxTruco(game: ITrucoGameState): ITrucoGameState {
   if (game.trucoState !== "PENDING" || !game.trucoAskerId) return game;
-  const askingTeam = teamOf(game, game.trucoAskerId);
+
+  const next = clone(game);
+  const askingTeam = findTeamByUserId(next.teams, next.trucoAskerId!);
   if (!askingTeam) return game;
 
-  const defendingHasShield = game.activeEffects.some((effect) => {
-    if (effect.powerId !== PowerId.SILVER_SHIELD) return false;
-    const team = teamOf(game, effect.targetUserId);
-    return Boolean(team && team.id !== askingTeam.id);
-  });
+  const defendingHasShield = next.activeEffects.some(
+    (effect) =>
+      effect.powerId === PowerId.SILVER_SHIELD &&
+      findTeamByUserId(next.teams, effect.targetUserId)?.id !== askingTeam.id
+  );
+  const points = defendingHasShield
+    ? SILVER_SHIELD_REJECT_POINTS
+    : trucoRejectPoints(next.currentBet);
 
-  const previousBet = defendingHasShield
-    ? 1
-    : Number(
-        Object.entries(TRUCO_BETS).find(
-          ([, value]) => value === game.currentBet
-        )?.[0]
-      ) || 1;
-
-  const teams = game.teams.map((team) => ({
-    ...team,
-    roundWins: 0,
-    score: team.score + (team.id === askingTeam.id ? previousBet : 0),
-  }));
-
-  const scored: ITrucoGameState = {
-    ...game,
-    teams,
-    currentBet: 1,
-    trucoState: "NONE",
-    trucoAskerId: null,
-    bunch: [],
-  };
-
-  if (teams.some((team) => team.score >= 12)) {
-    return { ...scored, status: GameStatus.FINISHED };
-  }
-
-  return dealSandboxRound(scored);
+  return finishRound(next, askingTeam, points);
 }

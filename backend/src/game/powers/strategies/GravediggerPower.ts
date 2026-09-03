@@ -1,13 +1,8 @@
-import { Card, getCardValue, TRUCO_RANK_ORDER } from "shared/cards";
-import { PowerId } from "shared/game";
+import { findLastCardIndex } from "shared/cards";
+import { findGravediggerCandidates, pickRandom, PowerId } from "shared/game";
 import { GameError } from "@/errors/GameError";
 import type { TrucoGame } from "../../TrucoGameRules";
-import {
-  isSameCard,
-  PowerContext,
-  PowerResult,
-  PowerStrategy,
-} from "../PowerStrategy";
+import { PowerContext, PowerResult, PowerStrategy } from "../PowerStrategy";
 
 /**
  * Coveiro: devolve a última carta jogada ao baralho e traz do restante uma
@@ -29,9 +24,7 @@ export class GravediggerPower implements PowerStrategy {
       });
     }
 
-    const bunchIndex = findLastIndex(game.bunch, (c) =>
-      isSameCard(c, lastPlayed)
-    );
+    const bunchIndex = findLastCardIndex(game.bunch, lastPlayed);
     if (bunchIndex === -1) {
       throw new GameError({
         code: "INVALID_ACTION",
@@ -39,17 +32,18 @@ export class GravediggerPower implements PowerStrategy {
       });
     }
 
-    const picked = pickDeckCardAtLeast(game, lastPlayed);
-    if (!picked) {
+    const deckIndex = pickRandom(
+      findGravediggerCandidates(game.deck.cards, lastPlayed, game.manilha)
+    );
+    if (deckIndex === undefined) {
       throw new GameError({
         code: "INVALID_ACTION",
         message: "Não há carta restante com valor maior ou igual.",
       });
     }
 
-    const { card: replacement, index } = picked;
+    const [replacement] = game.deck.cards.splice(deckIndex, 1);
     delete replacement.powerId;
-    game.deck.cards.splice(index, 1);
     game.deck.cards.unshift(lastPlayed);
 
     player.playedCards[player.playedCards.length - 1] = replacement;
@@ -57,30 +51,4 @@ export class GravediggerPower implements PowerStrategy {
 
     return { returnedCard: lastPlayed, replacementCard: replacement };
   }
-}
-
-function pickDeckCardAtLeast(
-  game: TrucoGame,
-  played: Card
-): { card: Card; index: number } | null {
-  const minValue = getCardValue(played, game.manilha);
-  const allowed = new Set(Object.keys(TRUCO_RANK_ORDER));
-  const candidates: { card: Card; index: number }[] = [];
-
-  game.deck.cards.forEach((card, index) => {
-    if (!allowed.has(card.rank)) return;
-    if (getCardValue(card, game.manilha) >= minValue) {
-      candidates.push({ card, index });
-    }
-  });
-
-  if (candidates.length === 0) return null;
-  return candidates[Math.floor(Math.random() * candidates.length)];
-}
-
-function findLastIndex<T>(arr: T[], predicate: (item: T) => boolean): number {
-  for (let i = arr.length - 1; i >= 0; i--) {
-    if (predicate(arr[i])) return i;
-  }
-  return -1;
 }

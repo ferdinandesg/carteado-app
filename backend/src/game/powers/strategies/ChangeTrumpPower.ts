@@ -1,4 +1,4 @@
-import { getNextRank, TRUCO_RANK_ORDER } from "shared/cards";
+import { getNextRank, TRUCO_RANKS } from "shared/cards";
 import { PowerId } from "shared/game";
 import type { TrucoGame } from "../../TrucoGameRules";
 import type { PowerResult, PowerStrategy } from "../PowerStrategy";
@@ -9,10 +9,7 @@ export class ChangeTrumpPower implements PowerStrategy {
   readonly targeting = "NONE" as const;
 
   execute(game: TrucoGame): PowerResult {
-    const vira = game.rules.drawValidCard(
-      game.deck,
-      Object.keys(TRUCO_RANK_ORDER)
-    );
+    const vira = game.rules.drawValidCard(game.deck, TRUCO_RANKS);
     delete vira.powerId;
     game.vira = vira;
     game.manilha = getNextRank(vira.rank);

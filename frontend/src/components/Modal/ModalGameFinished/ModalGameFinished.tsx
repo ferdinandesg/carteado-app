@@ -1,13 +1,17 @@
 "use client";
-import styles from "@/styles/ModalGameFinished.module.scss";
-import { useTranslation } from "react-i18next";
-import BackButton from "@/components/buttons/BackButton";
+
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
+import { isTrucoGame, TRUCO_WINNING_SCORE } from "shared/game";
+
+import Modal from "@/components/Modal";
+import ActionButton from "@/components/buttons/ActionButton";
 import { selectCurrentPlayer, useGameStore } from "@/contexts/game.store";
 import { useTypedGame } from "@/hooks/useTypedGame";
-import { isTrucoGame } from "shared/game";
 import { testIds } from "@/tests/testIds";
+
+import styles from "@/styles/ModalGameFinished.module.scss";
 
 interface ModalGameFinishedProps {
   isOpen: boolean;
@@ -17,7 +21,6 @@ export default function ModalGameFinished({ isOpen }: ModalGameFinishedProps) {
   const { t } = useTranslation();
   const game = useTypedGame(isTrucoGame);
   const player = useGameStore(selectCurrentPlayer);
-
   const router = useRouter();
 
   useEffect(() => {
@@ -31,13 +34,12 @@ export default function ModalGameFinished({ isOpen }: ModalGameFinishedProps) {
       // jsdom / browsers sem autoplay
     }
   }, [isOpen]);
+
   if (!isOpen) return null;
 
-  const handleBack = () => {
-    router.push("/menu");
-  };
-
-  const winningTeam = game?.teams?.find((team) => team.score >= 12);
+  const winningTeam = game?.teams.find(
+    (team) => team.score >= TRUCO_WINNING_SCORE
+  );
   const winner =
     winningTeam && game
       ? game.players
@@ -48,24 +50,21 @@ export default function ModalGameFinished({ isOpen }: ModalGameFinishedProps) {
       : player?.name;
 
   return (
-    <div
-      className={styles.Overlay}
+    <Modal.Root
+      className={styles.panel}
       data-testid={testIds.game.finishedModal}>
-      <div className={styles.ModalGameFinished}>
-        <div className={styles.gameWinnerInfo}>
-          <h1 className={styles.info}>{t("Game.gameFinished")}</h1>
-          <h2 className={styles.winner}>
-            {t("Game.winner", {
-              winner,
-            })}
-          </h2>
-        </div>
-        <BackButton
-          size={48}
-          onClick={handleBack}
-          color="light"
-        />
-      </div>
-    </div>
+      <Modal.Content className={styles.content}>
+        <p className={styles.eyebrow}>{t("Game.gameFinished")}</p>
+        <h2 className={styles.winner}>{t("Game.winner", { winner })}</h2>
+      </Modal.Content>
+      <Modal.Footer className={styles.footer}>
+        <ActionButton
+          type="button"
+          variant="primary"
+          onClick={() => router.push("/menu")}>
+          {t("Game.backToMenu")}
+        </ActionButton>
+      </Modal.Footer>
+    </Modal.Root>
   );
 }

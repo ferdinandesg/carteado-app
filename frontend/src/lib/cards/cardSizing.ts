@@ -7,6 +7,7 @@ export const CARD_SIZES = {
   md: 126,
   lg: 154,
   xl: 182,
+  xxl: 210,
 } as const;
 
 export type CardSize = keyof typeof CARD_SIZES;

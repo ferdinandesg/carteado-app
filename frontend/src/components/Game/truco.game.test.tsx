@@ -119,6 +119,7 @@ describe("TrucoGame", () => {
     const stamp = screen.getByTestId(testIds.game.trucoStamp);
     expect(stamp).toHaveTextContent("Truco.stamp.power");
     expect(stamp).toHaveAttribute("data-power-id", PowerId.X_RAY);
+    expect(stamp).toHaveAttribute("data-target-user-id", "user-b");
   });
 
   it("reveals the peeked card only after a private X-Ray result", async () => {
@@ -135,7 +136,9 @@ describe("TrucoGame", () => {
       });
     });
 
-    expect(screen.getByTestId(testIds.game.xrayPeek)).toBeInTheDocument();
+    const peek = screen.getByTestId(testIds.game.xrayPeek);
+    expect(peek).toBeInTheDocument();
+    expect(peek).toHaveAttribute("data-target-user-id", "user-b");
     expect(screen.getByAltText("J of spades")).toBeInTheDocument();
 
     act(() => {
@@ -146,6 +149,48 @@ describe("TrucoGame", () => {
         screen.queryByTestId(testIds.game.xrayPeek)
       ).not.toBeInTheDocument()
     );
+  });
+
+  it("anchors X-Ray on the targeted side seat in a 4-player table", () => {
+    const base = fixtures.truco.roundStart;
+    const clone = (userId: string) => ({
+      ...base.players[1],
+      userId,
+      name: userId,
+      hand: [...base.players[1].hand],
+    });
+    setGame({
+      ...base,
+      players: [
+        base.players[0],
+        clone("user-b"),
+        clone("user-c"),
+        clone("user-d"),
+      ],
+      teams: [
+        { id: "TEAM_A", userIds: ["user-a", "user-c"], roundWins: 0, score: 0 },
+        { id: "TEAM_B", userIds: ["user-b", "user-d"], roundWins: 0, score: 0 },
+      ],
+    });
+    render(<TrucoGame />);
+
+    act(() => {
+      useGameStore.setState({
+        powerPeek: {
+          powerId: PowerId.X_RAY,
+          targetUserId: "user-d",
+          card: clone("user-d").hand[0],
+        },
+      });
+    });
+
+    expect(screen.getByTestId(testIds.game.xrayPeek)).toHaveAttribute(
+      "data-target-user-id",
+      "user-d"
+    );
+    expect(
+      screen.getByText("user-d").closest("[data-user-id='user-d']")?.className
+    ).toMatch(/highlighted/);
   });
 
   it("shows a yes/no radar stamp after a private Sixth Sense result", async () => {
@@ -162,9 +207,9 @@ describe("TrucoGame", () => {
       });
     });
 
-    expect(screen.getByTestId(testIds.game.radarPeek)).toHaveTextContent(
-      "Powers.SIXTH_SENSE.yes"
-    );
+    const radar = screen.getByTestId(testIds.game.radarPeek);
+    expect(radar).toHaveTextContent("Powers.SIXTH_SENSE.yes");
+    expect(radar).toHaveAttribute("data-target-user-id", "user-b");
 
     act(() => {
       jest.advanceTimersByTime(2000);

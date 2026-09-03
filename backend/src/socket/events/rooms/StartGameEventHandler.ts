@@ -3,6 +3,7 @@ import prisma from "@/prisma";
 import { requireRoom } from "../handleGameAction";
 import { atomicallyUpdateRoomState, getRoomState } from "@/lib/redis/room";
 import emitToRoom from "@/socket/utils/emitToRoom";
+import { emitGameToRoom } from "@/socket/utils/emitGameToRoom";
 import ErrorHandler from "@/utils/error.handler";
 import { createPlayers } from "./utils";
 import { fillTrucoSeatsWithBots, PlayerStatus } from "shared/game";
@@ -82,7 +83,7 @@ export async function StartGameEventHandler(
     ]);
 
     emitToRoom(channel, roomHash, CHANNEL.SERVER.INFO, "MATCH_STARTED");
-    emitToRoom(channel, roomHash, CHANNEL.SERVER.GAME_UPDATED, game);
+    emitGameToRoom(channel, roomHash, game);
     emitToRoom(
       channel,
       roomHash,

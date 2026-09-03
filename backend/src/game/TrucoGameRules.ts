@@ -1,44 +1,30 @@
-import Deck, {
-  Card,
-  getNextRank,
-  suitValueMap,
-  TRUCO_RANK_ORDER,
-} from "shared/cards";
+import Deck, { Card, getNextRank, TRUCO_RANKS } from "shared/cards";
 import { IGameRules } from "./IGameRules";
 import { Game } from "./game";
 import { HandResult, Team } from "shared/types";
 import {
   ActiveEffect,
   BasePlayer,
+  findTeamByUserId,
   GameStatus,
+  getOpponentTeam,
+  nextTrucoBet,
   PlayerStatus,
   PowerPrivateResult,
   PowerUsage,
+  resolveRoundOutcome,
+  resolveTrickWinner,
+  restoreIllusions,
+  stampPowersOnDeck,
+  TRUCO_MAX_BET,
+  TRUCO_WINNING_SCORE,
+  trucoRejectPoints,
   UsePowerPayload,
 } from "shared/game";
 import { GameError } from "@/errors/GameError";
 import { executePower, PowerResult } from "./powers/PowerExecutor";
 import { applyPlayedCardPower } from "./powers/applyCardPower";
-import { stampPowersOnDeck } from "./powers/stampDeck";
 import * as powerEffects from "./powers/effects";
-import { restoreIllusions } from "./powers/strategies/IllusionistPower";
-
-/** Hierarquia comum do Truco: 4, 5, 6, 7, Q, J, K, A, 2, 3. */
-const TRUCO_COMMON_POWER: Record<string, number> = {
-  "4": 1,
-  "5": 2,
-  "6": 3,
-  "7": 4,
-  Q: 5,
-  J: 6,
-  K: 7,
-  A: 8,
-  "2": 9,
-  "3": 10,
-};
-
-/** Manilhas ficam acima de qualquer carta comum (3 = 10). */
-const MANILHA_BASE_POWER = 20;
 
 // A classe TrucoGame permanece focada no estado do jogo.
 export class TrucoGame extends Game<TrucoGame, ITrucoGameRules, BasePlayer> {
@@ -105,16 +91,15 @@ export class TrucoGame extends Game<TrucoGame, ITrucoGameRules, BasePlayer> {
 type ITrucoGameRules = IGameRules<TrucoGame> & {
   askTruco(game: TrucoGame, userId: string): void;
   acceptTruco(game: TrucoGame, userId: string): void;
-  rejectTruco(game: TrucoGame, pointsOverride?: number): void;
+  rejectTruco(game: TrucoGame): void;
   usePower(
     game: TrucoGame,
     userId: string,
     payload: UsePowerPayload
   ): PowerResult;
-  drawValidCard(deck: Deck, allowedRanks: string[]): Card;
+  drawValidCard(deck: Deck, allowedRanks: readonly string[]): Card;
   findTeamByUserId(game: TrucoGame, userId: string): Team | undefined;
   getOpponentTeam(game: TrucoGame, userId: string): Team | undefined;
-  getCardTrucoPower(card: Card, vira: Card | null): number;
 };
 
 export class TrucoGameRules implements ITrucoGameRules {
@@ -147,24 +132,22 @@ export class TrucoGameRules implements ITrucoGameRules {
   }
 
   private distributeHands(game: TrucoGame) {
-    const allowedRanks = Object.keys(TRUCO_RANK_ORDER);
     game.players.forEach((player) => {
       player.status = PlayerStatus.WAITING;
       player.playedCards = [];
       player.hand = Array.from({ length: 3 }, () =>
-        this.drawValidCard(game.deck, allowedRanks)
+        this.drawValidCard(game.deck, TRUCO_RANKS)
       );
     });
   }
 
   private setupViraAndManilha(game: TrucoGame) {
-    const allowedRanks = Object.keys(TRUCO_RANK_ORDER);
-    game.vira = this.drawValidCard(game.deck, allowedRanks);
+    game.vira = this.drawValidCard(game.deck, TRUCO_RANKS);
     delete game.vira.powerId;
     game.manilha = getNextRank(game.vira.rank);
   }
 
-  public drawValidCard(deck: Deck, allowedRanks: string[]): Card {
+  public drawValidCard(deck: Deck, allowedRanks: readonly string[]): Card {
     let card = deck.draw();
     // Adicionado um loop de segurança para evitar loop infinito em um baralho esgotado.
     while (
@@ -178,30 +161,12 @@ export class TrucoGameRules implements ITrucoGameRules {
     return card;
   }
 
-  // Métodos de busca foram otimizados.
   public findTeamByUserId(game: TrucoGame, userId: string): Team | undefined {
-    return game.teams.find((team) => team.userIds.includes(userId));
+    return findTeamByUserId(game.teams, userId);
   }
 
   public getOpponentTeam(game: TrucoGame, userId: string): Team | undefined {
-    const playerTeamId = this.findTeamByUserId(game, userId)?.id;
-    return game.teams.find((team) => team.id !== playerTeamId);
-  }
-
-  /**
-   * Poder da carta na escala oficial do Truco Paulista.
-   * Comuns: 4 < 5 < 6 < 7 < Q < J < K < A < 2 < 3.
-   * Manilhas (próximo rank do vira), em ordem absoluta de naipe:
-   * Ouros < Espadas < Copas < Paus (Zap).
-   */
-  public getCardTrucoPower(card: Card, vira: Card | null): number {
-    if (vira) {
-      const manilhaRank = getNextRank(vira.rank);
-      if (card.rank === manilhaRank) {
-        return MANILHA_BASE_POWER + (suitValueMap[card.suit] ?? 0);
-      }
-    }
-    return TRUCO_COMMON_POWER[card.rank] ?? 0;
+    return getOpponentTeam(game.teams, userId);
   }
 
   // Lógica de truco foi simplificada.
@@ -223,10 +188,10 @@ export class TrucoGameRules implements ITrucoGameRules {
         message: "Seu time já pediu truco. Aguarde a resposta.",
       });
     }
-    if (game.currentBet >= 12) throw new GameError({ code: "INVALID_BET" });
+    if (game.currentBet >= TRUCO_MAX_BET)
+      throw new GameError({ code: "INVALID_BET" });
 
-    const betValues: Record<number, number> = { 1: 3, 3: 6, 6: 9, 9: 12 };
-    game.currentBet = betValues[game.currentBet] ?? 3;
+    game.currentBet = nextTrucoBet(game.currentBet);
     game.trucoState = "PENDING";
     game.trucoAskerId = userId; // Guarda quem fez o último pedido
   }
@@ -245,25 +210,22 @@ export class TrucoGameRules implements ITrucoGameRules {
     game.trucoState = "ACCEPTED";
   }
 
-  rejectTruco(game: TrucoGame, pointsOverride?: number) {
+  rejectTruco(game: TrucoGame) {
     if (!this.isTrucoPending(game) || !game.trucoAskerId)
       throw new GameError({ code: "INVALID_ACTION" });
 
     const askingTeam = this.findTeamByUserId(game, game.trucoAskerId);
     if (!askingTeam) throw new GameError({ code: "INVALID_ACTION" });
 
-    const betValues: Record<number, number> = { 1: 3, 3: 6, 6: 9, 9: 12 };
-    const matchingKey = Object.entries(betValues).find(
-      ([, v]) => v === game.currentBet
-    )?.[0];
-    let points = pointsOverride ?? (matchingKey ? Number(matchingKey) : 1);
-
-    if (pointsOverride === undefined) {
-      const defendingIds = game.teams
-        .filter((team) => team.id !== askingTeam.id)
-        .flatMap((team) => team.userIds);
-      points = powerEffects.adjustRejectPoints(game, defendingIds, points);
-    }
+    // Efeitos do time que corre (ex.: Escudo de Prata) podem baratear a fuga.
+    const defendingIds = game.teams
+      .filter((team) => team.id !== askingTeam.id)
+      .flatMap((team) => team.userIds);
+    const points = powerEffects.adjustRejectPoints(
+      game,
+      defendingIds,
+      trucoRejectPoints(game.currentBet)
+    );
 
     this.finishRound(game, askingTeam, points);
   }
@@ -278,9 +240,8 @@ export class TrucoGameRules implements ITrucoGameRules {
 
   usePower(game: TrucoGame, userId: string, payload: UsePowerPayload) {
     const result = executePower(game, userId, payload);
-    if (result.rejectPoints !== undefined) {
-      this.rejectTruco(game, result.rejectPoints);
-    }
+    // Só depois do registro em `powerUsages`: correr fecha a rodada e muda `rounds`.
+    if (result.runFromTruco) this.rejectTruco(game);
     return result;
   }
 
@@ -332,88 +293,48 @@ export class TrucoGameRules implements ITrucoGameRules {
   private resolveHand(game: TrucoGame) {
     restoreIllusions(game);
 
-    const currentHandCards = game.bunch
-      .slice(-game.players.length)
-      .map((card) => {
-        const player = game.players.find(
-          (p) =>
-            p.playedCards.length > 0 &&
-            p.playedCards[p.playedCards.length - 1].rank === card.rank &&
-            p.playedCards[p.playedCards.length - 1].suit === card.suit
-        )!;
-        return { card, player };
-      });
+    // Cada carta da vaza pertence ao jogador cuja última jogada é ela.
+    const entries = game.bunch.slice(-game.players.length).map((card) => {
+      const owner = game.players.find((p) => {
+        const last = p.playedCards[p.playedCards.length - 1];
+        return last && last.rank === card.rank && last.suit === card.suit;
+      })!;
+      return { card, userId: owner.userId };
+    });
 
-    // Passa a estrutura correta para getHandWinner
-    const [winnerId, isTie] = this.getHandWinner(currentHandCards, game);
-
-    const winningTeam = winnerId
-      ? this.findTeamByUserId(game, winnerId)
+    const outcome = resolveTrickWinner(entries, game.manilha, game.teams);
+    const winningTeam = outcome.winnerTeamId
+      ? game.teams.find((team) => team.id === outcome.winnerTeamId)
       : undefined;
 
-    if (isTie) {
+    if (outcome.isTie) {
       game.teams.forEach((t) => (t.roundWins += 1));
     } else if (winningTeam) {
       winningTeam.roundWins += 1;
     }
 
     game.handsResults.push({
-      winnerTeamId: isTie ? null : winningTeam?.id || null,
-      bunch: currentHandCards.map((c) => c.card), // Apenas as cartas
+      winnerTeamId: outcome.winnerTeamId,
+      bunch: entries.map((entry) => entry.card),
       round: game.rounds,
-      isTie: isTie,
+      isTie: outcome.isTie,
     });
 
-    const nextPlayer = winnerId ? game.getPlayer(winnerId) : undefined;
-    game.playerTurn = isTie
-      ? game.playerTurn
-      : (nextPlayer?.userId ?? game.playerTurn);
+    // Quem venceu a vaza abre a próxima; em empate, mantém a ordem.
+    game.playerTurn = outcome.winnerUserId ?? game.playerTurn;
     game.skipTurns(game.playerTurn, 0);
     this.checkRoundEnding(game);
   }
 
-  // ** REGRAS DE EMPATE CORRIGIDAS **
-  // A lógica de fim de rodada foi completamente refatorada para ser mais clara e correta.
   private checkRoundEnding(game: TrucoGame) {
-    const teamA = game.teams[0];
-    const teamB = game.teams[1];
-
     const roundResults = game.handsResults.filter(
       (r) => r.round === game.rounds
     );
-
-    // Se menos de 2 mãos foram jogadas neste round, não há nada a fazer.
-    if (roundResults.length < 2) return;
-
-    // Cenário 1: Vencedor claro após 2 mãos (ganhou-ganhou ou empatou-ganhou).
-    if (teamA.roundWins >= 2 && teamA.roundWins > teamB.roundWins) {
-      this.finishRound(game, teamA, game.currentBet);
-      return;
-    }
-    if (teamB.roundWins >= 2 && teamB.roundWins > teamA.roundWins) {
-      this.finishRound(game, teamB, game.currentBet);
-      return;
-    }
-
-    // Cenário 2: Se 3 mãos foram jogadas, precisamos de um desempate.
-    if (roundResults.length === 3) {
-      if (teamA.roundWins > teamB.roundWins) {
-        this.finishRound(game, teamA, game.currentBet);
-      } else if (teamB.roundWins > teamA.roundWins) {
-        this.finishRound(game, teamB, game.currentBet);
-      } else {
-        // ✅ LÓGICA DE DESEMPATE CORRIGIDA E SIMPLIFICADA
-        // Se os 'roundWins' são iguais, o vencedor da primeira mão leva a rodada.
-        const firstHandWinnerId = roundResults[0].winnerTeamId;
-        const winnerTeam = game.teams.find((t) => t.id === firstHandWinnerId);
-
-        if (winnerTeam) {
-          this.finishRound(game, winnerTeam, game.currentBet);
-        } else {
-          // Se a primeira mão empatou, ninguém ganha a rodada.
-          this.startNewRound(game);
-        }
-      }
+    const outcome = resolveRoundOutcome(game.teams, roundResults);
+    if (outcome.kind === "won") {
+      this.finishRound(game, outcome.team, game.currentBet);
+    } else if (outcome.kind === "void") {
+      this.startNewRound(game);
     }
   }
 
@@ -422,7 +343,7 @@ export class TrucoGameRules implements ITrucoGameRules {
 
     winningTeam.score += points;
     powerEffects.afterFinishRound(game, winningTeam);
-    if (winningTeam.score >= 12) {
+    if (winningTeam.score >= TRUCO_WINNING_SCORE) {
       game.status = GameStatus.FINISHED;
     } else {
       this.startNewRound(game);
@@ -432,45 +353,5 @@ export class TrucoGameRules implements ITrucoGameRules {
   private startNewRound(game: TrucoGame) {
     game.teams.forEach((t) => (t.roundWins = 0));
     this.dealInitialHands(game);
-  }
-
-  private getHandWinner(
-    handCards: { card: Card; player: BasePlayer }[],
-    game: TrucoGame
-  ): [string | undefined, boolean] {
-    if (!handCards.length) return [undefined, false];
-
-    let highestValue = -1;
-    let winners: { card: Card; player: BasePlayer }[] = [];
-
-    for (const { card, player } of handCards) {
-      const value = this.getCardTrucoPower(card, game.vira);
-
-      if (value > highestValue) {
-        highestValue = value;
-        winners = [{ card, player }];
-      } else if (value === highestValue) {
-        winners.push({ card, player });
-      }
-    }
-
-    if (winners.length === 0) return [undefined, false];
-
-    // Verifica se os jogadores com a maior carta são do mesmo time.
-    const firstWinnerTeamId = this.findTeamByUserId(
-      game,
-      winners[0].player.userId
-    )?.id;
-    const isTie = winners.some(
-      (w) =>
-        this.findTeamByUserId(game, w.player.userId)?.id !== firstWinnerTeamId
-    );
-
-    if (isTie) {
-      return [undefined, true];
-    }
-
-    // Se não for empate, o vencedor é o primeiro jogador da lista.
-    return [winners[0].player.userId, false];
   }
 }

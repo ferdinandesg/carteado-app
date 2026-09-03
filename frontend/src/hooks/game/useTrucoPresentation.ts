@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { useReducedMotion } from "motion/react";
-import { Card } from "shared/cards";
-import { GameStatus, ITrucoGameState, PowerId } from "shared/game";
+import { Card, findLastCardIndex, sameCard } from "shared/cards";
+import {
+  areTeammates,
+  GameStatus,
+  ITrucoGameState,
+  PowerId,
+} from "shared/game";
 
 import { useGameStore } from "@/contexts/game.store";
 import { getCardKey } from "@/lib/cards/cardKey";
@@ -38,7 +43,13 @@ export type TrucoEffect =
   | { id: number; kind: "trucoRejected"; won: boolean; points: number }
   | { id: number; kind: "roundFinished"; won: boolean; points: number }
   | { id: number; kind: "matchFinished"; won: boolean }
-  | { id: number; kind: "powerUsed"; powerId: string; userId: string };
+  | {
+      id: number;
+      kind: "powerUsed";
+      powerId: string;
+      userId: string;
+      targetUserId?: string;
+    };
 
 type DistributiveOmit<T, K extends keyof T> = T extends unknown
   ? Omit<T, K>
@@ -208,30 +219,6 @@ function reducer(state: State, action: Action): State {
 let sequence = 0;
 const nextId = () => ++sequence;
 
-export const sameCard = (a: Card, b: Card) =>
-  a.rank === b.rank && a.suit === b.suit;
-
-/**
- * `illusionReal` é dado privado de quem jogou — igual ao `power_result`.
- * Parceiro e adversário veem só o Zap falso, sem brilho.
- */
-export function cardForIllusionViewer(
-  card: Card,
-  ownerId: string | null,
-  viewerId: string | null
-): Card {
-  if (!card.illusionReal || ownerId === viewerId) return card;
-  const { illusionReal: _hidden, ...rest } = card;
-  return rest;
-}
-
-function findLastIndex<T>(arr: T[], predicate: (item: T) => boolean): number {
-  for (let i = arr.length - 1; i >= 0; i--) {
-    if (predicate(arr[i])) return i;
-  }
-  return -1;
-}
-
 /** Dono de uma carta na mesa: quem a tem em `playedCards` nesta rodada. */
 export function resolveCardOwner(
   game: ITrucoGameState,
@@ -281,8 +268,9 @@ export function applyGraveHoldToBunch(
   hold: GraveHold | null
 ): PlayedEntry[] {
   if (!hold) return entries;
-  const idx = findLastIndex(entries, (entry) =>
-    sameCard(entry.card, hold.incoming)
+  const idx = findLastCardIndex(
+    entries.map((entry) => entry.card),
+    hold.incoming
   );
   if (idx === -1) return entries;
   const next = [...entries];
@@ -405,10 +393,10 @@ export function useTrucoPresentation(
                 ? "ours"
                 : "opponent";
             const id = nextId();
+            // Ilusionista: todo mundo vê a face falsa virar para a real.
             const revealFrom = disguisedBunch?.map((card, index) => {
-              if (!card.illusionReal) return undefined;
-              const owner = resolveCardOwner(next, result.bunch[index] ?? card);
-              return owner === userId ? card : undefined;
+              const real = result.bunch[index];
+              return real && !sameCard(card, real) ? card : undefined;
             });
             const hasReveal = Boolean(
               revealFrom?.some((card) => Boolean(card)) && !reduceMotion
@@ -459,9 +447,10 @@ export function useTrucoPresentation(
             break;
 
           case "powerUsed":
+            // Ilusionista: o aviso é só para o time de quem blefou.
             if (
               event.powerId === PowerId.ILLUSIONIST &&
-              event.userId !== userId
+              !areTeammates(next.teams, event.userId, userId ?? "-")
             ) {
               break;
             }
@@ -469,6 +458,7 @@ export function useTrucoPresentation(
               kind: "powerUsed",
               powerId: event.powerId,
               userId: event.userId,
+              targetUserId: event.targetUserId,
             });
             if (
               !reduceMotion &&
@@ -525,21 +515,19 @@ export function useTrucoPresentation(
   const bunch = useMemo<PlayedEntry[]>(() => {
     if (!game) return [];
     const cards = state.hold?.cards ?? game.bunch;
-    const entries = cards.map((card, index) => {
-      const playerId = resolveCardOwner(game, card);
-      return {
-        card: cardForIllusionViewer(card, playerId, userId),
-        key: getCardKey(card),
-        playerId,
-        revealFrom: state.hold?.revealFrom?.[index],
-      };
-    });
+    // `illusionReal` já vem filtrado pelo servidor (só o time de quem jogou).
+    const entries = cards.map((card, index) => ({
+      card,
+      key: getCardKey(card),
+      playerId: resolveCardOwner(game, card),
+      revealFrom: state.hold?.revealFrom?.[index],
+    }));
     return markGraveDeckOrigin(
       applyGraveHoldToBunch(entries, state.graveHold),
       game,
       state.graveHold
     );
-  }, [game, state.hold, state.graveHold, userId]);
+  }, [game, state.hold, state.graveHold]);
 
   const visualHand = useMemo(() => {
     const hand =

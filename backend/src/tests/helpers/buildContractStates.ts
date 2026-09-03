@@ -100,8 +100,8 @@ function buildTrucoStates() {
   // Estado de rodada fixado manualmente (sem deal aleatório)
   const normalizeRound = () => {
     rigDeck(game.deck, []);
-    game.vira = card("6", "clubs");
-    game.manilha = getNextRank("6");
+    game.vira = card("7", "clubs");
+    game.manilha = getNextRank("7");
     game.playerTurn = USER_A;
     game.getPlayer(USER_A)!.hand = [
       card("K", "hearts"),

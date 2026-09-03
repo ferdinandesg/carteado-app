@@ -13,7 +13,11 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
-    "prisma:db:push": "prisma db push"
+    "prisma:db:push": "prisma db push",
+    "prisma:seed": "ts-node -r tsconfig-paths/register src/scripts/seedStore.ts"
+  },
+  "prisma": {
+    "seed": "ts-node -r tsconfig-paths/register src/scripts/seedStore.ts"
   },
   "keywords": [],
   "author": "",

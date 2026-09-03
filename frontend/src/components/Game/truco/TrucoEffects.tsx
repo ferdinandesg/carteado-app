@@ -11,7 +11,7 @@ import { useEffect, useMemo, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 import CardComponent from "@/components/Card";
-import { seatAnchor, useSeatAnchors } from "@/hooks/game/useSeatAnchors";
+import { useCenterOffsetToSeat } from "@/hooks/game/useSeatAnchors";
 import type {
   RadarPeek,
   TrucoEffect,
@@ -110,12 +110,23 @@ export default function TrucoEffects({
 }: TrucoEffectsProps) {
   const [scope, animate] = useAnimate();
   const reduceMotion = useReducedMotion();
-  const anchors = useSeatAnchors();
   const stamp = useStampCopy(effect);
   const { t } = useTranslation();
 
   const isAsk = effect?.kind === "trucoAsked";
   const level = isAsk ? getBetLevel(effect.bet) : 0;
+  const stampTargetId =
+    effect?.kind === "trucoAsked"
+      ? effect.askerId
+      : effect?.kind === "powerUsed"
+        ? (effect.targetUserId ?? effect.userId)
+        : undefined;
+  const stampOrigin = useCenterOffsetToSeat(stampTargetId);
+  const peekOrigin = useCenterOffsetToSeat(xrayPeek?.targetUserId);
+  const radarOrigin = useCenterOffsetToSeat(radarPeek?.targetUserId);
+  const stampSettle =
+    effect?.kind === "powerUsed" && effect.targetUserId ? 0.85 : 0.35;
+  const stampReady = !stampTargetId || stampOrigin !== null;
 
   useEffect(() => {
     if (!effect || effect.kind !== "trucoAsked") return;
@@ -133,32 +144,6 @@ export default function TrucoEffects({
 
     return () => controls.stop();
   }, [effect, level, reduceMotion, animate, scope]);
-
-  // Selo nasce perto de quem pediu e assenta entre o assento e o centro.
-  const stampOrigin = useMemo(() => {
-    if (!effect || effect.kind !== "trucoAsked" || reduceMotion) return null;
-    return anchors.getOffset("center", seatAnchor(effect.askerId));
-  }, [anchors, effect, reduceMotion]);
-
-  const peekOrigin = useMemo(() => {
-    if (!xrayPeek) return { x: 0, y: 0 };
-    return (
-      anchors.getOffset("center", seatAnchor(xrayPeek.targetUserId)) ?? {
-        x: 0,
-        y: 0,
-      }
-    );
-  }, [anchors, xrayPeek]);
-
-  const radarOrigin = useMemo(() => {
-    if (!radarPeek) return { x: 0, y: 0 };
-    return (
-      anchors.getOffset("center", seatAnchor(radarPeek.targetUserId)) ?? {
-        x: 0,
-        y: 0,
-      }
-    );
-  }, [anchors, radarPeek]);
 
   return (
     <div className={styles.root}>
@@ -182,7 +167,7 @@ export default function TrucoEffects({
       </AnimatePresence>
 
       <AnimatePresence>
-        {effect && stamp && (
+        {effect && stamp && stampReady && (
           <motion.div
             key={`stamp-${effect.id}`}
             className={classNames(
@@ -193,6 +178,7 @@ export default function TrucoEffects({
             )}
             data-testid={testIds.game.trucoStamp}
             data-power-id={stamp.powerId}
+            data-target-user-id={stampTargetId}
             initial={{
               x: stampOrigin?.x ?? 0,
               y: stampOrigin?.y ?? 0,
@@ -201,8 +187,8 @@ export default function TrucoEffects({
               opacity: 0,
             }}
             animate={{
-              x: (stampOrigin?.x ?? 0) * 0.35,
-              y: (stampOrigin?.y ?? 0) * 0.35,
+              x: (stampOrigin?.x ?? 0) * stampSettle,
+              y: (stampOrigin?.y ?? 0) * stampSettle,
               scale: reduceMotion ? 1 : [0.3, 1.25, 1],
               rotate: -6,
               opacity: 1,
@@ -215,11 +201,12 @@ export default function TrucoEffects({
       </AnimatePresence>
 
       <AnimatePresence>
-        {xrayPeek && (
+        {xrayPeek && peekOrigin && (
           <motion.div
             key={`xray-${xrayPeek.id}`}
             className={styles.xrayPeek}
             data-testid={testIds.game.xrayPeek}
+            data-target-user-id={xrayPeek.targetUserId}
             initial={{
               x: peekOrigin.x,
               y: peekOrigin.y,
@@ -254,7 +241,7 @@ export default function TrucoEffects({
       </AnimatePresence>
 
       <AnimatePresence>
-        {radarPeek && (
+        {radarPeek && radarOrigin && (
           <motion.div
             key={`radar-${radarPeek.id}`}
             className={classNames(
@@ -262,6 +249,7 @@ export default function TrucoEffects({
               radarPeek.hasManilha ? styles.radarYes : styles.radarNo
             )}
             data-testid={testIds.game.radarPeek}
+            data-target-user-id={radarPeek.targetUserId}
             initial={{
               x: radarOrigin.x,
               y: radarOrigin.y,

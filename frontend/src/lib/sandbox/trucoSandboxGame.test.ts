@@ -203,6 +203,28 @@ describe("trucoSandboxGame", () => {
     expect(next.handsResults[0].winnerTeamId).toBe("TEAM_B");
   });
 
+  it("updates vira and manilha of the current round when CHANGE_TRUMP is stamped", () => {
+    const played = makeSandboxCard("4", "hearts", PowerId.CHANGE_TRUMP);
+    const base = withHands([played], [makeSandboxCard("3", "spades")]);
+    const game = {
+      ...base,
+      vira: makeSandboxCard("7", "clubs"),
+      rounds: 1,
+      deck: {
+        ...base.deck,
+        cards: [makeSandboxCard("A", "spades")],
+      } as typeof base.deck,
+    };
+
+    const { game: next } = playSandboxCard(game, SANDBOX_YOU_ID, played);
+
+    expect(next.rounds).toBe(1);
+    expect(next.vira).toEqual(
+      expect.objectContaining({ rank: "A", suit: "spades" })
+    );
+    expect(next.manilha).toBe("2");
+  });
+
   it("makes reject cost 1 after SILVER_SHIELD is armed, even on a raised bet", () => {
     const played = makeSandboxCard("4", "hearts", PowerId.SILVER_SHIELD);
     const { game: armed } = playSandboxCard(

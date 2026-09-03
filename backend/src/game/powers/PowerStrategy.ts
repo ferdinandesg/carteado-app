@@ -30,10 +30,10 @@ export interface PowerResult {
   /** Coveiro: carta do baralho que fica na mesa. */
   replacementCard?: Card;
   /**
-   * Escudo de Prata: ao ativar com truco pendente, corre a rodada por
-   * este valor (em vez da aposta anterior).
+   * Escudo de Prata: ao ativar com truco pendente, o time corre em seguida.
+   * O valor pago passa pelo `onRejectTrucoPoints` normal (caminho único).
    */
-  rejectPoints?: number;
+  runFromTruco?: boolean;
 }
 
 /**
@@ -77,6 +77,3 @@ export interface PowerStrategy {
     winningTeam: Team
   ): void;
 }
-
-export const isSameCard = (a: Card, b: Card): boolean =>
-  a.rank === b.rank && a.suit === b.suit;

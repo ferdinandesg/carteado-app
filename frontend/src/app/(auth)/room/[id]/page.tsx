@@ -13,6 +13,7 @@ import RoomInfo from "@/components/room/RoomInfo";
 import RoomShell from "@/components/room/RoomShell";
 import { testIds } from "@/tests/testIds";
 import RoomParticipantsPanel from "@/components/room/RoomParticipantsPanel";
+import { SocketGameActionsProvider } from "@/hooks/game/useGameActions";
 import classNames from "classnames";
 
 const RenderScreen = ({ status }: { status?: RoomStatus }) => {
@@ -22,7 +23,11 @@ const RenderScreen = ({ status }: { status?: RoomStatus }) => {
       return <Lobby />;
     case "playing":
     case "finished":
-      return <Game />;
+      return (
+        <SocketGameActionsProvider>
+          <Game />
+        </SocketGameActionsProvider>
+      );
     default:
       return <div>{t("loading")}</div>;
   }

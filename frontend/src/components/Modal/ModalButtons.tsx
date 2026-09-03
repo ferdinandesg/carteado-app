@@ -3,7 +3,7 @@
 import { ButtonHTMLAttributes, ReactNode } from "react";
 import classNames from "classnames";
 
-import styles from "@styles/Modal.module.scss";
+import styles from "@/styles/Modal.module.scss";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon: ReactNode;
