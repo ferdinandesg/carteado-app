@@ -1,7 +1,7 @@
 import Deck, {
   Card,
-  getCardValue,
   getNextRank,
+  suitValueMap,
   TRUCO_RANK_ORDER,
 } from "shared/cards";
 import { IGameRules } from "./IGameRules";
@@ -22,6 +22,23 @@ import { applyPlayedCardPower } from "./powers/applyCardPower";
 import { stampPowersOnDeck } from "./powers/stampDeck";
 import * as powerEffects from "./powers/effects";
 import { restoreIllusions } from "./powers/strategies/IllusionistPower";
+
+/** Hierarquia comum do Truco: 4, 5, 6, 7, Q, J, K, A, 2, 3. */
+const TRUCO_COMMON_POWER: Record<string, number> = {
+  "4": 1,
+  "5": 2,
+  "6": 3,
+  "7": 4,
+  Q: 5,
+  J: 6,
+  K: 7,
+  A: 8,
+  "2": 9,
+  "3": 10,
+};
+
+/** Manilhas ficam acima de qualquer carta comum (3 = 10). */
+const MANILHA_BASE_POWER = 20;
 
 // A classe TrucoGame permanece focada no estado do jogo.
 export class TrucoGame extends Game<TrucoGame, ITrucoGameRules, BasePlayer> {
@@ -97,6 +114,7 @@ type ITrucoGameRules = IGameRules<TrucoGame> & {
   drawValidCard(deck: Deck, allowedRanks: string[]): Card;
   findTeamByUserId(game: TrucoGame, userId: string): Team | undefined;
   getOpponentTeam(game: TrucoGame, userId: string): Team | undefined;
+  getCardTrucoPower(card: Card, vira: Card | null): number;
 };
 
 export class TrucoGameRules implements ITrucoGameRules {
@@ -168,6 +186,22 @@ export class TrucoGameRules implements ITrucoGameRules {
   public getOpponentTeam(game: TrucoGame, userId: string): Team | undefined {
     const playerTeamId = this.findTeamByUserId(game, userId)?.id;
     return game.teams.find((team) => team.id !== playerTeamId);
+  }
+
+  /**
+   * Poder da carta na escala oficial do Truco Paulista.
+   * Comuns: 4 < 5 < 6 < 7 < Q < J < K < A < 2 < 3.
+   * Manilhas (próximo rank do vira), em ordem absoluta de naipe:
+   * Ouros < Espadas < Copas < Paus (Zap).
+   */
+  public getCardTrucoPower(card: Card, vira: Card | null): number {
+    if (vira) {
+      const manilhaRank = getNextRank(vira.rank);
+      if (card.rank === manilhaRank) {
+        return MANILHA_BASE_POWER + (suitValueMap[card.suit] ?? 0);
+      }
+    }
+    return TRUCO_COMMON_POWER[card.rank] ?? 0;
   }
 
   // Lógica de truco foi simplificada.
@@ -410,7 +444,7 @@ export class TrucoGameRules implements ITrucoGameRules {
     let winners: { card: Card; player: BasePlayer }[] = [];
 
     for (const { card, player } of handCards) {
-      const value = getCardValue(card, game.manilha);
+      const value = this.getCardTrucoPower(card, game.vira);
 
       if (value > highestValue) {
         highestValue = value;

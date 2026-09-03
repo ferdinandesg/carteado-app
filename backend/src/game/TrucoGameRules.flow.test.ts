@@ -18,7 +18,7 @@ describe("TrucoGame — fluxo completo de partida (2 jogadores)", () => {
 
   /** Fixa vira/manilha e o jogador da vez, para tornar a rodada previsível. */
   const setupRound = () => {
-    game.vira = card("7", "clubs");
+    game.vira = card("J", "clubs");
     game.manilha = "Q";
     game.playerTurn = "p1";
   };
@@ -75,6 +75,19 @@ describe("TrucoGame — fluxo completo de partida (2 jogadores)", () => {
 
     expect(teamA.score).toBe(12);
     expect(game.status).toBe(GameStatus.FINISHED);
+  });
+
+  it("Zap (4 de Paus) deve vencer o Rei quando o vira é 3", () => {
+    game.vira = card("3", "hearts");
+    game.manilha = "4";
+
+    playHand([
+      { userId: "p1", card: card("K", "hearts") },
+      { userId: "p2", card: card("4", "clubs") },
+    ]);
+
+    expect(game.teams[1].roundWins).toBe(1);
+    expect(game.playerTurn).toBe("p2");
   });
 
   it("manilha deve vencer o 3, e entre manilhas decide o naipe (paus > ouros)", () => {

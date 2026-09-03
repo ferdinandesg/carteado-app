@@ -49,8 +49,9 @@ export const TRUCO_RANK_ORDER: Record<string, number> = {
   "2": 13,
   A: 12,
   K: 11,
-  Q: 10,
-  J: 9,
+  // Hierarquia comum do Truco Paulista: ... 7 < Q < J < K < A < 2 < 3
+  J: 10,
+  Q: 9,
   "7": 8,
   "6": 7,
   "5": 6,

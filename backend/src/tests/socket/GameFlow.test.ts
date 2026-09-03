@@ -298,7 +298,7 @@ describe("Fluxo de jogo via socket — integração", () => {
     const seedDeterministicTruco = () => {
       const game = new TrucoGame(makePlayers([USER_A, USER_B]));
       game.startGame();
-      game.vira = card("7", "clubs");
+      game.vira = card("J", "clubs");
       game.manilha = "Q";
       game.playerTurn = USER_A;
       game.getPlayer(USER_A)!.hand = [

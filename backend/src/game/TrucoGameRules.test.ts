@@ -32,9 +32,8 @@ describe("TrucoGameRules", () => {
     game.status = GameStatus.PLAYING;
     game.playerTurn = "p1";
 
-    // Mockar o baralho para não depender da aleatoriedade
-    // Vira 7; manilha fixada em Q (os testes jogam J como carta comum).
-    game.vira = card("7", "C");
+    // Vira J → manilha Q (os testes jogam J como carta comum, não como manilha).
+    game.vira = card("J", "clubs");
     game.manilha = "Q";
   });
 
@@ -104,6 +103,52 @@ describe("TrucoGameRules", () => {
   });
 
   // ===================================================================
+  // ESCALA DE PODER DO TRUCO
+  // ===================================================================
+  describe("getCardTrucoPower", () => {
+    const vira = card("3", "hearts"); // manilha = 4
+
+    it("segue a hierarquia comum 4 < 5 < 6 < 7 < Q < J < K < A < 2 < 3", () => {
+      const ranks = ["4", "5", "6", "7", "Q", "J", "K", "A", "2", "3"];
+      const powers = ranks.map((rank) =>
+        rules.getCardTrucoPower(card(rank, "hearts"), null)
+      );
+      for (let i = 1; i < powers.length; i++) {
+        expect(powers[i]).toBeGreaterThan(powers[i - 1]);
+      }
+    });
+
+    it("ordena manilhas por naipe: Ouros < Espadas < Copas < Paus", () => {
+      expect(rules.getCardTrucoPower(card("4", "diamonds"), vira)).toBeLessThan(
+        rules.getCardTrucoPower(card("4", "spades"), vira)
+      );
+      expect(rules.getCardTrucoPower(card("4", "spades"), vira)).toBeLessThan(
+        rules.getCardTrucoPower(card("4", "hearts"), vira)
+      );
+      expect(rules.getCardTrucoPower(card("4", "hearts"), vira)).toBeLessThan(
+        rules.getCardTrucoPower(card("4", "clubs"), vira)
+      );
+    });
+
+    it("Zap (4 de Paus) vence o Rei e o 3 quando o vira é 3", () => {
+      const zap = card("4", "clubs");
+      expect(rules.getCardTrucoPower(zap, vira)).toBeGreaterThan(
+        rules.getCardTrucoPower(card("K", "hearts"), vira)
+      );
+      expect(rules.getCardTrucoPower(zap, vira)).toBeGreaterThan(
+        rules.getCardTrucoPower(card("3", "spades"), vira)
+      );
+    });
+
+    it("não usa o valor nominal: 4 comum perde para o Rei", () => {
+      const viraSete = card("7", "clubs"); // manilha = J
+      expect(
+        rules.getCardTrucoPower(card("4", "clubs"), viraSete)
+      ).toBeLessThan(rules.getCardTrucoPower(card("K", "hearts"), viraSete));
+    });
+  });
+
+  // ===================================================================
   // TESTES DE RESOLUÇÃO DE MÃO E RODADA
   // ===================================================================
   describe("Hand and Round Resolution", () => {
@@ -115,6 +160,22 @@ describe("TrucoGameRules", () => {
         rules.applyPlayCard(game, play.userId, play.card);
       });
     };
+
+    it("should award the hand to Zap over a King when vira makes 4 the manilha", () => {
+      game.vira = card("3", "hearts");
+      game.manilha = "4";
+
+      playHand([
+        { userId: "p1", card: card("K", "hearts") },
+        { userId: "p2", card: card("4", "clubs") },
+        { userId: "p3", card: card("5", "diamonds") },
+        { userId: "p4", card: card("6", "spades") },
+      ]);
+
+      const teamB = rules.findTeamByUserId(game, "p2")!;
+      expect(teamB.roundWins).toBe(1);
+      expect(game.playerTurn).toBe("p2");
+    });
 
     it("should award the hand to the player with the highest card", () => {
       // Arrange

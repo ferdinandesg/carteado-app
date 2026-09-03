@@ -43,7 +43,7 @@ describe("getCardValue", () => {
     expect(getCardValue(tres, "4")).toBeGreaterThan(0);
   });
 
-  it("ordena figuras J < Q < K", () => {
+  it("ordena figuras Q < J < K", () => {
     const jack: Card = {
       suit: "hearts",
       rank: "J",
@@ -65,8 +65,8 @@ describe("getCardValue", () => {
       secondaryValue: null,
       toString: "K of hearts",
     };
-    expect(getCardValue(jack, "4")).toBeLessThan(getCardValue(queen, "4"));
-    expect(getCardValue(queen, "4")).toBeLessThan(getCardValue(king, "4"));
+    expect(getCardValue(queen, "4")).toBeLessThan(getCardValue(jack, "4"));
+    expect(getCardValue(jack, "4")).toBeLessThan(getCardValue(king, "4"));
   });
 });
 
