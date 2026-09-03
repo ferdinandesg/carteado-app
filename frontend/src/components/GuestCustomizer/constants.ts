@@ -23,6 +23,11 @@ export const skinOptions = [
     value: "baralho03",
     path: "/assets/skins/baralho03/clubs/Kclubs.png",
   },
+  {
+    name: "Baralho 04",
+    value: "baralho04",
+    path: "/assets/skins/baralho04/clubs/Kclubs.png",
+  },
 ] as const;
 
 export type AvatarOption = (typeof avatarOptions)[number];

@@ -11,12 +11,7 @@ import { getCardScale, type CardSize } from "@/lib/cards/cardSizing";
 
 import styles from "@/styles/Card.module.scss";
 
-type AvailableSkins =
-  | "baralho01"
-  | "baralho02"
-  | "baralho03"
-  | "basics/white"
-  | "basics/black";
+type AvailableSkins = "baralho01" | "baralho02" | "baralho03" | "baralho04";
 
 type CardComponentProps = {
   card: Card;
