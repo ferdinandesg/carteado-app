@@ -16,7 +16,7 @@ export default function Menu() {
   const router = useRouter();
 
   return (
-    <MenuShell activeTabLabel={t("Menu.gameplay")}>
+    <MenuShell tabs={[{ label: t("pageTitles.menu") }]}>
       <div className={styles.menuActions}>
         <ActionButton
           type="button"

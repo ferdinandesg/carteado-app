@@ -225,3 +225,31 @@
     bottom: 10px;
   }
 }
+
+@media (max-height: $breakpoint-md) {
+  .sidebar {
+    background-color: transparent;
+    height: 100px;
+    position: relative;
+    order: 1;
+    flex-direction: row;
+    align-items: center;
+    padding: $spacing-m;
+  }
+
+  .helpButton {
+    width: 24px;
+    height: 24px;
+    font-size: 1rem;
+    bottom: 0;
+    left: 0;
+  }
+  .deckPreview {
+    position: relative;
+    padding-bottom: 30px;
+    .editBadge {
+      right: 0;
+      bottom: 30px;
+    }
+  }
+}

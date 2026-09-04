@@ -7,6 +7,7 @@ import ptFlag from "public/flags/brasil.png";
 import enFlag from "public/flags/eua.png";
 
 import styles from "@/styles/LanguageSwitcher.module.scss";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const LanguageSwitcher: React.FC = () => {
   const { i18n } = useTranslation();
@@ -17,19 +18,21 @@ const LanguageSwitcher: React.FC = () => {
     router.refresh();
   };
 
+  const isMobileHeight = useMediaQuery("(max-height: 768px)");
+  const iconSize = isMobileHeight ? 20 : 30;
   return (
     <div className={styles.LanguageSwitcher}>
       <Image
         src={ptFlag}
         alt="Português"
-        width={30}
+        width={iconSize}
         className={styles.languageIcon}
         onClick={() => handleLanguageChange("pt")}
       />
       <Image
         src={enFlag}
         alt="English"
-        width={30}
+        width={iconSize}
         className={styles.languageIcon}
         onClick={() => handleLanguageChange("en")}
       />

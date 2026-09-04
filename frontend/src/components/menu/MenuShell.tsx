@@ -10,7 +10,9 @@ import type { ProductType } from "shared/types";
 
 import styles from "@/styles/Menu.module.scss";
 import FriendsPanel from "@/components/menu/FriendsPanel";
-import MenuContentCard from "@/components/menu/MenuContentCard";
+import MenuContentCard, {
+  type MenuTab,
+} from "@/components/menu/MenuContentCard";
 import MenuTopBar from "@/components/menu/MenuTopBar";
 import UserPanel from "@/components/menu/UserPanel";
 import ActionButton from "../buttons/ActionButton";
@@ -19,13 +21,13 @@ import { resolveSkin } from "@/components/GuestCustomizer/constants";
 import { testIds } from "@/tests/testIds";
 
 type MenuShellProps = {
-  activeTabLabel: string;
+  tabs: MenuTab[];
   children: ReactNode;
   contentSize?: "default" | "wide";
 };
 
 export default function MenuShell({
-  activeTabLabel,
+  tabs,
   children,
   contentSize = "default",
 }: MenuShellProps) {
@@ -85,7 +87,7 @@ export default function MenuShell({
         />
 
         <MenuContentCard
-          activeTabLabel={activeTabLabel}
+          tabs={tabs}
           size={contentSize}>
           {children}
         </MenuContentCard>

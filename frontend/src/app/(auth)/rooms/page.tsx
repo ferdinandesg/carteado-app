@@ -7,7 +7,6 @@ import RoomItem from "@/components/RoomItem";
 import MenuShell from "@/components/menu/MenuShell";
 
 import styles from "@/styles/Rooms.module.scss";
-import BackButton from "@/components/buttons/BackButton";
 import { useTranslation } from "react-i18next";
 import useTitle from "@/hooks/useTitle";
 import logger from "@/lib/logger";
@@ -71,26 +70,15 @@ export default function Rooms() {
     }
   };
 
-  const goToMenu = () => {
-    try {
-      router.push("/menu");
-    } catch (error) {
-      logger.error(error);
-    }
-  };
-
   return (
     <MenuShell
-      activeTabLabel={t("Menu.createdRooms")}
+      tabs={[
+        { label: t("pageTitles.menu"), href: "/menu" },
+        { label: t("Menu.createdRooms") },
+      ]}
       contentSize="default">
       <div className={styles.roomsCardContent}>
         <header className={styles.roomsToolbar}>
-          <BackButton
-            data-testid="back-button"
-            onClick={goToMenu}
-            size={24}
-            color="white"
-          />
           <SearchComponent
             value={search}
             onChange={setSearch}

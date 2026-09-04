@@ -45,6 +45,8 @@ export default function UserPanel({
   onEditDeck,
 }: UserPanelProps) {
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const isMobileHeight = useMediaQuery("(max-height: 768px)");
+  const cardSize = isMobileHeight ? "sm" : isMobile ? "md" : "lg";
   return (
     <aside
       className={styles.sidebar}
@@ -87,7 +89,7 @@ export default function UserPanel({
           <div className={styles.deckPreview}>
             <SkinPreview
               skin={userSkin}
-              size={isMobile ? "md" : "lg"}
+              size={cardSize}
             />
             {onEditDeck && (
               <button

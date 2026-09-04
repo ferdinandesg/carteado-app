@@ -20,7 +20,7 @@ export function isPowerId(value: string): value is PowerId {
 export const TRUCO_POWERS_PER_ROUND = 3;
 
 /** Chance de cada carta elegível receber um poder. */
-export const TRUCO_POWER_STAMP_CHANCE = 0.1;
+export const TRUCO_POWER_STAMP_CHANCE = 0.15;
 
 /**
  * Origem do disparo. `CARD` = carta carimbada no deal; `MANUAL` = evento

@@ -1,5 +1,4 @@
 "use client";
-import BackButton from "@/components/buttons/BackButton";
 import ActionButton from "@/components/buttons/ActionButton";
 import TextInput from "@/components/inputs/TextInput";
 import MenuShell from "@/components/menu/MenuShell";
@@ -64,15 +63,12 @@ export default function CreateRoom() {
 
   return (
     <MenuShell
-      activeTabLabel={t("CreateRoom.createRoom")}
+      tabs={[
+        { label: t("pageTitles.menu"), href: "/menu" },
+        { label: t("CreateRoom.createRoom") },
+      ]}
       contentSize="default">
       <div className={styles.createRoomContent}>
-        <BackButton
-          data-testid="back-button"
-          color="white"
-          onClick={() => window.history.back()}
-          size={24}
-        />
         <form
           className={styles.formContent}
           onSubmit={(event) => {

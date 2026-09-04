@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import classNames from "classnames";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "react-i18next";
 import {
@@ -11,7 +10,6 @@ import {
   type ProductType,
 } from "shared/types";
 
-import BackButton from "@/components/buttons/BackButton";
 import MenuShell from "@/components/menu/MenuShell";
 import PurchaseConfirmModal from "@/components/store/PurchaseConfirmModal";
 import StoreItem from "@/components/store/StoreItem";
@@ -24,7 +22,6 @@ export default function Shop() {
   const { t } = useTranslation();
   useTitle({ title: t("pageTitles.shop") });
 
-  const router = useRouter();
   const { data: session } = useSession();
   const isGuest = session?.user?.role === "guest";
   const {
@@ -53,15 +50,13 @@ export default function Shop() {
 
   return (
     <MenuShell
-      activeTabLabel={t("Menu.shop")}
+      tabs={[
+        { label: t("pageTitles.menu"), href: "/menu" },
+        { label: t("Menu.shop") },
+      ]}
       contentSize="wide">
       <div className={styles.shop}>
         <header className={styles.toolbar}>
-          <BackButton
-            size={24}
-            color="white"
-            onClick={() => router.push("/menu")}
-          />
           <div
             className={styles.tabs}
             role="tablist"

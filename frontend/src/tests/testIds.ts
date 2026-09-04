@@ -44,6 +44,7 @@ export const testIds = {
   menu: {
     shell: "menu-shell",
     content: "menu-content",
+    tab: (index: number) => `menu-tab-${index}`,
     friendsPanel: "menu-friends-panel",
     friendsToggle: "menu-friends-toggle",
     friendsList: "menu-friends-list",

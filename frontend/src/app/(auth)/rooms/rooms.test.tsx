@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import RoomsPage from "./page";
 import useFetchRooms from "@/hooks/rooms/useFetchRooms";
 import { useRouter } from "next/navigation";
+import { testIds } from "@/tests/testIds";
 
 // Mock dos hooks e do router
 jest.mock("@/hooks/rooms/useFetchRooms");
@@ -69,7 +70,8 @@ describe("RoomsPage", () => {
   it("deve renderizar a lista de salas corretamente", () => {
     render(<RoomsPage />);
     // Verifica se os elementos principais estão na tela
-    expect(screen.getByTestId("back-button")).toBeInTheDocument();
+    expect(screen.getByTestId(testIds.menu.tab(0))).toBeInTheDocument();
+    expect(screen.getByTestId(testIds.menu.tab(1))).toBeInTheDocument();
     // Verifica se os itens da sala foram renderizados
 
     const roomList = screen.getByTestId("room-list");
@@ -81,12 +83,12 @@ describe("RoomsPage", () => {
     });
   });
 
-  it("deve voltar ao menu ao clicar no botão de voltar", async () => {
+  it("deve voltar ao menu ao clicar na tab do menu", async () => {
     const user = userEvent.setup();
     render(<RoomsPage />);
 
-    const backButton = screen.getByTestId("back-button");
-    await user.click(backButton);
+    const menuTab = screen.getByTestId(testIds.menu.tab(0));
+    await user.click(menuTab);
 
     // Verifica se o router foi chamado para a rota correta
     expect(mockPush).toHaveBeenCalledWith("/menu");
