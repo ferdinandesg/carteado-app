@@ -88,7 +88,6 @@ export const authOptions: NextAuthOptions = {
       if (account && user) {
         try {
           const auth = await resolveAuthProfile(account.provider, user);
-          console.log({ auth });
           return { ...token, ...mapAuthToJwt(auth) };
         } catch (error) {
           logger.error(

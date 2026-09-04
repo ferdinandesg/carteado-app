@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import prisma from "../prisma";
+import prisma from "@/prisma";
 import {
   AuthenticatedUser,
   EmptyGuestType,
@@ -30,6 +30,7 @@ export type AuthProfile = {
 export type RegisteredAuthProfile = AuthProfile & {
   image: string;
   role: RegisteredUserRole;
+  skin: string;
 };
 
 async function toRegisteredProfile(user: User): Promise<RegisteredAuthProfile> {
@@ -43,6 +44,7 @@ async function toRegisteredProfile(user: User): Promise<RegisteredAuthProfile> {
     cash: user.cash ?? 0,
     xp: user.xp ?? 0,
     role: normalizeRegisteredRole(user.role),
+    skin: cosmetics.skin,
   };
 }
 
