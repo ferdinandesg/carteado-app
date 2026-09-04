@@ -7,6 +7,7 @@ import RankMeter from "@/components/RankMeter";
 import SkinPreview from "@/components/SkinPreview";
 import UserPlaceholder from "@/components/UserPlaceholder";
 import styles from "@/styles/UserPanel.module.scss";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 type UserPanelProps = {
   userName: string;
@@ -43,11 +44,11 @@ export default function UserPanel({
   onEditAvatar,
   onEditDeck,
 }: UserPanelProps) {
+  const isMobile = useMediaQuery("(max-width: 768px)");
   return (
     <aside
       className={styles.sidebar}
       aria-label={userName}>
-      <div />
       <div className={styles.profileContainer}>
         <div className={styles.profileAvatar}>
           {userImage ? (
@@ -78,7 +79,6 @@ export default function UserPanel({
         <div className={styles.profileName}>
           <h1>{userName}</h1>
         </div>
-        <span className={styles.levelBadge}>{levelLabel}</span>
 
         <section
           className={styles.deckSection}
@@ -87,7 +87,7 @@ export default function UserPanel({
           <div className={styles.deckPreview}>
             <SkinPreview
               skin={userSkin}
-              size="lg"
+              size={isMobile ? "md" : "lg"}
             />
             {onEditDeck && (
               <button

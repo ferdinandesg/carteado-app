@@ -36,12 +36,11 @@ export default function MenuTopBar({
   onOpenSettings,
   onOpenShop,
 }: MenuTopBarProps) {
-  const { t } = useTranslation();
-
+  const playerLevelOrMax = 100 > 100 ? "+99" : playerLevel;
   return (
     <header className={styles.topBar}>
       <div className={styles.xpWidget}>
-        <span className={styles.hexBadge}>{playerLevel}</span>
+        <span className={styles.hexBadge}>{playerLevelOrMax}</span>
         <div
           className={styles.xpTrack}
           aria-label={`${xpLabel} ${playerXp}%`}>
@@ -63,9 +62,8 @@ export default function MenuTopBar({
           disabled
           size="sm"
           icon={<Plus size={15} />}
-          aria-label={goldAriaLabel}>
-          {t("Menu.addGold")}
-        </ActionButton>
+          aria-label={goldAriaLabel}
+        />
       </div>
 
       <button

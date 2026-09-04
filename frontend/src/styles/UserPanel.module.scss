@@ -89,9 +89,6 @@
   align-items: center;
   width: 100%;
   padding: $spacing-xs $spacing-s 0;
-  background-color: rgba($color-bg-input, 0.6);
-  border: $border-width solid $color-outline;
-  border-radius: $border-radius-s;
 }
 
 .profileName {
@@ -163,6 +160,7 @@
 
 @media (max-width: $breakpoint-lg) {
   .sidebar {
+    position: relative;
     order: 1;
     flex-direction: row;
     align-items: center;
@@ -188,7 +186,7 @@
   .profileName {
     justify-content: flex-start;
     text-align: left;
-
+    max-width: 80%;
     h1 {
       font-size: clamp(1.1rem, 4vw, 1.5rem);
     }
@@ -223,11 +221,7 @@
     height: 40px;
     font-size: 1.5rem;
     flex-shrink: 0;
-  }
-}
-
-@media (max-width: $breakpoint-md) {
-  .sidebar {
-    padding-top: calc(#{$spacing-xl} + #{$spacing-xs});
+    position: absolute;
+    bottom: 10px;
   }
 }

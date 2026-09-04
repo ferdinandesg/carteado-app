@@ -9,7 +9,7 @@ type ActionButtonVariant = "primary" | "secondary" | "accent" | "ghost";
 type ActionButtonSize = "sm" | "md" | "lg";
 
 type ActionButtonProps = {
-  children: ReactNode;
+  children?: ReactNode;
   variant?: ActionButtonVariant;
   size?: ActionButtonSize;
   icon?: ReactNode;
