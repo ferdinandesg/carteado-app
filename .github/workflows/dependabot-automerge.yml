@@ -1,0 +1,28 @@
+name: Dependabot auto-merge
+
+# Só aprova e liga o auto-merge; o merge acontece quando os checks obrigatórios
+# da regra de master (validate, integration, e2e) passam. Merge em master = deploy.
+on: pull_request
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  automerge:
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - id: meta
+        uses: dependabot/fetch-metadata@v2
+      # Majors (inclusive de actions usadas só no deploy, que o CI de PR não exercita) ficam manuais.
+      - if: >-
+          steps.meta.outputs.update-type != 'version-update:semver-major' &&
+          (steps.meta.outputs.dependency-group == 'minor-and-patch' ||
+           steps.meta.outputs.package-ecosystem == 'github_actions')
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr review --approve "$PR_URL"
+          gh pr merge --auto --squash "$PR_URL"
