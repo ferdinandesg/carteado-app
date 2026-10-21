@@ -10,7 +10,7 @@ import { RoomInterface } from "shared/types";
 import Game from "@/components/Game/game";
 import { useGameStore } from "@/contexts/game.store";
 import { useRoomContext } from "@/contexts/room.context";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 jest.mock("@/components/buttons/withSound", () => ({
   withSound: (Component: unknown) => Component,

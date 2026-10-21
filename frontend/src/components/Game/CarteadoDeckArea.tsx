@@ -3,7 +3,7 @@ import { useTypedGame } from "@/hooks/useTypedGame";
 import styles from "@/styles/Game.module.scss";
 import { isCarteadoGame } from "shared/game";
 
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 export default function CarteadoDeckArea() {
   const game = useTypedGame(isCarteadoGame);

@@ -6,7 +6,7 @@ import GameTableActions from "./GameTableActions";
 import { useGameActions } from "@/hooks/game/useGameActions";
 import { usePlayerHand } from "@/hooks/game/usePlayerHand";
 import { useTypedGame } from "@/hooks/useTypedGame";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 import { isCarteadoGame } from "shared/game";
 
 export default function CarteadoTable() {

@@ -9,7 +9,7 @@ import Modal from "@/components/Modal";
 import ActionButton from "@/components/buttons/ActionButton";
 import { selectCurrentPlayer, useGameStore } from "@/contexts/game.store";
 import { useTypedGame } from "@/hooks/useTypedGame";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 import styles from "@/styles/ModalGameFinished.module.scss";
 

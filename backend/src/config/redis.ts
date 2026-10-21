@@ -1,4 +1,5 @@
 /** Redis key builders and TTLs */
+import { SESSION_TTL_SEC } from "shared/types";
 
 export const REDIS_KEY_PREFIX = {
   room: "room:",
@@ -14,12 +15,9 @@ export const REDIS_KEYS = {
   guest: (id: string) => `guest:${id}`,
 } as const;
 
-/** 30 dias — alinhado com expiração do access token / sessão NextAuth. */
-const THIRTY_DAYS_SEC = 30 * 24 * 60 * 60;
-
 export const REDIS_TTL = {
   room: 7200, // 2h
   game: 7200,
   chat: 7200,
-  guest: THIRTY_DAYS_SEC,
+  guest: SESSION_TTL_SEC,
 } as const;

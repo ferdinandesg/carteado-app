@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import RoomsPage from "./page";
 import useFetchRooms from "@/hooks/rooms/useFetchRooms";
 import { useRouter } from "next/navigation";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 // Mock dos hooks e do router
 jest.mock("@/hooks/rooms/useFetchRooms");

@@ -5,7 +5,7 @@ import { isTrucoGame } from "shared/game";
 import Shaky from "../Shaky";
 import { useGameStore } from "@/contexts/game.store";
 import { useTypedGame } from "@/hooks/useTypedGame";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 import styles from "@/styles/Game.module.scss";
 

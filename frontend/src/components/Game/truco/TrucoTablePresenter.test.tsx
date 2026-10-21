@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { Card } from "shared/cards";
 
 import { SeatAnchorProvider } from "@/hooks/game/useSeatAnchors";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 import TrucoTablePresenter from "./TrucoTablePresenter";
 

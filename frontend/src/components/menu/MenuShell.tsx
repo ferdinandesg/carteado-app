@@ -18,7 +18,7 @@ import UserPanel from "@/components/menu/UserPanel";
 import ActionButton from "../buttons/ActionButton";
 import CosmeticPickerModal from "@/components/Modal/CosmeticPickerModal/CosmeticPickerModal";
 import { resolveSkin } from "@/components/GuestCustomizer/constants";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 type MenuShellProps = {
   tabs: MenuTab[];

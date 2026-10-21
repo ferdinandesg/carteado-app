@@ -4,7 +4,7 @@ import { useGameStore } from "@/contexts/game.store";
 import { useRoomContext } from "@/contexts/room.context";
 import ModalGameFinished from "@/components/Modal/ModalGameFinished/ModalGameFinished";
 import styles from "@/styles/Game.module.scss";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 import { gameComponents } from "./game.registry";
 

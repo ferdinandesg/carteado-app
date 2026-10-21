@@ -6,7 +6,7 @@ import RoomInfo from "@/components/room/RoomInfo";
 import RoomShell from "@/components/room/RoomShell";
 import { useSocket } from "@/contexts/socket.context";
 import { RoomInterface } from "shared/types";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 jest.mock("@/contexts/socket.context", () => ({
   useSocket: jest.fn(),

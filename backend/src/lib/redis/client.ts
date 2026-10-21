@@ -1,19 +1,26 @@
 import { createClient, RedisClientType } from "redis";
-import { expireRoomByHash } from "@/services/room.service";
+import { env } from "@/config/env";
 import { logger } from "@/utils/logger";
 import { REDIS_KEY_PREFIX } from "@/config/redis";
+
+type RoomExpiredHandler = (roomHash: string) => Promise<unknown>;
+
+const REDIS_URL = env.REDIS_URL || "redis://localhost:6379";
 
 class RedisClass {
   private static dataClient: RedisClientType | null = null;
   private static subscribeClient: RedisClientType | null = null;
+  private static roomExpiredHandler: RoomExpiredHandler | null = null;
 
   private constructor() {}
 
+  public static onRoomExpired(handler: RoomExpiredHandler): void {
+    RedisClass.roomExpiredHandler = handler;
+  }
+
   public static async getDataClient(): Promise<RedisClientType> {
     if (!RedisClass.dataClient) {
-      RedisClass.dataClient = createClient({
-        url: process.env.REDIS_URL || "redis://localhost:6379",
-      });
+      RedisClass.dataClient = createClient({ url: REDIS_URL });
 
       RedisClass.dataClient.on("error", (err) => {
         logger.error({ err }, "Redis data client error.");
@@ -30,9 +37,7 @@ class RedisClass {
 
   public static async getSubscribeClient(): Promise<RedisClientType> {
     if (!RedisClass.subscribeClient) {
-      RedisClass.subscribeClient = createClient({
-        url: process.env.REDIS_URL || "redis://localhost:6379",
-      });
+      RedisClass.subscribeClient = createClient({ url: REDIS_URL });
 
       RedisClass.subscribeClient.on("error", (err) => {
         logger.error({ err }, "Redis subscribe client error.");
@@ -46,7 +51,7 @@ class RedisClass {
         async (key) => {
           if (key.startsWith(REDIS_KEY_PREFIX.room)) {
             const roomHash = key.slice(REDIS_KEY_PREFIX.room.length);
-            await expireRoomByHash(roomHash);
+            await RedisClass.roomExpiredHandler?.(roomHash);
           }
         }
       );

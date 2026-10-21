@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { RoomInterface } from "shared/types";
 
 import styles from "@/styles/RoomInfo.module.scss";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 type RoomInfoProps = {
   room: RoomInterface;

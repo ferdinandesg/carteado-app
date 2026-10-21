@@ -5,7 +5,7 @@ import { useCurrentPlayer } from "@/hooks/game/useCurrentPlayer";
 import { useGameActions } from "@/hooks/game/useGameActions";
 import { useCardSelection } from "@/hooks/useCardSelection";
 import styles from "@/styles/ChoosingPhase.module.scss";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 

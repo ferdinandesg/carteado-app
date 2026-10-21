@@ -7,7 +7,7 @@ import { useGameStore } from "@/contexts/game.store";
 import { useRoomContext } from "@/contexts/room.context";
 import { useSocket } from "@/contexts/socket.context";
 import { RoomInterface } from "shared/types";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 const mockPush = jest.fn();
 const mockEmit = jest.fn();

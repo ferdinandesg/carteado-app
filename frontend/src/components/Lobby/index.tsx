@@ -5,7 +5,7 @@ import { Play, UserCheck } from "lucide-react";
 import ActionButton from "@/components/buttons/ActionButton";
 import { useLobbyActions } from "@/hooks/rooms/useLobbyActions";
 import styles from "@/styles/Lobby.module.scss";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 export default function Lobby() {
   const { t } = useTranslation();
