@@ -16,7 +16,7 @@ import {
 import styles from "@/styles/Menu.module.scss";
 import classNames from "classnames";
 import TextInput from "@/components/inputs/TextInput";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 import { FriendUser } from "shared/types";
 import useFriends, { useIsRegisteredUser } from "@/hooks/friends/useFriends";
 import useFriendRequests from "@/hooks/friends/useFriendRequests";

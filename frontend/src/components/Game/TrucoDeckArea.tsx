@@ -6,7 +6,7 @@ import Card from "@/components/Card";
 import PowerHint from "@/components/PowerHint";
 import Shaky from "@/components/Shaky";
 import { useTypedGame } from "@/hooks/useTypedGame";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 import gameStyles from "@/styles/Game.module.scss";
 import styles from "@/styles/TrucoTable.module.scss";

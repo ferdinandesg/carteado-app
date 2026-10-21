@@ -11,7 +11,7 @@ import useTitle from "@/hooks/useTitle";
 import Chat from "@/components/Chat";
 import RoomInfo from "@/components/room/RoomInfo";
 import RoomShell from "@/components/room/RoomShell";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 import RoomParticipantsPanel from "@/components/room/RoomParticipantsPanel";
 import { SocketGameActionsProvider } from "@/hooks/game/useGameActions";
 import classNames from "classnames";

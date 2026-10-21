@@ -1,14 +1,13 @@
 import jwt from "jsonwebtoken";
 import { env } from "@/config/env";
-import { UserRole } from "shared/types";
+import { SESSION_TTL_SEC, UserRole } from "shared/types";
 
 export type AccessTokenPayload = {
   id: string;
   role: UserRole;
 };
 
-/** Alinhado com REDIS_TTL.guest e sessão NextAuth (~30 dias). */
-export const ACCESS_TOKEN_EXPIRES_IN = "30d";
+export const ACCESS_TOKEN_EXPIRES_IN = SESSION_TTL_SEC;
 
 export function signAccessToken(payload: AccessTokenPayload): string {
   return jwt.sign(payload, env.JWT_SECRET_KEY, {

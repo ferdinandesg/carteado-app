@@ -3,7 +3,7 @@ import { SocketContext } from "@/@types/socket";
 import { pickHand } from "@/services/game.service";
 import { pickHandSchema } from "@/schemas/socket.schemas";
 import { handleGameAction, parsePayload } from "../handleGameAction";
-import { PickHandPayload } from "../payloads";
+import { PickHandPayload } from "shared/socket";
 
 export function PickHandEventHandler(
   context: SocketContext<PickHandPayload>

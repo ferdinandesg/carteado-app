@@ -1,8 +1,8 @@
 import { SocketContext } from "@/@types/socket";
 import emitToRoom from "@/socket/utils/emitToRoom";
 import { addMessage } from "./addMessage";
-import { SendMessagePayload } from "../payloads";
-import { CHANNEL } from "@/socket/channels";
+import { SendMessagePayload } from "shared/socket";
+import { CHANNEL } from "shared/socket";
 
 export async function SendMessageEventHandler(
   context: SocketContext<SendMessagePayload>

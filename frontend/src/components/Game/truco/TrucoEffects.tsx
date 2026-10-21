@@ -17,7 +17,7 @@ import type {
   TrucoEffect,
   XrayPeek,
 } from "@/hooks/game/useTrucoPresentation";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 import styles from "@/styles/TrucoEffects.module.scss";
 

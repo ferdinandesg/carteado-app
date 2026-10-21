@@ -1,7 +1,7 @@
 import ActionButton from "@/components/buttons/ActionButton";
 import { useGameStore } from "@/contexts/game.store";
 import { useGameActions } from "@/hooks/game/useGameActions";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 import { useTranslation } from "react-i18next";
 
 import GameActionPanel from "./GameActionPanel";

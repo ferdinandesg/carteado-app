@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import ActionButton from "@/components/buttons/ActionButton";
 import { useGameActions } from "@/hooks/game/useGameActions";
 import { useTrucoActionsState } from "@/hooks/game/useTrucoActionsState";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 import styles from "@/styles/Game.module.scss";
 import GameActionPanel from "./GameActionPanel";

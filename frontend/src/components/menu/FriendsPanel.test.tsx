@@ -6,7 +6,7 @@ import useFriends, { useIsRegisteredUser } from "@/hooks/friends/useFriends";
 import useFriendRequests from "@/hooks/friends/useFriendRequests";
 import useSearchUsers from "@/hooks/friends/useSearchUsers";
 import useFriendActions from "@/hooks/friends/useFriendActions";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 jest.mock("@/hooks/friends/useFriends", () => ({
   __esModule: true,

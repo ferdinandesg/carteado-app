@@ -1,17 +1,19 @@
 import type { Namespace } from "socket.io";
 import { GameStatus, TRUCO_BOT_DELAY_MS } from "shared/game";
 
-import { TrucoGame } from "../TrucoGameRules";
+import {
+  needsTrucoBotAction,
+  playTrucoBotStep,
+  TrucoGame,
+} from "shared/engine";
 import { getGameInstance, saveGameInstance } from "@/services/game.service";
 import { applyEndOfMatchRewards } from "@/services/rewards.service";
 import { finishRoom } from "@/services/room.service";
-import { CHANNEL } from "@/socket/channels";
+import { CHANNEL } from "shared/socket";
 import emitToRoom from "@/socket/utils/emitToRoom";
 import { emitGameToRoom } from "@/socket/utils/emitGameToRoom";
 import { logger } from "@/utils/logger";
 import { withRoomLock } from "@/lib/locks/withRoomLock";
-
-import { needsTrucoBotAction, playTrucoBotStep } from "./playTrucoBots";
 
 const timers = new Map<string, ReturnType<typeof setTimeout>>();
 

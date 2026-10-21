@@ -12,7 +12,7 @@ import {
   useRoomShell,
 } from "@/contexts/roomShell.context";
 import styles from "@/styles/Room.module.scss";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 type RoomShellProps = {
   participants: ReactNode;

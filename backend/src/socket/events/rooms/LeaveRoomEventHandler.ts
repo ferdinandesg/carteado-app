@@ -2,7 +2,7 @@ import { Namespace, Socket } from "socket.io";
 import { BaseSocketContext } from "@/@types/socket";
 import { atomicallyUpdateRoomState } from "@/lib/redis/room";
 import emitToRoom from "@/socket/utils/emitToRoom";
-import { CHANNEL } from "@/socket/channels";
+import { CHANNEL } from "shared/socket";
 import ErrorHandler from "@/utils/error.handler";
 import { socketLogger } from "@/utils/logContext";
 

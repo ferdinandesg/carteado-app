@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Card } from "shared/cards";
 
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 import TrickPile from "./TrickPile";
 

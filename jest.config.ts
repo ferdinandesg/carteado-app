@@ -20,14 +20,15 @@ const config: Config.InitialOptions = {
   ],
   coverageReporters: ["text-summary", "json-summary", "lcov"],
   // Ratchet: ~2 pontos abaixo do baseline medido. Só sobe; nunca baixar para passar o CI.
+  // (Fase 2: o motor saiu de backend/src para shared/engine; os números migraram juntos.)
   coverageThreshold: {
     global: {},
-    "./shared/": { statements: 75, branches: 72, functions: 74, lines: 76 },
+    "./shared/": { statements: 90, branches: 79, functions: 88, lines: 93 },
     "./backend/src/": {
-      statements: 73,
-      branches: 60,
-      functions: 68,
-      lines: 74,
+      statements: 66,
+      branches: 48,
+      functions: 57,
+      lines: 66,
     },
     "./frontend/src/": {
       statements: 59,

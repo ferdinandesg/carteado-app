@@ -1,9 +1,9 @@
 import { Socket } from "socket.io";
 import { ZodType } from "zod";
 import { BaseSocketContext } from "@/@types/socket";
-import { GameError } from "@/errors/GameError";
+import { GameError } from "shared/errors";
 import { GameActionResult } from "@/services/game.service";
-import { CHANNEL } from "@/socket/channels";
+import { CHANNEL } from "shared/socket";
 import emitToRoom from "@/socket/utils/emitToRoom";
 import { emitGameToRoom } from "@/socket/utils/emitGameToRoom";
 import emitToUser from "@/socket/utils/emitToUser";

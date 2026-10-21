@@ -4,7 +4,7 @@ import { registerRoomEvents } from "./rooms";
 import { registerCardEvents } from "./cards";
 import { registerChatEvents } from "./chat";
 import { registerSafeSocketEvent } from "./registerSafeSocketEvent";
-import { CHANNEL } from "@/socket/channels";
+import { CHANNEL } from "shared/socket";
 
 export function ConnectionEventHandler(
   socket: Socket,

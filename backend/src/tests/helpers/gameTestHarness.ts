@@ -1,20 +1,9 @@
-import Deck, { Card, Rank, Suit, RANK_TO_VALUE } from "shared/cards";
+import Deck, { Card, Rank, Suit, makeCard } from "shared/cards";
 import { BasePlayer, PlayerStatus } from "shared/game";
 
-/**
- * Cria uma carta real (mesmo shape do Deck), com value/secondaryValue
- * derivados de RANK_TO_VALUE — igual ao baralho de produção.
- */
+/** Carta real (mesmo shape do Deck de produção). */
 export function card(rank: Rank, suit: Suit, isHidden = false): Card {
-  const value = RANK_TO_VALUE[rank];
-  return {
-    rank,
-    suit,
-    value: Array.isArray(value) ? value[0] : value,
-    secondaryValue: Array.isArray(value) ? value[1] : null,
-    toString: `${rank} of ${suit}`,
-    isHidden,
-  };
+  return makeCard(rank, suit, { isHidden });
 }
 
 export function makePlayer(

@@ -8,7 +8,7 @@ import TextInput from "@/components/inputs/TextInput";
 import { useRoomShell } from "@/contexts/roomShell.context";
 import { useChatSocket } from "@/hooks/chat/useChatSocket";
 import styles from "@/styles/Chat.module.scss";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 import Message from "./message";
 

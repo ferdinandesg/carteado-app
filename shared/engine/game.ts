@@ -1,11 +1,6 @@
-import Deck, { Card } from "shared/cards";
+import Deck, { Card } from "../cards";
 import { IGameRules } from "./IGameRules";
-import {
-  BasePlayer,
-  GameRuleNames,
-  GameStatus,
-  PlayerStatus,
-} from "shared/game";
+import { BasePlayer, GameRuleNames, GameStatus, PlayerStatus } from "../game";
 
 export class Game<
   G extends Game<G, R, P>,

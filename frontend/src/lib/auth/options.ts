@@ -2,7 +2,7 @@ import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import type { User } from "next-auth";
-import { UserRole } from "shared/types";
+import { SESSION_TTL_SEC, UserRole } from "shared/types";
 import type { UserSession } from "@/models/Users";
 import {
   fetchCurrentAuthProfile,
@@ -12,7 +12,6 @@ import {
 import type { AuthApiResponse, AuthProfileResponse } from "@/lib/auth/types";
 import logger from "@/lib/logger";
 
-const THIRTY_DAYS_SEC = 30 * 24 * 60 * 60;
 const PROFILE_REFRESH_INTERVAL_MS = 60 * 1000;
 
 function mapAuthToJwt(
@@ -59,7 +58,7 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
-    maxAge: THIRTY_DAYS_SEC,
+    maxAge: SESSION_TTL_SEC,
   },
   providers: [
     Credentials({

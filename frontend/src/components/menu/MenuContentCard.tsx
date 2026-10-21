@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import classNames from "classnames";
 
 import styles from "@/styles/Menu.module.scss";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 export type MenuTab = {
   label: string;

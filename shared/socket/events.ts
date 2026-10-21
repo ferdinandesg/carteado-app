@@ -1,4 +1,4 @@
-import { IGameState, PowerPrivateResult } from "shared/game";
+import { IGameState, PowerPrivateResult, UsePowerPayload } from "shared/game";
 import { RoomInterface } from "../types/room";
 import {
   ChatMessage,
@@ -20,6 +20,7 @@ export interface ServerToClientEvents {
   room_updated: (room: RoomInterface) => void;
   room_joined: (payload: { room: RoomInterface }) => void;
   user_joined: (payload: SystemNoticePayload) => void;
+  user_left: (payload: SystemNoticePayload) => void;
   player_joined: (payload: SystemNoticePayload) => void;
   join_chat: (payload: ChatMessage) => void;
   load_messages: (messages: ChatMessage[]) => void;
@@ -42,6 +43,7 @@ export interface ClientToServerEvents {
   ask_truco: () => void;
   accept_truco: () => void;
   reject_truco: () => void;
+  use_power: (payload: UsePowerPayload) => void;
   join_chat: (payload: JoinChatPayload) => void;
   send_message: (payload: SendMessagePayload) => void;
 }

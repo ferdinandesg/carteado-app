@@ -1,6 +1,6 @@
-import { findLastCardIndex } from "shared/cards";
-import { findGravediggerCandidates, pickRandom, PowerId } from "shared/game";
-import { GameError } from "@/errors/GameError";
+import { findLastCardIndex } from "../../../cards";
+import { findGravediggerCandidates, pickRandom, PowerId } from "../../../game";
+import { GameError } from "../../../errors/GameError";
 import type { TrucoGame } from "../../TrucoGameRules";
 import { PowerContext, PowerResult, PowerStrategy } from "../PowerStrategy";
 

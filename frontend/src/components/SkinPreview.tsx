@@ -1,4 +1,4 @@
-import { Card, RANK_TO_VALUE, type Rank, type Value } from "shared/cards";
+import { Card, makeCard, type Rank } from "shared/cards";
 
 import CardFan from "@/components/CardFan";
 import {
@@ -12,13 +12,9 @@ import styles from "@/styles/SkinPreview.module.scss";
 const ROYALTY_RANKS: Rank[] = ["J", "Q", "K"];
 
 /** Realeza de paus: as três cartas que melhor mostram a arte de um baralho. */
-export const SKIN_PREVIEW_CARDS: Card[] = ROYALTY_RANKS.map((rank) => ({
-  rank,
-  suit: "clubs",
-  value: RANK_TO_VALUE[rank] as Value,
-  secondaryValue: null,
-  toString: `${rank} of clubs`,
-}));
+export const SKIN_PREVIEW_CARDS: Card[] = ROYALTY_RANKS.map((rank) =>
+  makeCard(rank, "clubs")
+);
 
 type SkinPreviewProps = {
   skin: string;

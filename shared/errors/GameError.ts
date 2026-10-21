@@ -52,6 +52,10 @@ const httpStatusMap: Partial<Record<GameErrorCode, number>> = {
   INTERNAL: 500,
 };
 
+type V8ErrorConstructor = ErrorConstructor & {
+  captureStackTrace?: (target: object, constructorOpt?: unknown) => void;
+};
+
 export class GameError extends Error {
   public readonly code: GameErrorCode;
   public readonly httpStatus: number;
@@ -66,7 +70,8 @@ export class GameError extends Error {
     this.meta = meta;
     this.cause = cause;
     this.httpStatus = options.httpStatus || httpStatusMap[code] || 500;
-    Error.captureStackTrace?.(this, GameError);
+    // Extensão do V8 (Node/Chrome); ausente em outros browsers.
+    (Error as V8ErrorConstructor).captureStackTrace?.(this, GameError);
   }
 
   toJSON() {

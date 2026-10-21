@@ -1,10 +1,10 @@
 import { Namespace, Socket } from "socket.io";
-import { CHANNEL } from "@/socket/channels";
+import { CHANNEL } from "shared/socket";
 import { JoinChatEventHandler } from "./JoinChatEventHandler";
 import { SendMessageEventHandler } from "./SendMessageEventHandler";
 import { SocketContext } from "@/@types/socket";
 import { registerSafeSocketEvent } from "../registerSafeSocketEvent";
-import { JoinChatPayload, SendMessagePayload } from "../payloads";
+import { JoinChatPayload, SendMessagePayload } from "shared/socket";
 
 export function registerChatEvents(socket: Socket, channel: Namespace): void {
   const context: Omit<SocketContext, "payload"> = { socket, channel };

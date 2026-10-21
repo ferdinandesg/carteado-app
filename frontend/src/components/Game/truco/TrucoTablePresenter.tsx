@@ -16,7 +16,7 @@ import type {
 } from "@/hooks/game/useTrucoPresentation";
 import { TIMINGS } from "@/hooks/game/useTrucoPresentation";
 import { getPileTransform } from "@/lib/cards/pileLayout";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 import styles from "@/styles/TrucoTable.module.scss";
 

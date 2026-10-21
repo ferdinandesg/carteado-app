@@ -1,6 +1,5 @@
 import prisma from "@/prisma";
-import { TrucoGame } from "@/game/TrucoGameRules";
-import { CarteadoGame } from "@/game/CarteadoGameRules";
+import { CarteadoGame, TrucoGame } from "shared/engine";
 import { GameStatus } from "shared/game";
 import { logger } from "@/utils/logger";
 

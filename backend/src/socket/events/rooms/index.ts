@@ -1,12 +1,12 @@
 import { Namespace, Socket } from "socket.io";
-import { CHANNEL } from "@/socket/channels";
+import { CHANNEL } from "shared/socket";
 import { JoinRoomEventHandler } from "./JoinRoomEventHandler";
 import { LeaveRoomEventHandler } from "./LeaveRoomEventHandler";
 import { SetPlayerStatusEventHandler } from "./SetPlayerReadyEventHandler";
 import { StartGameEventHandler } from "./StartGameEventHandler";
 import { BaseSocketContext } from "@/@types/socket";
 import { registerSafeSocketEvent } from "../registerSafeSocketEvent";
-import { JoinRoomPayload, SetPlayerStatusPayload } from "../payloads";
+import { JoinRoomPayload, SetPlayerStatusPayload } from "shared/socket";
 
 export function registerRoomEvents(socket: Socket, channel: Namespace): void {
   const context: BaseSocketContext = { socket, channel };

@@ -1,0 +1,304 @@
+import { Card } from "../cards";
+import { IGameRules } from "./IGameRules";
+import { Errors } from "../errors/GameError";
+import { Game } from "./game";
+import { BasePlayer, GameStatus, PlayerStatus } from "../game";
+
+export class CarteadoGame extends Game<
+  CarteadoGame,
+  ICarteadoGameRules,
+  BasePlayer
+> {
+  public type = "CARTEADO";
+  constructor(players: BasePlayer[]) {
+    const rules = new CarteadoGameRules();
+    super(players, rules, "CarteadoGameRules");
+  }
+}
+
+export type ICarteadoGameRules = IGameRules<CarteadoGame> & {
+  isSpecialCard(game: CarteadoGame, player: BasePlayer, card?: Card): boolean;
+  applySpecialCardRules(game: CarteadoGame, player: BasePlayer): void;
+  drawCards(game: CarteadoGame, player: BasePlayer): void;
+  pickUpBunch(game: CarteadoGame, userId: string): void;
+  undoPlay(game: CarteadoGame, userId: string): void;
+  pickHand(game: CarteadoGame, userId: string, cards: Card[]): void;
+  addHiddenCardToHand(player: BasePlayer, card: Card): void;
+};
+
+export class CarteadoGameRules implements ICarteadoGameRules {
+  dealInitialHands(game: CarteadoGame) {
+    game.status = GameStatus.PLAYING;
+    game.players.forEach((p) => {
+      p.status = PlayerStatus.CHOOSING;
+      p.playedCards = [];
+      p.table = [];
+      p.hand = game.deck.giveTableCards();
+    });
+  }
+
+  private isRankTwoOrTen(card: Card): boolean {
+    return card.rank === "2" || card.rank === "10";
+  }
+
+  private isLastFourSameRank(game: CarteadoGame): boolean {
+    if (game.bunch.length < 4) return false;
+    const lastFour = game.bunch.slice(-4);
+    return lastFour.every((x) => x.rank === lastFour[0].rank);
+  }
+
+  private isHiddenAndEmpty(card: Card, player: BasePlayer): boolean {
+    return Boolean(card.isHidden && player.hand.length === 0);
+  }
+
+  isSpecialCard(game: CarteadoGame, player: BasePlayer, card?: Card): boolean {
+    if (!card) return false;
+    return (
+      this.isRankTwoOrTen(card) ||
+      this.isLastFourSameRank(game) ||
+      this.isHiddenAndEmpty(card, player)
+    );
+  }
+
+  canPlayCard(game: CarteadoGame, userId: string, card: Card) {
+    const foundPlayer = game.getPlayer(userId);
+    if (!foundPlayer) throw Errors.playerNotInRoom({ userId });
+
+    if (card.isHidden && foundPlayer.hand.length > 0) {
+      throw Errors.invariant("CANT_PLAY_HIDDEN_YET");
+    }
+
+    if (game.players.some((p) => p.status === PlayerStatus.CHOOSING)) {
+      throw Errors.invariant("PLAYERS_NOT_READY");
+    }
+
+    const lastThree = game.bunch.slice(-3);
+    if (
+      lastThree.length === 3 &&
+      lastThree.every((x) => x.rank === card.rank)
+    ) {
+      return foundPlayer;
+    }
+
+    if (foundPlayer.userId !== game.playerTurn)
+      throw Errors.conflict("NOT_YOUR_TURN");
+
+    return foundPlayer;
+  }
+
+  private skipTurnsForTwos(game: CarteadoGame, player: BasePlayer) {
+    const twosCount = player.playedCards.filter((x) => x.rank === "2").length;
+    if (twosCount > 0) {
+      game.skipTurns(player.userId, twosCount + 1);
+      return;
+    }
+    game.skipTurns(game.playerTurn, 1);
+  }
+
+  private removeBunchAfterTen(game: CarteadoGame) {
+    const lastTenIndex = game.bunch.map((b) => b.rank).lastIndexOf("10");
+    if (lastTenIndex > -1) {
+      game.bunch = game.bunch.slice(lastTenIndex + 1);
+    }
+  }
+
+  private removeFourOfAKind(game: CarteadoGame) {
+    // Itera pelo monte procurando o início de uma sequência de 4 cartas
+    // O loop vai até o 4º último item, pois não há como formar uma sequência depois disso
+    for (let i = 0; i <= game.bunch.length - 4; i++) {
+      const sequence = game.bunch.slice(i, i + 4);
+      const isFourOfAKind = sequence.every(
+        (card) => card.rank === sequence[0].rank
+      );
+
+      if (isFourOfAKind) {
+        game.bunch = game.bunch.slice(i + 4);
+        return;
+      }
+    }
+  }
+
+  applySpecialCardRules(game: CarteadoGame, player: BasePlayer) {
+    this.skipTurnsForTwos(game, player);
+    this.removeBunchAfterTen(game);
+    this.removeFourOfAKind(game);
+  }
+
+  private validatePlayCard(
+    game: CarteadoGame,
+    player: BasePlayer,
+    card: Card,
+    lastCard?: Card
+  ) {
+    const hasSpecialCard =
+      this.isSpecialCard(game, player, lastCard) ||
+      this.isSpecialCard(game, player, card);
+
+    if (lastCard && !hasSpecialCard) {
+      if (lastCard.value > card.value) {
+        throw Errors.invariant("LOWER_RANK");
+      }
+      if (lastCard.rank !== card.rank && player.playedCards.length > 0) {
+        throw Errors.invariant("DIFFERENT_CARD");
+      }
+    }
+  }
+
+  private executePlayCard(game: CarteadoGame, player: BasePlayer, card: Card) {
+    card.isHidden = false;
+    game.bunch.push(card);
+
+    player.table = player.table.filter((x) => x.toString !== card.toString);
+    player.hand = player.hand.filter((x) => x.toString !== card.toString);
+
+    player.playedCards.push(card);
+  }
+
+  applyPlayCard(game: CarteadoGame, userId: string, card: Card) {
+    this.canPlayCard(game, userId, card);
+
+    const player = game.getPlayer(userId)!;
+    const lastCard = game.bunch.at(-1);
+
+    this.validatePlayCard(game, player, card, lastCard);
+
+    // 3. Verifica se o jogador POSSUI a carta e a remove (isso resolve a Falha 2)
+    const cardInHandIndex = player.hand.findIndex(
+      (c) => c.toString === card.toString
+    );
+    const cardOnTableIndex = player.table.findIndex(
+      (c) => c.toString === card.toString
+    );
+
+    if (cardInHandIndex !== -1) {
+      player.hand.splice(cardInHandIndex, 1);
+    } else if (cardOnTableIndex !== -1) {
+      player.table.splice(cardOnTableIndex, 1);
+    } else {
+      // Lança o erro que o teste esperava
+      throw Errors.invariant("CARD_NOT_FOUND");
+    }
+
+    // 4. Se tudo passou, executa a jogada
+    card.isHidden = false;
+    game.bunch.push(card);
+    player.playedCards.push(card);
+  }
+
+  addHiddenCardToHand(player: BasePlayer, card: Card) {
+    card.isHidden = false;
+    player.hand.push(card);
+    player.table = player.table.filter((x) => x.toString !== card.toString);
+  }
+
+  validateEndTurn() {
+    // Neste caso não faz nada
+    return;
+  }
+
+  public drawCards(game: CarteadoGame, player: BasePlayer) {
+    if (player.hand.length > 3) return;
+    const gameHasCards = game.deck.getCards().length > 0;
+
+    while (player.hand.length < 3 && gameHasCards) {
+      const draweeCard = game.deck.draw();
+      if (!draweeCard) return;
+      draweeCard.isHidden = false;
+      player.hand.push(draweeCard);
+    }
+
+    if (player.hand.length === 0 && !gameHasCards) {
+      player.hand = player.table.filter((x) => !x.isHidden);
+      player.table = player.table.filter((x) => x.isHidden);
+    }
+  }
+
+  public pickUpBunch(game: CarteadoGame, userId: string) {
+    const foundPlayer = game.getPlayer(userId);
+    if (!foundPlayer) throw Errors.playerNotInRoom({ userId });
+    if (userId !== game.playerTurn) throw Errors.conflict("NOT_YOUR_TURN");
+
+    game.bunch.forEach((card) => foundPlayer.hand.push(card));
+    foundPlayer.playedCards = [];
+    game.bunch = [];
+  }
+
+  public undoPlay(game: CarteadoGame, userId: string) {
+    if (userId !== game.playerTurn) throw Errors.conflict("NOT_YOUR_TURN");
+    const foundPlayer = game.getPlayer(userId);
+    if (!foundPlayer) throw Errors.playerNotInRoom({ userId });
+    if (!foundPlayer.playedCards.length)
+      throw Errors.invariant("MUST_PLAY_FIRST");
+
+    foundPlayer.hand.push(...foundPlayer.playedCards);
+
+    game.bunch = game.bunch.filter((x) =>
+      foundPlayer.playedCards.every((y) => y.toString !== x.toString)
+    );
+    foundPlayer.playedCards = [];
+  }
+
+  public pickHand(game: CarteadoGame, userId: string, cards: Card[]) {
+    const foundPlayer = game.getPlayer(userId);
+    if (!foundPlayer) throw Errors.playerNotInRoom({ userId });
+    if (foundPlayer.status !== PlayerStatus.CHOOSING) {
+      throw Errors.invariant("HAND_ALREADY_PICKED");
+    }
+    if (cards.length !== 3) throw Errors.validation("INVALID_HAND_SIZE");
+
+    // Só aceita cartas que o servidor realmente distribuiu a este jogador.
+    const dealt = new Set(foundPlayer.hand.map((c) => c.toString));
+    const uniquePicked = new Set(cards.map((c) => c.toString));
+    if (
+      uniquePicked.size !== cards.length ||
+      cards.some((c) => !dealt.has(c.toString))
+    ) {
+      throw Errors.validation("CARD_NOT_FOUND");
+    }
+
+    foundPlayer.table = foundPlayer.hand.filter(
+      (c) => !cards.some((y) => c.toString === y.toString)
+    );
+    foundPlayer.hand = cards;
+    foundPlayer.status = PlayerStatus.WAITING;
+
+    // Fim da fase de escolha: quando o último jogador escolhe, todos ficam
+    // WAITING; libera então o jogador da vez para jogar.
+    const choosingPhaseDone = game.players.every(
+      (p) => p.status === PlayerStatus.WAITING
+    );
+    if (choosingPhaseDone) {
+      game.skipTurns(game.playerTurn, 0);
+    }
+  }
+
+  private clearPlayersPlays(game: CarteadoGame) {
+    game.players.forEach((p) => {
+      p.playedCards = [];
+    });
+  }
+
+  private checkGameFinished(game: CarteadoGame, player: BasePlayer) {
+    if (player.hand.length === 0 && player.table.length === 0) {
+      game.status = GameStatus.FINISHED;
+      game.playerTurn = player.userId;
+    }
+  }
+
+  applyEndTurn(game: CarteadoGame, userId: string) {
+    const player = game.getPlayer(userId);
+    if (!player) throw Errors.playerNotInRoom({ userId });
+
+    if (player.playedCards.length === 0) {
+      throw Errors.invariant("MUST_PLAY_FIRST");
+    }
+
+    this.applySpecialCardRules(game, player);
+
+    this.clearPlayersPlays(game);
+
+    this.drawCards(game, player);
+
+    this.checkGameFinished(game, player);
+  }
+}

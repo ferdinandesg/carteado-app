@@ -6,7 +6,7 @@ const EnvSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
     .default("development"),
-  PORT: z.coerce.number().int().positive().default(3001),
+  PORT: z.coerce.number().int().positive().default(4000),
   REDIS_URL: z.string().optional(),
   DATABASE_URL: z.string().optional(),
   JWT_SECRET_KEY: z.string().min(4, "JWT_SECRET_KEY must be at least 4 chars"),

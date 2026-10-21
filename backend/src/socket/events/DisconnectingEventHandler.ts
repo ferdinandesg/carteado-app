@@ -1,7 +1,7 @@
 import { atomicallyUpdateRoomState } from "@/lib/redis/room";
 import { SocketContext } from "@/@types/socket";
 import emitToRoom from "@/socket/utils/emitToRoom";
-import { CHANNEL } from "@/socket/channels";
+import { CHANNEL } from "shared/socket";
 import { GameStatus, PlayerStatus } from "shared/game";
 import { socketLogger } from "@/utils/logContext";
 

@@ -1,4 +1,5 @@
-import { ALL_RANKS, ALL_SUITS, RANK_TO_VALUE } from "./constants";
+import { ALL_RANKS, ALL_SUITS } from "./constants";
+import { makeCard } from "./factory";
 import { Card } from "./types";
 
 class Deck {
@@ -21,14 +22,7 @@ class Deck {
 
     for (const suit of ALL_SUITS) {
       for (const rank of ALL_RANKS) {
-        const value = RANK_TO_VALUE[rank];
-        cards.push({
-          suit,
-          rank,
-          value: Array.isArray(value) ? value[0] : value,
-          secondaryValue: Array.isArray(value) ? value[1] : null,
-          toString: `${rank} of ${suit}`,
-        });
+        cards.push(makeCard(rank, suit));
       }
     }
     return cards;

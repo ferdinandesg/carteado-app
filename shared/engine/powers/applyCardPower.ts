@@ -1,10 +1,5 @@
-import { Card } from "shared/cards";
-import {
-  BasePlayer,
-  isPowerId,
-  pickRandom,
-  UsePowerPayload,
-} from "shared/game";
+import { Card } from "../../cards";
+import { BasePlayer, isPowerId, pickRandom, UsePowerPayload } from "../../game";
 
 import type { TrucoGame } from "../TrucoGameRules";
 import { executePower, type PowerPolicy } from "./PowerExecutor";

@@ -1,0 +1,44 @@
+import { CHANNEL } from "./channels";
+
+// Contrato com clientes já carregados em produção: renomear um evento quebra
+// quem não recarregou a página. Mudar este teste exige decisão explícita.
+describe("socket CHANNEL contract", () => {
+  it("keeps every event name stable", () => {
+    expect(CHANNEL).toEqual({
+      SERVER: {
+        CONNECTION: "connection",
+        DISCONNECTING: "disconnecting",
+        ERROR: "error",
+        GAME_UPDATED: "game_updated",
+        INFO: "info",
+        JOIN_CHAT: "join_chat",
+        LOAD_MESSAGES: "load_messages",
+        PLAYER_JOINED: "player_joined",
+        POWER_RESULT: "power_result",
+        RECEIVE_MESSAGE: "receive_message",
+        ROOM_JOINED: "room_joined",
+        ROOM_UPDATED: "room_updated",
+        USER_JOINED: "user_joined",
+        USER_LEFT: "user_left",
+      },
+      CLIENT: {
+        ACCEPT_TRUCO: "accept_truco",
+        ASK_TRUCO: "ask_truco",
+        CONNECTION: "connection",
+        DRAW_TABLE: "draw_table",
+        END_TURN: "end_turn",
+        JOIN_ROOM: "join_room",
+        LEAVE_ROOM: "quit",
+        PICK_HAND: "pick_hand",
+        PLAY_CARD: "play_card",
+        REJECT_TRUCO: "reject_truco",
+        RETRIEVE_CARD: "retrieve_card",
+        START_GAME: "start_game",
+        JOIN_CHAT: "join_chat",
+        SEND_MESSAGE: "send_message",
+        SET_PLAYER_STATUS: "set_player_status",
+        USE_POWER: "use_power",
+      },
+    });
+  });
+});

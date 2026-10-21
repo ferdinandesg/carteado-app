@@ -5,8 +5,10 @@ import RedisClass from "@/lib/redis/client";
 import { env } from "./config/env";
 import { logger } from "./utils/logger";
 import { SocketServer } from "@/socket/socket";
+import { expireRoomByHash } from "@/services/room.service";
 
 async function bootstrap() {
+  RedisClass.onRoomExpired(expireRoomByHash);
   await RedisClass.getDataClient();
 
   const httpServer = http.createServer(app);

@@ -1,4 +1,4 @@
-import { Card, RANK_TO_VALUE, type Rank, type Suit } from "../../cards";
+import { Card, cardValues, type Rank, type Suit } from "../../cards";
 import type { ITrucoGameState } from "../game.types";
 import { areTeammates } from "./teams";
 
@@ -9,7 +9,7 @@ export const ILLUSION_SUIT: Suit = "clubs";
 export function disguiseAsZap(card: Card, manilha: string): void {
   if (card.illusionReal || !manilha) return;
   const rank = manilha as Rank;
-  const value = RANK_TO_VALUE[rank];
+  const { value, secondaryValue } = cardValues(rank);
   card.illusionReal = {
     rank: card.rank,
     suit: card.suit,
@@ -18,8 +18,8 @@ export function disguiseAsZap(card: Card, manilha: string): void {
   card.rank = rank;
   card.suit = ILLUSION_SUIT;
   card.toString = `${rank} of ${ILLUSION_SUIT}`;
-  card.value = Array.isArray(value) ? value[0] : value;
-  card.secondaryValue = Array.isArray(value) ? value[1] : null;
+  card.value = value;
+  card.secondaryValue = secondaryValue;
 }
 
 /** Desfaz o disfarce (revelação no fim da vaza). Muta `card`. */

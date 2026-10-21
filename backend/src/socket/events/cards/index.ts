@@ -1,5 +1,5 @@
 import { Namespace, Socket } from "socket.io";
-import { CHANNEL } from "@/socket/channels";
+import { CHANNEL } from "shared/socket";
 import { BaseSocketContext } from "@/@types/socket";
 import { AcceptTrucoEventHandler } from "./AcceptTrucoEventHandler";
 import { AskTrucoEventHandler } from "./AskTrucoEventHandler";
@@ -11,7 +11,8 @@ import { RetrieveCardEventHandler } from "./RetrieveCardEventHandler";
 import { UsePowerEventHandler } from "./UsePowerEventHandler";
 import { EndTurnEventHandler } from "../EndTurnEventHandler";
 import { registerSafeSocketEvent } from "../registerSafeSocketEvent";
-import { PickHandPayload, PlayCardPayload, UsePowerPayload } from "../payloads";
+import { PickHandPayload, PlayCardPayload } from "shared/socket";
+import { UsePowerPayload } from "shared/game";
 
 export function registerCardEvents(socket: Socket, channel: Namespace): void {
   const context: BaseSocketContext = { socket, channel };

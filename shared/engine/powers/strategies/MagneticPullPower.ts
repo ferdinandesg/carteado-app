@@ -1,6 +1,6 @@
-import { Card, getCardValue } from "shared/cards";
-import { ActiveEffect, PowerId } from "shared/game";
-import { GameError } from "@/errors/GameError";
+import { Card, getCardValue } from "../../../cards";
+import { ActiveEffect, PowerId } from "../../../game";
+import { GameError } from "../../../errors/GameError";
 import type { TrucoGame } from "../../TrucoGameRules";
 import type {
   PowerContext,

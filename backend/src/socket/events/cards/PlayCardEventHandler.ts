@@ -3,7 +3,7 @@ import { SocketContext } from "@/@types/socket";
 import { playCard } from "@/services/game.service";
 import { playCardSchema } from "@/schemas/socket.schemas";
 import { handleGameAction, parsePayload } from "../handleGameAction";
-import { PlayCardPayload } from "../payloads";
+import { PlayCardPayload } from "shared/socket";
 
 export function PlayCardEventHandler(
   context: SocketContext<PlayCardPayload>

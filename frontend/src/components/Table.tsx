@@ -13,7 +13,7 @@ import {
 import { resolveTableSeats, type SeatSlot } from "@/lib/game/tableLayout";
 import { getTeamRelation, resolveTeamId } from "@/lib/game/teamRelation";
 import styles from "@/styles/Table.module.scss";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 import GameBoard from "./game.board";
 

@@ -8,7 +8,7 @@ import { SeatAnchorProvider } from "@/hooks/game/useSeatAnchors";
 import { useTrucoPresentation } from "@/hooks/game/useTrucoPresentation";
 import { useTypedGame } from "@/hooks/useTypedGame";
 import styles from "@/styles/Game.module.scss";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 import CardFan from "../CardFan";
 import Table from "../Table";

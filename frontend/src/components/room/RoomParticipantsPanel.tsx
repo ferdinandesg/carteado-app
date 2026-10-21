@@ -9,7 +9,7 @@ import { useGameStore } from "@/contexts/game.store";
 import { useRoomContext } from "@/contexts/room.context";
 import { useLeaveRoom } from "@/hooks/rooms/useLeaveRoom";
 import { buildParticipantViews } from "@/lib/room/participantDisplayStatus";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 import ParticipantListItem from "./ParticipantListItem";
 import styles from "@/styles/RoomParticipantsPanel.module.scss";

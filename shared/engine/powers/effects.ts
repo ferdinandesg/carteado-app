@@ -1,7 +1,6 @@
-import { randomUUID } from "node:crypto";
-import type { Card } from "shared/cards";
-import type { ActiveEffect, PowerId } from "shared/game";
-import type { Team } from "shared/types";
+import type { Card } from "../../cards";
+import type { ActiveEffect, PowerId } from "../../game";
+import type { Team } from "../../types";
 import type { TrucoGame } from "../TrucoGameRules";
 import { getPowerStrategy } from "./powerRegistry";
 
@@ -12,7 +11,8 @@ export function addEffect(
   targetUserId: string
 ): ActiveEffect {
   const effect: ActiveEffect = {
-    id: randomUUID(),
+    // Web Crypto global: existe no Node 24 e no browser (motor isomórfico).
+    id: globalThis.crypto.randomUUID(),
     powerId,
     sourceUserId,
     targetUserId,

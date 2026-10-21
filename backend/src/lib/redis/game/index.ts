@@ -1,7 +1,5 @@
-import { GameFactory } from "game/GameFactory";
+import { CarteadoGame, GameFactory, TrucoGame } from "shared/engine";
 import RedisClass from "@/lib/redis/client";
-import { TrucoGame } from "game/TrucoGameRules";
-import { CarteadoGame } from "game/CarteadoGameRules";
 import { logger } from "@/utils/logger";
 import { ICarteadoGameState, ITrucoGameState } from "shared/game";
 import { REDIS_KEYS, REDIS_TTL } from "@/config/redis";

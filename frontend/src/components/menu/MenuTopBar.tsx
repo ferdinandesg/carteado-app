@@ -4,7 +4,7 @@ import { Coins, Plus, Settings, ShoppingBag, Users } from "lucide-react";
 
 import styles from "@/styles/Menu.module.scss";
 import ActionButton from "../buttons/ActionButton";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 import { useTranslation } from "react-i18next";
 
 type MenuTopBarProps = {

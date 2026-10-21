@@ -4,7 +4,7 @@ import { act, render, screen, waitFor } from "@testing-library/react";
 import { ITrucoGameState, PowerId } from "shared/game";
 
 import { useGameStore } from "@/contexts/game.store";
-import { testIds } from "@/tests/testIds";
+import { testIds } from "@/lib/testIds";
 
 import TrucoGame from "./truco.game";
 
