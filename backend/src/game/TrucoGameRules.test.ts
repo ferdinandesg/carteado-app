@@ -119,7 +119,7 @@ describe("TrucoGameRules", () => {
 
       // Act & Assert
       expect(() => {
-        rules.canPlayCard(game, "p2");
+        rules.canPlayCard(game, "p2", card("4", "hearts"));
       }).toThrow();
     });
   });

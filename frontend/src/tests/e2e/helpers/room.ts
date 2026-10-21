@@ -25,6 +25,16 @@ export async function createRoom(
   await expect(page).toHaveURL(/\/room\/\w+/);
 }
 
+/** Login de convidado (usado pelo `auth.setup.ts` e por contextos extras). */
+export async function loginAsGuest(page: Page, name: string) {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Entrar como convidado" }).click();
+  await page.getByTestId("guest-name-input").fill(name);
+  await page.getByRole("button", { name: "Avatar 1" }).click();
+  await page.getByRole("button", { name: "Aplicar" }).click();
+  await expect(page).toHaveURL(/\/menu/);
+}
+
 export async function markReady(page: Page) {
   await page.getByTestId(testIds.lobby.ready).click();
 }

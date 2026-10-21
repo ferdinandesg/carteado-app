@@ -7,29 +7,26 @@ jest.mock("@/lib/redis/client", () => ({
 }));
 describe("Socket Class", () => {
   const { getPort } = socketTestSetup();
-  it("should connect to socket.io and authenticate", (done) => {
+  it("should connect to socket.io and authenticate", async () => {
     const port = getPort();
     const socket = createTestSocket("valid-token", port);
 
-    socket.on("connect", () => {
-      expect(socket.connected).toBe(true);
-      done();
-      closeSockets(socket);
-    });
+    await new Promise<void>((resolve) => socket.on("connect", resolve));
+    expect(socket.connected).toBe(true);
+    closeSockets(socket);
   });
 
-  it("should reject socket connection if authentication fails", (done) => {
+  it("should reject socket connection if authentication fails", async () => {
     const port = getPort();
     const socket = createTestSocket("empty-token", port);
 
-    socket.on("connect_error", (err) => {
-      expect(err.message).toBe("Unauthorized");
-      closeSockets(socket);
-      done();
+    const err = await new Promise<Error>((resolve, reject) => {
+      socket.on("connect_error", resolve);
+      socket.on("connect", () =>
+        reject(new Error("Connection should have failed"))
+      );
     });
-
-    socket.on("connect", () => {
-      done.fail("Connection should have failed");
-    });
+    expect(err.message).toBe("Unauthorized");
+    closeSockets(socket);
   });
 });

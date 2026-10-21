@@ -4,21 +4,17 @@ import tseslint from "typescript-eslint";
 import eslintConfigPrettier from "eslint-config-prettier";
 import jestPlugin from "eslint-plugin-jest";
 
+const TEST_FILES = ["**/*.test.ts", "**/*.spec.ts", "**/tests/**/*.ts"];
+
 export default tseslint.config(
   {
-    ignores: [
-      "**/dist/**",
-      "**/node_modules/**",
-      "**/coverage/**",
-      "**/*.test.ts",
-      "**/*.spec.ts",
-      "**/tests/**",
-    ],
+    ignores: ["**/dist/**", "**/node_modules/**", "**/coverage/**"],
   },
   js.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
   {
     files: ["backend/src/**/*.ts", "shared/**/*.ts"],
+    ignores: TEST_FILES,
+    extends: [...tseslint.configs.recommendedTypeChecked],
     plugins: { jest: jestPlugin },
     languageOptions: {
       parserOptions: {
@@ -44,6 +40,25 @@ export default tseslint.config(
       ],
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/explicit-module-boundary-types": "off",
+    },
+  },
+  // Testes: sem type-check (mocks usam `any` e `!` de propósito), mas com regras do Jest.
+  {
+    files: TEST_FILES,
+    extends: [
+      ...tseslint.configs.recommended,
+      jestPlugin.configs["flat/recommended"],
+    ],
+    languageOptions: {
+      globals: { ...globals.node, ...globals.jest },
+    },
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
     },
   },
   eslintConfigPrettier

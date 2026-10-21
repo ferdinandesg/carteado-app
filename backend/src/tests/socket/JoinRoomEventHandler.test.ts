@@ -1,13 +1,15 @@
 import { socketTestSetup } from "./socket.setup";
-import { getRoomState } from "@/lib/redis/room";
-import { getGameState } from "@/lib/redis/game";
-import { closeSockets, createTestSocket } from "./utils";
+import { atomicallyUpdateRoomState } from "@/lib/redis/room";
+import { closeSockets, createTestSocket, waitForEvent } from "./utils";
 
 jest.mock("@/lib/redis/game", () => ({
   getGameState: jest.fn(),
 }));
 
-const mockRoomState = { participants: [] as object[] };
+const mockRoomState = {
+  status: "open",
+  participants: [] as object[],
+};
 jest.mock("@/lib/redis/room", () => ({
   getRoomState: jest.fn().mockResolvedValue({
     hash: "room-test",
@@ -23,7 +25,7 @@ jest.mock("@/lib/redis/room", () => ({
       async (roomHash: string, updateFn: (r: object) => object | null) => {
         const baseRoom = {
           hash: roomHash,
-          status: "open",
+          status: mockRoomState.status,
           size: 2,
           spectators: [] as object[],
           participants: [...mockRoomState.participants],
@@ -41,135 +43,92 @@ describe("JoinRoomEventHandler - integration", () => {
   const { getPort } = socketTestSetup();
 
   beforeEach(() => {
+    mockRoomState.status = "open";
     mockRoomState.participants = [];
   });
 
-  it("user should be able to join room", (done) => {
+  it("user should be able to join room", async () => {
     const port = getPort();
     const socket = createTestSocket("valid-token", port);
 
-    socket.on("room_updated", (room) => {
-      try {
-        const players = room.players ?? room.participants ?? [];
-        expect(players.length).toBe(1);
-        expect(players[0]).toMatchObject({
-          userId: "valid-token",
-          name: "valid-token",
-        });
-        done();
-      } catch (err) {
-        done(err);
-      } finally {
-        socket.close();
-      }
+    const room = await new Promise<any>((resolve) => {
+      socket.on("room_updated", resolve);
+      socket.on("connect", () => {
+        socket.emit("join_room", { roomHash: "room-test" });
+      });
     });
-    socket.on("connect", () => {
-      socket.emit("join_room", { roomHash: "room-test" });
+    closeSockets(socket);
+
+    const players = room.players ?? room.participants ?? [];
+    expect(players.length).toBe(1);
+    expect(players[0]).toMatchObject({
+      userId: "valid-token",
+      name: "valid-token",
     });
   });
-  it("should return error if room is full", (done) => {
+
+  it("should return error if room is full", async () => {
     const port = getPort();
     const socketA = createTestSocket("userA-valid-token", port);
     const socketB = createTestSocket("userB-valid-token", port);
     const socketC = createTestSocket("userC-valid-token", port);
 
-    socketA.on("connect", () => {
-      socketA.emit("join_room", { roomHash: "room-test" });
-    });
-    socketB.on("connect", () => {
-      socketB.emit("join_room", { roomHash: "room-test" });
-    });
-    socketC.on("connect", () => {
+    await Promise.all([
+      waitForEvent(socketA, "connect"),
+      waitForEvent(socketB, "connect"),
+      waitForEvent(socketC, "connect"),
+    ]);
+    socketA.emit("join_room", { roomHash: "room-test" });
+    await waitForEvent(socketA, "room_joined");
+    socketB.emit("join_room", { roomHash: "room-test" });
+    await waitForEvent(socketB, "room_joined");
+
+    const error = await new Promise<unknown>((resolve) => {
+      socketC.on("error", resolve);
       socketC.emit("join_room", { roomHash: "room-test" });
     });
-    socketC.on("error", (error) => {
-      try {
-        expect(error).toBe("ROOM_IS_FULL");
-        done();
-      } catch (err) {
-        done(err);
-      } finally {
-        closeSockets(socketA, socketB, socketC);
-      }
-    });
-  });
-  it.skip("should return error if room does not exist", (done) => {
-    (getRoomState as jest.Mock).mockResolvedValue(null);
-    const port = getPort();
-    const socket = createTestSocket("userA-valid-token", port);
+    closeSockets(socketA, socketB, socketC);
 
-    socket.on("connect", () => {
-      socket.emit("join_room", { roomHash: "room-test" });
-    });
-    socket.on("error", (error) => {
-      expect(error).toBe("ROOM_NOT_FOUND");
-      done();
-      closeSockets(socket);
-    });
+    expect(error).toBe("ROOM_IS_FULL");
   });
-  it.skip("should return same user to room if already in room", (done) => {
-    (getRoomState as jest.Mock).mockResolvedValue({
-      hash: "room-test",
-      status: "playing",
-      size: 2,
-      spectators: [],
-    });
-    (getGameState as jest.Mock).mockResolvedValue({
-      players: [
-        {
-          userId: "valid-token",
-        },
-      ],
-    });
+
+  it("should return error if a new user joins a room that is playing", async () => {
+    mockRoomState.status = "playing";
     const port = getPort();
     const socket = createTestSocket("valid-token", port);
-    socket.on("info", (message) => {
-      try {
-        expect(message).toBe("WELCOME_BACK");
-        done();
-      } catch (err) {
-        done(err);
-      } finally {
-        socket.close();
-      }
-    });
-    socket.on("connect", () => {
+    await waitForEvent(socket, "connect");
+
+    const error = await new Promise<unknown>((resolve) => {
+      socket.on("error", resolve);
       socket.emit("join_room", { roomHash: "room-test" });
     });
+    closeSockets(socket);
+
+    expect(error).toBe("ROOM_IS_PLAYING");
   });
 
-  it.skip("should add user to spectators if room is playing", (done) => {
-    (getRoomState as jest.Mock).mockResolvedValue({
-      hash: "room-test",
-      status: "playing",
-      size: 2,
-      spectators: [],
-    });
-    (getGameState as jest.Mock).mockResolvedValue({
-      players: [],
-    });
+  it("should put a returning participant back online without duplicating them", async () => {
+    mockRoomState.participants = [
+      {
+        userId: "valid-token",
+        name: "valid-token",
+        status: "ready",
+        isOnline: false,
+      },
+    ];
     const port = getPort();
     const socket = createTestSocket("valid-token", port);
+    await waitForEvent(socket, "connect");
 
-    socket.on("room_updated", (room) => {
-      try {
-        expect(room.spectators.length).toBe(1);
-        expect(room.spectators).toContainEqual({
-          id: "valid-token",
-          name: "valid-token",
-          email: "valid-token@test.com",
-          room: "room-test",
-          role: "user",
-        });
-        done();
-      } catch (err) {
-        done(err);
-      } finally {
-        socket.close();
-      }
-    });
-    socket.on("connect", () => {
-      socket.emit("join_room", { roomHash: "room-test" });
+    socket.emit("join_room", { roomHash: "room-test" });
+    const { room } = await waitForEvent<{ room: any }>(socket, "room_joined");
+    closeSockets(socket);
+
+    expect(atomicallyUpdateRoomState).toHaveBeenCalled();
+    expect(room.participants).toHaveLength(1);
+    expect(room.participants[0]).toMatchObject({
+      userId: "valid-token",
+      isOnline: true,
     });
   });
 });

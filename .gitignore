@@ -77,8 +77,10 @@ backend/.eslintcache
 *.log
 
 # Coverage e relatórios de testes
+/coverage/
 frontend/coverage/
 backend/coverage/
+shared/coverage/
 frontend/.nyc_output/
 backend/.nyc_output/
 frontend/junit.xml

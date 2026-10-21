@@ -3,12 +3,12 @@ name: CI-CD
 on:
   push:
     branches: ["master"]
-  # ADICIONE ESTAS DUAS LINHAS PARA PERMITIR O ACIONAMENTO MANUAL
   workflow_dispatch:
 
+# Deploys enfileiram: cancelar um em andamento pode deixar a VM com a stack pela metade.
 concurrency:
   group: production-deploy-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
   NODE_VERSION: 24.14.0
@@ -30,7 +30,7 @@ jobs:
       deploy: ${{ steps.filter.outputs.deploy }}
     steps:
       - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v2
+      - uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
@@ -59,8 +59,12 @@ jobs:
         run: npm ci
       - name: Generate Prisma Client
         run: npm run prisma:generate
+      - name: Build shared
+        run: npm run build:shared
       - name: Lint project
         run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
       - name: Run unit tests
         run: npm run test
 

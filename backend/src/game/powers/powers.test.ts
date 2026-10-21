@@ -6,7 +6,7 @@ import {
   PowerId,
   TRUCO_POWERS_PER_ROUND,
 } from "shared/game";
-import { TrucoGame } from "../TrucoGameRules";
+import { TrucoGame, TrucoGameRules } from "../TrucoGameRules";
 import { executePower } from "./PowerExecutor";
 
 const card = (rank: string, suit: string): Card =>
@@ -96,11 +96,11 @@ describe("Truco powers", () => {
         powerId: PowerId.X_RAY,
         targetUserId: "p2",
       });
-      expect(result.privateResult?.powerId).toBe(PowerId.X_RAY);
-      expect(result.privateResult?.targetUserId).toBe("p2");
-      expect(game.getPlayer("p2")!.hand).toContainEqual(
-        result.privateResult?.card
-      );
+      const privateResult = result.privateResult;
+      if (privateResult?.powerId !== PowerId.X_RAY)
+        throw new Error("expected an X_RAY private result");
+      expect(privateResult.targetUserId).toBe("p2");
+      expect(game.getPlayer("p2")!.hand).toContainEqual(privateResult.card);
       expect(game.pendingPrivateResult).toEqual(result.privateResult);
     });
   });
@@ -379,7 +379,7 @@ describe("Truco powers", () => {
       teamB.score = 4;
       game.rules.dealInitialHands = jest.fn();
 
-      game.rules.finishRound(game, teamA, 3);
+      (game.rules as TrucoGameRules).finishRound(game, teamA, 3);
 
       expect(teamA.score).toBe(4);
       expect(teamB.score).toBe(3);
@@ -391,7 +391,7 @@ describe("Truco powers", () => {
       const teamB = game.rules.findTeamByUserId(game, "p2")!;
       game.rules.dealInitialHands = jest.fn();
 
-      game.rules.finishRound(game, teamB, 3);
+      (game.rules as TrucoGameRules).finishRound(game, teamB, 3);
 
       expect(teamA.score).toBe(0);
       expect(teamB.score).toBe(3);

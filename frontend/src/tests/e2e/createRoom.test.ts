@@ -8,8 +8,8 @@ test.describe("Fluxo de Criação de Sala", () => {
   }) => {
     await createRoom(page, { name: "Sala teste" });
     await expect(page.getByText("Esperando jogadores...")).toBeVisible();
-    await expect(page.getByText("Não pronto")).toBeVisible();
+    await expect(page.getByText("Em espera", { exact: true })).toBeVisible();
     await markReady(page);
-    await expect(page.getByText("Pronto", { exact: true })).toBeVisible();
+    await expect(page.getByText("Pronto!", { exact: true })).toBeVisible();
   });
 });
