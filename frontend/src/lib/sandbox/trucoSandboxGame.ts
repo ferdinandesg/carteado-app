@@ -442,12 +442,17 @@ export function acceptSandboxTruco(
 }
 
 /** O time que não pediu corre; quem pediu leva a aposta anterior (ou 1 com Escudo). */
-export function rejectSandboxTruco(game: ITrucoGameState): ITrucoGameState {
+export function rejectSandboxTruco(
+  game: ITrucoGameState,
+  userId: string
+): ITrucoGameState {
   if (game.trucoState !== "PENDING" || !game.trucoAskerId) return game;
 
   const next = clone(game);
   const askingTeam = findTeamByUserId(next.teams, next.trucoAskerId!);
   if (!askingTeam) return game;
+  const rejectingTeam = findTeamByUserId(next.teams, userId);
+  if (!rejectingTeam || rejectingTeam.id === askingTeam.id) return game;
 
   const defendingHasShield = next.activeEffects.some(
     (effect) =>

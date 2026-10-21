@@ -16,6 +16,7 @@ import { logger } from "@/utils/logger";
 import { GameError } from "@/errors/GameError";
 import { applyEndOfMatchRewards } from "./rewards.service";
 import { finishRoom } from "./room.service";
+import { withRoomLock } from "@/lib/locks/withRoomLock";
 
 type GameInstance = TrucoGame | CarteadoGame;
 
@@ -57,7 +58,15 @@ export async function saveGameInstance(roomId: string, game: GameInstance) {
  * Caminho único de toda ação de jogo: carrega → valida o tipo → aplica →
  * recompensas → persiste → finaliza a sala se a partida terminou.
  */
-async function getAndRun<T extends GameInstance>(
+function getAndRun<T extends GameInstance>(
+  roomId: string,
+  gameTypeGuard: (game: GameInstance) => game is T,
+  action: (game: T) => void
+): Promise<GameActionResult<T>> {
+  return withRoomLock(roomId, () => runLocked(roomId, gameTypeGuard, action));
+}
+
+async function runLocked<T extends GameInstance>(
   roomId: string,
   gameTypeGuard: (game: GameInstance) => game is T,
   action: (game: T) => void
@@ -140,8 +149,10 @@ export function acceptTruco(roomId: string, userId: string) {
   );
 }
 
-export function rejectTruco(roomId: string) {
-  return getAndRun(roomId, isTrucoGame, (game) => game.rules.rejectTruco(game));
+export function rejectTruco(roomId: string, userId: string) {
+  return getAndRun(roomId, isTrucoGame, (game) =>
+    game.rules.rejectTruco(game, userId)
+  );
 }
 
 export async function usePower(

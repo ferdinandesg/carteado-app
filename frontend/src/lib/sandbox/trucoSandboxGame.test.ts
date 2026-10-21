@@ -238,7 +238,7 @@ describe("trucoSandboxGame", () => {
     const raised = askSandboxTruco(accepted, SANDBOX_BOT_ID);
     expect(raised.currentBet).toBe(6);
 
-    const rejected = rejectSandboxTruco(raised);
+    const rejected = rejectSandboxTruco(raised, SANDBOX_YOU_ID);
     const botTeam = rejected.teams.find((team) => team.id === "TEAM_B")!;
     expect(botTeam.score).toBe(1);
   });
@@ -256,9 +256,19 @@ describe("trucoSandboxGame", () => {
     };
 
     const asked = askSandboxTruco(almost, SANDBOX_YOU_ID);
-    const finished = rejectSandboxTruco(asked);
+    const finished = rejectSandboxTruco(asked, SANDBOX_BOT_ID);
 
     expect(finished.status).toBe(GameStatus.FINISHED);
     expect(finished.teams.find((team) => team.id === "TEAM_A")?.score).toBe(12);
+  });
+
+  it("ignores a reject coming from the asking team", () => {
+    const base = withHands(
+      [makeSandboxCard("4", "clubs")],
+      [makeSandboxCard("5", "clubs")]
+    );
+    const asked = askSandboxTruco(base, SANDBOX_YOU_ID);
+
+    expect(rejectSandboxTruco(asked, SANDBOX_YOU_ID)).toBe(asked);
   });
 });

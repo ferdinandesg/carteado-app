@@ -9,6 +9,7 @@ import { CHANNEL } from "@/socket/channels";
 import emitToRoom from "@/socket/utils/emitToRoom";
 import { emitGameToRoom } from "@/socket/utils/emitGameToRoom";
 import { logger } from "@/utils/logger";
+import { withRoomLock } from "@/lib/locks/withRoomLock";
 
 import { needsTrucoBotAction, playTrucoBotStep } from "./playTrucoBots";
 
@@ -41,21 +42,30 @@ function scheduleTrucoBots(roomHash: string, channel: Namespace): void {
   timers.set(roomHash, timer);
 }
 
+async function playBotStepLocked(roomHash: string) {
+  const game = await getGameInstance(roomHash);
+  if (!(game instanceof TrucoGame) || !needsTrucoBotAction(game)) return null;
+  if (!playTrucoBotStep(game)) return null;
+
+  game.pendingPrivateResult = undefined;
+  await applyEndOfMatchRewards(game);
+  await saveGameInstance(roomHash, game);
+
+  const room =
+    game.status === GameStatus.FINISHED ? await finishRoom(roomHash) : null;
+  return { game, room };
+}
+
 async function runTrucoBotTick(
   roomHash: string,
   channel: Namespace
 ): Promise<void> {
   try {
-    const game = await getGameInstance(roomHash);
-    if (!(game instanceof TrucoGame) || !needsTrucoBotAction(game)) return;
-    if (!playTrucoBotStep(game)) return;
-
-    game.pendingPrivateResult = undefined;
-    await applyEndOfMatchRewards(game);
-    await saveGameInstance(roomHash, game);
-
-    const room =
-      game.status === GameStatus.FINISHED ? await finishRoom(roomHash) : null;
+    const result = await withRoomLock(roomHash, () =>
+      playBotStepLocked(roomHash)
+    );
+    if (!result) return;
+    const { game, room } = result;
 
     emitGameToRoom(channel, roomHash, game);
     if (room) {

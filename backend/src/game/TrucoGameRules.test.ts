@@ -84,11 +84,33 @@ describe("TrucoGameRules", () => {
       rules.dealInitialHands = jest.fn();
 
       // Act
-      rules.rejectTruco(game);
+      rules.rejectTruco(game, "p2");
 
       // Assert
       expect(teamA.score).toBe(initialScore + 1);
       expect(rules.dealInitialHands).toHaveBeenCalled();
+    });
+
+    it("should not let the asking player reject their own truco", () => {
+      rules.askTruco(game, "p1");
+      const teamA = rules.findTeamByUserId(game, "p1")!;
+
+      expect(() => rules.rejectTruco(game, "p1")).toThrow("Invalid action");
+      expect(teamA.score).toBe(0);
+      expect(game.trucoState).toBe("PENDING");
+    });
+
+    it("should not let the asker's teammate reject the truco", () => {
+      rules.askTruco(game, "p1");
+
+      expect(() => rules.rejectTruco(game, "p3")).toThrow("Invalid action");
+      expect(game.trucoState).toBe("PENDING");
+    });
+
+    it("should reject when the user is not in the game", () => {
+      rules.askTruco(game, "p1");
+
+      expect(() => rules.rejectTruco(game, "ghost")).toThrow("Invalid action");
     });
 
     it("should prevent a player from playing a card while a truco call is pending", () => {
@@ -316,7 +338,7 @@ describe("TrucoGameRules", () => {
         expect(game.currentBet).toBe(12);
 
         // 8. Time A FOGE
-        rules.rejectTruco(game);
+        rules.rejectTruco(game, "p1");
 
         // Assert: Time B ganha 9 pontos (a aposta anterior a 12)
         const teamB = rules.findTeamByUserId(game, "p2")!;

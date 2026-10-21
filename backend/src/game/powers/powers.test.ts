@@ -358,7 +358,7 @@ describe("Truco powers", () => {
 
       const teamB = game.rules.findTeamByUserId(game, "p2")!;
       game.rules.dealInitialHands = jest.fn();
-      game.rules.rejectTruco(game);
+      game.rules.rejectTruco(game, "p1");
 
       expect(teamB.score).toBe(1);
     });

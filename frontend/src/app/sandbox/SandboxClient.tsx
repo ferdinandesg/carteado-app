@@ -150,7 +150,8 @@ export default function SandboxClient() {
         patchSandbox((current) => askSandboxTruco(current, SANDBOX_YOU_ID)),
       acceptTruco: () =>
         patchSandbox((current) => acceptSandboxTruco(current, SANDBOX_YOU_ID)),
-      rejectTruco: () => patchSandbox(rejectSandboxTruco),
+      rejectTruco: () =>
+        patchSandbox((current) => rejectSandboxTruco(current, SANDBOX_YOU_ID)),
       handlePickCards: () => {},
       undoPlay: () => {},
       endTurn: () => {},
