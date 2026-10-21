@@ -14,7 +14,7 @@ test.describe("Fluxo de sala e lobby", () => {
     await createRoom(page, { name: "Sala E2E Carteado" });
     await expectLobbyVisible(page);
     await markReady(page);
-    await expect(page.getByText("Pronto", { exact: true })).toBeVisible();
+    await expect(page.getByText("Pronto!", { exact: true })).toBeVisible();
   });
 });
 

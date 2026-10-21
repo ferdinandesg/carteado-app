@@ -25,15 +25,14 @@ export async function createRoom(
   await expect(page).toHaveURL(/\/room\/\w+/);
 }
 
-/** Mesmo fluxo do `auth.setup.ts`, para contextos extras (segundo jogador). */
+/** Login de convidado (usado pelo `auth.setup.ts` e por contextos extras). */
 export async function loginAsGuest(page: Page, name: string) {
   await page.goto("/");
   await page.getByRole("button", { name: "Entrar como convidado" }).click();
   await page.getByTestId("guest-name-input").fill(name);
-  await page.getByRole("img", { name: "Avatar" }).nth(1).click();
-  await page.getByRole("img", { name: "-bit Blue" }).click();
-  await page.getByRole("button", { name: "Jogar" }).click();
-  await expect(page.getByRole("heading", { name })).toBeVisible();
+  await page.getByRole("button", { name: "Avatar 1" }).click();
+  await page.getByRole("button", { name: "Aplicar" }).click();
+  await expect(page).toHaveURL(/\/menu/);
 }
 
 export async function markReady(page: Page) {
