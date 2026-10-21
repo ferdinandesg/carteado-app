@@ -21,7 +21,24 @@ socket/events/ -> handlers -> services/ | lib/redis/
 - Controllers parse input and call services. Avoid business logic there.
 - Services orchestrate persistence, factories, and domain operations.
 - `lib/` holds JWT helpers, Redis adapters, and low-level integration helpers.
+  `lib/` must not import `services/`; wire callbacks in `index.ts` instead
+  (for example `RedisClass.onRoomExpired(expireRoomByHash)`).
 - Socket handlers should be one handler per event.
+
+The game engine is not backend code anymore:
+
+```text
+shared/engine  (TrucoGame, CarteadoGame, GameFactory, powers, pure bots)
+shared/errors  (GameError)
+      ^
+backend: services/game.service (Redis + withRoomLock) -> socket emit, rewards
+```
+
+- Import it only through `shared/engine` and `shared/errors`. Deep imports load
+  a second copy of the module and break `instanceof TrucoGame` / `GameError`.
+- `backend/src/game/*.ts` re-export files are compat shims for older tests; do
+  not add code there.
+- `shared` must stay isomorphic: no `node:*` imports or `process`.
 
 ## Authentication
 
@@ -67,7 +84,9 @@ export async function XxxEventHandler(
 
 ## Room and Chat Contracts
 
-Source of truth: `backend/src/socket/channels.ts`.
+Source of truth: `CHANNEL` in `shared/socket/channels.ts`, with typed payloads
+in `shared/socket/events.ts`. `shared/socket/channels.test.ts` pins every name,
+so a rename fails CI on purpose.
 
 Current client events:
 
@@ -110,7 +129,8 @@ same change.
 - Add new game types through `GameFactory`/registry patterns instead of scattered
   conditionals.
 - Use `createGameFromRuleName()` and `saveGameInstance()` for game lifecycle.
-- Shared game entities live in `shared/game`.
+- Shared game entities live in `shared/game`; build cards with `makeCard()`
+  from `shared/cards`.
 
 ## Logging and Tests
 

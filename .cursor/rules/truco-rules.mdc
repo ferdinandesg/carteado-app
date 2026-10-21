@@ -1,6 +1,6 @@
 ---
 description: Regras de negócio do Truco e dos poderes — fonte única em shared/game/truco, consumida por backend e sandbox
-globs: shared/game/**,backend/src/game/**,backend/src/socket/**,frontend/src/lib/sandbox/**
+globs: shared/game/**,shared/engine/**,backend/src/game/**,backend/src/socket/**,frontend/src/lib/sandbox/**
 alwaysApply: false
 ---
 

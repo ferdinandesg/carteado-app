@@ -8,9 +8,13 @@ alwaysApply: false
 
 - **Tipos de usuário**: `shared/types/guest.ts` — `UserRole`, `AuthenticatedUser`, `normalizeRegisteredRole`, guards.
 - **Game**: `shared/game/` — regras, `BasePlayer`, `createParticipantObject` em `utils.ts`.
-- **Cards**: `shared/cards/` — deck, helpers; sem dependência de backend/frontend.
+- **Cards**: `shared/cards/` — deck, helpers; sem dependência de backend/frontend. Carta nova = `makeCard(rank, suit, extras?)` (`shared/cards/factory.ts`); não montar `{ value, secondaryValue, toString }` à mão.
+- **Engine**: `shared/engine/` — `TrucoGame`, `CarteadoGame`, `GameFactory`, poderes, `playTrucoBots`. **Errors**: `shared/errors/` — `GameError`.
+- **Socket**: `shared/socket/` — `CHANNEL` (fonte única de nomes de evento) e payloads.
+- Isomórfico de verdade: nada de `node:*`, `process`, `fs` (usar `globalThis.crypto`, APIs web). Internamente `shared` usa imports **relativos**.
 - Build: `npm run build -w shared` gera `dist/`; backend referencia via project references.
-- Import nos workspaces: `from "shared/types"`, `from "shared/game"`, `from "shared/cards"`.
+- Import nos workspaces só pelos entrypoints do `exports` (`shared/types`, `shared/game`, `shared/cards`, `shared/engine`, `shared/errors`, `shared/socket`) — nunca `shared/engine/TrucoGameRules` etc. (cópia duplicada do módulo quebra `instanceof`). Novo subdiretório público exige entrada em `exports` do `shared/package.json`.
+- Cobertura: o motor é testado a partir do backend; por isso `backend/jest.config.ts` usa `rootDir` na raiz do monorepo (o instrumentador ignora arquivos fora do rootDir).
 
 ```typescript
 // createParticipantObject — usar isRegisteredUser(), não user.role === "user"

@@ -15,7 +15,9 @@ socket/events/ → handlers (*EventHandler) → services/ | lib/redis/
 
 - **Controllers**: parse input (Zod), chamam service, `res.status().json()` — sem lógica de negócio pesada.
 - **Services**: orquestração, Prisma, Redis, factories.
-- **lib/**: JWT (`lib/jwt.ts`), `authResponse.withAccessToken`, adapters Redis.
+- **lib/**: JWT (`lib/jwt.ts`), `authResponse.withAccessToken`, adapters Redis. `lib/` não importa `services/` (ex.: expiração de sala é registrada em `index.ts` via `RedisClass.onRoomExpired`).
+- **Motor de jogo** (`TrucoGame`, `CarteadoGame`, `GameFactory`, poderes, bots puros) e `GameError` vivem em `shared/engine` e `shared/errors`. O backend só orquestra (Redis, lock, emit, rewards, agendamento de bots em `game/bots/scheduleTrucoBots.ts`).
+- Importar o motor **apenas** por `"shared/engine"` / `"shared/errors"` — nunca por caminho interno: duas cópias do módulo quebram `instanceof TrucoGame` / `instanceof GameError`. Os arquivos em `backend/src/game/*.ts` são shims de compat para testes antigos; não adicionar código neles.
 
 ## Auth
 
@@ -39,7 +41,8 @@ const role = (user.role ?? "user") as RegisteredUserRole;
 
 ## Socket.IO
 
-- Servidor: `socket/socket.ts` — namespace `/room` é o único usado pelo frontend; `/chat` é legado, só exercitado por `tests/socket/utils.ts`. Não adicionar eventos novos em `/chat`.
+- Servidor: `socket/socket.ts` — namespace único `/room` (o `/chat` legado foi removido).
+- Nomes de eventos: só `CHANNEL` de `"shared/socket"`; payloads tipados em `shared/socket/events.ts`. O snapshot `shared/socket/channels.test.ts` falha se um nome mudar — isso é intencional (ver `production-safety.mdc`).
 - Registrar chat em `ConnectionEventHandler` via `registerChatEvents` no namespace **room**.
 - Middleware `AuthSocket`: `handshake.auth.token`, `try/catch`, `touchGuest` para convidados.
 - Handlers: `export async function XxxEventHandler(context: SocketContext<Payload>)`.
@@ -50,8 +53,8 @@ const role = (user.role ?? "user") as RegisteredUserRole;
 
 ## Redis / env
 
-- Chaves: `REDIS_KEYS.*` e TTLs em `config/redis.ts` — não strings mágicas.
-- Env validado com Zod em `config/env.ts` (`JWT_SECRET_KEY` obrigatório).
+- Chaves: `REDIS_KEYS.*` e TTLs em `config/redis.ts` — não strings mágicas. Vida de sessão (JWT, NextAuth, guest) = `SESSION_TTL_SEC` de `shared/types`.
+- Env validado com Zod em `config/env.ts` (`JWT_SECRET_KEY` obrigatório); ler `env.*`, não `process.env` direto.
 
 ## Logging e erros
 
