@@ -1,0 +1,46 @@
+---
+description: Pacote shared isomórfico e Docker/deploy
+globs: "{shared/**,docker/**,deploy/**,.env.example}"
+alwaysApply: false
+---
+
+# Shared (`shared/`)
+
+- **Tipos de usuário**: `shared/types/guest.ts` — `UserRole`, `AuthenticatedUser`, `normalizeRegisteredRole`, guards.
+- **Game**: `shared/game/` — regras, `BasePlayer`, `createParticipantObject` em `utils.ts`.
+- **Cards**: `shared/cards/` — deck, helpers; sem dependência de backend/frontend.
+- Build: `npm run build -w shared` gera `dist/`; backend referencia via project references.
+- Import nos workspaces: `from "shared/types"`, `from "shared/game"`, `from "shared/cards"`.
+
+```typescript
+// createParticipantObject — usar isRegisteredUser(), não user.role === "user"
+isRegistered: isRegisteredUser(user),
+```
+
+# Docker
+
+| Arquivo | Uso |
+|---------|-----|
+| `docker/compose.base.yml` | Mongo + Redis (rede `carteado_network`) |
+| `docker/compose.dev.yml` | front + back + base |
+| `docker/compose.dev.services.yml` | só infra (dev híbrido) |
+| `deploy/docker-compose-prod.yml` | produção |
+
+## Variáveis críticas
+
+| Variável | Onde | Função |
+|----------|------|--------|
+| `JWT_SECRET_KEY` | backend | Assina/valida `accessToken` |
+| `NEXTAUTH_SECRET` | frontend | Sessão/cookie NextAuth |
+| `API_URL` | frontend SSR | `http://backend:4000/api/v1` no Docker |
+| `NEXT_PUBLIC_API_URL` | browser | `http://localhost:4000/api/v1` |
+| `NEXT_PUBLIC_SOCKET_URL` | browser | `http://localhost:4000` |
+| `DATABASE_URL` / `REDIS_URL` | backend | Mongo e Redis |
+
+## Nginx / produção
+
+- API: `location /api/v1/` → backend
+- WebSocket: `location /carteado_socket/` com headers Upgrade
+- Frontend: `location /` → Next
+
+Ao alterar auth ou socket, validar **ambos** ambientes (local com `dev:services` e Docker com `deploy:dev`).

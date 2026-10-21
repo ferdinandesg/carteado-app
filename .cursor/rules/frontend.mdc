@@ -1,0 +1,48 @@
+---
+description: Next.js, NextAuth, Socket client e UI
+globs: frontend/**/*
+alwaysApply: false
+---
+
+# Frontend (`frontend/src/`)
+
+## App Router
+
+- Rotas em `app/`; páginas autenticadas sob `app/(auth)/`.
+- `"use client"` apenas onde há hooks (session, socket, router, i18n).
+- Layout autenticado: `SessionProvider` (root) + `SocketProvider` em `(auth)/layout.tsx`.
+
+## NextAuth (padrão do projeto)
+
+```
+lib/auth/options.ts      → authOptions (NextAuthOptions)
+lib/auth/backend-client.ts → POST /auth, /auth/guest
+lib/auth/types.ts          → AuthApiResponse
+app/api/auth/[...nextauth]/route.ts → export GET/POST apenas
+```
+
+- `accessToken` vem do **backend** no callback `jwt` — nunca `jwt.sign` no frontend.
+- Estender sessão em `frontend/src/@types/next-auth.d.ts` (id, role, accessToken, skin).
+
+## Socket client
+
+- Instância única: `lib/socket/client.ts` (`gameSocket`, `autoConnect: false`).
+- `SocketProvider`: conecta quando `status === "authenticated"` e há `accessToken`; listeners em função com cleanup.
+- Não colocar `useTranslation().t` nas deps do effect — usar `ref` se precisar de `t` em callbacks.
+- Eventos de sala/chat no mesmo socket (`/room`).
+
+## Dados e API
+
+- HTTP autenticado: `useAuthAxios()` → `Authorization: Bearer ${session.user.accessToken}`.
+- React Query em hooks `hooks/rooms/*`, `hooks/friends/*`, `hooks/store/useStore.ts`.
+- Textos de UI: `react-i18next` (`useTranslation`), chaves em `public/locales/`.
+
+## Componentes e estilo
+
+- Componentes funcionais; SCSS modules (`*.module.scss`) colocalizados.
+- Imports: **`@/`** exclusivamente (ex.: `@/components/`, `@/contexts/`, `@/lib/`).
+- Logger de app: `@/lib/logger` — não importar logger de `tests/` em código de produção.
+
+## ESLint
+
+- `next/core-web-vitals`; respeitar hooks rules e dependências de `useEffect`.

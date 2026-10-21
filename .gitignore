@@ -93,6 +93,6 @@ frontend/.next/
 frontend/.vercel/
 frontend/.netlify/
 
-# Docs
-docs/
-.cursor/
+# Cursor: só as regras do projeto são versionadas (planos/estado local ficam fora)
+.cursor/*
+!.cursor/rules/

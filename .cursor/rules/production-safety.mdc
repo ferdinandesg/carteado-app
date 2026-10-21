@@ -1,0 +1,39 @@
+---
+description: Regras anti-regressão — o projeto está em produção e todo merge em master faz deploy
+alwaysApply: true
+---
+
+# Produção: o que não pode quebrar
+
+`push` em `master` roda `.github/workflows/ci-cd.yml`: testes → build das imagens → deploy na VM (`deploy/docker-compose-prod.yml`). Não existe staging; o merge **é** o deploy.
+
+## Contratos imutáveis (mudar só com decisão explícita e plano de migração)
+
+| Contrato | Onde | Por quê |
+|---|---|---|
+| Nomes de eventos socket | `backend/src/socket/channels.ts`, `shared/socket/*` | Clientes com aba aberta usam o bundle antigo até recarregar |
+| Forma serializada do jogo | `serialize()` / `GameFactory.recreate` | Partidas em andamento no Redis precisam sobreviver ao deploy; guard: `backend/src/tests/gameStateContract.test.ts` (não regenerar a fixture para "passar") |
+| Nomes de env vars | `config/env.ts`, compose, secrets do CI | O CI escreve `deploy/.env` a partir dos secrets |
+| Path do socket / namespace | `/carteado_socket`, `/room` | nginx e cliente dependem disso |
+
+Campo novo no estado do jogo: sempre com default em `recreate` (ex.: `gameData.activeEffects ?? []`).
+
+## Invariantes de jogo
+
+- Toda mutação de jogo passa por `getAndRun` (`services/game.service.ts`) sob `withRoomLock`. Não fazer load/save de jogo fora dele.
+- Toda ação de truco valida o time do `userId` (aceitar/correr só o defensor; pedir não repete o mesmo time).
+- Emitir estado só via `emitGameToRoom` / `emitGameToUser` (máscara do Ilusionista).
+
+## Infra
+
+- `deploy/docker-compose-prod.yml`: Mongo, Redis, backend e frontend publicam **só em `127.0.0.1`**; o tráfego público entra pelo nginx. Nunca publicar Redis (sem senha) ou Mongo em `0.0.0.0`.
+- `NEXTAUTH_SECRET` e `JWT_SECRET_KEY` são segredos distintos, sem fallback de um para o outro.
+- `unhandledRejection` loga e mantém o processo vivo de propósito (ver `backend/src/index.ts`); não trocar por `process.exit` sem antes garantir que nenhum handler relança erros.
+
+## Checklist de pré-merge
+
+1. `npm run validate`
+2. `npm run test:integration` (Testcontainers ou `npm run dev:services`)
+3. Mudou Docker/compose/shared/build? `npm run deploy:prod:local` + smoke: login convidado → criar sala truco → partida contra bot até o fim.
+4. Mudou contrato acima? Descrever compatibilidade com clientes/partidas antigas no PR.
+5. Atualizou `.cursor/rules/` e `docs/` afetados.

@@ -1,0 +1,60 @@
+---
+description: Backend Express, Socket.IO, Prisma, Redis e factories
+globs: backend/**/*
+alwaysApply: false
+---
+
+# Backend (`backend/src/`)
+
+## Camadas
+
+```
+routes/ → controller/ → services/ → lib/ | prisma | redis/
+socket/events/ → handlers (*EventHandler) → services/ | lib/redis/
+```
+
+- **Controllers**: parse input (Zod), chamam service, `res.status().json()` — sem lógica de negócio pesada.
+- **Services**: orquestração, Prisma, Redis, factories.
+- **lib/**: JWT (`lib/jwt.ts`), `authResponse.withAccessToken`, adapters Redis.
+
+## Auth
+
+```typescript
+// ✅ Emitir token só no backend
+res.status(200).json(withAccessToken(profile));
+
+// ✅ Resolver usuário (HTTP + socket)
+const user = await verifyJWTToken(token);
+
+// ❌ Evitar no controller
+const role = (user.role ?? "user") as RegisteredUserRole;
+// ✅ Usar validateUser() → RegisteredAuthProfile ou normalizeRegisteredRole()
+```
+
+## UserFactory / GameFactory
+
+- Novo papel ou tipo de jogo → estender **registry** + resolver, não espalhar `if (role === ...)`.
+- `UserFactory`: `fromJwtPayload`, `createGuest`, `canOwnRoom`.
+- `GameFactory`: `create`, `recreate`, `deserialize` — erros via `GameError`.
+
+## Socket.IO
+
+- Servidor: `socket/socket.ts` — namespace `/room` é o único usado pelo frontend; `/chat` é legado, só exercitado por `tests/socket/utils.ts`. Não adicionar eventos novos em `/chat`.
+- Registrar chat em `ConnectionEventHandler` via `registerChatEvents` no namespace **room**.
+- Middleware `AuthSocket`: `handshake.auth.token`, `try/catch`, `touchGuest` para convidados.
+- Handlers: `export async function XxxEventHandler(context: SocketContext<Payload>)`.
+- Emit helpers: `emitToRoom`, `emitToUser` — não duplicar `channel.to().emit`.
+- Estado de sala: `atomicallyUpdateRoomState`; sessão: `storeSession` / `retrieveSession` (`REDIS_TTL` em `config/redis.ts`).
+- Estado de jogo: toda mutação passa por `getAndRun` em `services/game.service.ts`, que roda sob `withRoomLock(roomHash)` (`lib/locks/withRoomLock.ts`). Fluxos fora dele (ex.: tick de bot em `game/bots/scheduleTrucoBots.ts`) também envolvem load → mutate → save no lock. O lock é em memória (1 instância) e **não é reentrante**.
+- Ações de jogo recebem o `userId` do socket (`handleGameAction`) e as regras validam o time/turno dele — nunca aceitar ação sem identificar quem age.
+
+## Redis / env
+
+- Chaves: `REDIS_KEYS.*` e TTLs em `config/redis.ts` — não strings mágicas.
+- Env validado com Zod em `config/env.ts` (`JWT_SECRET_KEY` obrigatório).
+
+## Logging e erros
+
+- `logger` (Pino) de `@/utils/logger` — evitar `console.log` (ESLint warn).
+- Socket: `ErrorHandler(error, socket)` para erros de domínio.
+- `pingTimeout` do servidor: ~20s (não valores agressivos < 5s).

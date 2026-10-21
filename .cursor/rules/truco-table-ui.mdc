@@ -1,0 +1,32 @@
+---
+description: Mesa do Truco no frontend — slots, pilhas de vaza, leques, efeitos e eventos de apresentação (evita regressões visuais)
+globs: frontend/src/components/Game/**,frontend/src/hooks/game/**,frontend/src/lib/game/**,frontend/src/lib/cards/**,frontend/src/components/Card*.tsx,frontend/src/styles/TrucoTable.module.scss,frontend/src/styles/GameBoard.module.scss,frontend/src/styles/CardFan.module.scss,frontend/src/styles/CardPile.module.scss
+alwaysApply: false
+---
+
+# Mesa do Truco (UI)
+
+## Grid 3x3 (`Table` / `GameBoard.module.scss`)
+- Slot 1 = vira + aposta (`TrucoDeckArea`); slot 5 = centro/vaza; slots 3 e 9 = pilhas de vaza (`TrickPile`); linha de baixo = mão (`CardFan`).
+- `.board` usa **`overflow: visible`** de propósito: o peek das pilhas, o `PowerHint` e os selos (`TrucoEffects`) vazam do slot. Não voltar para `hidden`.
+
+## Pilhas de vaza (`TrickPile` → `CardPile` → `pileLayout.ts`)
+- Fechada: `variant="stack"`, `size="sm"`, `maxVisible={6}`.
+- Hover/foco (`peek`): `variant="fan-up"` (nossa, slot 9) / `"fan-down"` (adversário, slot 3), `size="md"`, `scale 1.12` via `motion`.
+- `fan-up`/`fan-down` vivem em `getPileTransform` (x `k*30%`, y `±(8 + i*16)%`, rot `k*5°`). **Não substituir por `CardFan`**: o leque da mão tem arco + container query próprios e desalinha dentro do slot.
+- Teste: `TrickPile.test.tsx` cobre `data-expanded`.
+
+## Leques e cartas
+- `CardFan` é só para mãos e previews estáticos (`SkinPreview`, loja). Geometria 100% CSS (`--i`, `--n`, `--fan-scale`); em toque: 1º tap seleciona, 2º joga.
+- `SkinPreview` = realeza de paus (J/Q/K) em `CardFan` com `enableLayout={false}`; é o único preview de baralho do app (loja, seletor, customizer).
+- Tooltip de poder: sempre `PowerHint` (`placement` `above` na carta, `below` no chip de efeito). Não reescrever estilos de hint em outro módulo.
+- Skin da carta: `skin` prop → `useSkinOverride()` → `session.user.skin` → `resolveSkin` (fallback `baralho01`).
+
+## Eventos de apresentação (`trucoTableEvents.ts` + `useTrucoPresentation`)
+- O servidor não emite eventos granulares; `diffTrucoSnapshots(prev, next)` infere `cardPlayed`, `trickFinished`, `trucoAsked/Accepted/Rejected`, `roundFinished`, `matchFinished`, `powerUsed`.
+- Carta nova: **por identidade** dentro da vaza (Coveiro troca carta já jogada) e **por posição** quando a vaza fecha (Ilusionista revela a face real das anteriores). Mudar isso quebra `trucoTableEvents.test.ts`.
+- `trickFinished.disguisedBunch` guarda a face falsa por posição; a revelação anima para todos.
+- Selos/peeks se ancoram no assento via `useCenterOffsetToSeat` (`useSeatAnchors`); mede em `useLayoutEffect` síncrono — sem `setTimeout`, senão os testes com fake timers não montam o selo.
+
+## Antes de mexer
+- Ler `truco.game.test.tsx`, `TrickPile.test.tsx`, `trucoTableEvents.test.ts`, `useTrucoPresentation.test.ts` e rodar `npx jest src/components/Game src/lib/game src/hooks/game` em `frontend/`.
