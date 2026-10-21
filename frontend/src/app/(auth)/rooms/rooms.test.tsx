@@ -11,10 +11,22 @@ jest.mock("@/hooks/rooms/useFetchRooms");
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }));
-// eslint-disable-next-line react/display-name
-jest.mock("@/components/Search", () => () => (
-  <input placeholder="procurar sala" />
-));
+jest.mock("@/components/Search", () => ({
+  __esModule: true,
+  default: ({
+    value,
+    onChange,
+  }: {
+    value: string;
+    onChange: (value: string) => void;
+  }) => (
+    <input
+      placeholder="procurar sala"
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+    />
+  ),
+}));
 
 // Painel de amigos usa react-query; fora do escopo desta página
 jest.mock("@/components/menu/FriendsPanel", () => ({
@@ -95,7 +107,7 @@ describe("RoomsPage", () => {
     expect(mockPush).toHaveBeenCalledTimes(1); // Garante que foi chamado apenas uma vez
   });
 
-  it.skip("deve filtrar as salas quando o usuário digita na busca", async () => {
+  it("deve filtrar as salas quando o usuário digita na busca", async () => {
     const user = userEvent.setup();
     render(<RoomsPage />);
 
@@ -107,11 +119,13 @@ describe("RoomsPage", () => {
     expect(screen.getByText("Apenas Novatos")).toBeInTheDocument();
   });
 
-  it.skip("deve navegar para a página de criação de sala ao clicar no botão", async () => {
+  it("deve navegar para a página de criação de sala ao clicar no botão", async () => {
     const user = userEvent.setup();
     render(<RoomsPage />);
 
-    const createButton = screen.getByRole("button", { name: /criar sala/i });
+    const createButton = screen.getByRole("button", {
+      name: "Menu.createRoom",
+    });
     await user.click(createButton);
 
     // Verifica se o router foi chamado para a rota correta

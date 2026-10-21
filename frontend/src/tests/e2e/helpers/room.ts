@@ -25,6 +25,17 @@ export async function createRoom(
   await expect(page).toHaveURL(/\/room\/\w+/);
 }
 
+/** Mesmo fluxo do `auth.setup.ts`, para contextos extras (segundo jogador). */
+export async function loginAsGuest(page: Page, name: string) {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Entrar como convidado" }).click();
+  await page.getByTestId("guest-name-input").fill(name);
+  await page.getByRole("img", { name: "Avatar" }).nth(1).click();
+  await page.getByRole("img", { name: "-bit Blue" }).click();
+  await page.getByRole("button", { name: "Jogar" }).click();
+  await expect(page.getByRole("heading", { name })).toBeVisible();
+}
+
 export async function markReady(page: Page) {
   await page.getByTestId(testIds.lobby.ready).click();
 }
