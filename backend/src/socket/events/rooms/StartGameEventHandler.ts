@@ -12,7 +12,7 @@ import {
   createGameFromRuleName,
   saveGameInstance,
 } from "@/services/game.service";
-import { CHANNEL } from "@/socket/channels";
+import { CHANNEL } from "shared/socket";
 
 export async function StartGameEventHandler(
   context: BaseSocketContext

@@ -2,7 +2,7 @@ import { PlayerStatus } from "shared/game";
 import prisma from "@/prisma";
 import { getGuest } from "@/lib/redis/guests";
 import { getRoomState } from "@/lib/redis/room";
-import { CHANNEL } from "@/socket/channels";
+import { CHANNEL } from "shared/socket";
 import {
   authenticateGuest,
   createRoomViaApi,

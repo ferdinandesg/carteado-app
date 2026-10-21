@@ -2,7 +2,7 @@ import { SocketContext } from "@/@types/socket";
 import { usePower } from "@/services/game.service";
 import { usePowerSchema } from "@/schemas/power.schemas";
 import { handleGameAction, parsePayload } from "../handleGameAction";
-import { UsePowerPayload } from "../payloads";
+import { UsePowerPayload } from "shared/game";
 
 /**
  * Evento único para todos os poderes: valida o payload e delega ao motor,
@@ -13,6 +13,6 @@ export function UsePowerEventHandler(
 ): Promise<void> {
   return handleGameAction(context, (roomHash, userId) => {
     const payload = parsePayload(usePowerSchema, context.payload);
-    return usePower(roomHash, userId, payload as UsePowerPayload);
+    return usePower(roomHash, userId, payload);
   });
 }

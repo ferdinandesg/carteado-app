@@ -5,7 +5,7 @@ import { TrucoGame } from "../TrucoGameRules";
 import { getGameInstance, saveGameInstance } from "@/services/game.service";
 import { applyEndOfMatchRewards } from "@/services/rewards.service";
 import { finishRoom } from "@/services/room.service";
-import { CHANNEL } from "@/socket/channels";
+import { CHANNEL } from "shared/socket";
 import emitToRoom from "@/socket/utils/emitToRoom";
 import { emitGameToRoom } from "@/socket/utils/emitGameToRoom";
 import { logger } from "@/utils/logger";

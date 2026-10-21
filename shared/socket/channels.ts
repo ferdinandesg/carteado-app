@@ -8,10 +8,12 @@ export const CHANNEL = {
     JOIN_CHAT: "join_chat",
     LOAD_MESSAGES: "load_messages",
     PLAYER_JOINED: "player_joined",
+    POWER_RESULT: "power_result",
     RECEIVE_MESSAGE: "receive_message",
     ROOM_JOINED: "room_joined",
     ROOM_UPDATED: "room_updated",
     USER_JOINED: "user_joined",
+    USER_LEFT: "user_left",
   },
   CLIENT: {
     ACCEPT_TRUCO: "accept_truco",
@@ -29,6 +31,7 @@ export const CHANNEL = {
     JOIN_CHAT: "join_chat",
     SEND_MESSAGE: "send_message",
     SET_PLAYER_STATUS: "set_player_status",
+    USE_POWER: "use_power",
   },
 } as const;
 

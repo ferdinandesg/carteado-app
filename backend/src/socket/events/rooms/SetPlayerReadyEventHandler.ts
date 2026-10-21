@@ -2,8 +2,8 @@ import { atomicallyUpdateRoomState } from "@/lib/redis/room";
 import { SocketContext } from "@/@types/socket";
 import emitToRoom from "@/socket/utils/emitToRoom";
 import ErrorHandler from "@/utils/error.handler";
-import { SetPlayerStatusPayload } from "../payloads";
-import { CHANNEL } from "@/socket/channels";
+import { SetPlayerStatusPayload } from "shared/socket";
+import { CHANNEL } from "shared/socket";
 import { setPlayerStatusSchema } from "@/schemas/socket.schemas";
 import { parsePayload, requireRoom } from "../handleGameAction";
 

@@ -5,7 +5,7 @@ import {
   type IGameState,
 } from "shared/game";
 
-import { CHANNEL } from "@/socket/channels";
+import { CHANNEL } from "shared/socket";
 
 /**
  * Snapshot exatamente como o socket.io serializaria a instância

@@ -1,9 +1,9 @@
 import emitToUser from "@/socket/utils/emitToUser";
 import { getMessages } from "@/lib/redis/chat";
 import emitToRoom from "@/socket/utils/emitToRoom";
-import { JoinChatPayload } from "../payloads";
+import { JoinChatPayload } from "shared/socket";
 import { SocketContext } from "@/@types/socket";
-import { CHANNEL } from "@/socket/channels";
+import { CHANNEL } from "shared/socket";
 
 export async function JoinChatEventHandler(
   context: SocketContext<JoinChatPayload>

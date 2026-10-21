@@ -2,7 +2,7 @@ import type { Socket } from "socket.io-client";
 import { GameStatus, PlayerStatus, type BasePlayer } from "shared/game";
 import prisma from "@/prisma";
 import { getGameState } from "@/lib/redis/game";
-import { CHANNEL } from "@/socket/channels";
+import { CHANNEL } from "shared/socket";
 import { TrucoGame } from "@/game/TrucoGameRules";
 import {
   askTruco,

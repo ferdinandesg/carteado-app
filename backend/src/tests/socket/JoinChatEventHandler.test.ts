@@ -1,4 +1,4 @@
-import { CHANNEL } from "@/socket/channels";
+import { CHANNEL } from "shared/socket";
 import { socketTestSetup } from "./socket.setup";
 import { closeSockets, createTestChatSocket } from "./utils";
 

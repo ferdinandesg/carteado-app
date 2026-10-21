@@ -1,6 +1,6 @@
 import { Server, Socket, Namespace } from "socket.io";
 import http from "http";
-import { CHANNEL } from "./channels";
+import { CHANNEL } from "shared/socket";
 import { ConnectionEventHandler } from "./events/ConnectionEventHandler";
 import { ChatConnectionEventHandler } from "./events/chat/ChatConnectionEventHandler";
 import { Authentication } from "./events/middleware/AuthSocket";
