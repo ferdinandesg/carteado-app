@@ -95,7 +95,9 @@ npm run validate
 npm run test:integration
 ```
 
-No GitHub, o workflow `CI` roda `validate:ci` (com cobertura) e integração em todo PR; o `Playwright E2E` roda em paralelo.
+No GitHub, o workflow `CI` roda `validate:ci` (com cobertura) e integração em todo PR; o `Playwright E2E` roda em paralelo. A regra de `master` exige os três checks (`validate`, `integration`, `e2e`).
+
+PRs do Dependabot: `dependabot-automerge.yml` aprova e liga o auto-merge só no grupo `minor-and-patch` e nas GitHub Actions sem major; o merge (e o deploy) acontece quando os três checks passam. Majors ficam manuais — testar localmente antes do merge. Majors de `next`, `react`, `next-auth`, `prisma` e `@types/node` nem são abertos.
 
 ---
 
