@@ -40,4 +40,9 @@ import { UserRole } from "shared/types";
 ## Testes
 
 - Jest na raiz; testes backend em `backend/src/tests/` e colocalizados `*.test.ts`.
+- Testes são typechecados (`backend/tsconfig.test.json`, `shared/tsconfig.test.json`, encadeados no `ts-check`) e lintados (bloco de testes em `eslint.node.mjs`: `recommended` + `jest/recommended`, sem type-check).
+- Async em teste: `async/await` ou retornar Promise — **nunca** callback `done` (regra `jest/no-done-callback`). Asserções dentro de listeners de socket só valem se a Promise do teste esperar por elas.
+- Cobertura: `coverageThreshold` por workspace em `jest.config.ts` (raiz) é **ratchet** — pode subir, nunca baixar para passar CI.
+- Regra de jogo nova (truco/carteado) exige teste em `shared/game/**` ou no motor; fluxo socket novo pede teste em `backend/src/tests/integration/`.
+- Sem `it.skip`/`test.skip` sem issue/justificativa no PR; teste obsoleto deve ser reescrito para o comportamento atual ou apagado.
 - Mocks de auth preferem JWT real (`signAccessToken`) ou mock de `verifyJWTToken` exportado — não mockar só `jsonwebtoken` se o fluxo usa `lib/jwt.ts`.

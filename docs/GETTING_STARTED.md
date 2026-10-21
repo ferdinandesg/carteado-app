@@ -68,7 +68,23 @@ Config na raiz: `eslint.node.mjs` (back/shared), `frontend/eslint.config.mjs` (N
 | Hook       | Roda                           |
 | ---------- | ------------------------------ |
 | pre-commit | `precommit` (silencioso se ok) |
-| pre-push   | `npm test`                     |
+| pre-push   | `npm run check`                |
+
+---
+
+## Testes (camadas)
+
+| Camada     | Comando                                       | Precisa de                                                                            |
+| ---------- | --------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Unit       | `npm test` (ou `npx jest caminho/do/arquivo`) | nada; Redis/Prisma mockados em `backend/jest.setup.ts`                                |
+| Cobertura  | `npm test -- --coverage`                      | idem; falha se cair abaixo do threshold                                               |
+| Integração | `npm run test:integration`                    | Docker (Testcontainers) ou `npm run dev:services`                                     |
+| E2E        | `npm run test:e2e -w frontend`                | `npm run dev:services`; o Playwright sobe backend e frontend se não estiverem rodando |
+
+- Os testes também passam por typecheck (`tsconfig.test.json`) e lint (`jest/recommended`).
+- Thresholds de cobertura ficam em `jest.config.ts` (raiz), por workspace. É um ratchet: subir quando a cobertura subir, **nunca** baixar para passar o CI.
+- Integração sem Docker: com `DATABASE_URL` e `REDIS_URL` no ambiente, o `globalSetup` usa os serviços locais em vez de containers.
+- E2E pela primeira vez: `npx playwright install chromium` dentro de `frontend/`.
 
 ---
 
@@ -76,7 +92,10 @@ Config na raiz: `eslint.node.mjs` (back/shared), `frontend/eslint.config.mjs` (N
 
 ```bash
 npm run validate
+npm run test:integration
 ```
+
+No GitHub, o workflow `CI` roda `validate:ci` (com cobertura) e integração em todo PR; o `Playwright E2E` roda em paralelo.
 
 ---
 
