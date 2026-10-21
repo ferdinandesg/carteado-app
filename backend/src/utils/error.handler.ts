@@ -1,6 +1,6 @@
 import emitToUser from "@/socket/utils/emitToUser";
 import { Socket } from "socket.io";
-import { GameError } from "errors/GameError";
+import { GameError } from "shared/errors";
 
 type CustomError = {
   error: boolean;

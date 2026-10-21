@@ -1,5 +1,5 @@
-import { PowerId, SILVER_SHIELD_REJECT_POINTS } from "shared/game";
-import { GameError } from "@/errors/GameError";
+import { PowerId, SILVER_SHIELD_REJECT_POINTS } from "../../../game";
+import { GameError } from "../../../errors/GameError";
 import type { TrucoGame } from "../../TrucoGameRules";
 import type {
   PowerContext,

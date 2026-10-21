@@ -1,6 +1,4 @@
-import { GameFactory } from "@/game/GameFactory";
-import { CarteadoGame } from "@/game/CarteadoGameRules";
-import { TrucoGame } from "@/game/TrucoGameRules";
+import { CarteadoGame, GameFactory, TrucoGame } from "shared/engine";
 import * as gameRepository from "@/lib/redis/game";
 import { RoomWithParticipants } from "@/lib/redis/room";
 import { Card } from "shared/cards";
@@ -13,7 +11,7 @@ import {
   UsePowerPayload,
 } from "shared/game";
 import { logger } from "@/utils/logger";
-import { GameError } from "@/errors/GameError";
+import { GameError } from "shared/errors";
 import { applyEndOfMatchRewards } from "./rewards.service";
 import { finishRoom } from "./room.service";
 import { withRoomLock } from "@/lib/locks/withRoomLock";

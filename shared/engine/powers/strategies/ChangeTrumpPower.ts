@@ -1,5 +1,5 @@
-import { getNextRank, TRUCO_RANKS } from "shared/cards";
-import { PowerId } from "shared/game";
+import { getNextRank, TRUCO_RANKS } from "../../../cards";
+import { PowerId } from "../../../game";
 import type { TrucoGame } from "../../TrucoGameRules";
 import type { PowerResult, PowerStrategy } from "../PowerStrategy";
 

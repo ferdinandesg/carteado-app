@@ -1,12 +1,12 @@
-import type { Card } from "shared/cards";
-import type { Team } from "shared/types";
+import type { Card } from "../../cards";
+import type { Team } from "../../types";
 import type {
   ActiveEffect,
   BasePlayer,
   PowerId,
   PowerPrivateResult,
   UsePowerPayload,
-} from "shared/game";
+} from "../../game";
 import type { TrucoGame } from "../TrucoGameRules";
 
 /**

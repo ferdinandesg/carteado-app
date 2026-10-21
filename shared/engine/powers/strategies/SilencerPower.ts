@@ -1,5 +1,5 @@
-import { PowerId } from "shared/game";
-import { GameError } from "@/errors/GameError";
+import { PowerId } from "../../../game";
+import { GameError } from "../../../errors/GameError";
 import type { TrucoGame } from "../../TrucoGameRules";
 import type {
   PowerContext,

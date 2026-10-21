@@ -1,4 +1,4 @@
-import { Card } from "shared/cards";
+import { Card } from "../cards";
 
 export interface IGameRules<T> {
   dealInitialHands(game: T): void;

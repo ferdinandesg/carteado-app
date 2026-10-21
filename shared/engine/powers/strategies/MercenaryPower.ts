@@ -1,6 +1,6 @@
-import { applyMercenarySteal, PowerId } from "shared/game";
-import type { ActiveEffect } from "shared/game";
-import type { Team } from "shared/types";
+import { applyMercenarySteal, PowerId } from "../../../game";
+import type { ActiveEffect } from "../../../game";
+import type { Team } from "../../../types";
 import type { TrucoGame } from "../../TrucoGameRules";
 import type {
   PowerContext,

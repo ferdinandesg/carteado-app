@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { GameError } from "@/errors/GameError";
+import { GameError } from "shared/errors";
 import { ZodError } from "zod";
 
 /** JSON não serializa `Error.message` (não enumerável); expõe mensagem/meta do Prisma para debug. */
