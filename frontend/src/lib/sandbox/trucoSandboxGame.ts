@@ -2,7 +2,7 @@ import Deck, {
   Card,
   getNextRank,
   isTrucoRank,
-  RANK_TO_VALUE,
+  makeCard,
   sameCard,
   type Rank,
   type Suit,
@@ -59,15 +59,7 @@ export function makeSandboxCard(
   suit: Suit,
   powerId?: string
 ): Card {
-  const value = RANK_TO_VALUE[rank];
-  return {
-    rank,
-    suit,
-    value: Array.isArray(value) ? value[0] : value,
-    secondaryValue: Array.isArray(value) ? value[1] : null,
-    toString: `${rank} of ${suit}`,
-    powerId,
-  };
+  return makeCard(rank, suit, { powerId });
 }
 
 function clone<T>(value: T): T {
