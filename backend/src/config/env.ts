@@ -14,6 +14,9 @@ const EnvSchema = z.object({
 
 export type Env = z.infer<typeof EnvSchema>;
 
+// Só alerta: falhar aqui derrubaria a produção se o secret atual for curto.
+const RECOMMENDED_JWT_SECRET_LENGTH = 32;
+
 let cached: Env | null = null;
 
 export function loadEnv(): Env {
@@ -29,6 +32,15 @@ export function loadEnv(): Env {
     throw new Error("Environment validation failed");
   }
   cached = parsed.data;
+  if (
+    cached.NODE_ENV === "production" &&
+    cached.JWT_SECRET_KEY.length < RECOMMENDED_JWT_SECRET_LENGTH
+  ) {
+    logger.warn(
+      { length: cached.JWT_SECRET_KEY.length },
+      `JWT_SECRET_KEY is shorter than ${RECOMMENDED_JWT_SECRET_LENGTH} chars; rotate it to a longer random value.`
+    );
+  }
   return cached;
 }
 

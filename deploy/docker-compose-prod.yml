@@ -34,8 +34,9 @@ services:
   frontend:
     image: ${FRONTEND_IMAGE:-ferdinandes/carteado-frontend:latest}
     container_name: carteado_frontend
+    # Só loopback: o tráfego público entra pelo nginx (rede app_network).
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     depends_on:
       backend:
         condition: service_healthy
@@ -58,7 +59,7 @@ services:
       - NEXT_PUBLIC_SOCKET_URL=https://carteado.ferdinandes.com.br
       - GOOGLE_ID=${GOOGLE_ID}
       - GOOGLE_SECRET=${GOOGLE_SECRET}
-      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-${JWT_SECRET_KEY}}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
       - APP_VERSION=${APP_VERSION:-latest}
       - AUTH_TRUST_HOST=true
     restart: always
@@ -74,7 +75,7 @@ services:
     image: ${BACKEND_IMAGE:-ferdinandes/carteado-backend:latest}
     container_name: carteado_backend
     ports:
-      - "4000:4000"
+      - "127.0.0.1:4000:4000"
     depends_on:
       mongodb:
         condition: service_healthy
@@ -128,8 +129,9 @@ services:
   redis:
     image: redis:7.0
     container_name: redis
+    # Redis sem senha: nunca publicar fora do loopback.
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -154,17 +156,20 @@ services:
       args:
         MONGO_VERSION: "7.0"
     container_name: mongodb
+    # Loopback mantém o `npm run ssh:tunnel` (-L 27017:localhost:27017).
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 15s
+    # MONGO_INITDB_* só valem na criação do volume; trocar a senha de um volume
+    # existente exige db.changeUserPassword() + atualizar DATABASE_URL (ver docs/DEPLOY.md).
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-password}
       MONGO_INITDB_DATABASE: carteado
       MONGO_REPLICA_PORT: 27017
       MONGO_REPLICA_HOST: mongodb

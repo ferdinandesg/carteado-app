@@ -1,0 +1,29 @@
+---
+description: Regras de negócio do Truco e dos poderes — fonte única em shared/game/truco, consumida por backend e sandbox
+globs: shared/game/**,backend/src/game/**,backend/src/socket/**,frontend/src/lib/sandbox/**
+alwaysApply: false
+---
+
+# Truco — regras de negócio
+
+## Fonte única: `shared/game/truco/`
+- `scoring.ts`: partida a **12** (`TRUCO_WINNING_SCORE`); escada 1→3→6→9→12 (`nextTrucoBet`); correr paga o degrau anterior (`trucoRejectPoints`); `applyMercenarySteal`.
+- `teams.ts`: `findTeamByUserId`, `getOpponentTeam`, `areTeammates`.
+- `trick.ts`: `resolveTrickWinner` (empate entre times = vaza anulada) e `resolveRoundOutcome` (2 vazas vence; 3ª empatada → quem fez a 1ª).
+- `illusion.ts`, `gravedigger.ts`, `stampPowers.ts`: lógica pura dos poderes.
+- Regra que valha para backend **e** sandbox entra aqui, nunca duplicada em `TrucoGameRules.ts` ou `trucoSandboxGame.ts`. Rodar `npm run build -w shared` antes do typecheck do backend.
+
+## Poderes (`PowerId`)
+- Carimbados por rodada em cartas de rank de truco (`stampPowersOnDeck`, `TRUCO_POWERS_PER_ROUND`, `TRUCO_POWER_STAMP_CHANCE`).
+- **Correr exige ser do time defensor**: `rejectTruco(game, userId)` lança `INVALID_ACTION` se `userId` for do time de `trucoAskerId` (senão o pedinte pontuaria sozinho). O mesmo vale para `acceptTruco` e para o sandbox (`rejectSandboxTruco(game, userId)`).
+- `PowerResult.runFromTruco` é o **único** caminho para rejeitar truco por poder (Escudo de Prata paga `SILVER_SHIELD_REJECT_POINTS = 1`). Não reintroduzir `pointsOverride`/`rejectPoints`.
+- **Ilusionista**: carta vira Zap falso (`disguiseAsZap`). `illusionReal` é segredo do time: só quem jogou e o parceiro recebem; adversários veem o Zap. No fim da vaza `restoreIllusions` revela para todos.
+- **Coveiro**: devolve a carta jogada ao baralho e traz uma de valor ≥ (`findGravediggerCandidates`).
+- **Mercenário**: +1 para quem ganhou a rodada, −1 (mín. 0) para o adversário.
+- Payload `use_power` não carrega `card`; o servidor resolve pela última carta jogada (`findLastCardIndex`).
+
+## Estado por destinatário
+- Sempre emitir jogo com `emitGameToRoom` / `emitGameToUser` (`backend/src/socket/utils/emitGameToRoom.ts`): projeta `maskIllusionsForViewer` por socket. Nunca `emitToRoom(..., GAME_UPDATED, game)` cru.
+
+## Recompensas (`rewards.service.ts`)
+- Gold por partida: **200 vitória / 100 derrota** (`defaultGoldRewardPolicy`); rank pela média do lobby (+15/+20/+25). Só usuários com ObjectId recebem; convidados não.

@@ -1,0 +1,58 @@
+---
+description: Carteado monorepo — visão geral, workflows e princípios do agente
+alwaysApply: true
+---
+
+# Carteado — contexto do projeto
+
+Monorepo **npm workspaces**: `shared` → `backend` → `frontend` (ordem de build obrigatória). Node **24.14.0** (`.nvmrc`).
+
+**Windows:** se `npm` falhar no PowerShell (ExecutionPolicy), usar `npm.cmd` ou `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` — ver `docs/GETTING_STARTED.md`.
+
+| Workspace | Stack | Porta dev |
+|-----------|-------|-----------|
+| `shared` | TypeScript puro (game, cards, types) | — |
+| `backend` | Express 5, Socket.IO, Prisma (Mongo), Redis | 4000 |
+| `frontend` | Next.js 16 App Router, NextAuth v4, React 19 | 3000 |
+
+## Comandos úteis
+
+```bash
+npm run validate          # lint + typecheck + test + build
+npm run dev:services      # só Mongo + Redis (dev local em terminais)
+npm run deploy:dev        # stack completa via Docker
+npm run build -w shared   # antes de typecheck backend
+```
+
+## Princípios (sempre)
+
+- **Escopo mínimo**: diff focado; não refatorar fora do pedido.
+- **Convenções existentes**: ler código adjacente antes de inventar abstração.
+- **Sem commits** salvo pedido explícito do usuário.
+- **Tipos compartilhados** em `shared/` — evitar duplicar DTOs no front/back.
+- **Imports**: nunca `@//`; frontend usa `@/` → `src/`; backend usa `@/` → `backend/src/`.
+- **Produção**: merge em `master` faz deploy automático. Antes de mexer em socket, serialização de jogo, env ou compose, ler `production-safety.mdc`.
+- **Docs versionadas**: `docs/` (guias e deploy) e `.cursor/rules/` vivem no git; atualizar no mesmo PR que muda o comportamento descrito.
+
+## Autenticação (modelo atual)
+
+- Backend **emite** JWT (`JWT_SECRET_KEY`) em `POST /auth` e `POST /auth/guest` via `withAccessToken()`.
+- HTTP (`authorize`) e Socket (`AuthSocket`) validam com `verifyJWTToken` → `UserFactory.fromJwtPayload`.
+- NextAuth guarda `accessToken` do backend na sessão — **não** assinar JWT no frontend.
+- Papéis: `guest` | `user` | `admin` — normalizar role de DB com `normalizeRegisteredRole()` em `shared/types/guest.ts`.
+
+## Design patterns no repo
+
+| Pattern | Onde | Uso |
+|---------|------|-----|
+| **Factory** | `GameFactory`, `UserFactory` | Criar/resolver entidades por tipo (`gameType`, `role`) |
+| **Registry** | `gameRegistry` em `GameFactory` | Mapa estático tipo → construtor |
+| **Middleware chain** | Express `authorize`, Socket `Authentication` | Auth antes de handlers |
+| **Event handlers** | `*EventHandler.ts` | Um handler por evento socket; recebe `SocketContext` |
+
+## Docker / ambientes
+
+- Base: `docker/compose.base.yml` (Mongo replica set + Redis).
+- Dev full: `docker/compose.dev.yml` — `API_URL=http://backend:4000/api/v1` (SSR), `NEXT_PUBLIC_*` para browser.
+- Socket: path `/carteado_socket`, namespace **`/room`** (game + chat no mesmo namespace).
+- Secrets: `JWT_SECRET_KEY` (API/socket), `NEXTAUTH_SECRET` (cookie NextAuth apenas).

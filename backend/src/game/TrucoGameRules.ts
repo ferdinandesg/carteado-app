@@ -91,7 +91,7 @@ export class TrucoGame extends Game<TrucoGame, ITrucoGameRules, BasePlayer> {
 type ITrucoGameRules = IGameRules<TrucoGame> & {
   askTruco(game: TrucoGame, userId: string): void;
   acceptTruco(game: TrucoGame, userId: string): void;
-  rejectTruco(game: TrucoGame): void;
+  rejectTruco(game: TrucoGame, userId: string): void;
   usePower(
     game: TrucoGame,
     userId: string,
@@ -210,12 +210,17 @@ export class TrucoGameRules implements ITrucoGameRules {
     game.trucoState = "ACCEPTED";
   }
 
-  rejectTruco(game: TrucoGame) {
+  rejectTruco(game: TrucoGame, userId: string) {
     if (!this.isTrucoPending(game) || !game.trucoAskerId)
       throw new GameError({ code: "INVALID_ACTION" });
 
     const askingTeam = this.findTeamByUserId(game, game.trucoAskerId);
     if (!askingTeam) throw new GameError({ code: "INVALID_ACTION" });
+
+    // Só o time que recebeu o pedido pode correr; senão o pedinte pontuaria sozinho.
+    const rejectingTeam = this.findTeamByUserId(game, userId);
+    if (!rejectingTeam || rejectingTeam.id === askingTeam.id)
+      throw new GameError({ code: "INVALID_ACTION" });
 
     // Efeitos do time que corre (ex.: Escudo de Prata) podem baratear a fuga.
     const defendingIds = game.teams
@@ -241,7 +246,7 @@ export class TrucoGameRules implements ITrucoGameRules {
   usePower(game: TrucoGame, userId: string, payload: UsePowerPayload) {
     const result = executePower(game, userId, payload);
     // Só depois do registro em `powerUsages`: correr fecha a rodada e muda `rounds`.
-    if (result.runFromTruco) this.rejectTruco(game);
+    if (result.runFromTruco) this.rejectTruco(game, userId);
     return result;
   }
 

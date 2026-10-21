@@ -5,5 +5,7 @@ import { handleGameAction } from "../handleGameAction";
 export function RejectTrucoEventHandler(
   context: BaseSocketContext
 ): Promise<void> {
-  return handleGameAction(context, (roomHash) => rejectTruco(roomHash));
+  return handleGameAction(context, (roomHash, userId) =>
+    rejectTruco(roomHash, userId)
+  );
 }

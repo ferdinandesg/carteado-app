@@ -1,0 +1,43 @@
+---
+description: TypeScript strict, ESLint e Prettier do Carteado
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# TypeScript
+
+- `strict: true` em todos os workspaces; não desativar checagens para “passar build”.
+- Preferir tipos de `shared/types` e guards (`isRegisteredUser`, `isRegisteredRole`, `normalizeRegisteredRole`) em vez de casts `as`.
+- Schemas Zod em `backend/src/schemas/`; inferir tipos com `z.infer<typeof schema>`.
+- Evitar `any` (ESLint: **warn**). Prefixar intencionalmente não usados com `_`.
+- `shared/`: lógica isomórfica — **sem** imports de Express, Prisma, React ou Redis.
+
+## Path aliases
+
+```typescript
+// Backend (baseUrl = backend/src)
+import { UserFactory } from "@/users/UserFactory";
+import { GuestType } from "shared/types";
+
+// Frontend (baseUrl = frontend root)
+import { authOptions } from "@/lib/auth/options";
+import { UserRole } from "shared/types";
+```
+
+## ESLint
+
+| Workspace | Config | Regras notáveis |
+|-----------|--------|-----------------|
+| `backend` + `shared` | `eslint.node.mjs` (raiz) | `recommendedTypeChecked`, `no-console: warn`, `no-explicit-any: warn` |
+| `frontend` | `eslint.config.mjs` | `next/core-web-vitals` |
+
+## Prettier (`.prettierrc`)
+
+- `semi: true`, `tabWidth: 2`, `singleQuote: false`, `trailingComma: es5`
+- `singleAttributePerLine: true`
+- Pre-commit: `lint-staged` roda Prettier + ESLint por workspace
+
+## Testes
+
+- Jest na raiz; testes backend em `backend/src/tests/` e colocalizados `*.test.ts`.
+- Mocks de auth preferem JWT real (`signAccessToken`) ou mock de `verifyJWTToken` exportado — não mockar só `jsonwebtoken` se o fluxo usa `lib/jwt.ts`.

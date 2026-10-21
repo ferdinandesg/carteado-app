@@ -1,0 +1,32 @@
+---
+description: Loja e cosméticos — catálogo, inventário, loadout, resolução de skin/avatar e sessão
+globs: backend/prisma/**,backend/src/services/store.service.ts,backend/src/services/cosmetics.service.ts,backend/src/controller/store.controller.ts,backend/src/scripts/**,shared/types/store.ts,frontend/src/hooks/store/**,frontend/src/components/store/**,frontend/src/components/menu/**,frontend/src/components/Modal/CosmeticPickerModal/**,frontend/src/app/(auth)/shop/**,frontend/src/lib/auth/**,frontend/src/components/GuestCustomizer/constants.ts
+alwaysApply: false
+---
+
+# Loja / cosméticos
+
+## Modelo (3 peças, Prisma/Mongo)
+- `Product` (catálogo): `type` (`DECK | AVATAR`), `assetKey @unique` (ex.: `baralho02` — chave do asset no front), `price`, `isDefault`, `isActive`, `sortOrder`, `imageUrl?`.
+- `UserInventory` (posse): `@@unique([userId, productId])`. Posse = `product.isDefault || inventory existe`.
+- `UserLoadout` (equipado): 1:1 com `User`, `slots: { type, productId }[]`, **um por tipo** (invariante em `writeSlots`).
+- `User` **não** tem `skin`/`equipped*`. Novo tipo de item = valor no enum + seed, sem migration no `User`.
+
+## Resolução (`cosmetics.service.resolveCosmetics`)
+- Único ponto que decide skin/avatar: loadout → catálogo → default (`DEFAULT_DECK_KEY = "baralho01"`). Avatar sem slot = `null` = foto do provedor.
+- Chamado em `validateUser` (login) e `UserFactory.resolveRegistered` (`/auth/me`, socket). Não ler `skin` de outro lugar.
+
+## API (`/api/v1/store`, tudo com `authorize`)
+- `GET /` catálogo já com `owned`/`equipped`/`cash`; convidado (`userId: null`) só vê a vitrine.
+- `POST /buy`, `PATCH /equip`, `DELETE /equip/:type` → devolvem o catálogo atualizado. Convidado → 403 `GUEST_NOT_ALLOWED`.
+- Erros: `StoreError` com códigos `PRODUCT_NOT_FOUND | ALREADY_OWNED | INSUFFICIENT_FUNDS | ITEM_NOT_OWNED | USER_NOT_FOUND`; traduzidos em `Store.errors.*`.
+
+## Economia
+- Baralho **400**, avatar **200** (`seedStore.ts`); gold 200/100 por vitória/derrota → 2 vitórias ou 4 derrotas compram um baralho. Mudar um lado exige revisar o outro.
+- Seed idempotente por `assetKey`: `npm run prisma:seed -w backend`.
+
+## Frontend
+- `useStore` (react-query, key `["store"]`): após mutação, `setQueryData` com a resposta e `update()` do NextAuth **sem payload** → `jwt` callback rebusca `/auth/me`. Nunca escrever `skin`/`image` no token à mão.
+- `session.user.skin` / `session.user.image` já vêm resolvidos do backend.
+- `/shop` usa `MenuShell` (sidebar em toda página fora do jogo). Seleção rápida do que já é seu: lápis no avatar e no baralho da sidebar → `CosmeticPickerModal` (avatar tem "Foto do Google" = unequip). Convidado não vê os lápis.
+- `GuestCustomizer/constants.ts` (`skinOptions`, `resolveSkin`) é o registro estático de assets: ao adicionar um baralho, atualizar lá **e** no seed.
