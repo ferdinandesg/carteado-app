@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: meta
-        uses: dependabot/fetch-metadata@v2
+        uses: dependabot/fetch-metadata@v3
       # Majors (inclusive de actions usadas só no deploy, que o CI de PR não exercita) ficam manuais.
       - if: >-
           steps.meta.outputs.update-type != 'version-update:semver-major' &&
