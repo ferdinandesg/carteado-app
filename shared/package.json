@@ -17,7 +17,8 @@
   "scripts": {
     "test": "jest",
     "build": "tsc",
-    "ts-check": "tsc --noEmit",
+    "ts-check": "tsc --noEmit && npm run ts-check:test",
+    "ts-check:test": "tsc -p tsconfig.test.json",
     "dev": "tsc -w"
   },
   "keywords": [],

@@ -23,20 +23,21 @@ export function socketTestSetup() {
   let ioServer: Server;
   let port: number;
 
-  beforeAll((done) => {
+  beforeAll(async () => {
     httpServer = http.createServer();
     const socketServer = new SocketServer(httpServer);
     ioServer = socketServer.io;
-    httpServer.listen(0, () => {
-      port = (httpServer.address() as AddressInfo).port;
-      done();
+    await new Promise<void>((resolve) => {
+      httpServer.listen(0, () => {
+        port = (httpServer.address() as AddressInfo).port;
+        resolve();
+      });
     });
   });
 
-  afterAll((done) => {
+  afterAll(() => {
     ioServer.close();
     httpServer.close();
-    done();
   });
 
   return {

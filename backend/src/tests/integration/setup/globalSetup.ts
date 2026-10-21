@@ -1,7 +1,10 @@
 import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { MongoDBContainer } from "@testcontainers/mongodb";
+import {
+  MongoDBContainer,
+  type StartedMongoDBContainer,
+} from "@testcontainers/mongodb";
 import { GenericContainer, Wait } from "testcontainers";
 
 const SETUP_DIR = __dirname;
@@ -16,7 +19,7 @@ type IntegrationEnv = {
 };
 
 type StartedContainers = {
-  mongo?: MongoDBContainer;
+  mongo?: StartedMongoDBContainer;
   redis?: Awaited<ReturnType<GenericContainer["start"]>>;
 };
 
@@ -46,16 +49,18 @@ function buildLocalDevUrls(): IntegrationEnv {
 }
 
 async function startTestcontainers(): Promise<IntegrationEnv> {
-  started.mongo = await new MongoDBContainer("mongo:7.0").start();
-  started.redis = await new GenericContainer("redis:7-alpine")
+  const mongo = await new MongoDBContainer("mongo:7.0").start();
+  started.mongo = mongo;
+  const redis = await new GenericContainer("redis:7-alpine")
     .withExposedPorts(6379)
     .withWaitStrategy(Wait.forLogMessage("Ready to accept connections"))
     .start();
+  started.redis = redis;
 
-  const host = started.mongo.getHost();
-  const port = started.mongo.getMappedPort(27017);
+  const host = mongo.getHost();
+  const port = mongo.getMappedPort(27017);
   const databaseUrl = `mongodb://${host}:${port}/carteado_integration?directConnection=true`;
-  const redisUrl = `redis://${started.redis.getHost()}:${started.redis.getMappedPort(6379)}`;
+  const redisUrl = `redis://${redis.getHost()}:${redis.getMappedPort(6379)}`;
 
   return {
     DATABASE_URL: databaseUrl,
