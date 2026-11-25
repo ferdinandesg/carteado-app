@@ -15,6 +15,10 @@ services:
       # Caminhos no host são configuráveis via .env; defaults mantêm o deploy atual.
       - ${PORTFOLIO_NGINX_CONF:-/home/franmlfran/port/nginx/portfolio.conf}:/etc/nginx/conf.d/portfolio.conf:ro
       - ${PORTFOLIO_WWW_DIR:-/home/franmlfran/port/www}:/var/www/port:ro
+      # Co-hosting do Ferfas Share (repo ferdinandesg/ferfashare): o deploy dele publica
+      # deploy/nginx/*.conf nesta pasta. Pasta (e não arquivo) para o nginx subir mesmo
+      # antes do primeiro deploy do Ferfas Share: o include com glob vazio não falha.
+      - ${FERFASHARE_NGINX_DIR:-/home/franmlfran/ferfashare/deploy/nginx}:/etc/nginx/ferfashare:ro
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
     command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
