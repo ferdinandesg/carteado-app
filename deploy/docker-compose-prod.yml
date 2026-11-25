@@ -47,6 +47,7 @@ services:
       options:
         max-size: "10m" # Rotação de logs: máximo de 10 megabytes por arquivo
         max-file: "3" # Rotação de logs: manter no máximo 3 arquivos de log
+        tag: "{{.Name}}" # rotula os logs no Ops Agent (vm-infra)
     networks:
       - app_network
       - edge
@@ -94,6 +95,7 @@ services:
       options:
         max-size: "10m" # Rotação de logs: máximo de 10 megabytes por arquivo
         max-file: "3" # Rotação de logs: manter no máximo 3 arquivos de log
+        tag: "{{.Name}}" # rotula os logs no Ops Agent (vm-infra)
     networks:
       - app_network
       - edge
@@ -117,6 +119,7 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+        tag: "{{.Name}}" # rotula os logs no Ops Agent (vm-infra)
     networks:
       - app_network
     command:
