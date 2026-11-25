@@ -262,7 +262,7 @@ jobs:
               echo "### Falha no deploy. Coletando diagnóstico..."
               cd ${{ env.DEPLOY_PATH }}/deploy || exit 1
               docker compose -f docker-compose-prod.yml ps || true
-              docker compose -f docker-compose-prod.yml logs --tail=200 backend frontend nginx || true
+              docker compose -f docker-compose-prod.yml logs --tail=200 backend frontend || true
             }
             trap on_error ERR
 
