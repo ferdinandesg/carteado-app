@@ -66,6 +66,13 @@ services:
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
       - APP_VERSION=${APP_VERSION:-latest}
       - AUTH_TRUST_HOST=true
+    # Traefik (repo ferdinandes/vm-infra). Inerte enquanto o nginx acima serve o tráfego.
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.carteado.rule=Host(`carteado.ferdinandes.com.br`)
+      - traefik.http.routers.carteado.entrypoints=websecure
+      - traefik.http.routers.carteado.middlewares=ratelimit@file
+      - traefik.http.services.carteado.loadbalancer.server.port=3000
     restart: always
     logging:
       driver: "json-file"
@@ -74,6 +81,7 @@ services:
         max-file: "3" # Rotação de logs: manter no máximo 3 arquivos de log
     networks:
       - app_network
+      - edge
 
   backend:
     image: ${BACKEND_IMAGE:-ferdinandes/carteado-backend:latest}
@@ -95,6 +103,12 @@ services:
       # (MONGO_INITDB_* só aplicam na primeira criação do volume; senão ajuste a senha no Mongo ou o secret).
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - FRONTEND_URL=https://carteado.ferdinandes.com.br
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.carteado-api.rule=Host(`carteado.ferdinandes.com.br`) && (PathPrefix(`/api/v1`) || PathPrefix(`/carteado_socket`))
+      - traefik.http.routers.carteado-api.entrypoints=websecure
+      - traefik.http.routers.carteado-api.middlewares=ratelimit@file
+      - traefik.http.services.carteado-api.loadbalancer.server.port=4000
     healthcheck:
       # Liveness em /live (sem DB). Readiness real: curl/grep em /api/v1/health (ver deploy/diagnose-backend.sh)
       test:
@@ -116,6 +130,7 @@ services:
         max-file: "3" # Rotação de logs: manter no máximo 3 arquivos de log
     networks:
       - app_network
+      - edge
 
   certbot:
     image: certbot/certbot
@@ -194,3 +209,7 @@ volumes:
 networks:
   app_network:
     driver: bridge
+  # Rede da plataforma da VM (vm-infra): Traefik e, após a troca, o mongodb.
+  edge:
+    external: true
+    name: edge
