@@ -1,44 +1,13 @@
-# Produção – nginx, frontend, backend, redis, mongodb
+# Produção – frontend, backend, redis. Proxy (Traefik), TLS e MongoDB vêm da plataforma da VM
+# (repo ferdinandes/vm-infra); as rotas são as labels abaixo.
 # Uso: cd deploy && docker compose -f docker-compose-prod.yml up -d
 # CI cria .env no servidor a cada deploy. Execução manual: cd deploy && docker compose up -d (usa .env existente)
 
 services:
-  nginx:
-    image: nginx:latest
-    container_name: carteado_nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-      # Co-hosting do portfólio (projeto ~/Desktop/dev/port) na mesma VM.
-      # Caminhos no host são configuráveis via .env; defaults mantêm o deploy atual.
-      - ${PORTFOLIO_NGINX_CONF:-/home/franmlfran/port/nginx/portfolio.conf}:/etc/nginx/conf.d/portfolio.conf:ro
-      - ${PORTFOLIO_WWW_DIR:-/home/franmlfran/port/www}:/var/www/port:ro
-      # Co-hosting do Ferfas Share (repo ferdinandesg/ferfashare): o deploy dele publica
-      # deploy/nginx/*.conf nesta pasta. Pasta (e não arquivo) para o nginx subir mesmo
-      # antes do primeiro deploy do Ferfas Share: o include com glob vazio não falha.
-      - ${FERFASHARE_NGINX_DIR:-/home/franmlfran/ferfashare/deploy/nginx}:/etc/nginx/ferfashare:ro
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m" # Rotação de logs: máximo de 10 megabytes por arquivo
-        max-file: "3" # Rotação de logs: manter no máximo 3 arquivos de log
-    depends_on:
-      frontend:
-        condition: service_healthy
-      backend:
-        condition: service_healthy
-    networks:
-      - app_network
-
   frontend:
     image: ${FRONTEND_IMAGE:-ferdinandes/carteado-frontend:latest}
     container_name: carteado_frontend
-    # Só loopback: o tráfego público entra pelo nginx (rede app_network).
+    # Só loopback: o tráfego público entra pelo Traefik (rede edge).
     ports:
       - "127.0.0.1:3000:3000"
     depends_on:
@@ -66,7 +35,6 @@ services:
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
       - APP_VERSION=${APP_VERSION:-latest}
       - AUTH_TRUST_HOST=true
-    # Traefik (repo ferdinandes/vm-infra). Inerte enquanto o nginx acima serve o tráfego.
     labels:
       - traefik.enable=true
       - traefik.http.routers.carteado.rule=Host(`carteado.ferdinandes.com.br`)
@@ -89,8 +57,6 @@ services:
     ports:
       - "127.0.0.1:4000:4000"
     depends_on:
-      mongodb:
-        condition: service_healthy
       redis:
         condition: service_healthy
     env_file:
@@ -132,19 +98,6 @@ services:
       - app_network
       - edge
 
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
   redis:
     image: redis:7.0
     container_name: redis
@@ -169,47 +122,13 @@ services:
     command:
       ["redis-server", "--notify-keyspace-events", "Ex", "--appendonly", "yes"]
 
-  mongodb:
-    build:
-      context: ./mongodb_rs
-      args:
-        MONGO_VERSION: "7.0"
-    container_name: mongodb
-    # Loopback mantém o `npm run ssh:tunnel` (-L 27017:localhost:27017).
-    ports:
-      - "127.0.0.1:27017:27017"
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 15s
-    # MONGO_INITDB_* só valem na criação do volume; trocar a senha de um volume
-    # existente exige db.changeUserPassword() + atualizar DATABASE_URL (ver docs/DEPLOY.md).
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-root}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-password}
-      MONGO_INITDB_DATABASE: carteado
-      MONGO_REPLICA_PORT: 27017
-      MONGO_REPLICA_HOST: mongodb
-    volumes:
-      - mongodb_data:/data/db
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    networks:
-      - app_network
-
 volumes:
   redis_data:
-  mongodb_data:
 
 networks:
   app_network:
     driver: bridge
-  # Rede da plataforma da VM (vm-infra): Traefik e, após a troca, o mongodb.
+  # Rede da plataforma da VM (vm-infra): Traefik e mongodb.
   edge:
     external: true
     name: edge
