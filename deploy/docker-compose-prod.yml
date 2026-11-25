@@ -66,7 +66,7 @@ services:
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
       - APP_VERSION=${APP_VERSION:-latest}
       - AUTH_TRUST_HOST=true
-    # Traefik (repo ferdinandes/vm-infra). Inerte enquanto o nginx acima serve o tráfego.
+    # Traefik (repo ferdinandesg/vm-infra). Inerte enquanto o nginx acima serve o tráfego.
     labels:
       - traefik.enable=true
       - traefik.http.routers.carteado.rule=Host(`carteado.ferdinandes.com.br`)
