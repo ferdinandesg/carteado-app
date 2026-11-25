@@ -61,6 +61,15 @@ npm run deploy:prod:local
 
 ## Produção (GCP VM + CI)
 
+Proxy (Traefik, TLS automático), MongoDB e a rede `edge` são da plataforma da VM, o repo **`ferdinandesg/vm-infra`**. Este repo sobe só `frontend`, `backend` e `redis`, e as rotas públicas são as **labels** do Traefik em `deploy/docker-compose-prod.yml`:
+
+| Router         | Regra                                          | Porta         |
+| -------------- | ---------------------------------------------- | ------------- |
+| `carteado`     | `Host(carteado.ferdinandes.com.br)`            | frontend:3000 |
+| `carteado-api` | o mesmo host + `/api/v1` ou `/carteado_socket` | backend:4000  |
+
+Não há nginx, certbot nem certificado para gerenciar aqui. Para adicionar ou alterar uma rota, mude as labels; o Traefik aplica sozinho no deploy.
+
 ### CI/CD (`push` em `master` ou `workflow_dispatch`)
 
 Workflow `.github/workflows/ci-cd.yml` (Node **24.14.0**):
@@ -81,16 +90,17 @@ docker compose -f docker-compose-prod.yml up -d
 
 ### Portas e segredos
 
-- Mongo (27017), Redis (6379), backend (4000) e frontend (3000) publicam **só em `127.0.0.1`** na VM. O acesso público é pelo nginx (80/443), que fala com os containers pela rede `app_network`.
+- Redis (6379), backend (4000) e frontend (3000) publicam **só em `127.0.0.1`** na VM. O acesso público é pelo Traefik (80/443) da `vm-infra`, que alcança frontend e backend pela rede `edge`. O Redis fica só na rede interna `app_network`.
+- O Mongo (27017, também só em `127.0.0.1`) é o da `vm-infra`. O backend o acessa como `mongodb:27017` pela rede `edge`.
 - Acesso ao Mongo da sua máquina: `npm run ssh:tunnel` (encaminha `localhost:27017` da VM).
 - `NEXTAUTH_SECRET` é obrigatório (sem fallback para `JWT_SECRET_KEY`). O backend loga um aviso se `JWT_SECRET_KEY` tiver menos de 32 caracteres.
 
 ### Rotação da senha do Mongo
 
-`MONGO_INITDB_ROOT_*` (`MONGO_ROOT_USERNAME` / `MONGO_ROOT_PASSWORD` no `.env` da VM) só valem na criação do volume. Com o volume já existente:
+O Mongo agora é da `vm-infra`, e o root só é criado num volume novo (ver o README de lá). Para trocar a senha do usuário que o carteado usa:
 
-1. `docker exec -it mongodb mongosh admin -u root -p <senha-atual> --eval 'db.changeUserPassword("root", "<nova>")'`
-2. Atualizar o secret `DATABASE_URL` no GitHub (senha percent-encoded) e `MONGO_ROOT_PASSWORD` no `.env` da VM.
+1. `docker exec -it mongodb mongosh admin -u root -p --eval 'db.changeUserPassword("<usuario>", passwordPrompt())'`
+2. Atualizar o secret `DATABASE_URL` no GitHub, com a senha percent-encoded.
 3. Re-rodar o deploy (`workflow_dispatch`).
 
 ### Rollback
