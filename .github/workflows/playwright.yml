@@ -15,7 +15,8 @@ env:
 jobs:
   e2e:
     timeout-minutes: 25
-    runs-on: ubuntu-latest
+    # ubuntu-latest virou 26.04, ainda sem suporte do Playwright ("does not support chromium on ubuntu26.04").
+    runs-on: ubuntu-24.04
     services:
       redis:
         image: redis:7.0
