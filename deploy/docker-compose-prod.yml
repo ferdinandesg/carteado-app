@@ -1,5 +1,5 @@
 # Produção – frontend, backend, redis. Proxy (Traefik), TLS e MongoDB vêm da plataforma da VM
-# (repo ferdinandes/vm-infra); as rotas são as labels abaixo.
+# (repo ferdinandesg/vm-infra); as rotas são as labels abaixo.
 # Uso: cd deploy && docker compose -f docker-compose-prod.yml up -d
 # CI cria .env no servidor a cada deploy. Execução manual: cd deploy && docker compose up -d (usa .env existente)
 
